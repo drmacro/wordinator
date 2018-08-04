@@ -1,4 +1,4 @@
-package com.municode.munipub2docx;
+package org.wordinator.xml2docx;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -10,19 +10,20 @@ import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.xmlbeans.XmlObject;
 import org.junit.Test;
-
-import com.municode.munipub2docx.generator.DocxGenerator;
+import org.wordinator.xml2docx.generator.DocxGenerator;
 
 import junit.framework.TestCase;
 
 public class TestDocxGenerator extends TestCase {
 	
 	
+	private static final String DOTX_TEMPLATE_PATH = "resources/docx/Test_Template.dotx";
+
 	@Test
 	public void testMakeDocx() throws FileNotFoundException, IOException {
 		ClassLoader classLoader = getClass().getClassLoader();
 		File inFile = new File(classLoader.getResource("resources/simplewp/simplewpml-test-01.xml").getFile());
-		File templateFile = new File(classLoader.getResource("resources/docx/Munipub_DOCX.dotx").getFile());
+		File templateFile = new File(classLoader.getResource(DOTX_TEMPLATE_PATH).getFile());
 		File outFile = new File("out/output.docx");
 		File outDir = outFile.getParentFile();
 		System.out.println("Input file: " + inFile.getAbsolutePath());
@@ -62,7 +63,7 @@ public class TestDocxGenerator extends TestCase {
 	public void testMakeDocxWithSections() throws FileNotFoundException, IOException {
 		ClassLoader classLoader = getClass().getClassLoader();
 		File inFile = new File(classLoader.getResource("resources/simplewp/simplewpml-test-02.xml").getFile());
-		File templateFile = new File(classLoader.getResource("resources/docx/Munipub_DOCX.dotx").getFile());
+		File templateFile = new File(classLoader.getResource(DOTX_TEMPLATE_PATH).getFile());
 		File outFile = new File("out/output-02.docx");
 		File outDir = outFile.getParentFile();
 		System.out.println("Input file: " + inFile.getAbsolutePath());

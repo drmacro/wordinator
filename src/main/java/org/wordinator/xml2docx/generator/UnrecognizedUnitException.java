@@ -1,4 +1,4 @@
-package com.municode.munipub2docx.generator;
+package org.wordinator.xml2docx.generator;
 
 /**
  * Indicates a measurement unit that is not recognized.

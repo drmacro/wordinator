@@ -1,0 +1,140 @@
+/* 
+ * Authoring/display CSS for Simple Word Processing Markup Language
+ * 
+ * This is mostly a convenience for developers who are working with 
+ * raw SimpleWPML docs.
+ */
+ 
+ document
+ {
+   display: block;
+   font-family: sans-serif;
+   counter-reset: fn;
+ }
+ 
+ p
+ {
+   display: block;
+   margin-top: 1em;
+ }
+ 
+ p[style]:before
+ {
+   content: '[style: ' attr(style) ']';
+   font-family: serif;
+   background-color: lightblue;
+ }
+ 
+ run
+ {
+   display: inline;
+ }
+
+ run[style]:before
+ {
+   content: '[style: ' attr(style) ']';
+   font-family: serif;
+   background-color: lightgreen;
+ }
+
+ bookmarkStart
+ {
+   content: attr(name);
+   display: inline;
+   background-color: lightblue;
+   font-family: serif;
+ }
+ 
+ bookmarkStart:before
+ {
+   content: '[Start: id="' attr(id) '": ';
+ }
+ 
+ bookmarkStart:after
+ {
+   content: ']';
+ }
+ 
+ bookmarkEnd
+ {
+   content: '[End: id="' attr(id) '"]';
+   display: inline;
+   background-color: lightblue;
+   font-family: serif;
+ }
+ 
+ break
+ {
+   content: '[Break: ' attr(type) ']';
+   display: block;
+   background-color: lightblue;
+   font-family: serif;
+ }
+ 
+ table
+ {
+   display: table;
+   border: solid blue 0.5pt;
+ }
+ 
+ tbody
+ {
+   display: table-row-group;
+ }
+ 
+ thead
+ {
+   display: table-header-group;
+ }
+ 
+ cols {
+   visibility: hidden;
+ }
+ 
+ row
+ {
+   display: table-row;
+ }
+ 
+ td 
+ {
+   display: table-cell;
+   border: solid blue 0.5pt;
+   border-collapse: collapse;
+   margin: 4pt;   
+ }
+ 
+ fn
+ {
+   counter-increment: fn;
+   display: block;
+   background-color: aquamarine;
+ }
+ 
+ fn > p:first-child
+ {
+   display: inline;
+ }
+ 
+ fn:before
+ {
+   content: counter(fn);
+   font-size: smaller;
+   baseline-shift: super;
+   background-color: white;
+ }
+ 
+ hyperlink
+ {
+   display: inline;
+   text-decoration: underline;
+   color: blue;
+   -oxy-link: attr(href url);
+ }
+ 
+ hyperlink:after
+ {
+   content: '[' attr(href) ']';
+   font-family: serif;
+   /*  -oxy-link: attr(href url); This makes a link but the ID reference doesn't resolve */
+ }

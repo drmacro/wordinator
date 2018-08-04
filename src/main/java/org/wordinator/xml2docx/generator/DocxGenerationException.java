@@ -1,4 +1,4 @@
-package com.municode.munipub2docx.generator;
+package org.wordinator.xml2docx.generator;
 
 /*
  * Reports problems generating DOCX files.
