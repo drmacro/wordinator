@@ -1,9 +1,8 @@
-package com.municode.munipub2docx;
+package org.wordinator.xml2docx;
 
 import org.junit.Test;
-
-import com.municode.munipub2docx.generator.Measurement;
-import com.municode.munipub2docx.generator.UnrecognizedUnitException;
+import org.wordinator.xml2docx.generator.Measurement;
+import org.wordinator.xml2docx.generator.UnrecognizedUnitException;
 
 import junit.framework.TestCase;
 

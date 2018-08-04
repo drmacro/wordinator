@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.municode.munipub2docx.generator;
+package org.wordinator.xml2docx.generator;
 
 import java.awt.image.BufferedImage;
 import java.io.File;

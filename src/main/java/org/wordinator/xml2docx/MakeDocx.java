@@ -1,4 +1,4 @@
-package com.municode.munipub2docx;
+package org.wordinator.xml2docx;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -19,9 +19,8 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.xmlbeans.XmlObject;
-
-import com.municode.munipub2docx.generator.DocxGeneratingOutputUriResolver;
-import com.municode.munipub2docx.generator.DocxGenerator;
+import org.wordinator.xml2docx.generator.DocxGeneratingOutputUriResolver;
+import org.wordinator.xml2docx.generator.DocxGenerator;
 
 import net.sf.saxon.lib.FeatureKeys;
 import net.sf.saxon.lib.OutputURIResolver;
@@ -35,6 +34,9 @@ import net.sf.saxon.s9api.XsltExecutable;
 /**
  * Command-line application to generate DOCX files from
  * various inputs.
+ * <p>You can use this directly as the main file run from the command line
+ * or as a helper class to build your own command-line handler or integrated
+ * DOCX generator.
  *
  */
 public class MakeDocx 
@@ -45,12 +47,20 @@ public class MakeDocx
     	CommandLineParser parser = new DefaultParser();
     	CommandLine cmd = parser.parse( options, args);
     	
-    	String inDocPath = cmd.getOptionValue("i");
+    	handleCommandLine(cmd);    	
+    	
+    }
+
+	/**
+	 * @param cmd
+	 */
+	protected static void handleCommandLine(CommandLine cmd) {
+		String inDocPath = cmd.getOptionValue("i");
     	String docxPath = cmd.getOptionValue("o");
     	String templatePath = cmd.getOptionValue("t");
     	String transformPath = cmd.getOptionValue("x");
     	String chunkLevel = cmd.getOptionValue("c");
-    	chunkLevel = chunkLevel == null ? "section" : chunkLevel;
+    	chunkLevel = chunkLevel == null ? "root" : chunkLevel;
     	
     	// FIXME: Set up proper Java logging.
     	System.out.println("+ [INFO] Input document or directory='" + inDocPath + "'");
@@ -96,44 +106,39 @@ public class MakeDocx
         	}
     	}
     	
+    	Map<String, String> xsltParameters = new HashMap<String, String>();
     	try {
-	    	if (inFile.isDirectory()) {
-	    		File cand = new File(inFile, "_Book.xml");
-	    		if (cand.exists()) {
-	    			processHtmlBook(cand, outDir, templateFile, transformFile, chunkLevel);
+    		if (inFile.isDirectory()) {
+    			// Assume directory contains *.swpx files 
+    			handleDirectory(inFile, outDir, templateFile);
+    		} else { 
+    			if (inFile.getName().endsWith(".swpx")) {
+	    			handleSingleSwpxDoc(inFile, outFile, templateFile);
 	    		} else {
-	        		handleDirectory(inFile, outDir, templateFile);    			
+	    			transformXml(inFile, outDir, templateFile, transformFile, xsltParameters);
 	    		}
-	    	} else {
-	    		if (inFile.getName().equalsIgnoreCase("_book.xml")) {
-	    			processHtmlBook(inFile, outDir, templateFile, transformFile, chunkLevel);
-	    		} else {
-	    			handleSingleFile(inFile, outFile, templateFile);
-	    		}
-	    	}
+    		}
     	} catch (Exception e) {
     		System.out.println("- [ERROR] " + e.getClass().getSimpleName() + ": " + e.getMessage());
     		System.exit(1);
     	}
-    	
-    	
-    }
+	}
 
 	/**
-	 * Process a _Book.xml file to a set of DOCX files
-	 * @param bookFile the _Book.xml file to process
+	 * Process an XML document to a set of DOCX files
+	 * @param docFile the root XML document to process
 	 * @param outDir Directory to put the DOCX files in
 	 * @param templateFile DOTX file to use in constructing new DOCX files.
 	 * @param transformFile The file containing the XSLT transform for generating SWPX documents
-	 * @param chunkLevel 
+	 * @param xsltParameters Map of parameter names to values to be passed to the XSLT transform.
 	 * @throws Exception 
 	 */
-	private static void processHtmlBook(
-			File bookFile, 
+	public static void transformXml(
+			File docFile, 
 			File outDir, 
 			File templateFile, 
 			File transformFile, 
-			String chunkLevel) throws Exception {
+			Map<String, String> xsltParameters) throws Exception {
 		// Apply transform to book file to generate Simple WP XML documents
 		
 		if (transformFile == null) {
@@ -154,15 +159,20 @@ public class MakeDocx
 		XsltExecutable executable = compiler.compile(xformSource);
 		
 		Xslt30Transformer transformer = executable.load30();
+
 		Map<QName, XdmValue> parameters = new HashMap<QName, XdmValue>();
-		parameters.put(new QName("", "chunk-level"), XdmValue.makeValue(chunkLevel));
+		// Assuming that parameters are not namespaced. If they are we'll
+		// have to deal with that additional complexity. s
+		for (String name : xsltParameters.keySet()) {
+			parameters.put(new QName("", name), XdmValue.makeValue(xsltParameters.get(name)));			
+		}
 		transformer.setStylesheetParameters(parameters);
 		
-		Source bookSource = new StreamSource(bookFile);
-		System.out.println("+ [INFO] Applying transform to source document " + bookFile.getAbsolutePath() + "...");
+		Source docSource = new StreamSource(docFile);
+		System.out.println("+ [INFO] Applying transform to source document " + docFile.getAbsolutePath() + "...");
 	
 		@SuppressWarnings("unused")
-		XdmValue result = transformer.applyTemplates(bookSource);
+		XdmValue result = transformer.applyTemplates(docSource);
 		System.out.println("Transform applied.");
 		// Direct result is the generation log XML document
 		// At this point, all the DOCX files should be generated.
@@ -175,7 +185,7 @@ public class MakeDocx
 	 * @param outFile If this is a directory, result filename is constructed from input filename. 
 	 * @param templateFile DOTX file to use as a template when constructing the new document.
 	 */
-	private static void handleSingleFile(File inFile, File outFile, File templateFile) {
+	public static void handleSingleSwpxDoc(File inFile, File outFile, File templateFile) {
 		
 		File effectiveOutFile = outFile;
 		if (outFile.isDirectory()) {
@@ -210,12 +220,12 @@ public class MakeDocx
 	 * @param outDir Directory to write *.docx files to
 	 * @param templateFile DOTX file to use as template for new DOCX files.
 	 */
-	private static void handleDirectory(File inDir, File outDir, File templateFile) {
+	public static void handleDirectory(File inDir, File outDir, File templateFile) {
 		
 		FilenameFilter filter = new SuffixFileFilter(".swpx");
 		File[] files = inDir.listFiles(filter);
 		for (File inFile : files) {
-			handleSingleFile(inFile, outDir, templateFile);
+			handleSingleSwpxDoc(inFile, outDir, templateFile);
 		}
 
 	}
@@ -224,7 +234,7 @@ public class MakeDocx
 	 * Build the command-line options
 	 * @return CLI options object ready to use.
 	 */
-	private static Options buildOptions() {
+	public static Options buildOptions() {
 		Options options = new Options();
     	Option input = Option.builder("i")
 						.required(true)
@@ -246,17 +256,11 @@ public class MakeDocx
 				.hasArg(true)
 				.desc("The path and filename of the XSLT transform for generating SWPX documents.")
 				.build();
-    	Option chunkLevel = Option.builder("c")
-				.required(false)
-				.hasArg(true)
-				.desc("The chunking level, one of \"chapter\" or \"section\"")
-				.build();
     			
     	options.addOption(input);
     	options.addOption(output);
     	options.addOption(template);
     	options.addOption(transform);
-    	options.addOption(chunkLevel);
 		return options;
 	}
 }

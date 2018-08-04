@@ -1,4 +1,4 @@
-package com.municode.munipub2docx;
+package org.wordinator.xml2docx;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
