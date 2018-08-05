@@ -38,8 +38,6 @@
   <xsl:template name="set-run-format-attributes" as="attribute()*">
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
     
-    <xsl:variable name="doDebug" as="xs:boolean" select="false()"/>
-
     <!-- For text, check the grandparent and then parent element, for 
          elements, check the parent and then the element.
          
@@ -65,10 +63,43 @@
     </xsl:choose>
   </xsl:template>
   
-  <xsl:template mode="set-run-format-attributes" match="xhtml:dfn" as="attribute()*">
+  <xsl:template mode="set-run-format-attributes" as="attribute()*" 
+    match="
+    xhtml:dfn |
+    xhtml:i
+    ">
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
     
     <xsl:attribute name="italic" select="'true'"/>
+    
+  </xsl:template>
+  
+  <xsl:template mode="set-run-format-attributes" as="attribute()*" 
+    match="
+    xhtml:dt |
+    xhtml:b
+    ">
+    <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
+
+    <xsl:if test="$doDebug">
+      <xsl:message>+ [DEBUG] set-run-format-attributes: {name(.)}: Setting bold to true</xsl:message>
+    </xsl:if>
+    
+    <xsl:attribute name="bold" select="'true'"/>
+    
+  </xsl:template>
+  
+  <xsl:template mode="set-run-format-attributes" as="attribute()*" 
+    match="
+      xhtml:u
+    ">
+    <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
+    
+    <xsl:if test="$doDebug">
+      <xsl:message>+ [DEBUG] set-run-format-attributes: {name(.)} "{.}": Setting underline to single</xsl:message>
+    </xsl:if>
+    
+    <xsl:attribute name="underline" select="'single'"/>
     
   </xsl:template>
   

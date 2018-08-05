@@ -30,6 +30,7 @@
   <xsl:import href="baseProcessing.xsl"/>
   <xsl:import href="get-style-name.xsl"/>
   <xsl:import href="set-format-attributes.xsl"/>
+  <xsl:import href="cleanup-swpx.xsl"/>
   
   <xsl:output method="xml"
     indent="yes"
@@ -56,7 +57,6 @@
   
   <xsl:template match="/">
     <xsl:param name="doDebug" as="xs:boolean" select="false()"/>
-    <xsl:variable name="doDebug" as="xs:boolean" select="true()"/>
     
     <log started="{format-dateTime(current-dateTime(), '[Y000]-[m0]}-[d0]')}">
       <message>+ [INFO] inputdoc={document-uri(.)}</message>

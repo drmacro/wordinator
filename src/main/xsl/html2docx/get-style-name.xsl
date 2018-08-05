@@ -39,6 +39,32 @@
     <xsl:sequence select="$result"/>
   </xsl:template>
   
+  <xsl:template mode="get-style-name" as="xs:string?"
+    match="
+      xhtml:h1 |
+      xhtml:h2 |
+      xhtml:h3 |
+      xhtml:h4 |
+      xhtml:h5
+    " 
+    >
+    <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
+    
+    <xsl:variable name="heading-number" as="xs:string"
+      select="substring-after(name(.), 'h')"
+    />
+    <xsl:variable name="headingLevel" as="xs:integer"
+      select="xs:integer($heading-number)"
+    />
+    <xsl:variable name="result" as="xs:string" 
+      select="'Heading ' || $headingLevel"
+    />
+    <xsl:if test="$doDebug">
+      <xsl:message>+ [DEBUG] get-style-name: {name(.)}. Returning "{$result}".</xsl:message>
+    </xsl:if>
+    <xsl:sequence select="$result"/>
+  </xsl:template>
+  
   <xsl:template mode="get-style-name" match="xhtml:span[@class] | xhtml:p[@class]" as="xs:string?">
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
     

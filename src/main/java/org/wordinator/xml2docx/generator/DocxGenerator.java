@@ -71,7 +71,7 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.impl.STOnOffImpl;
 public class DocxGenerator {
 
 	private static final String OO_WPML_NS = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
-	public static final String SIMPLE_WP_NS = "urn:ns:dita4publishers:simplewpml";
+	public static final String SIMPLE_WP_NS = "urn:ns:wordinator:simplewpml";
 	
 	private static final QName QNAME_INSTR_ATT = new QName(OO_WPML_NS, "instr");
 	private static final QName QNAME_ALIGN_ATT = new QName("", "align");
@@ -182,13 +182,15 @@ public class DocxGenerator {
 	private void constructDoc(XWPFDocument doc, XmlObject xml) throws DocxGenerationException {
 		XmlCursor cursor = xml.newCursor();
 		cursor.toFirstChild(); // Put us on the root element of the document
+		String tagName = cursor.getName().getLocalPart();
 		cursor.push();
 		if (cursor.toChild(new QName(SIMPLE_WP_NS, "page-sequence-properties"))) {
 			setupPageSequence(doc, cursor.getObject());
 		}
 		cursor.pop();
-		
+		tagName = cursor.getName().getLocalPart();
 		cursor.toChild(new QName(SIMPLE_WP_NS, "body"));
+		tagName = cursor.getName().getLocalPart();
 		handleBody(doc, cursor.getObject());
 		
 		
@@ -758,7 +760,7 @@ public class DocxGenerator {
 			// relationship's ID on the hyperlink
 			// It's not yet clear from the POI API how to create a new relationship for
 			// use by an external hyperlink.
-			throw new NotImplementedException("Links to external resources not yet implemented.");
+			// throw new NotImplementedException("Links to external resources not yet implemented.");
 		}
 		
 		XWPFHyperlinkRun hyperlinkRun = new XWPFHyperlinkRun(hyperlink, run, para);

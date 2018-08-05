@@ -8,8 +8,7 @@
   exclude-result-prefixes="xs local relpath xhtml"
   version="3.0"
   expand-text="yes"
-  
-  xmlns:fn="http://www.example.com/fn">
+  >
   <!-- ===================================================================
        Base processing for XHTML to DOCX
        
@@ -21,8 +20,10 @@
   <xsl:template match="xhtml:html">
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
     
+<!--    <xsl:variable name="doDebug" as="xs:boolean" select="true()"/>-->
+    
     <xsl:if test="$doDebug">
-      <xsl:message>+ [DEBUG] Handling {name(..)}/{name(.)}</xsl:message>
+      <xsl:message>+ [DEBUG] #default: (not a chunk) Handling {name(..)}/{name(.)}</xsl:message>
     </xsl:if>
     
     <xsl:apply-templates>
@@ -39,28 +40,74 @@
   
   <xsl:template match="xhtml:section[local:is-chunk(.)] | xhtml:html[local:is-chunk(.)]" priority="10">
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
-    
+        
+    <xsl:if test="$doDebug">
+      <xsl:message>+ [DEBUG] #default: is-chunk() is true: Handling {name(..)}/{name(.)}</xsl:message>
+    </xsl:if>
+        
     <xsl:variable name="result-uri" as="xs:string"
       select="local:get-result-uri(., $chunk-level, $outputDirectory)"
     />
     <xsl:if test="$doDebug">
       <xsl:message>+ [INFO] Generating result document "{$result-uri}"...</xsl:message>
     </xsl:if>
-      <xsl:result-document href="{$result-uri}" format="swpx" >
-        <wp:document>
-          <wp:page-sequence-properties>
-            <!-- Use default page numbering properties -->
-            <xsl:apply-templates mode="make-section-header-and-footer">
-              <xsl:with-param name="doDebug" as="xs:boolean" tunnel="yes" select="$doDebug"/>
-            </xsl:apply-templates>
-          </wp:page-sequence-properties>          
-          <wp:body>
-            <xsl:apply-templates>
-              <xsl:with-param name="doDebug" as="xs:boolean" tunnel="yes" select="$doDebug"/>
-            </xsl:apply-templates>
-          </wp:body>
-        </wp:document>
-      </xsl:result-document>
+    <xsl:variable name="swpx-base-result" as="element()">
+      <wp:document>
+        <wp:page-sequence-properties>
+          <!-- Use default page numbering properties -->
+          <xsl:if test="$doDebug">
+            <xsl:message>+ [DEBUG] page-sequence properties: applying templates to {name(.)} in mode make-section-header-and-footer...</xsl:message>
+          </xsl:if>
+          <xsl:apply-templates mode="make-section-header-and-footer" select=".">
+            <xsl:with-param name="doDebug" as="xs:boolean" tunnel="yes" select="$doDebug"/>
+          </xsl:apply-templates>
+          <xsl:if test="$doDebug">
+            <xsl:message>+ [DEBUG] applying templates to {name(.)} Done with page-sequence-properties.</xsl:message>
+          </xsl:if>
+        </wp:page-sequence-properties>          
+        <wp:body>
+          <xsl:apply-templates select="." mode="make-body-content">
+            <xsl:with-param name="doDebug" as="xs:boolean" tunnel="yes" select="$doDebug"/>
+          </xsl:apply-templates>
+        </wp:body>
+      </wp:document>           
+    </xsl:variable>
+    <xsl:if test="$doDebug or false()">
+      <debug>
+        <message>swpx-base-result for {$result-uri}</message>
+        <xsl:sequence select="$swpx-base-result"/>
+      </debug>
+    </xsl:if>
+    <xsl:result-document href="{$result-uri}" format="swpx" >
+      <xsl:apply-templates select="$swpx-base-result" mode="cleanup-swpx">
+        <xsl:with-param name="doDebug" as="xs:boolean" tunnel="yes" select="$doDebug"/>
+      </xsl:apply-templates>
+    </xsl:result-document>
+  </xsl:template>
+  
+  <xsl:template mode="make-body-content" match="xhtml:html">
+    <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
+    
+    <xsl:if test="$doDebug">
+      <xsl:message>+ [DEBUG] make-body-content: Handling {name(..)}/{name(.)}</xsl:message>
+    </xsl:if>
+    
+    <xsl:apply-templates mode="#default" select="xhtml:body">
+      <xsl:with-param name="doDebug" as="xs:boolean" tunnel="yes" select="$doDebug"/>
+    </xsl:apply-templates>
+    
+  </xsl:template>
+  
+  <xsl:template mode="make-body-content" match="xhtml:section">
+    <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
+    
+    <xsl:if test="$doDebug">
+      <xsl:message>+ [DEBUG] make-body-content: Handling {name(..)}/{name(.)}</xsl:message>
+    </xsl:if>
+    
+    <xsl:apply-templates mode="#default">
+      <xsl:with-param name="doDebug" as="xs:boolean" tunnel="yes" select="$doDebug"/>
+    </xsl:apply-templates>
   </xsl:template>
   
   <xsl:template match="xhtml:*" priority="-1">
@@ -74,6 +121,32 @@
       <xsl:with-param name="doDebug" as="xs:boolean" tunnel="yes" select="$doDebug"/>
     </xsl:apply-templates>
     
+  </xsl:template>
+  
+  <xsl:template match="xhtml:a[empty(@href)]">
+    <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
+    
+    <xsl:apply-templates>
+      <xsl:with-param name="doDebug" as="xs:boolean" tunnel="yes" select="$doDebug"/>
+    </xsl:apply-templates>
+    
+  </xsl:template>
+  
+  <xsl:template match="xhtml:hr">
+    <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
+    <!-- Ignore -->
+  </xsl:template>
+  
+  <xsl:template match="xhtml:a[@href]">
+    <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
+    
+    <xsl:variable name="targetId" as="xs:string?" select="tokenize(@href, '#')[last()]"/>
+    
+    <wp:hyperlink href="#{$targetId}">
+      <xsl:apply-templates>
+        <xsl:with-param name="doDebug" as="xs:boolean" tunnel="yes" select="$doDebug"/>
+      </xsl:apply-templates>
+    </wp:hyperlink>    
   </xsl:template>
   
   <xsl:template match="xhtml:a[@class = ('footnoteref')]" mode="running-header">
@@ -137,9 +210,12 @@
        
        ================================== -->
   
-  <xsl:template match="xhtml:h1">
+  <xsl:template match="xhtml:h1 | xhtml:h2 | xhtml:h3 | xhtml:h4 | xhtml:h5 | xhtml:h6" >
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
     
+    <xsl:if test="$doDebug">
+      <xsl:message>+ [DEBUG] #default: {name(..)}/{name(.)}: "{string(.)}"</xsl:message>
+    </xsl:if>
     <wp:p>
       <xsl:call-template name="set-style">
         <xsl:with-param name="doDebug" as="xs:boolean" tunnel="yes" select="$doDebug"/>
@@ -151,11 +227,21 @@
     </wp:p>
   </xsl:template>
   
-  <xsl:template match="xhtml:h1/text()">
+  <xsl:template match="
+      xhtml:h1/text() | 
+      xhtml:h2/text() | 
+      xhtml:h3/text() | 
+      xhtml:h4/text() | 
+      xhtml:h5/text() | 
+      xhtml:h6/text()
+      ">
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
 
     <wp:run>
       <xsl:call-template name="set-style">
+        <xsl:with-param name="doDebug" as="xs:boolean" tunnel="yes" select="$doDebug"/>
+      </xsl:call-template>
+      <xsl:call-template name="set-run-format-attributes">
         <xsl:with-param name="doDebug" as="xs:boolean" tunnel="yes" select="$doDebug"/>
       </xsl:call-template>
       <!-- Never trailing space for h1 run -->
@@ -389,7 +475,11 @@
        Paragraphs and spans
        ========================== -->
   
-  <xsl:template match="xhtml:p">
+  <xsl:template match="
+    xhtml:p | 
+    xhtml:dt | 
+    xhtml:dd[empty(xhtml:p)] | 
+    xhtml:pre">
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
 
     <wp:p>
@@ -409,9 +499,8 @@
   </xsl:template>
   
   <xsl:template priority="10"
-    match="
-    xhtml:div/text()
-    ">
+    match="xhtml:div/text()"
+  >
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
     
     <xsl:choose>
@@ -429,8 +518,17 @@
   <xsl:template 
     match="
       xhtml:span/text() | 
-      xhtml:div/text() |
-      xhtml:dfn/text()
+      xhtml:dfn/text() |
+      xhtml:a//text() |
+      xhtml:pre//text() |
+      xhtml:li//text() |
+      xhtml:dt//text() |
+      xhtml:dd//text() |
+      xhtml:code/text() |
+      xhtml:i/text() |
+      xhtml:b/text() |
+      xhtml:u/text() |
+      xhtml:tt/text()
     ">
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
     
@@ -492,17 +590,36 @@
        Lists
        ========================== -->
   
-  <xsl:template match="xhtml:li">
+  <xsl:template match="xhtml:li[empty(xhtml:p)]">
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
+    
     
     <wp:p>
       <xsl:call-template name="set-style">
         <xsl:with-param name="doDebug" as="xs:boolean" tunnel="yes" select="$doDebug"/>
       </xsl:call-template>
-      <xsl:apply-templates select="* except (xhtml:ul, xhtml:ol)">
+      <xsl:apply-templates select="node() except (xhtml:ul, xhtml:ol)">
         <xsl:with-param name="doDebug" as="xs:boolean" tunnel="yes" select="$doDebug"/>
       </xsl:apply-templates>
     </wp:p>
+    
+    <xsl:apply-templates select="xhtml:ul | xhtml:ol">
+      <xsl:with-param name="doDebug" as="xs:boolean" tunnel="yes" select="$doDebug"/>
+    </xsl:apply-templates>
+    
+  </xsl:template>
+  
+  <!-- For now, assume there is no text between paragraphs in the list item, even though
+       this is not a requirement of HTML markup.
+       
+       FIXME: Provide a more general way of handing a mix of text nodes and block nodes.
+    -->
+  <xsl:template match="xhtml:li[xhtml:p]">
+    <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
+    
+    <xsl:apply-templates select="* except (xhtml:ul, xhtml:ol)">
+      <xsl:with-param name="doDebug" as="xs:boolean" tunnel="yes" select="$doDebug"/>
+    </xsl:apply-templates>
     
     <xsl:apply-templates select="xhtml:ul | xhtml:ol">
       <xsl:with-param name="doDebug" as="xs:boolean" tunnel="yes" select="$doDebug"/>
@@ -523,7 +640,7 @@
     <wp:run><wp:break type="line"/></wp:run>
   </xsl:template>
   
-  <xsl:template match="xhtml:br[not(ancestor::xhtml:p)]" priority="10">
+  <xsl:template match="xhtml:br[not(ancestor::xhtml:p|ancestor::xhtml:dd)]" priority="10">
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
     <wp:p>
       <xsl:next-match>
@@ -643,6 +760,10 @@
        
 <xsl:template mode="make-section-header-and-footer" match="*">
   <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
+  
+  <xsl:if test="$doDebug">
+    <xsl:message>+ [DEBUG] make-section-header-and-footer: {name(..)}/{name(.)} - generating wp:headers-and-footers...</xsl:message>
+  </xsl:if>
   
   <wp:headers-and-footers>
     <wp:header>
