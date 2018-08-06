@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?xml-model href="../../../../../../doctypes/simplewpml/simplewpml.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
-<?xml-stylesheet type="text/css" href="../../../../../../doctypes/simplewpml/css/simplewpml.css"?>
-<document xmlns="urn:ns:dita4publishers:simplewpml">
+<?xml-stylesheet type="text/css" href="../../../../main/doctypes/simplewpml/css/simplewpml.css"?>
+<?xml-model href="../../../../main/doctypes/simplewpml/simplewpml.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<document xmlns="urn:ns:wordinator:simplewpml">
   <page-sequence-properties>
     <page-number-properties format="custom" start="1" xslt-format="1."/>
     <headers-and-footers>

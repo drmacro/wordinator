@@ -60,19 +60,23 @@
         <ref name="headers-and-footers"/>        
       </optional>
       <optional>
-        <attribute name="valign">
-          <a:documentation>
-            <p>Vertical alignment of content in the page sequence. See 17.18.101 ST_VerticalJc (Vertical Alignment Type) in the OOXML specification.</p>
-          </a:documentation>
-          <choice>
-            <value>both</value>
-            <value>bottom</value>
-            <value>center</value>
-            <value>top</value>
-          </choice>
-        </attribute>
+        <ref name="valign-att"/>
       </optional>
     </element>
+  </define>
+  
+  <define name="valign-att">
+    <attribute name="valign">
+      <a:documentation>
+        <p>Vertical alignment of content in the page sequence. See 17.18.101 ST_VerticalJc (Vertical Alignment Type) in the OOXML specification.</p>
+      </a:documentation>
+      <choice>
+        <value>both</value>
+        <value>bottom</value>
+        <value>center</value>
+        <value>top</value>
+      </choice>
+    </attribute>    
   </define>
   
   <define name="page-number-properties">
@@ -1107,16 +1111,7 @@
         </attribute>
       </optional>
       <optional>
-        <attribute name="valign">
-          <a:documentation>
-            <p>The vertical alignment of the cell contents.</p>
-          </a:documentation>
-          <choice>
-            <value>top</value>
-            <value>middle</value>
-            <value>bottom</value>
-          </choice>
-        </attribute>
+        <ref name="valign-att"/>
       </optional>
       <optional>
         <attribute name="colspan">
