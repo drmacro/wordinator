@@ -10,10 +10,10 @@ public class Measurement {
 
 	/**
 	 * Calculate the number of pixels represented by the specified value.
-	 * @param measurementValue
-	 * @param dotsPerInch The number of pixels (dots) per inch.
+	 * @param measurementValue The measurement value with unit (e.g., "12pt", "1.3in")
+	 * @param dotsPerInch The number of pixels (dots) per inch.s
 	 * @return Number of pixels
-	 * @throws MeasurementException 
+	 * @throws MeasurementException Bad measurement value
 	 */
 	public static double toPixels(String measurementValue, int dotsPerInch) throws MeasurementException {
 		String value = measurementValue.toLowerCase();
@@ -52,10 +52,10 @@ public class Measurement {
 
 	/**
 	 * Calculate the number of points represented by the specified measurement value.
-	 * @param measurementValue
+	 * @param measurementValue The measurement value with unit (e.g., "12pt", "1.3in")
 	 * @param dotsPerInch The number of pixels (dots) per inch.
 	 * @return Number of points
-	 * @throws MeasurementException 
+	 * @throws MeasurementException Bad measurement value 
 	 */
 	public static double toPoints(String measurementValue, int dotsPerInch) throws MeasurementException {
 		String value = measurementValue.toLowerCase();
@@ -93,13 +93,13 @@ public class Measurement {
 
 	/**
 	 * Calculate the number twips (1/20th of a point) represented by the measurement value.
-	 * @param width Measurement value
+	 * @param measurementValue The measurement value with unit (e.g., "12pt", "1.3in") 
 	 * @param dotsPerInch The number of pixels (dots) per inch.
 	 * @return Number of twips
-	 * @throws MeasurementException
+	 * @throws MeasurementException Bad measurement value 
 	 */
-	public static int toTwips(String width, int dotsPerInch) throws MeasurementException {
-		double points = toPoints(width, dotsPerInch);
+	public static int toTwips(String measurementValue, int dotsPerInch) throws MeasurementException {
+		double points = toPoints(measurementValue, dotsPerInch);
 		return (int) points * 20;
 	}
 

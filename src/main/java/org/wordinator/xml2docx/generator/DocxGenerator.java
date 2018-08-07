@@ -202,7 +202,7 @@ public class DocxGenerator {
 	 * @param xml Body element
 	 * @throws DocxGenerationException
 	 */
-	public void handleBody(XWPFDocument doc, XmlObject xml) throws DocxGenerationException {
+	private void handleBody(XWPFDocument doc, XmlObject xml) throws DocxGenerationException {
 		XmlCursor cursor = xml.newCursor();
 		if (cursor.toFirstChild()) {
 			do {

@@ -33,7 +33,7 @@ import net.sf.saxon.s9api.XsltExecutable;
 
 /**
  * Command-line application to generate DOCX files from
- * various inputs.
+ * 	
  * <p>You can use this directly as the main file run from the command line
  * or as a helper class to build your own command-line handler or integrated
  * DOCX generator.
@@ -41,20 +41,31 @@ import net.sf.saxon.s9api.XsltExecutable;
  */
 public class MakeDocx 
 {
+	public static final String XSLT_PARAM_CHUNKLEVEL = "chunklevel";
+
 	public static void main( String[] args ) throws ParseException
     {
     	Options options = buildOptions();
     	CommandLineParser parser = new DefaultParser();
     	CommandLine cmd = parser.parse( options, args);
     	
-    	handleCommandLine(cmd);    	
+    	Map<String, String> xsltParameters = new HashMap<String, String>();
+
+    	
+    	handleCommandLine(cmd, xsltParameters);    	
     	
     }
 
 	/**
-	 * @param cmd
+	 * Does the actual command line processing. You can call this from your own
+	 * command line processor if you need additional command-line options, for example,
+	 * to set additional XSLT parameters.
+	 * @param cmd The command line command.
+	 * @param xsltParameters XSLT parameters to use. Note that the chunklevel parameter will be set automatically.
 	 */
-	protected static void handleCommandLine(CommandLine cmd) {
+	public static void handleCommandLine(
+			CommandLine cmd, 
+			Map<String, String> xsltParameters) {
 		String inDocPath = cmd.getOptionValue("i");
     	String docxPath = cmd.getOptionValue("o");
     	String templatePath = cmd.getOptionValue("t");
@@ -104,9 +115,11 @@ public class MakeDocx
         		System.err.println("- [ERROR] XSLT transform file '" + transformFile.getAbsolutePath() + "' not found. Cannot continue."); 
         		System.exit(1);
         	}
+        	if (!xsltParameters.containsKey(XSLT_PARAM_CHUNKLEVEL)) {
+        		xsltParameters.put(XSLT_PARAM_CHUNKLEVEL, chunkLevel);
+        	}
     	}
     	
-    	Map<String, String> xsltParameters = new HashMap<String, String>();
     	try {
     		if (inFile.isDirectory()) {
     			// Assume directory contains *.swpx files 
@@ -131,7 +144,7 @@ public class MakeDocx
 	 * @param templateFile DOTX file to use in constructing new DOCX files.
 	 * @param transformFile The file containing the XSLT transform for generating SWPX documents
 	 * @param xsltParameters Map of parameter names to values to be passed to the XSLT transform.
-	 * @throws Exception 
+	 * @throws Exception Any kind of error
 	 */
 	public static void transformXml(
 			File docFile, 
