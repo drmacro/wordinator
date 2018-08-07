@@ -84,3 +84,13 @@ This is a Maven project.
 NOTE: As of Aug 2018 this code relies on the development version of Apache POI 4.0.0. This means that you'll need to clone or fork the Apache POI sources (e.g., [https://github.com/apache/poi]) and build the POI jars directly following the POI project build instructions, which may be as easy as running the "mvn-install" Ant task.
 
 NOTE: POI 4.0.0 and this project require at least Java 8.
+
+Maven dependency:
+
+```
+<dependency>
+  <groupId>org.wordinator</groupId>
+  <artifactId>wordinator</artifactId>
+  <version>0.1.1</version>
+</dependency>
+```

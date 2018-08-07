@@ -5,12 +5,15 @@
   <groupId>org.wordinator</groupId>
   <artifactId>wordinator</artifactId>
   <packaging>jar</packaging>
-  <version>0.1.0</version>
+  <version>0.1.1</version>
   <organization>
     <name>wordinator.org</name>
     <url>http://wordinator.org</url>
   </organization>
   <name>${project.groupId}:${project.artifactId}</name>
+<description>Simplifies the creation of DOCX files from XML, HTML, or similar sources through the
+use of an intermediate XML format, Simple Word Processing XML (SWPX) that can be generated from HTML,
+arbitrary XML, JSON, etc.</description>  
   <url>https://github.com/drmacro/wordinator</url>
   <licenses>
     <license>
