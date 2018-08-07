@@ -22,6 +22,8 @@ import javax.imageio.ImageIO;
 import javax.xml.namespace.QName;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.formula.eval.NotImplementedException;
 import org.apache.poi.util.Units;
 import org.apache.poi.wp.usermodel.HeaderFooterType;
@@ -69,6 +71,8 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.impl.STOnOffImpl;
  * Generates DOCX files from Simple Word Processing Markup Language XML.
  */
 public class DocxGenerator {
+	
+	public static final Logger log = LogManager.getLogger();
 
 	private static final String OO_WPML_NS = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
 	public static final String SIMPLE_WP_NS = "urn:ns:wordinator:simplewpml";
@@ -220,7 +224,7 @@ public class DocxGenerator {
 					// FIXME: This is currently unimplemented.
 					makeObject(doc, cursor);
 				} else {
-					System.out.println("- [WARN] createContent(): Unexpected element {" + namespace + "}:'" + tagName + "' in <body>. Ignored.");
+					log.warn("handleBody(): Unexpected element {" + namespace + "}:'" + tagName + "' in <body>. Ignored.");
 				}
 			} while (cursor.toNextSibling());
 		}
@@ -235,7 +239,7 @@ public class DocxGenerator {
 	private void handleSection(XWPFDocument doc, XmlObject xml) throws DocxGenerationException {
 		XmlCursor cursor = xml.newCursor();
 		
-		System.err.println("- [WARN] Section-level headers and footers and page numbering not yet implemented.");
+		log.warn("Section-level headers and footers and page numbering not yet implemented.");
 		// FIXME: The section-specific properties go in the first paragraph of the section.
 		cursor.push();
 		if (false && cursor.toChild(new QName(SIMPLE_WP_NS, "page-sequence-properties"))) {
@@ -311,7 +315,7 @@ public class DocxGenerator {
 					XWPFFooter footer = doc.createFooter(type);
 					makeHeaderFooter(footer, cursor.getObject());
 				} else {
-					System.out.println("- [WARN] Unexpected element {" + namespace + "}:" + tagName + " in <headers-and-footers>. Ignored.");
+					log.warn("Unexpected element {" + namespace + "}:" + tagName + " in <headers-and-footers>. Ignored.");
 				}
 			} while(cursor.toNextSibling());
 		}
@@ -345,7 +349,7 @@ public class DocxGenerator {
 				} else {
 					// There are other body-level things that could go in a footnote but 
 					// we aren't worrying about them for now.
-					System.out.println("- [WARN] makeFootnote(): Unexpected element {" + namespace + "}:" + tagName + "' in <fn>. Ignored.");
+					log.warn("makeFootnote(): Unexpected element {" + namespace + "}:" + tagName + "' in <fn>. Ignored.");
 				}
 			} while(cursor.toNextSibling());
 		}
@@ -412,7 +416,7 @@ public class DocxGenerator {
 				} else if ("page-number-ref".equals(tagName)) {
 					makePageNumberRef(para, cursor);
 				} else {
-					System.out.println("- [WARN] Unexpected element {" + namespace + "}:" + tagName + " in <p>. Ignored.");
+					log.warn("Unexpected element {" + namespace + "}:" + tagName + " in <p>. Ignored.");
 				}
 			} while(cursor.toNextSibling());
 		}
@@ -493,7 +497,7 @@ public class DocxGenerator {
 				} else if ("tab".equals(name)) {
 					makeTab(run, cursor);
 				} else {
-					System.err.println("makeRun(); Unexpected element {" + namespace + "}:" + name + ". Skipping.");
+					log.error("makeRun(); Unexpected element {" + namespace + "}:" + name + ". Skipping.");
 					cursor.toEndToken(); // Skip this element.
 				}
 				cursor.toNextToken();
@@ -504,9 +508,9 @@ public class DocxGenerator {
 			} else {
 				// What else could there be?
 				if (cursor.getName() != null) {
-					System.err.println("makeRun(): Unhanded XML token " + cursor.getName().getLocalPart());
+					log.error("makeRun(): Unhanded XML token " + cursor.getName().getLocalPart());
 				} else {
-					System.err.println("makeRun(): Unhanded XML token " + cursor.currentTokenType());
+					log.error("makeRun(): Unhanded XML token " + cursor.currentTokenType());
 				}
 				cursor.toNextToken();
 			}
@@ -573,7 +577,7 @@ public class DocxGenerator {
 						value = UnderlinePatterns.valueOf(attValue.toUpperCase());
 					    run.setUnderline(value);
 					} catch (Exception e) {
-						System.err.println("- [ERROR] Unrecognized underline value \"" + attValue + "\"");
+						log.error("- [ERROR] Unrecognized underline value \"" + attValue + "\"");
 					}
 				  } else if ("underline-color".equals(attName)) {
 					  run.setUnderlineColor(attValue);
@@ -643,7 +647,7 @@ public class DocxGenerator {
 				} else {
 					// There are other body-level things that could go in a footnote but 
 					// we aren't worrying about them for now.
-					System.out.println("- [WARN] makeFootnote(): Unexpected element {" + namespace + "}:" + tagName + "' in <fn>. Ignored.");
+					log.warn("makeFootnote(): Unexpected element {" + namespace + "}:" + tagName + "' in <fn>. Ignored.");
 				}
 			} while (cursor.toNextSibling());
 		}
@@ -686,7 +690,7 @@ public class DocxGenerator {
 		} else if ("column".equals(typeValue)) {
 			type = BreakType.COLUMN;
 		} else {
-			System.err.println("- [WARN] makeBreak(): Unexpected @type value '" + typeValue + "'. Using 'line'.");			
+			log.warn("makeBreak(): Unexpected @type value '" + typeValue + "'. Using 'line'.");			
 		}
 		run.addBreak(type);
 		// Now move the cursor past the end of the break element
@@ -778,7 +782,7 @@ public class DocxGenerator {
 		
 		String imgUrl = cursor.getAttributeText(QNAME_SRC_ATT);
 		if (null == imgUrl) {
-			System.err.println("- [ERROR] No @src attribute for image.");
+			log.error("- [ERROR] No @src attribute for image.");
 			return;
 		}
 		URL url;
@@ -789,7 +793,7 @@ public class DocxGenerator {
 			}
 			url = new URL(imgUrl);
 		} catch (MalformedURLException e) {
-			System.err.println("- [ERROR] " + e.getClass().getSimpleName() + " on img/@src value: " + e.getMessage());
+			log.error("- [ERROR] " + e.getClass().getSimpleName() + " on img/@src value: " + e.getMessage());
 			return;
 		}
 		File imgFile = null;
@@ -808,7 +812,7 @@ public class DocxGenerator {
 		
         if (format == 0) {
         	// FIXME: Might be more appropriate to throw an exception here.
-            System.err.println("Unsupported picture: " + imgFilename +
+            log.error("Unsupported picture: " + imgFilename +
                     ". Expected emf|wmf|pict|jpeg|jpg|png|dib|gif|tiff|eps|bmp|wpg");
             cursor.pop();
             return;
@@ -823,7 +827,7 @@ public class DocxGenerator {
 		    intrinsicWidth = img.getWidth();
 		    intrinsicHeight = img.getHeight();
 		} catch (IOException e) {
-			System.err.println("- [WARN] " + e.getClass().getSimpleName() + " exception loading image file '" + imgFile +"': " +
+			log.warn("" + e.getClass().getSimpleName() + " exception loading image file '" + imgFile +"': " +
                      e.getMessage());
 		}		
 		 
@@ -832,8 +836,8 @@ public class DocxGenerator {
 			try {
 				width = (int) Measurement.toPixels(widthVal, dotsPerInch);
 			} catch (MeasurementException e) {
-				System.err.println(e.getClass().getSimpleName() + ": " + e.getMessage());
-				System.err.println("Using default width value " + width);
+				log.error(e.getClass().getSimpleName() + ": " + e.getMessage());
+				log.error("Using default width value " + width);
 				width = intrinsicWidth > 0 ? intrinsicWidth : width;
 			}
 		} else {
@@ -845,8 +849,8 @@ public class DocxGenerator {
 			try {
 				height = (int) Measurement.toPixels(heightVal, dotsPerInch);
 			} catch (MeasurementException e) {
-				System.err.println(e.getClass().getSimpleName() + ": " + e.getMessage());
-				System.err.println("Using default height value " + height);
+				log.error(e.getClass().getSimpleName() + ": " + e.getMessage());
+				log.error("Using default height value " + height);
 				height = intrinsicHeight > 0 ? intrinsicHeight : height;
 			}
 		} else {
@@ -867,7 +871,7 @@ public class DocxGenerator {
 					       Units.toEMU(width), 
 					       Units.toEMU(height));
 		} catch (Exception e) {
-			System.err.println("- [WARN] " + e.getClass().getSimpleName() + " exception adding picture for reference '" + imgFile +"': " +
+			log.warn("" + e.getClass().getSimpleName() + " exception adding picture for reference '" + imgFile +"': " +
  		                       e.getMessage());
 		}
 		cursor.pop();
@@ -929,7 +933,7 @@ public class DocxGenerator {
 						CTTblGridCol gridCol = grid.addNewGridCol();	
 						gridCol.setW(colWidth);
 					} catch (MeasurementException e) {
-						System.err.println("- [WARN] makeTable(): " + e.getClass().getSimpleName() + ": " + e.getMessage());
+						log.warn("makeTable(): " + e.getClass().getSimpleName() + ": " + e.getMessage());
 					}
 				}
 			} while (cursor.toNextSibling());
@@ -1020,7 +1024,7 @@ public class DocxGenerator {
 					spanNumber.setVal(BigInteger.valueOf(spanval));
 					ctTcPr.setGridSpan(spanNumber);
 				} catch (NumberFormatException e) {
-					System.err.println("- [WARN] Non-numeric value for @colspan: \"" + colspan + "\". Ignored.");
+					log.warn("Non-numeric value for @colspan: \"" + colspan + "\". Ignored.");
 				}
 			}
 			if (null != rowspan) {
@@ -1033,7 +1037,7 @@ public class DocxGenerator {
 					vMerge.setVal(STMerge.RESTART);
 					ctTcPr.setVMerge(vMerge);
 				} catch (NumberFormatException e) {
-					System.err.println("- [WARN] Non-numeric value for @rowspan: \"" + rowspan + "\". Ignored.");
+					log.warn("Non-numeric value for @rowspan: \"" + rowspan + "\". Ignored.");
 				}
 			}
 			
@@ -1042,7 +1046,7 @@ public class DocxGenerator {
 			if (rowspan == null && cursor.toChild(QNAME_VSPAN_ELEM)) {
 				int spansRemaining = rowSpanManager.includeCell(cellCtr);
 				if (spansRemaining < 0) {
-					System.err.println("- [WARN] Found <vspan> when there should not have been one. Ignored.");
+					log.warn("Found <vspan> when there should not have been one. Ignored.");
 				} else {
 					ctTcPr.setVMerge(CTVMerge.Factory.newInstance());
 				}
