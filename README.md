@@ -10,13 +10,19 @@ The Wordinator uses the Apache POI library [https://poi.apache.org/] to generate
 
 This approach provides a two-stage X-to-DOCX conversion process, where the first stage is a transform from whatever your input is into one or more SWPX documents and the second stage generates DOCX files from the SWPX files. You can think of the SWPX XML as a very abstract API to the DOCX format.
 
-The Wordinator Java code can run an XSLT to generate the SWPX dynamically from any XML input or you can generate the SWPX documents separately using whatever means you choose and then process those into DOCX files. Word style definitions are managed using a normal Word tempalte (DOTX) file that you create and manage normally.
+The Wordinator Java code can run an XSLT to generate the SWPX dynamically from any XML input or you can generate the SWPX documents separately using whatever means you choose and then process those into DOCX files. Word style definitions are managed using a normal Word template (DOTX) file that you create and manage normally.
 
 The Wordinator is designed for batch or on-demand generation of DOCX files.
 
 The Wordinator requires Java 8 or newer (because POI 4 requires it).
 
-The Wordinator provides a generic HTML5-to-DOCX transform that can easily be adapted to your specific HTML or other XML format. The main challenges are managing white space within text runs and mapping source elements to the appropriate paragraph and character styles. The XSLT has been designed to make the element-to-style mapping as easy as possible by using a separate XSLT mode to generate the style names for elements. This mode uses an XSLT 3 map to map HTML class values to Word style names. This makes configuring the mapping about as easy as it can be. If a simple class-to-style mapping is insufficient you can use normal XSLT templates to map elements in context to styles.
+The Wordinator provides a generic HTML5-to-DOCX transform that can easily be adapted to your specific HTML or other XML format. 
+
+The main challenges are managing white space within text runs and mapping source elements to the appropriate paragraph and character styles. The XSLT has been designed to make the element-to-style mapping as easy as possible by using a separate XSLT mode to generate the style names for elements. This mode uses an XSLT 3 map to map HTML class values to Word style names and paragraph and run-level formatting controls (e.g., a @class token of 'bold' will result in bold runs). This makes configuring the mapping about as easy as it can be. If a simple class-to-style mapping is insufficient you can use normal XSLT templates to map elements in context to styles.
+
+You can use your own XSLT transform to generate SWPX files from any XML (or JSON source for that matter). You may find it easier to generate HTML and then use that as input to the Wordinator.
+
+If you need to go from Word documents back to XML, you may find the DITA for Publishers Word-to-DITA framework useful ([https://github.com/dita4publishers/org.dita4publishers.word2dita]). This packaged as a DITA Open Toolkit plugin but is really a general-purpose XML-to-DOCX framework. It does not depend on the DITA Open Toolkit in any way. While it is designed to generate DITA XML it can be adapted to produce any XML format, either directly or through a DITA-to-X transform applied 
 
 ## Word feature support
 
@@ -29,9 +35,7 @@ The Wordinator supports generation of documents with the following Word features
 * Running heads and feet
 * Bookmarks
 * Hyperlinks
-* Multiple sections
-
-*NOTE:* Use of direct formatting is not supported. All formatting must be defined through the use of templates,
+* Multiple sections (full support pending)
 
 ## Getting Started
 
@@ -73,4 +77,20 @@ For new features, it is unlikely that I will be able to implement them outside o
 
 If you would like to contribute new features, I welcome all contributions. Use normal GitHub pull requests to submit your contributions. If you'd like to be more heavily involved or even take over primarily development, please contact me directly.
 
+## Building
 
+This is a Maven project.
+
+NOTE: As of Aug 2018 this code relies on the development version of Apache POI 4.0.0. This means that you'll need to clone or fork the Apache POI sources (e.g., [https://github.com/apache/poi]) and build the POI jars directly following the POI project build instructions, which may be as easy as running the "mvn-install" Ant task.
+
+NOTE: POI 4.0.0 and this project require at least Java 8.
+
+Maven dependency:
+
+```
+<dependency>
+  <groupId>org.wordinator</groupId>
+  <artifactId>wordinator</artifactId>
+  <version>0.1.1</version>
+</dependency>
+```

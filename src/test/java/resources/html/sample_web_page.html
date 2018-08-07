@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<!-- saved from url=(0040) -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+
+    <!-- THIS IS A COMMENT -->
+    <title>Sample Web Page</title>
+
+  </head>
+  <body>
+    <h1>Sample Web Page</h1>
+    <div>
+    <p>Original source: <a href="http://www.columbia.edu/%7Efdc/sample.html">http://www.columbia.edu/%7Efdc/sample.html</a></p>
+    <p>NOTE: This was originally created by Frank da Cruz as an HTML 4 document. It has been
+      converted to an HTML5 document but I didn't change the actual examples from HTML 4 to
+      HTML5.</p>
+    <!-- How to insert an image -->
+    <p>
+      <img alt="Brief description" src="./images/picture-of-something.jpg" /><br />
+      <span><i>A random photo, maximize your browser to enlarge.</i></span></p>
+    <p>
+      <!--  <a href="http://www.columbia.edu/~fdc/">-->Frank da Cruz<!-- </a> --><br /> Sat Jan 17 12:07:32 2004
+        </p><h3><a id="contents">CONTENTS</a></h3>
+    <ol>
+      <li><a href="#basics">Creating a Web Page</a>
+      </li><li><a href="#syntax">HTML Syntax</a>
+      </li><li><a href="#chars">Special Characters</a>
+      </li><li><a href="#convert">Converting Plain Text to HTML</a>
+      </li><li><a href="#effects">Effects</a>
+      </li><li><a href="#lists">Lists</a>
+      </li><li><a href="#links">Links</a>
+      </li><li><a href="#tables">Tables</a>
+      </li><li><a href="#install">Installing your Web Page on the Internet</a>
+      </li><li><a href="#more">Where to go from here</a>
+      </li></ol>
+    </div>
+    <div id="basics" style="border-top: solid 1p black;">
+    <h3>1. Creating a Web Page</h3> 
+    <p>This page was typed by hand. Anybody can do
+    this, you don't need any special "web creation" tools or HTML editors, and the pages you make
+    can be viewed from any browser. To see how this page was made, choose <b>View Source</b> (or
+    View Page Source, or View Document Source) in your browser's menu. A simple web page like this
+    one is just plain text with HTML commands (markup) mixed in. HTML commands themselves are plain
+    text. </p>
+    <p>When you're just learning and want to experiment, you can do everything on your PC.
+      Create a new directory ("folder") for your website, and then put the web-page files (HTML plus
+      any pictures) in it. Use NotePad or other plain-text editor (not word processor) on your PC to
+      create an <code>index.html</code> file, which you can view locally with your Web browser. (You
+      can also use word processors such as Word or WordPad if you save in "plain text", "text",
+      "text document", or "text document MS-DOS format".) <a href="#install">Later</a> I'll explain
+      how you can install your web site on the Internet. </p>
+    <dl>
+      <dt><i>Example for Windows:</i></dt>
+      <dd>Move your mouse cursor to the desktop. Right-click, choose <i>New</i>, then choose
+          <i>Folder</i>, and a "New Folder" appears, with its name highlighted. Type "Web" to change
+        the folder's name to Web (or anything else you want). Then
+          <i>Start</i>&#xa0;<code>-&gt;</code>&#xa0;<i>Run</i> and type "notepad" to start NotePad.
+        Now you can create your first Web page. </dd>
+    </dl>
+    </div>
+    <div id="syntax" style="border-top: solid 1p black;">
+    <h3>2. HTML Syntax</h3>
+    <p>Web pages are written in Hyper Text Markup Language
+    (HTML). HTML has three special characters: <code>&lt;</code>, <code>&amp;</code>,
+      <code>&gt;</code>. An HTML command is enclosed in <code>&lt;...&gt;</code>, for example
+      <code>&lt;p&gt;</code>, which is a paragraph separator, or <code>&lt;b&gt;</code> ("begin
+    bold") and <code>&lt;/b&gt;</code> ("end bold"). So the following HTML text: </p>
+    <blockquote>
+      <pre>This sentence contains &lt;b&gt;bold&lt;/b&gt; text.
+</pre>
+    </blockquote>
+    <p> produces: </p><blockquote><p> This sentence contains <b>bold</b> text. </p></blockquote>
+    <p> A Web page starts with a series of HTML commands, and ends with a few more. The contents go
+      in between: </p><blockquote>
+      <pre>&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;title&gt;Sample Web Page&lt;/title&gt;
+&lt;META http-equiv="Content-Type" content="text/html; charset=iso-8859-1"&gt;
+&lt;/head&gt;
+&lt;body bgcolor="#ffffff" text="#000000"&gt;
+</pre>
+      <p>
+        <i>(Contents go here)</i>
+      </p><pre>&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+    </blockquote>
+    <p> The first line (DOCTYPE) specifies which language the page uses; just copy this
+          line<sup><span style="font-size: smaller;">1</span></sup>. The next line,
+        <code>&lt;html&gt;</code>, starts the page, and is matched by the last line,
+        <code>&lt;/html&gt;</code>, which closes the page. <code>&lt;head&gt;</code>, starts the
+      heading, which contains a title to be displayed on the browser's title bar and a declaration
+      of the character set (usually US-ASCII, ISO-8859-1, or UTF-8). <code>&lt;/head&gt;</code>
+      closes the heading. </p><p> The <code>&lt;body&gt;</code> statement starts the body of the
+      document and can contain specifiers for color and other attributes. This one chooses black
+      writing on a white background. The body is closed by <code>&lt;/body&gt;</code> statement.
+      </p><p> As you can see, most HTML commands (but not all!) come in begin-end pairs:
+        <code>&lt;b&gt;...&lt;/b&gt;</code>, <code>&lt;head&gt;...&lt;/head&gt;</code>, etc. The
+      closing part of the command has a slash (<code>/</code>) between the <code>&lt;</code> and the
+      first letter of the command. </p><p> Blank lines and line breaks are ignored. The browser
+      automatically "flows" your text into lines and paragraphs that fit in its window. Paragraphs
+      must be separated by <code>&lt;p&gt;</code>. Line breaks can be forced by
+        <code>&lt;br&gt;</code>. </p><dl>
+      <dt><i>Example for Windows:</i></dt>
+      <dd><p>Use the mouse to copy the HTML above into NotePad. Then save the file
+          (<i>File</i>&#xa0;<code>-&gt;</code>&#xa0;<i>Save&#xa0;As...</i>) in your Web directory as
+          <code>index.html</code>. Suppose your Windows username is Olga. Then (depending on which
+        version of Windows you have) this might be:</p> 
+        <blockquote>
+          <pre><code>C:\Documents and Settings\Olga\Desktop\Web\index.html</code></pre>
+        </blockquote>
+        <p> Now to see your new web page, just double-click on the Web folder and then double-click
+          on <code>index.html</code>. </p></dd>
+    </dl>
+    <p> Now you're ready to start adding "content" to your web page. Go back to NotePad and replace
+      the title and "(Contents go here)" with whatever you want. Any time you want to see the
+      result, use <i>File</i>&#xa0;<code>-&gt;</code>&#xa0;<i>Save</i> in NotePad and then click the
+      Reload button on your browser. </p><p> The next sections tell how to achieve different kinds
+      of effects. <br />__________________<br />
+    </p><ol><li><span style="font-size: smaller;">HTML 4.01 is chosen because it supports tables
+          (new to HTML 3.2) as well as a couple other desirable features, such as the ability to
+          specify an image width as a percentage of the Browser's window width, and a bunch more
+          character entity symbols such as</span>
+        <code>&amp;euro;</code>
+        <span style="font-size: smaller;">(new&#xa0;to&#xa0;4.01). Otherwise we would stick with the
+          oldest available verifiable version, which is 2.0.</span></li></ol>
+    </div>
+    <div id="chars" style="border-top: solid 1p black;">
+      <h3>3. Special Characters</h3> 
+    <p>HTML special "character entities" start with
+    ampersand (<code>&amp;</code>) and end with semicolon (<code>;</code>), like
+      "<code>&amp;euro;</code>" = "". The ever-popular "no-break space" is <code>&amp;nbsp;</code>.
+    There are special entity names for accented Latin letters and other West European special
+    characters such as: </p>
+    <blockquote>
+      <table border="">
+        <tbody>
+          <tr>
+            <td><code>&amp;auml;</code>
+            </td>
+            <td>a-umlaut </td>
+            <td>&#xa0;&#xa0; </td>
+          </tr>
+          <tr>
+            <td><code>&amp;Auml;</code>
+            </td>
+            <td>A-umlaut </td>
+            <td>&#xa0;&#xa0; </td>
+          </tr>
+          <tr>
+            <td><code>&amp;aacute;</code>
+            </td>
+            <td>a-acute </td>
+            <td>&#xa0;&#xa0; </td>
+          </tr>
+          <tr>
+            <td><code>&amp;agrave;</code>
+            </td>
+            <td>a-grave </td>
+            <td>&#xa0;&#xa0; </td>
+          </tr>
+          <tr>
+            <td><code>&amp;ntilde;</code>
+            </td>
+            <td>n-tilde </td>
+            <td>&#xa0;&#xa0; </td>
+          </tr>
+          <tr>
+            <td><code>&amp;szlig;</code>
+            </td>
+            <td>German double-s </td>
+            <td>&#xa0;&#xa0; </td>
+          </tr>
+          <tr>
+            <td><code>&amp;thorn;</code>
+            </td>
+            <td>Icelandic thorn </td>
+            <td>&#xa0;&#xa0; </td>
+          </tr>
+        </tbody>
+      </table>
+    </blockquote>
+    <p> Examples: </p><dl>
+      <dt>For <b>Spanish</b> you would need: </dt>
+      <dd><code>&amp;Aacute;</code> (), <code>&amp;aacute;</code> (), <code>&amp;Eacute;</code> (),
+          <code>&amp;eacute;</code> (), <code>&amp;Iacute;</code> (), <code>&amp;iacute;</code> (),
+          <code>&amp;Oacute;</code> (), <code>&amp;oacute;</code> (), <code>&amp;Uacute;</code> (),
+          <code>&amp;uacute;</code> (), <code>&amp;Ntilde;</code> (), <code>&amp;ntilde;</code> ();
+          <code>&amp;iquest;</code> (); <code>&amp;iexcl;</code> ().<br /> Example: Aorarn =
+          <code>A&amp;ntilde;orar&amp;aacute;n</code>. </dd>
+      <dt>For <b>German</b> you would need: </dt>
+      <dd><code>&amp;Auml;</code> (), <code>&amp;auml;</code> (), <code>&amp;Ouml;</code> (),
+          <code>&amp;ouml;</code> (), <code>&amp;Uuml;</code> (), <code>&amp;uuml;</code> (),
+          <code>&amp;szlig;</code> ().<br /> Example: Gre aus Kln = <code>Gr&amp;uuml;&amp;szlig;e
+          aus K&amp;ouml;ln</code>. </dd>
+    </dl>
+    <p>
+      <!--  <a href="http://www.columbia.edu/~fdc/entities.html">-->CLICK HERE<!--  </a>--> for a complete list.
+      Cyrillic, Arabic, Hebrew, Greek. Japanese, etc, are a bit harder, but <!-- <a
+        href="http://www.columbia.edu/~fdc/entities.html">-->doable<!-- </a> -->. </p><p> If you want to include
+        <code>&lt;</code>, <code>&amp;</code>, or <code>&gt;</code> literally in text to be
+      displayed, you have to write <code>&amp;lt;</code>, <code>&amp;amp;</code>,
+        <code>&amp;gt;</code>, respectively. </p>
+    </div>
+    <div id="convert" style="border-top: solid 1p black;">      
+    <h3>4. Converting Plain Text to HTML</h3> 
+    <p>If you have a plain text
+    file that you want to convert to HTML, load the file into a plain-text editor and then follow
+    these steps. </p><ol>
+      <li>Change all occurrences of "<code>&amp;</code>" to "<code>&amp;amp;</code>".
+        </li><li>Change all occurrences of "<code>&lt;</code>" to "<code>&amp;lt;</code>".
+        </li><li>Change all occurrences of "<code>&gt;</code>" to "<code>&amp;gt;</code>".
+        </li><li>Change any accented letters to HTML entity names (previous section). </li><li>Put
+          "<code>&lt;p&gt;</code>" between each paragraph. </li><li>Insert the standard prolog at
+        the top, substituting an appropriate title. </li><li>Insert the standard epilog at the
+        bottom. </li><li>Save the result as <code><i>xxx</i>.html</code>, where
+          <code><i>xxx</i></code> is the part of the original file's name before the dot. For
+        example, if the original file was <code>letter.txt</code>, save the edited version as
+          <code>letter.html</code>. </li></ol>
+    <p> If you are a <!-- <a href="http://www.columbia.edu/kermit/"> -->Kermit<!--</a>--> user, you can find a
+      script to convert plain text to HTML <!-- <a
+        href="http://www.columbia.edu/kermit/ckscripts.html#html">-->HERE<!-- </a>-->. </p>
+    <p> If the text
+      contains lists, tables, or other structures, read on. </p><p> If you have a Microsoft Word
+      document you want to convert to HTML, and your copy of Word does not allow the file to be
+      "Saved As" HTML, then save it as plain text and follow the same instructions. In this case you
+      lose the "richness" (bold, italics, font changes, etc) when you save the file, and will have
+      to put the effects back by hand (next section). </p>
+    </div>
+    <div id="effects" style="border-top: solid 1p black;">      
+    <h3>5. Effects</h3> 
+    <p>The rest of this document shows what you can do with
+    simple HTML commands, but I don't explain how to do it. To see that, just tell your browser to
+      <b>View Source</b> and compare the HTML in the source window with the result in the original
+    window.</p>
+      <p>
+      <b>This sentence is bold.</b>
+      <i>This sentence is in italics.</i>
+      <b><i>This sentence is in bold italics.</i></b>
+      <code>This sentence is in typewriter font.</code> This sentence has <u>underlined words</u>
+      and <u><b>underlined bold words</b></u>. <span style="color: blue">This</span>
+      <span style="color: red">sentence</span>
+      <span style="color: green">has</span>
+      <span style="color: brown">colored</span>
+      <span style="color: magenta">words</span>. This sentence has <span style="font-size: larger;"
+        >big words.</span> This one has <span style="font-size: larger;"><span
+          style="font-size: larger;">very big words</span></span>. This one has <span
+        style="font-size: smaller;"><span style="font-size: smaller;">very small
+        words.</span></span>
+    </p><blockquote> <p>This is a "blockquote", which is like a regular paragraph, but it has
+      bigger margins. Begin a blockquote with <code>&lt;blockquote&gt;</code> and end it with
+        <code>&lt;/blockquote&gt;</code>. Environments such as blockquotes, lists, etc, that have a
+      beginning and an end always use paired commands like
+          <code>&lt;<i>blah</i>&gt;...&lt;<i>/blah</i>&gt;</code>.</p> <blockquote> <p>This is a
+        blockquote inside another blockquote, which shows how HTML environments can be "nested". </p></blockquote>
+      <p> Here we are back in the first blockquote again. </p></blockquote>
+    <p> And here we are back outside of the first blockquote. </p>
+    </div>
+    <div id="lists" style="border-top: solid 1p black;">      
+    <h3>6. Lists</h3> <p>Here is an Unordered (bullet) List
+      (<code>&lt;ul&gt;&gt;..&lt;/ul&gt;</code>):</p> <ul>
+      <li>This is a List Item (<code>&lt;li&gt;</code>). </li>
+      <li>This is another item. </li>
+      <li>This is yet another item. </li>
+    </ul> <p>Here is an Ordered (numbered) List (<code>&lt;ol&gt;&gt;..&lt;/ol&gt;</code>):</p> <ol>
+      <li>This is a List Item (<code>&lt;li&gt;</code>). </li><li>This is another item.
+        </li><li>This is yet another item. </li></ol>
+    <p> And here is a Description List (<code>&lt;dl&gt;</code>). using Kermit commands as an
+      example: </p><dl>
+
+      <dt><code>SET FILE TYPE BINARY</code></dt>
+      <dd>This command tells Kermit to transfer files in binary mode. In other words, don't mess
+        with the file, just send it as-is. The result on the receiving computer should be identical
+        to the original. </dd>
+      <dt><code>SET FILE TYPE TEXT</code></dt>
+      <dd>This command tells Kermit to transfer files in text mode. This should be used with
+        plain-text files, especially when transferring them between computers with different file
+        formats or operating systems, such as VMS and Unix, or Unix and Windows. It converts the
+        file's format and character-set (if necessary) so the received file is usable on the
+        destination computer. </dd>
+    </dl>
+    <p> You can have lists within lists: </p>
+      <ol>
+      <li>A gromet </li>
+        <li>A widget </li>
+        <li>A framus, which consists of the following components: 
+          <ul>
+          <li>A doohickey. </li>
+          <li>A veeblefetzer -- these come in several colors: <ol>
+              <li>Purple </li><li>Purple </li><li>Purple </li></ol>
+          </li>
+          <li>A whatchamacallit. </li>
+        </ul>
+      </li><li>A doodad. </li></ol>
+    <p> And you can have ordered lists that use letters instead of numbers: </p><ol type="a">
+      <li>Pennies </li><li>Nickels </li><li>Dimes </li><li>Quarters </li></ol>
+    </div>
+    <div id="links" style="border-top: solid 1p black;">
+      <h3>7. Links</h3> 
+    <p>Links can be internal within a Web page (like to the <a
+      href="#contents">Table of Contents</a> at the top), or they can be to external web pages or
+    pictures on the same website, or they can be to websites, pages, or pictures anywhere else in
+    the world.</p> 
+    <p> Here is a link to the <!--<a href="http://www.columbia.edu/kermit/">-->Kermit Project
+        home page<!--</a>-->. </p>
+      <p> Here is a link to <a href="#lists">Section 5</a> of this document.</p>
+      <p> Here is a link to <!-- <a href="http://www.columbia.edu/kermit/ckuins.html#x4.0">-->Section
+        4.0<!--</a>--> of the <!--<a href="http://www.columbia.edu/kermit/ckuins.html">-->LC-Kermit for Unix
+        Installation Instructions<!--</a>-->. </p><p> Here is a link to a picture: <a
+        href="./Sample Web Page_files/picture-of-something.jpg">CLICK HERE</a> to see it.
+      </p>
+    </div>
+    <div id="tables" style="border-top: solid 1p black;">      
+    <h3>8. Tables</h3> 
+    <p>Here's a simple table with some headings and a few rows:</p>
+      <blockquote>
+      <table>
+        <tbody>
+          <tr>
+            <!-- start table row -->
+            <td>Heading A <!-- table heading -->
+            </td>
+            <td>Heading B </td>
+            <td>Heading C </td>
+          </tr>
+          <tr>
+            <!-- start another row -->
+            <td>Cell 1A </td>
+            <td>Cell 1B </td>
+            <td>Cell 1C </td>
+          </tr>
+          <tr>
+            <!-- start another row -->
+            <td>Cell 2A </td>
+            <td>Cell 2B </td>
+            <td>Cell 2C </td>
+          </tr>
+          <tr>
+            <!-- start another row -->
+            <td>Cell 3A </td>
+            <td>Cell 3B </td>
+            <td>Cell 3C </td>
+          </tr>
+        </tbody>
+      </table>
+    </blockquote>
+    <p> Same table again but with borders: </p>
+    <blockquote>
+      <table border="">
+        <tbody>
+          <tr>
+            <!-- start table row -->
+            <th>Heading A <!-- table heading -->
+            </th>
+            <th>Heading B </th>
+            <th>Heading C </th>
+          </tr>
+          <tr>
+            <td>Cell 1A </td>
+            <td>Cell 1B </td>
+            <td>Cell 1C </td>
+          </tr>
+          <tr>
+            <td>Cell 2A </td>
+            <td>Cell 2B </td>
+            <td>Cell 2C </td>
+          </tr>
+          <tr>
+            <td>Cell 3A </td>
+            <td>Cell 3B </td>
+            <td>Cell 3C </td>
+          </tr>
+        </tbody>
+      </table>
+    </blockquote>
+    <p> And again but with Column C right-adjusted: </p>
+    <blockquote>
+      <table border="">
+        <tbody>
+          <tr>
+            <!-- start table row -->
+            <th>Heading A <!-- table heading -->
+            </th>
+            <th>Heading B </th>
+            <th>Heading C </th>
+          </tr>
+          <tr>
+            <td>Cell 1A </td>
+            <td>Cell 1B </td>
+            <td class="right">Cell 1C </td>
+          </tr>
+          <tr>
+            <td>Cell 2A </td>
+            <td>Cell 2B </td>
+            <td class="right">Cell 2C </td>
+          </tr>
+          <tr>
+            <td>Cell 3A </td>
+            <td>Cell 3B </td>
+            <td class="right">Cell 3C </td>
+          </tr>
+        </tbody>
+      </table>
+    </blockquote>
+    </div>
+    <div id="install" style="border-top: solid 1p black;">
+      <h3>9. Installing Your Web Page on the Internet</h3> 
+      <p>How to put your web
+    page on the Internet depends on your Internet Service Provider (ISP). At Columbia University,
+    each user has a "shell account" on the central server, which runs a Unix-based operating system,
+    and which you can access with a Telnet, SSH, or modem program such as <a
+      href="http://www.columbia.edu/kermit/">Kermit</a>. Here's an example that applies to Columbia
+    University's web server, showing how to upload your files from Windows:</p>
+    <blockquote>
+     <p> <i> There are easier ways to do this than what I describe below, but they require add-on
+        software. The following method should work for everybody who has Windows and an Internet
+        connection. </i></p>
+    </blockquote>
+    <p> If you create a <code>public_html</code> subdirectory of your login directory, give it world
+      read and search permission, and then create an <code>index.html</code> file in that directory
+      and give it world read permission, you'll have a home page. In this example "<code>$</code>"
+      is the shell prompt (yours might be different), and what you type is underlined. CAUTION: the
+      directory name is <code>public_html</code> but the underscore might be obscured the underline
+      in the examples below. Whenenever typing "<code>public_html</code>" always include the
+      underscore. </p>
+    <blockquote>
+      <pre>$ <u>cd</u>                      <i>(Change to your login directory)</i>
+$ <u>mkdir public_html</u>       <i>(Create</i> public_html <i>subdirectory)</i>
+$ <u>chmod 755 public_html</u>   <i>(Give it world read/search permission)</i>
+$ <u>cd public_html</u>          <i>(Enter the</i> public_html <i>subdirectory)</i>
+</pre>
+    </blockquote>
+    <p> You only have to do this part once. </p><p> Let's assume you have created a website in the
+      Web folder on your PC. Here's an example of how to upload your Web files to your
+        <code>public_html</code> directory on Columbia University's Cunix server using FTP (File
+      Transfer Protocol). First start the FTP program: </p><blockquote>
+      <p><i>Start</i>&#xa0;<code>-&gt;</code>&#xa0;<i>Run</i></p>
+    </blockquote>
+    <p> and type "ftp" in the box. An FTP window opens and an "<code>ftp&gt;</code>" prompt appears.
+      Type the underlined commands at the "<code>ftp&gt;</code>" prompt (substituting your own user
+      ID, etc): </p><blockquote>
+      <pre>
+ftp&gt; <u>lcd Desktop</u>
+Local directory now C:\Documents and Settings\olga\Desktop.
+ftp&gt; <u>lcd Web</u>
+Local directory now C:\Documents and Settings\olga\Desktop\Web.
+ftp&gt; <u>open cunix</u>
+Connected to cunix.cc.columbia.edu.
+220 Cunix FTP server (Version 5.60) ready.
+User (cunix.cc.columbia.edu:(none)): <u>olga</u>
+331 Password required for olga.
+Password: <u><i>(type your password here)</i></u>
+230 User olga logged in.
+ftp&gt; <u>cd public_html</u>   <i>(That's</i> "public_html" <i>in case you can't see the underscore)</i>
+ftp&gt; <u>binary</u>
+ftp&gt; <u>put index.html</u>
+200 PORT command successful.
+150 Opening ASCII mode data connection for index.html.
+226 Transfer complete.
+ftp: 285 bytes sent in 0.00Seconds 285000.00Kbytes/sec.
+ftp&gt; <u>site chmod 664 index.html</u>
+200 CHMOD command successful
+ftp&gt; <u>bye</u>
+</pre>
+    </blockquote>
+    <p> This sends the <code>index.html</code> file to your <code>public_html</code> directory on
+      the server. You can send any other file by subsituting its name for "<code>put
+        index.html</code>. If you want to send all the files in your Web folder, replace "<code>put
+        index.html</code> with "<code>put&#xa0;*</code>" (asterisk, meaning "all files" in this
+      directory). Always use binary mode unless you know what you're doing. </p><p> If the "site
+      chmod" command failed (this service is not supported by some FTP servers), you have one more
+      step. Before others can see your web files, you have to give them "world read" permission.
+      Again, log in to the server using a terminal emulator (Telnet, SSH, Kermit, whatever), and:
+      </p><blockquote>
+      <pre>$ <u>cd ~/public_html</u>        <i>(Enter the</i> public_html <i>subdirectory)</i>
+$ <u>chmod 664 *</u>             <i>(Make all files publicly readable)</i>
+</pre>
+    </blockquote>
+    <p> Now you have a home page. If you were at Columbia and your login ID was "olga", the address
+      (URL) of your home page would be: </p>
+    <blockquote>
+      <p><a href="http://www.columbia.edu/~olga/"><code>http://www.columbia.edu/~olga/</code></a></p>
+    </blockquote>
+    <p> If you want to add pictures to your Web page, you can upload those too (also with Kermit or
+      FTP), and you also have to "chmod 664" all the files to make them readable by everybody. Every
+      time you add new files to your <code>public_html</code> directory, you have to
+      "chmod&#xa0;664" them so they are accessible, either in the FTP session itself (as shown
+      previously), or by logging in to the host and: </p><blockquote>
+      <pre>$ <u>cd ~/public_html</u>   <i>(That's</i> "public_html" <i>in case you can't see the underscore)</i>
+$ <u>chmod 664 *</u>
+</pre>
+    </blockquote>
+    <p> Pictures should be in JPG or GIF format. To include a picture ("image") in your page,
+      include a statement like this at the desired spot: </p><blockquote>
+      <pre>&lt;img src="<i>filename</i>" alt="brief description" width="100%"&gt;
+</pre>
+    </blockquote>
+    <p> Replace <i>filename</i> by the name of the file (e.g. <code>skyline.jpg</code>). You can
+      omit or experiment with the <code>width=</code> clause. 100% means "make the picture the same
+      width as the browser window." </p>
+    <p> Now you have your own home page on the Web, and your own
+      URL (Uniform Resource Locator, or Web address). In this example, the URL is: </p>
+    <blockquote>
+      <p><a href="http://www.columbia.edu/~olga/"><code>http://www.columbia.edu/~olga/</code></a></p>
+    </blockquote>
+    <p> Of course, if you prefer, you can also do all the Web-page editing directly on the server,
+      using an a server-based text editor like EMACS, Pico, or Vi while logged in to the Unix shell.
+      In that case you don't need to upload anything (except maybe photos), but then you also need
+      to be more familiar with the server's Unix environment and commands and utilities.
+      </p>
+    </div>
+    <div id="more" style="border-top: solid 1p black;">      
+    <h3>10. Where to go from here</h3> 
+    <p>Most Web pages are created by hideous
+    bloated "Web Authoring" tools, which are designed to force readers to use a Web browser (such as
+    IE) that is made by the same company that made the Web-authoring tool (e.g. Front Page). If all
+    you want is text with some pictures and links and maybe some tables, as opposed to spinning
+    blinking popup holograms with streaming video and sound effects, it's best to keep it simple and
+    do it yourself. This is how the Web started off in the HTML 1.0 days of the early 1990s. The
+    ingenious thing was that it was self propogating. If you saw a web page with a certain effect
+    and wanted to know how it was done, you could simply "view source" to get the "source code" and
+    then adapt it to your own page. You can still do that with pages that look like this one, but
+    since most Web pages are no longer made by hand, you'll often see tons of incomprehensible
+    gibberish (the more special effects, the more gibberish). </p><p> If you have mastered the simple
+      techniques shown in this page, you know the basics. Which is more than can be said of many
+      "web designers" who only know how to use prepackaged software to create web pages by picking
+      things from menus and moving things around with a mouse. </p><p> To learn more, follow these
+      links: </p><ul>
+      <li>The HTML 4.01 specification </li>
+      <li>You can check the validity of your web page at the <a href="http://validator.w3.org/">W3C
+          Markup Validation Service</a>. </li>
+      <li>You can find lots more Web pages in the same simple style as this one at the <a
+          href="http://www.columbia.edu/kermit/">Kermit Project</a> website. </li>
+    </ul>
+    <p> Don't worry that the HTML 4.01 specification says that everything from HTML 1.0 is
+      "deprecated" and we're supposed to be using XHTML or XML and "cascading style sheets" or
+      whatever. They're not allowed to take the original simple HTML syntax away. </p><p> If your
+      web pages doesn't look the way you expected, try using the <a href="http://validator.w3.org/"
+        >Validation Service</a>. If you have errors in it, this will tell you what they are. The
+      most common errors are unclosed environments (such as <code>&lt;blockquote&gt;</code> without
+      a matching <code>&lt;/blockquote&gt;</code>) and missing doublequotes inside commands, e.g.:
+      </p><blockquote>
+      <pre>&lt;a href="http://www.columbia.edu/kermit&gt;
+</pre>
+    </blockquote>
+      <p> which must be: </p>
+      <blockquote>
+      <pre>&lt;a href="http://www.columbia.edu/kermit"&gt;
+</pre>
+    </blockquote>
+    <p> For more about "special characters" and character sets, see: </p><ul>
+      <li>
+        <a href="http://www.columbia.edu/~fdc/entities.html">HTML 4 Symbolic Character Entities</a>
+      </li>
+      <li>A <a href="http://www.columbia.edu/kermit/utf8-t1.html">Unicode 4.0 Table </a> (all but
+        Chinese, Japanese, and Korean) </li>
+      <li>More <a href="http://www.columbia.edu/kermit/csettables.html">character set tables</a>
+      </li>
+      <li>A <a href="http://www.columbia.edu/kermit/utf8.html">UTF-8 sampler</a> (text in many
+        languages) </li>
+      <li><a href="http://www.unicode.org/charts/">Unicode Character Charts</a> (official) </li>
+    </ul>
+    <p>
+      <i>(End)</i> </p><hr />
+    </div>
+  </body>
+</html>

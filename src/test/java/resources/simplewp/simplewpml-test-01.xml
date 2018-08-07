@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/css" href="../../../../main/doctypes/simplewpml/css/simplewpml.css"?>
+<?xml-model href="../../../../main/doctypes/simplewpml/simplewpml.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<document xmlns="urn:ns:wordinator:simplewpml">
+  <page-sequence-properties>
+    <page-number-properties
+      format="custom"
+      xslt-format="1."
+      start="1"
+    />
+    <headers-and-footers>
+      <header>
+        <p><run>Odd Header Paragraph 1</run></p>
+        <p><run>Odd Header Paragraph 2</run></p>
+      </header>
+      <header type="even">
+        <p><run>Even Header Paragraph 1</run></p>
+      </header>
+      <footer>
+        <p>
+          <run>Odd Footer: </run>
+          <page-number-ref format="numberInDash"/>
+          <run> After page-number-ref</run>
+        </p>
+      </footer>
+      <footer type="even">
+        <p><run>Even Footer</run></p>
+      </footer>
+    </headers-and-footers>
+  </page-sequence-properties>
+  <body>
+    <p style="Heading1">
+      <run style="Strong">Heading 1 Text</run>
+    </p>
+    <p>
+      <run highlight="cyan">Cyan highlight</run>
+    </p>
+    <p>
+      <run imprint="true">Imprinted</run>
+    </p>
+    <p>
+      <run bold="true">Bold</run>
+    </p>
+    <p>
+      <run bold="true" italic="true">Bold and Italic</run>
+    </p>
+    <p>
+      <run underline="wave" underline-color="FF0000">Run wavy underline</run>
+    </p>
+    
+    <p>
+      <run underline="dash" underline-theme-color="followedHyperlink">Dash underline, followed hyperlink theme color.</run>
+    </p>
+    <p><run>Before footnote reference.</run>
+      <fn><p><run>A footnote. This is the footnote text.</run></p>
+        <p><run>A second paragraph in the footnote.</run></p>
+        <table>
+          <cols>
+            <col colwidth="1in"/>
+            <col colwidth="31in"/>
+            <col colwidth="1in"/>
+          </cols>
+          <tbody>
+            <tr>
+              <td align="center"><p><run>R1 C1</run></p></td>
+              <td><p><run>R1 C2</run></p></td>
+              <td><p><run>R1 C3</run></p></td>
+            </tr>
+            <tr>
+              <td><p><run>R2 C1</run></p></td>
+              <td><p><run>R2 C2</run></p></td>
+              <td><p><run>R2 C3</run></p></td>
+            </tr>
+          </tbody>
+        </table>
+      </fn>
+      <bookmarkStart id="bm1" name="h1">Heading 1</bookmarkStart>
+      <run> This is before a bookmark start for bookmark "bm1". </run>
+      <bookmarkStart id="bm1" name="Bookmark bm1 name value"/>
+      <run>Before the bookmark end.</run><bookmarkEnd id="bm1"/><run> This is after the bookmark end.</run>
+    </p>
+    <p><run>An end note reference.</run><fn type="endnote"><p><run>This is an end note.</run></p></fn></p>
+    <p style="Heading2"><run>This is a Heading 2</run></p>
+    <p><run style="style1">An image reference, no width or height: </run><image src="images/picture-01.gif"/></p>
+    <p><run>A page break:<break type="page"/>After the page break.</run></p>
+    <p><run>A line break:<break type="line"/>After the line break.</run></p>
+    <p><run>A textwrapping break:<break type="textWrapping"/>After the textwrapping break.</run></p>
+    <p><run>A column break:<break type="column"/>After the column break.</run></p>
+    <p><run>A normal paragraph with a lot of content:</run></p>
+    <p><run>Call me Ishmael. Some years ago—never mind how long precisely—having little or no money in my purse, and nothing particular to interest me on shore, I thought I would sail about a little and see the watery part of the world. It is a way I have of driving off the spleen and regulating the circulation. Whenever I find myself growing grim about the mouth; whenever it is a damp, drizzly November in my soul; whenever I find myself involuntarily pausing before coffin warehouses, and bringing up the rear of every funeral I meet; and especially whenever my hypos get such an upper hand of me, that it requires a strong moral principle to prevent me from deliberately stepping into the street, and methodically knocking people’s hats off—then, I account it high time to get to sea as soon as I can. This is my substitute for pistol and ball. With a philosophical flourish Cato throws himself upon his sword; I quietly take to the ship. There is nothing surprising in this. If they but knew it, almost all men in their degree, some time or other, cherish very nearly the same feelings towards the ocean with me.</run></p>
+    <p style="Heading3"><run>A Heading 3</run></p>
+    <p><run style="style1">An image reference, width: 100, height: 50: </run>
+      <image
+        width="100"
+        height="50"
+        src="images/picture-01.gif"/></p>
+    <p style="Heading4"><run>Heading 4</run></p>
+       <p>      
+      <run> A hyperlink: </run>
+      <hyperlink href="#bm1"><run>Link to bookmark 1</run></hyperlink>
+      <run>. After the hyperlink.</run>
+    </p>  
+    <p><run>A table (cols: 2in, 3in):</run></p>
+    <table frame="topbot" colsep="0" rowsep="1" tagName="simpletable">
+      <cols>
+        <col colwidth="2in"/>
+        <col colwidth="3in"/>
+        <col colwidth="1in"/>
+      </cols>
+      <thead>
+        <tr>
+          <td><p><run>Header 1</run></p></td>
+          <td><p><run>Header 2</run></p></td>
+          <td><p><run>Header 3</run></p></td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+         <td align="center" valign="center"><p><run>R1 C1 horizontally centered, vertically centered.</run></p></td>
+          <td align="left"><p><run>R1C2 left-aligned</run></p></td>
+          <td align="right"><p><run>R1C3 Right-aligned</run></p></td>
+        </tr>
+        <tr>
+          <td><p><run>R2C1</run></p></td>
+          <td colspan="2" align="center">
+            <p><run>Span 2 columns</run></p>
+          </td>
+        </tr>
+        <tr>
+          <td align="right"><p><run>R2C1 right-aligned</run></p></td>
+          <td rowspan="2" valign="center" align="center"><p><run>Span 2 rows</run></p></td>
+          <td><p><run>R3C3</run></p></td>
+        </tr>
+        <tr>
+          <td align="right"><p><run>R2C1 right-aligned</run></p></td>
+          <td><vspan/></td>
+          <td><p><run>R4C3</run></p></td>
+        </tr>
+        <tr>
+          <td align="right"><p><run>R4C1 right-aligned</run></p></td>
+          <td><p><run>R4C2</run></p></td>
+          <td><p><run>R4C3</run></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <p>      
+      <run>After the table: A hyperlink: </run>
+      <hyperlink href="#bm1"><run>Link to bookmark 1</run></hyperlink>
+      <run>. After the hyperlink.</run>
+    </p>
+  </body>
+</document>

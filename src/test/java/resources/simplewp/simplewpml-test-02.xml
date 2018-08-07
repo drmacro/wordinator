@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/css" href="../../../../main/doctypes/simplewpml/css/simplewpml.css"?>
+<?xml-model href="../../../../main/doctypes/simplewpml/simplewpml.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<document xmlns="urn:ns:wordinator:simplewpml">
+  <page-sequence-properties>
+    <page-number-properties format="custom" start="1" xslt-format="1."/>
+    <headers-and-footers>
+      <header>
+        <p>
+          <run>Odd Header Paragraph 1</run>
+        </p>
+      </header>
+      <header type="even">
+        <p>
+          <run>Even Header Paragraph 1</run>
+        </p>
+      </header>
+      <footer>
+        <p>
+          <page-number-ref format="numberInDash"/>
+        </p>
+      </footer>
+      <footer type="even">
+        <p>
+          <page-number-ref format="numberInDash"/>
+        </p>
+      </footer>
+    </headers-and-footers>
+  </page-sequence-properties>
+  <body>
+    <p style="Heading1">
+      <run style="Strong">Document With Sections</run>
+    </p>
+    <p>
+      <run>Before footnote reference.</run>
+      <fn>
+        <p>
+          <run>A footnote. This is the footnote text.</run>
+        </p>
+        <p>
+          <run>A second paragraph in the footnote.</run>
+        </p>
+        <table>
+          <cols>
+            <col colwidth="1in"/>
+            <col colwidth="31in"/>
+            <col colwidth="1in"/>
+          </cols>
+          <tbody>
+            <tr>
+              <td>
+                <p>
+                  <run>R1 C1</run>
+                </p>
+              </td>
+              <td>
+                <p>
+                  <run>R1 C2</run>
+                </p>
+              </td>
+              <td>
+                <p>
+                  <run>R1 C3</run>
+                </p>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <p>
+                  <run>R2 C1</run>
+                </p>
+              </td>
+              <td>
+                <p>
+                  <run>R2 C2</run>
+                </p>
+              </td>
+              <td>
+                <p>
+                  <run>R2 C3</run>
+                </p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </fn>
+      <bookmarkStart id="bm1" name="h1">Heading 1</bookmarkStart>
+      <run> This is before a bookmark start for bookmark "bm1". </run>
+      <bookmarkStart id="bm1" name="Bookmark bm1 name value"/>
+      <run>Before the bookmark end.</run>
+      <bookmarkEnd id="bm1"/>
+      <run> This is after the bookmark end.</run>
+    </p>
+    <p>
+      <run>An end note reference.</run>
+      <fn type="endnote">
+        <p>
+          <run>This is an end note.</run>
+        </p>
+      </fn>
+    </p>
+    <p style="Heading2">
+      <run>This is a Heading 2</run>
+    </p>
+    <p>
+      <run style="style1">An image reference, no width or height: </run>
+      <image src="images/picture-01.gif"/>
+    </p>
+    <p>
+      <run>A page break:<break type="page"/>After the page break.</run>
+    </p>
+    <p>
+      <run>A line break:<break type="line"/>After the line break.</run>
+    </p>
+    <p>
+      <run>A textwrapping break:<break type="textWrapping"/>After the textwrapping break.</run>
+    </p>
+    <p>
+      <run>A column break:<break type="column"/>After the column break.</run>
+    </p>
+    <p>
+      <run>A normal paragraph with a lot of content:</run>
+    </p>
+    <p>
+      <run>Call me Ishmael. Some years ago—never mind how long precisely—having little or no money
+        in my purse, and nothing particular to interest me on shore, I thought I would sail about a
+        little and see the watery part of the world. It is a way I have of driving off the spleen
+        and regulating the circulation. Whenever I find myself growing grim about the mouth;
+        whenever it is a damp, drizzly November in my soul; whenever I find myself involuntarily
+        pausing before coffin warehouses, and bringing up the rear of every funeral I meet; and
+        especially whenever my hypos get such an upper hand of me, that it requires a strong moral
+        principle to prevent me from deliberately stepping into the street, and methodically
+        knocking people’s hats off—then, I account it high time to get to sea as soon as I can. This
+        is my substitute for pistol and ball. With a philosophical flourish Cato throws himself upon
+        his sword; I quietly take to the ship. There is nothing surprising in this. If they but knew
+        it, almost all men in their degree, some time or other, cherish very nearly the same
+        feelings towards the ocean with me.</run>
+    </p>
+    <p style="Heading3">
+      <run>A Heading 3</run>
+    </p>
+    <p>
+      <run style="style1">An image reference, width: 100, height: 50: </run>
+      <image height="50" src="images/picture-01.gif" width="100"/>
+    </p>
+    <p style="Heading4">
+      <run>Heading 4</run>
+    </p>
+    <p>
+      <run> A hyperlink: </run>
+      <hyperlink href="#bm1">
+        <run>Link to bookmark 1</run>
+      </hyperlink>
+      <run>. After the hyperlink.</run>
+    </p>
+    <section>
+      <page-sequence-properties>
+        <headers-and-footers>
+          <header>
+            <p>
+              <run>Header for First Section</run>
+            </p>              
+          </header>
+          <footer>
+            <p>
+              <page-number-ref format="lowerRoman"/>
+            </p>
+          </footer>
+        </headers-and-footers>
+      </page-sequence-properties>
+      <body>
+        <p style="Heading 1">
+          <run>First Section</run>
+        </p>
+        <p>
+          <run>Page numbers should be lowercase Roman numerals.</run>
+        </p>
+        <p>
+          <run>A table (cols: 2in, 3in):</run>
+        </p>
+        <table colsep="0" frame="topbot" rowsep="1" tagName="simpletable">
+          <cols>
+            <col colwidth="2in"/>
+            <col colwidth="3in"/>
+          </cols>
+          <thead>
+            <tr>
+              <td>
+                <p>
+                  <run>Header 1</run>
+                </p>
+              </td>
+              <td>
+                <p>
+                  <run>Header 2</run>
+                </p>
+              </td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <p>
+                  <run>R1C1</run>
+                </p>
+              </td>
+              <td>
+                <p>
+                  <run>R1C2</run>
+                </p>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <p>
+                  <run>R2C1</run>
+                </p>
+              </td>
+              <td>
+                <p>
+                  <run>R2C2</run>
+                </p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <p>
+          <run>After the table: A hyperlink: </run>
+          <hyperlink href="#bm1">
+            <run>Link to bookmark 1</run>
+          </hyperlink>
+          <run>. After the hyperlink.</run>
+        </p>
+      </body>
+    </section>
+  </body>
+</document>
