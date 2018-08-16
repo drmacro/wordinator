@@ -5,7 +5,7 @@
   <groupId>org.wordinator</groupId>
   <artifactId>wordinator</artifactId>
   <packaging>jar</packaging>
-  <version>0.2.0-SNAPSHOT</version>
+  <version>0.4.0</version>
   <organization>
     <name>wordinator.org</name>
     <url>http://wordinator.org</url>
@@ -130,7 +130,25 @@ arbitrary XML, JSON, etc.</description>
     </profile>
   </profiles>
   <build>
-    <plugins>
+    <plugins>      
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>1.5</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+                <configuration>
+                  <keyname>${gpg.keyname}</keyname>
+                  <passphraseServerId>${gpg.keyname}</passphraseServerId>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.8.0</version>
