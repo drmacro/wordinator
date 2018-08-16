@@ -765,7 +765,7 @@ public class DocxGenerator {
 		String widthVal = cursor.getAttributeText(DocxConstants.QNAME_WIDTH_ATT);
 		if (null != widthVal) {
 			try {
-				width = (int) Measurement.toPixels(widthVal, dotsPerInch);
+				width = (int) Measurement.toPixels(widthVal, getDotsPerInch());
 			} catch (MeasurementException e) {
 				log.error(e.getClass().getSimpleName() + ": " + e.getMessage());
 				log.error("Using default width value " + width);
@@ -778,7 +778,7 @@ public class DocxGenerator {
 		String heightVal = cursor.getAttributeText(DocxConstants.QNAME_HEIGHT_ATT);
 		if (null != heightVal) {
 			try {
-				height = (int) Measurement.toPixels(heightVal, dotsPerInch);
+				height = (int) Measurement.toPixels(heightVal, getDotsPerInch());
 			} catch (MeasurementException e) {
 				log.error(e.getClass().getSimpleName() + ": " + e.getMessage());
 				log.error("Using default height value " + height);
@@ -790,8 +790,8 @@ public class DocxGenerator {
 
 	    double widthInches = width * dotsPerInchFactor;
 	    double heightInches = height * dotsPerInchFactor;
-	    width = (int) (widthInches * dotsPerInch);
-	    height = (int) (heightInches * dotsPerInch);
+	    width = (int) (widthInches * getDotsPerInch());
+	    height = (int) (heightInches * getDotsPerInch());
 		
 		XWPFRun run = para.createRun();			
 
@@ -806,6 +806,14 @@ public class DocxGenerator {
  		                       e.getMessage());
 		}
 		cursor.pop();
+	}
+
+	/**
+	 * Get the current dots-per-inch setting
+	 * @return Dots (pixels) per inch
+	 */
+	public int getDotsPerInch() {
+		return this.dotsPerInch;
 	}
 
 	/**
@@ -849,44 +857,39 @@ public class DocxGenerator {
 		
 		String widthValue = cursor.getAttributeText(DocxConstants.QNAME_WIDTH_ATT);
 		if (null != widthValue) {
-			if (widthValue.matches(XWPFTable.REGEX_WIDTH_VALUE)) {
+			try {
 				table.setWidth(widthValue);
-			} else {
-				try {
-					int twips = Measurement.toTwips(widthValue, dotsPerInch);
-					table.setWidth(twips);
-				} catch (MeasurementException e) {
-					log.warn("makeTable(): Bad table/@width value: " + e.getMessage());
-				}
+			} catch (Exception e) {
+				log.warn("makeTable(): " + e.getClass().getSimpleName() + " - " + e.getMessage());
 			}
 		}
+
+		// Not setting a grid on the tables because it only uses absolute 
+		// measurements. 
 		
-		CTTblGrid grid = table.getCTTbl().getTblGrid();
-		if (grid == null) {
-			// Create a new grid
-			grid = table.getCTTbl().addNewTblGrid();
-		}
-		List<BigInteger> colWidths = new ArrayList<BigInteger>();
+		// So setting widths on columns, which allows percentages as well as
+		// explicit values.
+		TableColumnDefinitions colDefs = new TableColumnDefinitions();
 		cursor.toChild(DocxConstants.QNAME_COLS_ELEM);
 		if (cursor.toFirstChild()) {
 			do {
-				// The grid is constructed with no columns, so we can just
-				// add columns for each cols element.
+				TableColumnDefinition colDef = colDefs.newColumnDef();
+				
+				// FIXME: Set other column properties, such as row and column separators
+				
 				String width = cursor.getAttributeText(DocxConstants.QNAME_COLWIDTH_ATT);
 				if (null != width) {
 					try {
-						// Column widths are in twips (1/20th of a point), not EMUs
-						int twips = Measurement.toTwips(width, dotsPerInch);
-						BigInteger colWidth = new BigInteger(Integer.toString(twips));
-						colWidths.add(colWidth);
-						CTTblGridCol gridCol = grid.addNewGridCol();	
-						gridCol.setW(colWidth);
+						colDef.setWidth(width, getDotsPerInch());
 					} catch (MeasurementException e) {
-						log.warn("makeTable(): " + e.getClass().getSimpleName() + ": " + e.getMessage());
-					}
+						log.warn("makeTable(): " + e.getClass().getSimpleName() + " - " + e.getMessage());
+					}					
+				} else {
+					colDef.setWidthAuto();
 				}
 			} while (cursor.toNextSibling());
 		}
+		
 		// populate the rows and cells.
 		cursor = xml.newCursor();
 		
@@ -897,7 +900,7 @@ public class DocxGenerator {
 				RowSpanManager rowSpanManager = new RowSpanManager();
 				do {
 					// Process the rows
-					XWPFTableRow row = makeTableRow(table, cursor.getObject(), colWidths, rowSpanManager);
+					XWPFTableRow row = makeTableRow(table, cursor.getObject(), colDefs, rowSpanManager);
 					row.setRepeatHeader(true);
 				} while(cursor.toNextSibling());
 			}
@@ -911,7 +914,7 @@ public class DocxGenerator {
 				RowSpanManager rowSpanManager = new RowSpanManager();
 				do {
 					// Process the rows
-					XWPFTableRow row = makeTableRow(table, cursor.getObject(), colWidths, rowSpanManager);
+					XWPFTableRow row = makeTableRow(table, cursor.getObject(), colDefs, rowSpanManager);
 					// Adjust row as needed.
 					row.getCtRow(); // For setting low-level properties.
 				} while(cursor.toNextSibling());
@@ -924,7 +927,7 @@ public class DocxGenerator {
 	 * Construct a table row
 	 * @param table The table to add the row to
 	 * @param xml The <row> element to add to the table
-	 * @param colWidths List of columns widths in column order.
+	 * @param colDefs Column definitions
 	 * @param rowSpanManager Manages setting vertical spanning across multiple rows.
 	 * @return Constructed row object
 	 * @throws DocxGenerationException 
@@ -932,7 +935,7 @@ public class DocxGenerator {
 	private XWPFTableRow makeTableRow(
 			XWPFTable table, 
 			XmlObject xml, 
-			List<BigInteger> colWidths, 
+			TableColumnDefinitions colDefs, 
 			RowSpanManager rowSpanManager) 
 					throws DocxGenerationException {
 		XmlCursor cursor = xml.newCursor();
@@ -945,6 +948,8 @@ public class DocxGenerator {
 		int cellCtr = 0;
 		
 		do {
+			// log.debug("makeTableRow(): Cell " + cellCtr);
+			TableColumnDefinition colDef = colDefs.get(cellCtr);
 			// Rows always have at least one cell
 			// FIXME: At some point the POI API will remove the automatic creation
 			// of the first cell in a row.
@@ -956,11 +961,17 @@ public class DocxGenerator {
 			String colspan = cursor.getAttributeText(DocxConstants.QNAME_COLSPAN_ATT);
 			String rowspan = cursor.getAttributeText(DocxConstants.QNAME_ROWSPAN_ATT);
 			
+			
 			try {
-				ctTcPr.addNewTcW().setW(colWidths.get(cellCtr));
+				String widthValue = cursor.getAttributeText(DocxConstants.QNAME_WIDTH_ATT);
+				if (null != widthValue) {
+					cell.setWidth(TableColumnDefinition.interpretWidthSpecification(widthValue, getDotsPerInch()));
+				} else {
+					cell.setWidth(colDef.getWidth());
+					//log.debug("makeTableRow():   Setting width from column definition: " + colDef.getWidth() + " (" + colDef.getSpecifiedWidth() + ")");
+				}
 			} catch (Exception e) {
-				// There might not be column widths defined for the table,
-				// in which case just silently ignore this.
+				log.error(e.getClass().getSimpleName() + " setting width for column " + (cellCtr + 1) + ": " + e.getMessage(), e);
 			}
 			if (null != valign) {
 				XWPFVertAlign vertAlign = XWPFVertAlign.valueOf(valign.toUpperCase());

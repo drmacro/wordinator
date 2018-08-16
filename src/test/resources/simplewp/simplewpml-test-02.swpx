@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/css" href="../../../../main/doctypes/simplewpml/css/simplewpml.css"?>
-<?xml-model href="../../../../main/doctypes/simplewpml/simplewpml.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
 <document xmlns="urn:ns:wordinator:simplewpml">
   <page-sequence-properties>
     <page-number-properties format="custom" start="1" xslt-format="1."/>
@@ -40,11 +39,12 @@
         <p>
           <run>A second paragraph in the footnote.</run>
         </p>
-        <table>
+        <p><run>Table with columns defined as 10%, 30%, 60%</run></p>
+        <table width="100%">
           <cols>
-            <col colwidth="1in"/>
-            <col colwidth="31in"/>
-            <col colwidth="1in"/>
+            <col colwidth="10%"/>
+            <col colwidth="30%"/>
+            <col colwidth="60%"/>
           </cols>
           <tbody>
             <tr>
@@ -178,7 +178,8 @@
         <p>
           <run>A table (cols: 2in, 3in):</run>
         </p>
-        <table colsep="0" frame="topbot" rowsep="1" tagName="simpletable">
+        <table width="100%" 
+          colsep="0" frame="topbot" rowsep="1" tagName="simpletable">
           <cols>
             <col colwidth="2in"/>
             <col colwidth="3in"/>

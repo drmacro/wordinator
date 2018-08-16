@@ -22,7 +22,7 @@ public class TestDocxGenerator extends TestCase {
 	@Test
 	public void testMakeDocx() throws FileNotFoundException, IOException {
 		ClassLoader classLoader = getClass().getClassLoader();
-		File inFile = new File(classLoader.getResource("simplewp/simplewpml-test-01.xml").getFile());
+		File inFile = new File(classLoader.getResource("simplewp/simplewpml-test-01.swpx").getFile());
 		File templateFile = new File(classLoader.getResource(DOTX_TEMPLATE_PATH).getFile());
 		File outFile = new File("out/output.docx");
 		File outDir = outFile.getParentFile();
@@ -62,7 +62,7 @@ public class TestDocxGenerator extends TestCase {
   @Test
 	public void testMakeDocxWithSections() throws FileNotFoundException, IOException {
 		ClassLoader classLoader = getClass().getClassLoader();
-		File inFile = new File(classLoader.getResource("simplewp/simplewpml-test-02.xml").getFile());
+		File inFile = new File(classLoader.getResource("simplewp/simplewpml-test-02.swpx").getFile());
 		File templateFile = new File(classLoader.getResource(DOTX_TEMPLATE_PATH).getFile());
 		File outFile = new File("out/output-02.docx");
 		File outDir = outFile.getParentFile();
