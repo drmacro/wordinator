@@ -2,6 +2,7 @@ package org.wordinator.xml2docx.generator;
 
 import java.io.File;
 import java.net.URL;
+import java.net.URLDecoder;
 
 import javax.xml.transform.Result;
 import javax.xml.transform.TransformerException;
@@ -58,7 +59,8 @@ public class DocxGeneratingOutputUriResolver implements OutputURIResolver {
 		
 		try {
 			XmlObject xml = saxHandler.getObject();
-			String filename = FilenameUtils.getBaseName(result.getSystemId()) + ".docx";
+			String outFilepath = URLDecoder.decode(result.getSystemId(), "UTF-8");
+			String filename = FilenameUtils.getBaseName(outFilepath) + ".docx";
 			File outFile = new File(outDir, filename);
 			File inFile = new File(new URL(result.getSystemId()).toURI());
 			log.info("Generating DOCX file \"" + outFile.getAbsolutePath() + "\"");
