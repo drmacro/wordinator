@@ -7,7 +7,6 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.xml.transform.ErrorListener;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
@@ -30,7 +29,6 @@ import org.wordinator.xml2docx.saxon.LoggingMessageListener;
 import net.sf.saxon.lib.FeatureKeys;
 import net.sf.saxon.lib.OutputURIResolver;
 import net.sf.saxon.lib.StandardErrorListener;
-import net.sf.saxon.lib.StandardLogger;
 import net.sf.saxon.s9api.MessageListener;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
@@ -86,7 +84,6 @@ public class MakeDocx
     	String chunkLevel = cmd.getOptionValue("c");
     	chunkLevel = chunkLevel == null ? "root" : chunkLevel;
     	
-    	// FIXME: Set up proper Java logging.
     	log.info("Input document or directory='" + inDocPath + "'");
     	log.info("Output directory           ='" + docxPath + "'");
     	log.info("DOTX template              ='" + templatePath + "'");
