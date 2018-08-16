@@ -74,72 +74,7 @@ public class DocxGenerator {
 	
 	public static final Logger log = LogManager.getLogger();
 
-	private static final String OO_WPML_NS = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
-	public static final String SIMPLE_WP_NS = "urn:ns:wordinator:simplewpml";
-	
-	private static final QName QNAME_INSTR_ATT = new QName(OO_WPML_NS, "instr");
-	private static final QName QNAME_ALIGN_ATT = new QName("", "align");
-	private static final QName QNAME_BOLD_ATT = new QName("", "bold");
-	private static final QName QNAME_BOTTOM_ATT = new QName("", "bottom");
-	private static final QName QNAME_CALCULATEDWIDTH_ATT = new QName("", "calculatedWidth");
-	private static final QName QNAME_CAPS_ATT = new QName("", "caps");
-	private static final QName QNAME_COLSEP_ATT = new QName("", "colsep");
-	private static final QName QNAME_COLSPAN_ATT = new QName("", "colspan");
-	private static final QName QNAME_COLWIDTH_ATT = new QName("", "colwidth");
-	private static final QName QNAME_DOUBLE_STRIKETHROUGH_ATT = new QName("", "double-strikethrough");
-	private static final QName QNAME_EMBOSS_ATT = new QName("", "emboss");
-	private static final QName QNAME_EMPHASIS_MARK_ATT = new QName("", "emphasis-mark");
-	private static final QName QNAME_EXPAND_COLLAPSE_ATT = new QName("", "expand-collapse");
-	private static final QName QNAME_FONT_ATT = new QName("", "font");
-	private static final QName QNAME_FOOTER_ATT = new QName("", "footer");
-	private static final QName QNAME_FORMAT_ATT = new QName("", "format");
-	private static final QName QNAME_FRAME_ATT = new QName("", "frame");
-	private static final QName QNAME_GUTTER_ATT = new QName("", "gutter");
-	private static final QName QNAME_HEADER_ATT = new QName("", "header");
-	private static final QName QNAME_HEIGHT_ATT = new QName("", "height");
-	private static final QName QNAME_HIGHLIGHT_ATT = new QName("", "highlight");
-	private static final QName QNAME_HREF_ATT = new QName("", "href");
-	private static final QName QNAME_ID_ATT = new QName("", "id");
-	private static final QName QNAME_IMPRINT_ATT = new QName("", "imprint");
-	private static final QName QNAME_ITALIC_ATT = new QName("", "italic");
-	private static final QName QNAME_LEFT_ATT = new QName("", "left");
-	private static final QName QNAME_NAME_ATT = new QName("", "name");
-	private static final QName QNAME_OUTLINE_ATT = new QName("", "outline");
-	private static final QName QNAME_OUTLINE_LEVEL_ATT = new QName("", "outline-level");
-	private static final QName QNAME_PAGE_BREAK_BEFORE_ATT = new QName("", "page-break-before");
-	private static final QName QNAME_POSITION_ATT = new QName("", "position");
-	private static final QName QNAME_RIGHT_ATT = new QName("", "right");
-	private static final QName QNAME_ROWSEP_ATT = new QName("", "rowsep");
-	private static final QName QNAME_ROWSPAN_ATT = new QName("", "rowspan");
-	private static final QName QNAME_SHADOW_ATT = new QName("", "shadow");
-	private static final QName QNAME_SMALL_CAPS_ATT = new QName("", "small-caps");
-	private static final QName QNAME_SRC_ATT = new QName("", "src");
-	private static final QName QNAME_START_ATT = new QName("", "start");
-	private static final QName QNAME_STRIKETHROUGH_ATT = new QName("", "strikethrough");
-	private static final QName QNAME_STYLE_ATT = new QName("", "style");
-	private static final QName QNAME_STYLEID_ATT = new QName("", "styleId");
-	private static final QName QNAME_TAGNAME_ATT = new QName("", "tagName");
-	private static final QName QNAME_TOP_ATT = new QName("", "top");
-	private static final QName QNAME_TYPE_ATT = new QName("", "type");
-	private static final QName QNAME_UNDERLINE_ATT = new QName("", "underline");
-	private static final QName QNAME_UNDERLINE_COLOR_ATT = new QName("", "underline-color");
-	private static final QName QNAME_VALIGN_ATT = new QName("", "valign");
-	private static final QName QNAME_VANISH_ATT = new QName("", "vanish");
-	private static final QName QNAME_VERTICAL_ALIGNMENT_ATT = new QName("", "vertical-alignment");
-	private static final QName QNAME_WIDTH_ATT = new QName("", "width");
-	private static final QName QNAME_XSLT_FORMAT_ATT = new QName("", "xslt-format");	 
-	private static final QName QNAME_COLS_ELEM = new QName(SIMPLE_WP_NS, "cols");
-	@SuppressWarnings("unused")
-	private static final QName QNAME_COL_ELEM = new QName(SIMPLE_WP_NS, "col");
-	private static final QName QNAME_THEAD_ELEM = new QName(SIMPLE_WP_NS, "thead");
-	private static final QName QNAME_TBODY_ELEM = new QName(SIMPLE_WP_NS, "tbody");
-	@SuppressWarnings("unused")
-	private static final QName QNAME_TR_ELEM = new QName(SIMPLE_WP_NS, "tr");
-	private static final QName QNAME_TD_ELEM = new QName(SIMPLE_WP_NS, "td");
-	private static final QName QNAME_P_ELEM = new QName(SIMPLE_WP_NS, "p");
-	@SuppressWarnings("unused")
-	private static final QName QNAME_ROW_ELEM = new QName(SIMPLE_WP_NS, "row");
-	private static final QName QNAME_VSPAN_ELEM = new QName(SIMPLE_WP_NS, "vspan");
+
 	private File outFile;
 	private int dotsPerInch = 72; /* DPI */
 	private double dotsPerInchFactor = 1.0/dotsPerInch;
@@ -186,15 +121,12 @@ public class DocxGenerator {
 	private void constructDoc(XWPFDocument doc, XmlObject xml) throws DocxGenerationException {
 		XmlCursor cursor = xml.newCursor();
 		cursor.toFirstChild(); // Put us on the root element of the document
-		String tagName = cursor.getName().getLocalPart();
 		cursor.push();
-		if (cursor.toChild(new QName(SIMPLE_WP_NS, "page-sequence-properties"))) {
+		if (cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "page-sequence-properties"))) {
 			setupPageSequence(doc, cursor.getObject());
 		}
 		cursor.pop();
-		tagName = cursor.getName().getLocalPart();
-		cursor.toChild(new QName(SIMPLE_WP_NS, "body"));
-		tagName = cursor.getName().getLocalPart();
+		cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "body"));
 		handleBody(doc, cursor.getObject());
 		
 		
@@ -242,12 +174,12 @@ public class DocxGenerator {
 		log.warn("Section-level headers and footers and page numbering not yet implemented.");
 		// FIXME: The section-specific properties go in the first paragraph of the section.
 		cursor.push();
-		if (false && cursor.toChild(new QName(SIMPLE_WP_NS, "page-sequence-properties"))) {
+		if (false && cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "page-sequence-properties"))) {
 			setupPageSequence(doc, cursor.getObject());
 		}
 		cursor.pop();
 		
-		cursor.toChild(new QName(SIMPLE_WP_NS, "body"));
+		cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "body"));
 		handleBody(doc, cursor.getObject());
 		
 	}
@@ -261,15 +193,15 @@ public class DocxGenerator {
 	private void setupPageSequence(XWPFDocument doc, XmlObject xml) throws DocxGenerationException {
 		XmlCursor cursor = xml.newCursor();
 		cursor.push();
-		if (cursor.toChild(new QName(SIMPLE_WP_NS, "page-number-properties"))) {
-			String format = cursor.getAttributeText(QNAME_FORMAT_ATT);
+		if (cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "page-number-properties"))) {
+			String format = cursor.getAttributeText(DocxConstants.QNAME_FORMAT_ATT);
 			if (null != format) {
 				// FIXME: Not sure how to set this up with the POI API yet.
 			}
 		}
 		cursor.pop();
 		cursor.push();
-		if (cursor.toChild(new QName(SIMPLE_WP_NS, "headers-and-footers"))) {
+		if (cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "headers-and-footers"))) {
 			constructHeadersAndFooters(doc, cursor.getObject());
 		}
 		cursor.pop();
@@ -362,7 +294,7 @@ public class DocxGenerator {
 	 */
 	private HeaderFooterType getHeaderFooterType(XmlCursor cursor) {
 		HeaderFooterType type = HeaderFooterType.DEFAULT;
-		String typeName = cursor.getAttributeText(QNAME_TYPE_ATT);
+		String typeName = cursor.getAttributeText(DocxConstants.QNAME_TYPE_ATT);
 		if ("even".equals(typeName)) {
 			type = HeaderFooterType.EVEN;
 		} 
@@ -381,8 +313,8 @@ public class DocxGenerator {
 	private XWPFParagraph makeParagraph(XWPFParagraph para, XmlCursor cursor) throws DocxGenerationException {
 		
 		cursor.push();
-		String styleName = cursor.getAttributeText(QNAME_STYLE_ATT);
-		String styleId = cursor.getAttributeText(QNAME_STYLEID_ATT);
+		String styleName = cursor.getAttributeText(DocxConstants.QNAME_STYLE_ATT);
+		String styleId = cursor.getAttributeText(DocxConstants.QNAME_STYLEID_ATT);
 		
 		if (null != styleName && null == styleId) {
 			// Look up the style by name:
@@ -457,8 +389,8 @@ public class DocxGenerator {
 		// String tagname = cursor.getName().getLocalPart(); // For debugging
 		
 		XWPFRun run = para.createRun();
-		String styleName = cursor.getAttributeText(QNAME_STYLE_ATT);
-		String styleId = cursor.getAttributeText(QNAME_STYLEID_ATT);
+		String styleName = cursor.getAttributeText(DocxConstants.QNAME_STYLE_ATT);
+		String styleId = cursor.getAttributeText(DocxConstants.QNAME_STYLEID_ATT);
 		
 		if (null != styleName && null == styleId) {
 			// Look up the style by name:
@@ -522,7 +454,6 @@ public class DocxGenerator {
 	private void handleFormattingAttributes(XWPFRun run, XmlObject xml) {
 		XmlCursor cursor = xml.newCursor();
 		if (cursor.toFirstAttribute()) {
-			CTRPr pr = run.getCTR().isSetRPr() ? run.getCTR().getRPr() : run.getCTR().addNewRPr();
 			do {
 				  String attName = cursor.getName().getLocalPart();
 				  String attValue = cursor.getTextValue();
@@ -623,7 +554,7 @@ public class DocxGenerator {
 	 */
 	private void makeFootnote(XWPFParagraph para, XmlCursor cursor) throws DocxGenerationException {
 		
-		String type = cursor.getAttributeText(QNAME_TYPE_ATT);
+		String type = cursor.getAttributeText(DocxConstants.QNAME_TYPE_ATT);
 		
 		XWPFAbstractFootnoteEndnote note = null;
 		if ("endnote".equals(type)) {
@@ -681,7 +612,7 @@ public class DocxGenerator {
 	 */
 	private void makeBreak(XWPFRun run, XmlCursor cursor) throws DocxGenerationException {
 		
-		String typeValue = cursor.getAttributeText(QNAME_TYPE_ATT);
+		String typeValue = cursor.getAttributeText(DocxConstants.QNAME_TYPE_ATT);
 		BreakType type = BreakType.TEXT_WRAPPING;
 		if ("line".equals(typeValue) || "textWrapping".equals(typeValue)) {
 			// Already set to this
@@ -708,10 +639,10 @@ public class DocxGenerator {
 	private void makeBookmarkStart(XWPFParagraph para, XmlCursor cursor) throws DocxGenerationException 
 	{
 		CTBookmark bookmark = para.getCTP().addNewBookmarkStart();
-		bookmark.setName(cursor.getAttributeText(QNAME_NAME_ATT));
+		bookmark.setName(cursor.getAttributeText(DocxConstants.QNAME_NAME_ATT));
 		BigInteger id = nextId();
 		bookmark.setId(id);
-		this.bookmarkIdToIdMap.put(cursor.getAttributeText(QNAME_ID_ATT), id);
+		this.bookmarkIdToIdMap.put(cursor.getAttributeText(DocxConstants.QNAME_ID_ATT), id);
 	}
 
 	/**
@@ -722,7 +653,7 @@ public class DocxGenerator {
 	 */
 	private void makeBookmarkEnd(XWPFParagraph para, XmlCursor cursor) throws DocxGenerationException {
 		CTMarkupRange bookmark = para.getCTP().addNewBookmarkEnd();
-		String sourceID = cursor.getAttributeText(QNAME_ID_ATT);
+		String sourceID = cursor.getAttributeText(DocxConstants.QNAME_ID_ATT);
 		BigInteger id = this.bookmarkIdToIdMap.get(sourceID);
 		if (id == null) {
 			throw new DocxGenerationException("No bookmark start found for bookmark end with ID '" + sourceID + "'");
@@ -738,7 +669,7 @@ public class DocxGenerator {
 	 */
 	private void makeHyperlink(XWPFParagraph para, XmlCursor cursor) throws DocxGenerationException {
 		
-		String href = cursor.getAttributeText(QNAME_HREF_ATT);
+		String href = cursor.getAttributeText(DocxConstants.QNAME_HREF_ATT);
 		
 		// Hyperlink's anchor (@w:anchor) points to the name (not ID) of a bookmark.
 		//
@@ -780,7 +711,7 @@ public class DocxGenerator {
 	private void makeImage(XWPFParagraph para, XmlCursor cursor) throws DocxGenerationException {
 		cursor.push();
 		
-		String imgUrl = cursor.getAttributeText(QNAME_SRC_ATT);
+		String imgUrl = cursor.getAttributeText(DocxConstants.QNAME_SRC_ATT);
 		if (null == imgUrl) {
 			log.error("- [ERROR] No @src attribute for image.");
 			return;
@@ -831,7 +762,7 @@ public class DocxGenerator {
                      e.getMessage());
 		}		
 		 
-		String widthVal = cursor.getAttributeText(QNAME_WIDTH_ATT);
+		String widthVal = cursor.getAttributeText(DocxConstants.QNAME_WIDTH_ATT);
 		if (null != widthVal) {
 			try {
 				width = (int) Measurement.toPixels(widthVal, dotsPerInch);
@@ -844,7 +775,7 @@ public class DocxGenerator {
 			width = intrinsicWidth > 0 ? intrinsicWidth : width;			
 		}
 
-		String heightVal = cursor.getAttributeText(QNAME_HEIGHT_ATT);
+		String heightVal = cursor.getAttributeText(DocxConstants.QNAME_HEIGHT_ATT);
 		if (null != heightVal) {
 			try {
 				height = (int) Measurement.toPixels(heightVal, dotsPerInch);
@@ -908,9 +839,27 @@ public class DocxGenerator {
 	 * @throws DocxGenerationException
 	 */
 	private void makeTable(XWPFTable table, XmlObject xml) throws DocxGenerationException {
-		// Set the column widths. In the DOCX markup this is
-		// done in the "grid" (<w:tblGrid>)
+		
+		// If the column widths are absolute measurements they can be set on the grid,
+		// but if they are proportional, then they have to be set on at least the first
+		// row's cells. The table grid is not required (it always reflects the calculated
+		// width of the columns, possibly determined by applying percentage table and 
+		// column widths.
 		XmlCursor cursor = xml.newCursor();
+		
+		String widthValue = cursor.getAttributeText(DocxConstants.QNAME_WIDTH_ATT);
+		if (null != widthValue) {
+			if (widthValue.matches(XWPFTable.REGEX_WIDTH_VALUE)) {
+				table.setWidth(widthValue);
+			} else {
+				try {
+					int twips = Measurement.toTwips(widthValue, dotsPerInch);
+					table.setWidth(twips);
+				} catch (MeasurementException e) {
+					log.warn("makeTable(): Bad table/@width value: " + e.getMessage());
+				}
+			}
+		}
 		
 		CTTblGrid grid = table.getCTTbl().getTblGrid();
 		if (grid == null) {
@@ -918,12 +867,12 @@ public class DocxGenerator {
 			grid = table.getCTTbl().addNewTblGrid();
 		}
 		List<BigInteger> colWidths = new ArrayList<BigInteger>();
-		cursor.toChild(QNAME_COLS_ELEM);
+		cursor.toChild(DocxConstants.QNAME_COLS_ELEM);
 		if (cursor.toFirstChild()) {
 			do {
 				// The grid is constructed with no columns, so we can just
 				// add columns for each cols element.
-				String width = cursor.getAttributeText(QNAME_COLWIDTH_ATT);
+				String width = cursor.getAttributeText(DocxConstants.QNAME_COLWIDTH_ATT);
 				if (null != width) {
 					try {
 						// Column widths are in twips (1/20th of a point), not EMUs
@@ -943,7 +892,7 @@ public class DocxGenerator {
 		
 		// Header rows:
 		cursor.push();
-		if (cursor.toChild(QNAME_THEAD_ELEM)) {
+		if (cursor.toChild(DocxConstants.QNAME_THEAD_ELEM)) {
 			if (cursor.toFirstChild()) {
 				RowSpanManager rowSpanManager = new RowSpanManager();
 				do {
@@ -957,7 +906,7 @@ public class DocxGenerator {
 		// Body rows:
 		
 		cursor = xml.newCursor();
-		if (cursor.toChild(QNAME_TBODY_ELEM)) {
+		if (cursor.toChild(DocxConstants.QNAME_TBODY_ELEM)) {
 			if (cursor.toFirstChild()) {
 				RowSpanManager rowSpanManager = new RowSpanManager();
 				do {
@@ -992,7 +941,7 @@ public class DocxGenerator {
 		// FIXME: Handle attributes on rows (rowsep, colsep, etc.)
 		
 		cursor.push();
-		cursor.toChild(QNAME_TD_ELEM);
+		cursor.toChild(DocxConstants.QNAME_TD_ELEM);
 		int cellCtr = 0;
 		
 		do {
@@ -1002,10 +951,10 @@ public class DocxGenerator {
 			XWPFTableCell cell = cellCtr == 0 ? row.getCell(0) : row.addNewTableCell();
 			
 			CTTcPr ctTcPr = cell.getCTTc().addNewTcPr();
-			String align = cursor.getAttributeText(QNAME_ALIGN_ATT);
-			String valign = cursor.getAttributeText(QNAME_VALIGN_ATT);
-			String colspan = cursor.getAttributeText(QNAME_COLSPAN_ATT);
-			String rowspan = cursor.getAttributeText(QNAME_ROWSPAN_ATT);
+			String align = cursor.getAttributeText(DocxConstants.QNAME_ALIGN_ATT);
+			String valign = cursor.getAttributeText(DocxConstants.QNAME_VALIGN_ATT);
+			String colspan = cursor.getAttributeText(DocxConstants.QNAME_COLSPAN_ATT);
+			String rowspan = cursor.getAttributeText(DocxConstants.QNAME_ROWSPAN_ATT);
 			
 			try {
 				ctTcPr.addNewTcW().setW(colWidths.get(cellCtr));
@@ -1043,7 +992,7 @@ public class DocxGenerator {
 			
 			cursor.push();
 			// The first cell of a span will already have a vertical span set for it.
-			if (rowspan == null && cursor.toChild(QNAME_VSPAN_ELEM)) {
+			if (rowspan == null && cursor.toChild(DocxConstants.QNAME_VSPAN_ELEM)) {
 				int spansRemaining = rowSpanManager.includeCell(cellCtr);
 				if (spansRemaining < 0) {
 					log.warn("Found <vspan> when there should not have been one. Ignored.");
@@ -1051,7 +1000,7 @@ public class DocxGenerator {
 					ctTcPr.setVMerge(CTVMerge.Factory.newInstance());
 				}
 			} else {
-				if (cursor.toChild(QNAME_P_ELEM)) {
+				if (cursor.toChild(DocxConstants.QNAME_P_ELEM)) {
 					do {
 						XWPFParagraph p = cell.addParagraph();
 						makeParagraph(p, cursor);
