@@ -27,7 +27,6 @@ import org.wordinator.xml2docx.saxon.Log4jSaxonLogger;
 import org.wordinator.xml2docx.saxon.LoggingMessageListener;
 
 import net.sf.saxon.lib.FeatureKeys;
-import net.sf.saxon.lib.OutputURIResolver;
 import net.sf.saxon.lib.StandardErrorListener;
 import net.sf.saxon.s9api.MessageListener;
 import net.sf.saxon.s9api.Processor;
@@ -55,13 +54,8 @@ public class MakeDocx
 	public static void main( String[] args ) throws ParseException
     {
     	Options options = buildOptions();
-    	CommandLineParser parser = new DefaultParser();
-    	CommandLine cmd = parser.parse( options, args);
     	
-    	Map<String, String> xsltParameters = new HashMap<String, String>();
-
-    	
-    	handleCommandLine(cmd, xsltParameters, log);    	
+    	handleCommandLine(options, args, log); 	
     	
     }
 
@@ -69,19 +63,25 @@ public class MakeDocx
 	 * Does the actual command line processing. You can call this from your own
 	 * command line processor if you need additional command-line options, for example,
 	 * to set additional XSLT parameters.
-	 * @param cmd The command line command.
-	 * @param xsltParameters XSLT parameters to use. Note that the chunklevel parameter will be set automatically.
+	 * @param options Command-line options
+	 * @param args Command-line arguments
 	 * @param log Logger to log messages to.
+	 * @throws ParseException 
 	 */
 	public static void handleCommandLine(
-			CommandLine cmd, 
-			Map<String, String> xsltParameters, 
-			Logger log) {
+			Options options,
+			String[] args,
+			Logger log) throws ParseException {
+    	CommandLineParser parser = new DefaultParser();
+    	CommandLine cmd = parser.parse( options, args);
+    	
+    	Map<String, String> xsltParameters = new HashMap<String, String>();
 		String inDocPath = cmd.getOptionValue("i");
     	String docxPath = cmd.getOptionValue("o");
     	String templatePath = cmd.getOptionValue("t");
     	String transformPath = cmd.getOptionValue("x");
     	String chunkLevel = cmd.getOptionValue("c");
+    	
     	chunkLevel = chunkLevel == null ? "root" : chunkLevel;
     	
     	log.info("Input document or directory='" + inDocPath + "'");
@@ -175,7 +175,7 @@ public class MakeDocx
 		errorListener.setLogger(saxonLogger);
 		
 		Processor processor = new Processor(false);
-		OutputURIResolver outputResolver = new DocxGeneratingOutputUriResolver(outDir, templateFile, log);
+		DocxGeneratingOutputUriResolver outputResolver = new DocxGeneratingOutputUriResolver(outDir, templateFile, log);
 		processor.setConfigurationProperty(FeatureKeys.OUTPUT_URI_RESOLVER, outputResolver);
 		
 		// FIXME: Set up proper logger. See 
@@ -288,11 +288,19 @@ public class MakeDocx
 				.hasArg(true)
 				.desc("The path and filename of the XSLT transform for generating SWPX documents.")
 				.build();
+    	Option dpi = Option.builder("d")
+    			.longOpt("dpi")
+				.required(false)
+				.hasArg(true)
+				.desc("The dots-per-inch value to use when converting pixels to absolute measurements, e.g., \"72\" or \"96\".")
+				.build();
     			
     	options.addOption(input);
     	options.addOption(output);
     	options.addOption(template);
     	options.addOption(transform);
+    	options.addOption(dpi);
+
 		return options;
 	}
 }

@@ -13,9 +13,7 @@ import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
@@ -57,8 +55,6 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTRPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSimpleField;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTStyle;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblGrid;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblGridCol;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTcPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTVMerge;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STMerge;
@@ -77,7 +73,6 @@ public class DocxGenerator {
 
 	private File outFile;
 	private int dotsPerInch = 72; /* DPI */
-	private double dotsPerInchFactor = 1.0/dotsPerInch;
 	// Map of source IDs to internal object IDs.
 	private Map<String, BigInteger> bookmarkIdToIdMap = new HashMap<String, BigInteger>();
 	private int idCtr = 0;
@@ -787,11 +782,23 @@ public class DocxGenerator {
 		} else {
 			height = intrinsicHeight > 0 ? intrinsicHeight : height;
 		}
-
-	    double widthInches = width * dotsPerInchFactor;
-	    double heightInches = height * dotsPerInchFactor;
-	    width = (int) (widthInches * getDotsPerInch());
-	    height = (int) (heightInches * getDotsPerInch());
+		
+		// At this point, the measurement is pixels. If the original specification
+		// was also pixels, we need to convert to inches and then back to pixels
+		// in order to apply the dots-per-inch value.
+		
+		// Word uses a DPI of 72, so if the current dotsPerInch is not 72, we need to
+		// adjust the width and height by the difference.
+		
+		if (getDotsPerInch() != 72) {
+			double factor = 72.0 / getDotsPerInch();
+			if (widthVal.matches("[0-9]+(px)?")) {
+				width =  (int)Math.round(width * factor);
+			}
+			if (heightVal.matches("[0-9]+(px)?")) {
+				height = (int)Math.round(height * factor);
+			}
+		}				
 		
 		XWPFRun run = para.createRun();			
 
@@ -814,6 +821,15 @@ public class DocxGenerator {
 	 */
 	public int getDotsPerInch() {
 		return this.dotsPerInch;
+	}
+	
+	/**
+	 * Set the dots-per-inch to use when converting from pixels to absolute measurements.
+	 * <p>Typical values are 72 and 96</p>
+	 * @param dotsPerInch The dots-per-inch value.
+	 */
+	public void setDotsPerInch(int dotsPerInch) {
+		this.dotsPerInch = dotsPerInch;
 	}
 
 	/**

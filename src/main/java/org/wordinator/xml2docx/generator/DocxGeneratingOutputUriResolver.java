@@ -29,6 +29,10 @@ public class DocxGeneratingOutputUriResolver implements OutputURIResolver {
 	private File templateFile;
 	private XmlSaxHandler saxHandler;
 
+	private int dotsPerInch = 96; // FIXME: Need to figure out a way to make this
+	                              // configurable given that resolver is created using
+								  // newInstance()
+
 	/**
 	 * 
 	 * @param outDir Directory to put new DOCX files into.
@@ -65,11 +69,16 @@ public class DocxGeneratingOutputUriResolver implements OutputURIResolver {
 			File inFile = new File(new URL(result.getSystemId()).toURI());
 			log.info("Generating DOCX file \"" + outFile.getAbsolutePath() + "\"");
 			DocxGenerator generator = new DocxGenerator(inFile, outFile, templateFile);
+			generator.setDotsPerInch(dotsPerInch);
 			generator.generate(xml);
 		} catch (Exception e) {
 			throw new TransformerException(e);
 		}
 
+	}
+
+	public int getDotsPerInch() {
+		return dotsPerInch;
 	}
 
 }
