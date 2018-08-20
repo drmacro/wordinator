@@ -792,10 +792,10 @@ public class DocxGenerator {
 		
 		if (getDotsPerInch() != 72) {
 			double factor = 72.0 / getDotsPerInch();
-			if (widthVal.matches("[0-9]+(px)?")) {
+			if (widthVal != null && widthVal.matches("[0-9]+(px)?")) {
 				width =  (int)Math.round(width * factor);
 			}
-			if (heightVal.matches("[0-9]+(px)?")) {
+			if (heightVal != null && heightVal.matches("[0-9]+(px)?")) {
 				height = (int)Math.round(height * factor);
 			}
 		}				
