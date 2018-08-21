@@ -5,7 +5,7 @@
   <groupId>org.wordinator</groupId>
   <artifactId>wordinator</artifactId>
   <packaging>jar</packaging>
-  <version>0.5.0</version>
+  <version>0.6.0</version>
   <organization>
     <name>wordinator.org</name>
     <url>http://wordinator.org</url>
@@ -72,7 +72,7 @@ arbitrary XML, JSON, etc.</description>
     <dependency>
       <groupId>org.apache.xmlbeans</groupId>
       <artifactId>xmlbeans</artifactId>
-      <version>3.0.0</version>
+      <version>3.0.1</version>
     </dependency>
     <dependency>
       <groupId>commons-cli</groupId>
