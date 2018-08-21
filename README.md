@@ -1,6 +1,6 @@
 # The Wordinator
 
-Version 0.5.0 
+Version 0.6.0 
 
 Generate high-quality Microsoft Word DOCX files using a simplified XML format (simple word processing XML).
 
@@ -91,6 +91,6 @@ Maven dependency:
 <dependency>
   <groupId>org.wordinator</groupId>
   <artifactId>wordinator</artifactId>
-  <version>0.5.0</version>
+  <version>0.6.0</version>
 </dependency>
 ```
