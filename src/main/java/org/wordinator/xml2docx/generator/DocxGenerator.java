@@ -13,15 +13,15 @@ import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
 import javax.xml.namespace.QName;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.formula.eval.NotImplementedException;
 import org.apache.poi.util.Units;
 import org.apache.poi.wp.usermodel.HeaderFooterType;
@@ -55,8 +55,6 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTRPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSimpleField;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTStyle;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblGrid;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblGridCol;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTcPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTVMerge;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STMerge;
@@ -69,92 +67,30 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.impl.STOnOffImpl;
  * Generates DOCX files from Simple Word Processing Markup Language XML.
  */
 public class DocxGenerator {
-
-	private static final String OO_WPML_NS = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
-	public static final String SIMPLE_WP_NS = "urn:ns:wordinator:simplewpml";
 	
-	private static final QName QNAME_INSTR_ATT = new QName(OO_WPML_NS, "instr");
-	private static final QName QNAME_ALIGN_ATT = new QName("", "align");
-	private static final QName QNAME_BOLD_ATT = new QName("", "bold");
-	private static final QName QNAME_BOTTOM_ATT = new QName("", "bottom");
-	private static final QName QNAME_CALCULATEDWIDTH_ATT = new QName("", "calculatedWidth");
-	private static final QName QNAME_CAPS_ATT = new QName("", "caps");
-	private static final QName QNAME_COLSEP_ATT = new QName("", "colsep");
-	private static final QName QNAME_COLSPAN_ATT = new QName("", "colspan");
-	private static final QName QNAME_COLWIDTH_ATT = new QName("", "colwidth");
-	private static final QName QNAME_DOUBLE_STRIKETHROUGH_ATT = new QName("", "double-strikethrough");
-	private static final QName QNAME_EMBOSS_ATT = new QName("", "emboss");
-	private static final QName QNAME_EMPHASIS_MARK_ATT = new QName("", "emphasis-mark");
-	private static final QName QNAME_EXPAND_COLLAPSE_ATT = new QName("", "expand-collapse");
-	private static final QName QNAME_FONT_ATT = new QName("", "font");
-	private static final QName QNAME_FOOTER_ATT = new QName("", "footer");
-	private static final QName QNAME_FORMAT_ATT = new QName("", "format");
-	private static final QName QNAME_FRAME_ATT = new QName("", "frame");
-	private static final QName QNAME_GUTTER_ATT = new QName("", "gutter");
-	private static final QName QNAME_HEADER_ATT = new QName("", "header");
-	private static final QName QNAME_HEIGHT_ATT = new QName("", "height");
-	private static final QName QNAME_HIGHLIGHT_ATT = new QName("", "highlight");
-	private static final QName QNAME_HREF_ATT = new QName("", "href");
-	private static final QName QNAME_ID_ATT = new QName("", "id");
-	private static final QName QNAME_IMPRINT_ATT = new QName("", "imprint");
-	private static final QName QNAME_ITALIC_ATT = new QName("", "italic");
-	private static final QName QNAME_LEFT_ATT = new QName("", "left");
-	private static final QName QNAME_NAME_ATT = new QName("", "name");
-	private static final QName QNAME_OUTLINE_ATT = new QName("", "outline");
-	private static final QName QNAME_OUTLINE_LEVEL_ATT = new QName("", "outline-level");
-	private static final QName QNAME_PAGE_BREAK_BEFORE_ATT = new QName("", "page-break-before");
-	private static final QName QNAME_POSITION_ATT = new QName("", "position");
-	private static final QName QNAME_RIGHT_ATT = new QName("", "right");
-	private static final QName QNAME_ROWSEP_ATT = new QName("", "rowsep");
-	private static final QName QNAME_ROWSPAN_ATT = new QName("", "rowspan");
-	private static final QName QNAME_SHADOW_ATT = new QName("", "shadow");
-	private static final QName QNAME_SMALL_CAPS_ATT = new QName("", "small-caps");
-	private static final QName QNAME_SRC_ATT = new QName("", "src");
-	private static final QName QNAME_START_ATT = new QName("", "start");
-	private static final QName QNAME_STRIKETHROUGH_ATT = new QName("", "strikethrough");
-	private static final QName QNAME_STYLE_ATT = new QName("", "style");
-	private static final QName QNAME_STYLEID_ATT = new QName("", "styleId");
-	private static final QName QNAME_TAGNAME_ATT = new QName("", "tagName");
-	private static final QName QNAME_TOP_ATT = new QName("", "top");
-	private static final QName QNAME_TYPE_ATT = new QName("", "type");
-	private static final QName QNAME_UNDERLINE_ATT = new QName("", "underline");
-	private static final QName QNAME_UNDERLINE_COLOR_ATT = new QName("", "underline-color");
-	private static final QName QNAME_VALIGN_ATT = new QName("", "valign");
-	private static final QName QNAME_VANISH_ATT = new QName("", "vanish");
-	private static final QName QNAME_VERTICAL_ALIGNMENT_ATT = new QName("", "vertical-alignment");
-	private static final QName QNAME_WIDTH_ATT = new QName("", "width");
-	private static final QName QNAME_XSLT_FORMAT_ATT = new QName("", "xslt-format");	 
-	private static final QName QNAME_COLS_ELEM = new QName(SIMPLE_WP_NS, "cols");
-	@SuppressWarnings("unused")
-	private static final QName QNAME_COL_ELEM = new QName(SIMPLE_WP_NS, "col");
-	private static final QName QNAME_THEAD_ELEM = new QName(SIMPLE_WP_NS, "thead");
-	private static final QName QNAME_TBODY_ELEM = new QName(SIMPLE_WP_NS, "tbody");
-	@SuppressWarnings("unused")
-	private static final QName QNAME_TR_ELEM = new QName(SIMPLE_WP_NS, "tr");
-	private static final QName QNAME_TD_ELEM = new QName(SIMPLE_WP_NS, "td");
-	private static final QName QNAME_P_ELEM = new QName(SIMPLE_WP_NS, "p");
-	@SuppressWarnings("unused")
-	private static final QName QNAME_ROW_ELEM = new QName(SIMPLE_WP_NS, "row");
-	private static final QName QNAME_VSPAN_ELEM = new QName(SIMPLE_WP_NS, "vspan");
+	public static final Logger log = LogManager.getLogger();
+
+
 	private File outFile;
 	private int dotsPerInch = 72; /* DPI */
-	private double dotsPerInchFactor = 1.0/dotsPerInch;
 	// Map of source IDs to internal object IDs.
 	private Map<String, BigInteger> bookmarkIdToIdMap = new HashMap<String, BigInteger>();
 	private int idCtr = 0;
-	private File templateFile;
 	private File inFile;
+	private XWPFDocument templateDoc;
 
 	/**
 	 * 
 	 * @param inFile File representing input document.
 	 * @param outFile File to write DOCX result to
-	 * @param templateFile DOTX template to initialze result DOCX with (provides style definitions)
+	 * @param templateDoc DOTX template to initialize result DOCX with (provides style definitions)
+	 * @throws Exception Exception from loading the template document
+	 * @throws FileNotFoundException 
 	 */
-	public DocxGenerator(File inFile, File outFile, File templateFile) {
+	public DocxGenerator(File inFile, File outFile, XWPFDocument templateDoc) throws FileNotFoundException, Exception {
 		this.inFile = inFile;
 		this.outFile = outFile;		
-		this.templateFile = templateFile;
+		this.templateDoc = templateDoc;
 	}
 
 	/*
@@ -166,7 +102,7 @@ public class DocxGenerator {
 		
 		XWPFDocument doc = new XWPFDocument();
 		
-		setupStyles(doc);
+		setupStyles(doc, this.templateDoc);
 		constructDoc(doc, xml);
 		
 		FileOutputStream out = new FileOutputStream(outFile);
@@ -182,15 +118,12 @@ public class DocxGenerator {
 	private void constructDoc(XWPFDocument doc, XmlObject xml) throws DocxGenerationException {
 		XmlCursor cursor = xml.newCursor();
 		cursor.toFirstChild(); // Put us on the root element of the document
-		String tagName = cursor.getName().getLocalPart();
 		cursor.push();
-		if (cursor.toChild(new QName(SIMPLE_WP_NS, "page-sequence-properties"))) {
+		if (cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "page-sequence-properties"))) {
 			setupPageSequence(doc, cursor.getObject());
 		}
 		cursor.pop();
-		tagName = cursor.getName().getLocalPart();
-		cursor.toChild(new QName(SIMPLE_WP_NS, "body"));
-		tagName = cursor.getName().getLocalPart();
+		cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "body"));
 		handleBody(doc, cursor.getObject());
 		
 		
@@ -220,7 +153,7 @@ public class DocxGenerator {
 					// FIXME: This is currently unimplemented.
 					makeObject(doc, cursor);
 				} else {
-					System.out.println("- [WARN] createContent(): Unexpected element {" + namespace + "}:'" + tagName + "' in <body>. Ignored.");
+					log.warn("handleBody(): Unexpected element {" + namespace + "}:'" + tagName + "' in <body>. Ignored.");
 				}
 			} while (cursor.toNextSibling());
 		}
@@ -235,15 +168,15 @@ public class DocxGenerator {
 	private void handleSection(XWPFDocument doc, XmlObject xml) throws DocxGenerationException {
 		XmlCursor cursor = xml.newCursor();
 		
-		System.err.println("- [WARN] Section-level headers and footers and page numbering not yet implemented.");
+		log.warn("Section-level headers and footers and page numbering not yet implemented.");
 		// FIXME: The section-specific properties go in the first paragraph of the section.
 		cursor.push();
-		if (false && cursor.toChild(new QName(SIMPLE_WP_NS, "page-sequence-properties"))) {
+		if (false && cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "page-sequence-properties"))) {
 			setupPageSequence(doc, cursor.getObject());
 		}
 		cursor.pop();
 		
-		cursor.toChild(new QName(SIMPLE_WP_NS, "body"));
+		cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "body"));
 		handleBody(doc, cursor.getObject());
 		
 	}
@@ -257,15 +190,15 @@ public class DocxGenerator {
 	private void setupPageSequence(XWPFDocument doc, XmlObject xml) throws DocxGenerationException {
 		XmlCursor cursor = xml.newCursor();
 		cursor.push();
-		if (cursor.toChild(new QName(SIMPLE_WP_NS, "page-number-properties"))) {
-			String format = cursor.getAttributeText(QNAME_FORMAT_ATT);
+		if (cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "page-number-properties"))) {
+			String format = cursor.getAttributeText(DocxConstants.QNAME_FORMAT_ATT);
 			if (null != format) {
 				// FIXME: Not sure how to set this up with the POI API yet.
 			}
 		}
 		cursor.pop();
 		cursor.push();
-		if (cursor.toChild(new QName(SIMPLE_WP_NS, "headers-and-footers"))) {
+		if (cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "headers-and-footers"))) {
 			constructHeadersAndFooters(doc, cursor.getObject());
 		}
 		cursor.pop();
@@ -311,7 +244,7 @@ public class DocxGenerator {
 					XWPFFooter footer = doc.createFooter(type);
 					makeHeaderFooter(footer, cursor.getObject());
 				} else {
-					System.out.println("- [WARN] Unexpected element {" + namespace + "}:" + tagName + " in <headers-and-footers>. Ignored.");
+					log.warn("Unexpected element {" + namespace + "}:" + tagName + " in <headers-and-footers>. Ignored.");
 				}
 			} while(cursor.toNextSibling());
 		}
@@ -345,7 +278,7 @@ public class DocxGenerator {
 				} else {
 					// There are other body-level things that could go in a footnote but 
 					// we aren't worrying about them for now.
-					System.out.println("- [WARN] makeFootnote(): Unexpected element {" + namespace + "}:" + tagName + "' in <fn>. Ignored.");
+					log.warn("makeFootnote(): Unexpected element {" + namespace + "}:" + tagName + "' in <fn>. Ignored.");
 				}
 			} while(cursor.toNextSibling());
 		}
@@ -358,7 +291,7 @@ public class DocxGenerator {
 	 */
 	private HeaderFooterType getHeaderFooterType(XmlCursor cursor) {
 		HeaderFooterType type = HeaderFooterType.DEFAULT;
-		String typeName = cursor.getAttributeText(QNAME_TYPE_ATT);
+		String typeName = cursor.getAttributeText(DocxConstants.QNAME_TYPE_ATT);
 		if ("even".equals(typeName)) {
 			type = HeaderFooterType.EVEN;
 		} 
@@ -377,8 +310,8 @@ public class DocxGenerator {
 	private XWPFParagraph makeParagraph(XWPFParagraph para, XmlCursor cursor) throws DocxGenerationException {
 		
 		cursor.push();
-		String styleName = cursor.getAttributeText(QNAME_STYLE_ATT);
-		String styleId = cursor.getAttributeText(QNAME_STYLEID_ATT);
+		String styleName = cursor.getAttributeText(DocxConstants.QNAME_STYLE_ATT);
+		String styleId = cursor.getAttributeText(DocxConstants.QNAME_STYLEID_ATT);
 		
 		if (null != styleName && null == styleId) {
 			// Look up the style by name:
@@ -412,7 +345,7 @@ public class DocxGenerator {
 				} else if ("page-number-ref".equals(tagName)) {
 					makePageNumberRef(para, cursor);
 				} else {
-					System.out.println("- [WARN] Unexpected element {" + namespace + "}:" + tagName + " in <p>. Ignored.");
+					log.warn("Unexpected element {" + namespace + "}:" + tagName + " in <p>. Ignored.");
 				}
 			} while(cursor.toNextSibling());
 		}
@@ -453,8 +386,8 @@ public class DocxGenerator {
 		// String tagname = cursor.getName().getLocalPart(); // For debugging
 		
 		XWPFRun run = para.createRun();
-		String styleName = cursor.getAttributeText(QNAME_STYLE_ATT);
-		String styleId = cursor.getAttributeText(QNAME_STYLEID_ATT);
+		String styleName = cursor.getAttributeText(DocxConstants.QNAME_STYLE_ATT);
+		String styleId = cursor.getAttributeText(DocxConstants.QNAME_STYLEID_ATT);
 		
 		if (null != styleName && null == styleId) {
 			// Look up the style by name:
@@ -493,7 +426,7 @@ public class DocxGenerator {
 				} else if ("tab".equals(name)) {
 					makeTab(run, cursor);
 				} else {
-					System.err.println("makeRun(); Unexpected element {" + namespace + "}:" + name + ". Skipping.");
+					log.error("makeRun(); Unexpected element {" + namespace + "}:" + name + ". Skipping.");
 					cursor.toEndToken(); // Skip this element.
 				}
 				cursor.toNextToken();
@@ -504,9 +437,9 @@ public class DocxGenerator {
 			} else {
 				// What else could there be?
 				if (cursor.getName() != null) {
-					System.err.println("makeRun(): Unhanded XML token " + cursor.getName().getLocalPart());
+					log.error("makeRun(): Unhanded XML token " + cursor.getName().getLocalPart());
 				} else {
-					System.err.println("makeRun(): Unhanded XML token " + cursor.currentTokenType());
+					log.error("makeRun(): Unhanded XML token " + cursor.currentTokenType());
 				}
 				cursor.toNextToken();
 			}
@@ -518,7 +451,6 @@ public class DocxGenerator {
 	private void handleFormattingAttributes(XWPFRun run, XmlObject xml) {
 		XmlCursor cursor = xml.newCursor();
 		if (cursor.toFirstAttribute()) {
-			CTRPr pr = run.getCTR().isSetRPr() ? run.getCTR().getRPr() : run.getCTR().addNewRPr();
 			do {
 				  String attName = cursor.getName().getLocalPart();
 				  String attValue = cursor.getTextValue();
@@ -573,7 +505,7 @@ public class DocxGenerator {
 						value = UnderlinePatterns.valueOf(attValue.toUpperCase());
 					    run.setUnderline(value);
 					} catch (Exception e) {
-						System.err.println("- [ERROR] Unrecognized underline value \"" + attValue + "\"");
+						log.error("- [ERROR] Unrecognized underline value \"" + attValue + "\"");
 					}
 				  } else if ("underline-color".equals(attName)) {
 					  run.setUnderlineColor(attValue);
@@ -619,7 +551,7 @@ public class DocxGenerator {
 	 */
 	private void makeFootnote(XWPFParagraph para, XmlCursor cursor) throws DocxGenerationException {
 		
-		String type = cursor.getAttributeText(QNAME_TYPE_ATT);
+		String type = cursor.getAttributeText(DocxConstants.QNAME_TYPE_ATT);
 		
 		XWPFAbstractFootnoteEndnote note = null;
 		if ("endnote".equals(type)) {
@@ -643,7 +575,7 @@ public class DocxGenerator {
 				} else {
 					// There are other body-level things that could go in a footnote but 
 					// we aren't worrying about them for now.
-					System.out.println("- [WARN] makeFootnote(): Unexpected element {" + namespace + "}:" + tagName + "' in <fn>. Ignored.");
+					log.warn("makeFootnote(): Unexpected element {" + namespace + "}:" + tagName + "' in <fn>. Ignored.");
 				}
 			} while (cursor.toNextSibling());
 		}
@@ -677,7 +609,7 @@ public class DocxGenerator {
 	 */
 	private void makeBreak(XWPFRun run, XmlCursor cursor) throws DocxGenerationException {
 		
-		String typeValue = cursor.getAttributeText(QNAME_TYPE_ATT);
+		String typeValue = cursor.getAttributeText(DocxConstants.QNAME_TYPE_ATT);
 		BreakType type = BreakType.TEXT_WRAPPING;
 		if ("line".equals(typeValue) || "textWrapping".equals(typeValue)) {
 			// Already set to this
@@ -686,7 +618,7 @@ public class DocxGenerator {
 		} else if ("column".equals(typeValue)) {
 			type = BreakType.COLUMN;
 		} else {
-			System.err.println("- [WARN] makeBreak(): Unexpected @type value '" + typeValue + "'. Using 'line'.");			
+			log.warn("makeBreak(): Unexpected @type value '" + typeValue + "'. Using 'line'.");			
 		}
 		run.addBreak(type);
 		// Now move the cursor past the end of the break element
@@ -704,10 +636,10 @@ public class DocxGenerator {
 	private void makeBookmarkStart(XWPFParagraph para, XmlCursor cursor) throws DocxGenerationException 
 	{
 		CTBookmark bookmark = para.getCTP().addNewBookmarkStart();
-		bookmark.setName(cursor.getAttributeText(QNAME_NAME_ATT));
+		bookmark.setName(cursor.getAttributeText(DocxConstants.QNAME_NAME_ATT));
 		BigInteger id = nextId();
 		bookmark.setId(id);
-		this.bookmarkIdToIdMap.put(cursor.getAttributeText(QNAME_ID_ATT), id);
+		this.bookmarkIdToIdMap.put(cursor.getAttributeText(DocxConstants.QNAME_ID_ATT), id);
 	}
 
 	/**
@@ -718,7 +650,7 @@ public class DocxGenerator {
 	 */
 	private void makeBookmarkEnd(XWPFParagraph para, XmlCursor cursor) throws DocxGenerationException {
 		CTMarkupRange bookmark = para.getCTP().addNewBookmarkEnd();
-		String sourceID = cursor.getAttributeText(QNAME_ID_ATT);
+		String sourceID = cursor.getAttributeText(DocxConstants.QNAME_ID_ATT);
 		BigInteger id = this.bookmarkIdToIdMap.get(sourceID);
 		if (id == null) {
 			throw new DocxGenerationException("No bookmark start found for bookmark end with ID '" + sourceID + "'");
@@ -734,7 +666,7 @@ public class DocxGenerator {
 	 */
 	private void makeHyperlink(XWPFParagraph para, XmlCursor cursor) throws DocxGenerationException {
 		
-		String href = cursor.getAttributeText(QNAME_HREF_ATT);
+		String href = cursor.getAttributeText(DocxConstants.QNAME_HREF_ATT);
 		
 		// Hyperlink's anchor (@w:anchor) points to the name (not ID) of a bookmark.
 		//
@@ -776,9 +708,9 @@ public class DocxGenerator {
 	private void makeImage(XWPFParagraph para, XmlCursor cursor) throws DocxGenerationException {
 		cursor.push();
 		
-		String imgUrl = cursor.getAttributeText(QNAME_SRC_ATT);
+		String imgUrl = cursor.getAttributeText(DocxConstants.QNAME_SRC_ATT);
 		if (null == imgUrl) {
-			System.err.println("- [ERROR] No @src attribute for image.");
+			log.error("- [ERROR] No @src attribute for image.");
 			return;
 		}
 		URL url;
@@ -789,7 +721,7 @@ public class DocxGenerator {
 			}
 			url = new URL(imgUrl);
 		} catch (MalformedURLException e) {
-			System.err.println("- [ERROR] " + e.getClass().getSimpleName() + " on img/@src value: " + e.getMessage());
+			log.error("- [ERROR] " + e.getClass().getSimpleName() + " on img/@src value: " + e.getMessage());
 			return;
 		}
 		File imgFile = null;
@@ -808,7 +740,7 @@ public class DocxGenerator {
 		
         if (format == 0) {
         	// FIXME: Might be more appropriate to throw an exception here.
-            System.err.println("Unsupported picture: " + imgFilename +
+            log.error("Unsupported picture: " + imgFilename +
                     ". Expected emf|wmf|pict|jpeg|jpg|png|dib|gif|tiff|eps|bmp|wpg");
             cursor.pop();
             return;
@@ -823,40 +755,52 @@ public class DocxGenerator {
 		    intrinsicWidth = img.getWidth();
 		    intrinsicHeight = img.getHeight();
 		} catch (IOException e) {
-			System.err.println("- [WARN] " + e.getClass().getSimpleName() + " exception loading image file '" + imgFile +"': " +
+			log.warn("" + e.getClass().getSimpleName() + " exception loading image file '" + imgFile +"': " +
                      e.getMessage());
 		}		
 		 
-		String widthVal = cursor.getAttributeText(QNAME_WIDTH_ATT);
+		String widthVal = cursor.getAttributeText(DocxConstants.QNAME_WIDTH_ATT);
 		if (null != widthVal) {
 			try {
-				width = (int) Measurement.toPixels(widthVal, dotsPerInch);
+				width = (int) Measurement.toPixels(widthVal, getDotsPerInch());
 			} catch (MeasurementException e) {
-				System.err.println(e.getClass().getSimpleName() + ": " + e.getMessage());
-				System.err.println("Using default width value " + width);
+				log.error(e.getClass().getSimpleName() + ": " + e.getMessage());
+				log.error("Using default width value " + width);
 				width = intrinsicWidth > 0 ? intrinsicWidth : width;
 			}
 		} else {
 			width = intrinsicWidth > 0 ? intrinsicWidth : width;			
 		}
 
-		String heightVal = cursor.getAttributeText(QNAME_HEIGHT_ATT);
+		String heightVal = cursor.getAttributeText(DocxConstants.QNAME_HEIGHT_ATT);
 		if (null != heightVal) {
 			try {
-				height = (int) Measurement.toPixels(heightVal, dotsPerInch);
+				height = (int) Measurement.toPixels(heightVal, getDotsPerInch());
 			} catch (MeasurementException e) {
-				System.err.println(e.getClass().getSimpleName() + ": " + e.getMessage());
-				System.err.println("Using default height value " + height);
+				log.error(e.getClass().getSimpleName() + ": " + e.getMessage());
+				log.error("Using default height value " + height);
 				height = intrinsicHeight > 0 ? intrinsicHeight : height;
 			}
 		} else {
 			height = intrinsicHeight > 0 ? intrinsicHeight : height;
 		}
-
-	    double widthInches = width * dotsPerInchFactor;
-	    double heightInches = height * dotsPerInchFactor;
-	    width = (int) (widthInches * dotsPerInch);
-	    height = (int) (heightInches * dotsPerInch);
+		
+		// At this point, the measurement is pixels. If the original specification
+		// was also pixels, we need to convert to inches and then back to pixels
+		// in order to apply the dots-per-inch value.
+		
+		// Word uses a DPI of 72, so if the current dotsPerInch is not 72, we need to
+		// adjust the width and height by the difference.
+		
+		if (getDotsPerInch() != 72) {
+			double factor = 72.0 / getDotsPerInch();
+			if (widthVal != null && widthVal.matches("[0-9]+(px)?")) {
+				width =  (int)Math.round(width * factor);
+			}
+			if (heightVal != null && heightVal.matches("[0-9]+(px)?")) {
+				height = (int)Math.round(height * factor);
+			}
+		}				
 		
 		XWPFRun run = para.createRun();			
 
@@ -867,10 +811,27 @@ public class DocxGenerator {
 					       Units.toEMU(width), 
 					       Units.toEMU(height));
 		} catch (Exception e) {
-			System.err.println("- [WARN] " + e.getClass().getSimpleName() + " exception adding picture for reference '" + imgFile +"': " +
+			log.warn("" + e.getClass().getSimpleName() + " exception adding picture for reference '" + imgFile +"': " +
  		                       e.getMessage());
 		}
 		cursor.pop();
+	}
+
+	/**
+	 * Get the current dots-per-inch setting
+	 * @return Dots (pixels) per inch
+	 */
+	public int getDotsPerInch() {
+		return this.dotsPerInch;
+	}
+	
+	/**
+	 * Set the dots-per-inch to use when converting from pixels to absolute measurements.
+	 * <p>Typical values are 72 and 96</p>
+	 * @param dotsPerInch The dots-per-inch value.
+	 */
+	public void setDotsPerInch(int dotsPerInch) {
+		this.dotsPerInch = dotsPerInch;
 	}
 
 	/**
@@ -904,47 +865,60 @@ public class DocxGenerator {
 	 * @throws DocxGenerationException
 	 */
 	private void makeTable(XWPFTable table, XmlObject xml) throws DocxGenerationException {
-		// Set the column widths. In the DOCX markup this is
-		// done in the "grid" (<w:tblGrid>)
+		
+		// If the column widths are absolute measurements they can be set on the grid,
+		// but if they are proportional, then they have to be set on at least the first
+		// row's cells. The table grid is not required (it always reflects the calculated
+		// width of the columns, possibly determined by applying percentage table and 
+		// column widths.
 		XmlCursor cursor = xml.newCursor();
 		
-		CTTblGrid grid = table.getCTTbl().getTblGrid();
-		if (grid == null) {
-			// Create a new grid
-			grid = table.getCTTbl().addNewTblGrid();
+		String widthValue = cursor.getAttributeText(DocxConstants.QNAME_WIDTH_ATT);
+		if (null != widthValue) {
+			try {
+				table.setWidth(widthValue);
+			} catch (Exception e) {
+				log.warn("makeTable(): " + e.getClass().getSimpleName() + " - " + e.getMessage());
+			}
 		}
-		List<BigInteger> colWidths = new ArrayList<BigInteger>();
-		cursor.toChild(QNAME_COLS_ELEM);
+
+		// Not setting a grid on the tables because it only uses absolute 
+		// measurements. 
+		
+		// So setting widths on columns, which allows percentages as well as
+		// explicit values.
+		TableColumnDefinitions colDefs = new TableColumnDefinitions();
+		cursor.toChild(DocxConstants.QNAME_COLS_ELEM);
 		if (cursor.toFirstChild()) {
 			do {
-				// The grid is constructed with no columns, so we can just
-				// add columns for each cols element.
-				String width = cursor.getAttributeText(QNAME_COLWIDTH_ATT);
+				TableColumnDefinition colDef = colDefs.newColumnDef();
+				
+				// FIXME: Set other column properties, such as row and column separators
+				
+				String width = cursor.getAttributeText(DocxConstants.QNAME_COLWIDTH_ATT);
 				if (null != width) {
 					try {
-						// Column widths are in twips (1/20th of a point), not EMUs
-						int twips = Measurement.toTwips(width, dotsPerInch);
-						BigInteger colWidth = new BigInteger(Integer.toString(twips));
-						colWidths.add(colWidth);
-						CTTblGridCol gridCol = grid.addNewGridCol();	
-						gridCol.setW(colWidth);
+						colDef.setWidth(width, getDotsPerInch());
 					} catch (MeasurementException e) {
-						System.err.println("- [WARN] makeTable(): " + e.getClass().getSimpleName() + ": " + e.getMessage());
-					}
+						log.warn("makeTable(): " + e.getClass().getSimpleName() + " - " + e.getMessage());
+					}					
+				} else {
+					colDef.setWidthAuto();
 				}
 			} while (cursor.toNextSibling());
 		}
+		
 		// populate the rows and cells.
 		cursor = xml.newCursor();
 		
 		// Header rows:
 		cursor.push();
-		if (cursor.toChild(QNAME_THEAD_ELEM)) {
+		if (cursor.toChild(DocxConstants.QNAME_THEAD_ELEM)) {
 			if (cursor.toFirstChild()) {
 				RowSpanManager rowSpanManager = new RowSpanManager();
 				do {
 					// Process the rows
-					XWPFTableRow row = makeTableRow(table, cursor.getObject(), colWidths, rowSpanManager);
+					XWPFTableRow row = makeTableRow(table, cursor.getObject(), colDefs, rowSpanManager);
 					row.setRepeatHeader(true);
 				} while(cursor.toNextSibling());
 			}
@@ -953,12 +927,12 @@ public class DocxGenerator {
 		// Body rows:
 		
 		cursor = xml.newCursor();
-		if (cursor.toChild(QNAME_TBODY_ELEM)) {
+		if (cursor.toChild(DocxConstants.QNAME_TBODY_ELEM)) {
 			if (cursor.toFirstChild()) {
 				RowSpanManager rowSpanManager = new RowSpanManager();
 				do {
 					// Process the rows
-					XWPFTableRow row = makeTableRow(table, cursor.getObject(), colWidths, rowSpanManager);
+					XWPFTableRow row = makeTableRow(table, cursor.getObject(), colDefs, rowSpanManager);
 					// Adjust row as needed.
 					row.getCtRow(); // For setting low-level properties.
 				} while(cursor.toNextSibling());
@@ -971,7 +945,7 @@ public class DocxGenerator {
 	 * Construct a table row
 	 * @param table The table to add the row to
 	 * @param xml The <row> element to add to the table
-	 * @param colWidths List of columns widths in column order.
+	 * @param colDefs Column definitions
 	 * @param rowSpanManager Manages setting vertical spanning across multiple rows.
 	 * @return Constructed row object
 	 * @throws DocxGenerationException 
@@ -979,7 +953,7 @@ public class DocxGenerator {
 	private XWPFTableRow makeTableRow(
 			XWPFTable table, 
 			XmlObject xml, 
-			List<BigInteger> colWidths, 
+			TableColumnDefinitions colDefs, 
 			RowSpanManager rowSpanManager) 
 					throws DocxGenerationException {
 		XmlCursor cursor = xml.newCursor();
@@ -988,26 +962,34 @@ public class DocxGenerator {
 		// FIXME: Handle attributes on rows (rowsep, colsep, etc.)
 		
 		cursor.push();
-		cursor.toChild(QNAME_TD_ELEM);
+		cursor.toChild(DocxConstants.QNAME_TD_ELEM);
 		int cellCtr = 0;
 		
 		do {
+			// log.debug("makeTableRow(): Cell " + cellCtr);
+			TableColumnDefinition colDef = colDefs.get(cellCtr);
 			// Rows always have at least one cell
 			// FIXME: At some point the POI API will remove the automatic creation
 			// of the first cell in a row.
 			XWPFTableCell cell = cellCtr == 0 ? row.getCell(0) : row.addNewTableCell();
 			
 			CTTcPr ctTcPr = cell.getCTTc().addNewTcPr();
-			String align = cursor.getAttributeText(QNAME_ALIGN_ATT);
-			String valign = cursor.getAttributeText(QNAME_VALIGN_ATT);
-			String colspan = cursor.getAttributeText(QNAME_COLSPAN_ATT);
-			String rowspan = cursor.getAttributeText(QNAME_ROWSPAN_ATT);
+			String align = cursor.getAttributeText(DocxConstants.QNAME_ALIGN_ATT);
+			String valign = cursor.getAttributeText(DocxConstants.QNAME_VALIGN_ATT);
+			String colspan = cursor.getAttributeText(DocxConstants.QNAME_COLSPAN_ATT);
+			String rowspan = cursor.getAttributeText(DocxConstants.QNAME_ROWSPAN_ATT);
+			
 			
 			try {
-				ctTcPr.addNewTcW().setW(colWidths.get(cellCtr));
+				String widthValue = cursor.getAttributeText(DocxConstants.QNAME_WIDTH_ATT);
+				if (null != widthValue) {
+					cell.setWidth(TableColumnDefinition.interpretWidthSpecification(widthValue, getDotsPerInch()));
+				} else {
+					cell.setWidth(colDef.getWidth());
+					//log.debug("makeTableRow():   Setting width from column definition: " + colDef.getWidth() + " (" + colDef.getSpecifiedWidth() + ")");
+				}
 			} catch (Exception e) {
-				// There might not be column widths defined for the table,
-				// in which case just silently ignore this.
+				log.error(e.getClass().getSimpleName() + " setting width for column " + (cellCtr + 1) + ": " + e.getMessage(), e);
 			}
 			if (null != valign) {
 				XWPFVertAlign vertAlign = XWPFVertAlign.valueOf(valign.toUpperCase());
@@ -1020,7 +1002,7 @@ public class DocxGenerator {
 					spanNumber.setVal(BigInteger.valueOf(spanval));
 					ctTcPr.setGridSpan(spanNumber);
 				} catch (NumberFormatException e) {
-					System.err.println("- [WARN] Non-numeric value for @colspan: \"" + colspan + "\". Ignored.");
+					log.warn("Non-numeric value for @colspan: \"" + colspan + "\". Ignored.");
 				}
 			}
 			if (null != rowspan) {
@@ -1033,21 +1015,21 @@ public class DocxGenerator {
 					vMerge.setVal(STMerge.RESTART);
 					ctTcPr.setVMerge(vMerge);
 				} catch (NumberFormatException e) {
-					System.err.println("- [WARN] Non-numeric value for @rowspan: \"" + rowspan + "\". Ignored.");
+					log.warn("Non-numeric value for @rowspan: \"" + rowspan + "\". Ignored.");
 				}
 			}
 			
 			cursor.push();
 			// The first cell of a span will already have a vertical span set for it.
-			if (rowspan == null && cursor.toChild(QNAME_VSPAN_ELEM)) {
+			if (rowspan == null && cursor.toChild(DocxConstants.QNAME_VSPAN_ELEM)) {
 				int spansRemaining = rowSpanManager.includeCell(cellCtr);
 				if (spansRemaining < 0) {
-					System.err.println("- [WARN] Found <vspan> when there should not have been one. Ignored.");
+					log.warn("Found <vspan> when there should not have been one. Ignored.");
 				} else {
 					ctTcPr.setVMerge(CTVMerge.Factory.newInstance());
 				}
 			} else {
-				if (cursor.toChild(QNAME_P_ELEM)) {
+				if (cursor.toChild(DocxConstants.QNAME_P_ELEM)) {
 					do {
 						XWPFParagraph p = cell.addParagraph();
 						makeParagraph(p, cursor);
@@ -1066,21 +1048,17 @@ public class DocxGenerator {
 		return row;
 	}
 
-	private void setupStyles(XWPFDocument doc) throws DocxGenerationException {
+	private void setupStyles(XWPFDocument doc, XWPFDocument templateDoc) throws DocxGenerationException {
 		// Load template. For now this is hard coded but will need to be
 		// parameterized
 				
 		// Copy the template's styles to result document:
 				
 		try {
-			XWPFDocument templateDoc = new XWPFDocument(new FileInputStream(templateFile));
 			XWPFStyles newStyles = doc.createStyles();
 			newStyles.setStyles(templateDoc.getStyle());
-			templateDoc.close();
-		} catch (FileNotFoundException e) {
-			throw new DocxGenerationException("setupStyles(): Expected DOCX template for styles not found: " + templateFile.getAbsolutePath(), e);
 		} catch (IOException e) {
-			new DocxGenerationException(e.getClass().getSimpleName() + " loading template DOCX file: " + e.getMessage(), e);
+			new DocxGenerationException(e.getClass().getSimpleName() + " reading template DOCX file: " + e.getMessage(), e);
 		} catch (XmlException e) {
 			new DocxGenerationException(e.getClass().getSimpleName() + " Copying styles from template doc: " + e.getMessage(), e);
 		}
