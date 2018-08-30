@@ -99,3 +99,13 @@ Maven dependency:
   <version>0.7.0</version>
 </dependency>
 ```
+
+## Release
+
+To deploy to the public Maven repository use this command line:
+
+```
+mvn clean deploy
+```
+
+(Note: Only the project owner can do this as it requires being able to sign the jar.)
