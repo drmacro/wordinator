@@ -2,7 +2,9 @@ package org.wordinator.xml2docx;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,6 +22,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.xmlbeans.XmlObject;
 import org.wordinator.xml2docx.generator.DocxGeneratingOutputUriResolver;
 import org.wordinator.xml2docx.generator.DocxGenerator;
@@ -103,6 +106,15 @@ public class MakeDocx
     		log.error("Template file '" + templateFile.getAbsolutePath() + "' not found. Cannot continue."); 
     		System.exit(1);
     	}
+    	
+		XWPFDocument templateDoc = null;
+		try {
+			templateDoc = new XWPFDocument(new FileInputStream(templateFile));
+		} catch (Exception e) {
+			log.error(e.getClass().getSimpleName() +  " loading template DOCX file \"" + templateFile.getAbsolutePath() + "\"");
+			System.exit(1);
+		}
+    	
     	File outFile = new File(docxPath);
     	
     	File outDir = outFile; // Normal case: specify output directory
@@ -133,25 +145,32 @@ public class MakeDocx
     	try {
     		if (inFile.isDirectory()) {
     			// Assume directory contains *.swpx files 
-    			handleDirectory(inFile, outDir, templateFile, log);
+    			handleDirectory(inFile, outDir, templateDoc, log);
     		} else { 
     			if (inFile.getName().endsWith(".swpx")) {
-	    			handleSingleSwpxDoc(inFile, outFile, templateFile, log);
+	    			handleSingleSwpxDoc(inFile, outFile, templateDoc, log);
 	    		} else {
-	    			transformXml(inFile, outDir, templateFile, transformFile, xsltParameters, log);
+	    			transformXml(inFile, outDir, templateDoc, transformFile, xsltParameters, log);
 	    		}
     		}
     	} catch (Exception e) {
     		log.error(e.getClass().getSimpleName() + ": " + e.getMessage(), e);
     		System.exit(1);
-    	}
+    	} finally {
+			try {
+				templateDoc.close();
+			} catch (IOException e) {
+				// Don't care about this should it ever happen.
+			}
+		}
+    	
 	}
 
 	/**
 	 * Process an XML document to a set of DOCX files
 	 * @param docFile the root XML document to process
 	 * @param outDir Directory to put the DOCX files in
-	 * @param templateFile DOTX file to use in constructing new DOCX files.
+	 * @param templateDoc Template DOCX document
 	 * @param transformFile The file containing the XSLT transform for generating SWPX documents
 	 * @param xsltParameters Map of parameter names to values to be passed to the XSLT transform.
 	 * @param log Log to write messages to.
@@ -160,7 +179,7 @@ public class MakeDocx
 	public static void transformXml(
 			File docFile, 
 			File outDir, 
-			File templateFile, 
+			XWPFDocument templateDoc, 
 			File transformFile, 
 			Map<String, String> xsltParameters, 
 			Logger log) throws Exception {
@@ -172,10 +191,10 @@ public class MakeDocx
 		
 		StandardErrorListener errorListener = new StandardErrorListener();
 		net.sf.saxon.lib.Logger saxonLogger = new Log4jSaxonLogger(log);
-		errorListener.setLogger(saxonLogger);
+		errorListener.setLogger(saxonLogger);		
 		
 		Processor processor = new Processor(false);
-		DocxGeneratingOutputUriResolver outputResolver = new DocxGeneratingOutputUriResolver(outDir, templateFile, log);
+		DocxGeneratingOutputUriResolver outputResolver = new DocxGeneratingOutputUriResolver(outDir, templateDoc, log);
 		processor.setConfigurationProperty(FeatureKeys.OUTPUT_URI_RESOLVER, outputResolver);
 		
 		// FIXME: Set up proper logger. See 
@@ -213,10 +232,10 @@ public class MakeDocx
 	 * Process a SWPX file to a DOCX file.
 	 * @param inFile Single SWPX file
 	 * @param outFile If this is a directory, result filename is constructed from input filename. 
-	 * @param templateFile DOTX file to use as a template when constructing the new document.
+	 * @param templateDoc Template DOCX document used when constructing new document
 	 * @param log 
 	 */
-	public static void handleSingleSwpxDoc(File inFile, File outFile, File templateFile, Logger log) {
+	public static void handleSingleSwpxDoc(File inFile, File outFile, XWPFDocument templateDoc, Logger log) {
 		
 		File effectiveOutFile = outFile;
 		if (outFile.isDirectory()) {
@@ -232,7 +251,7 @@ public class MakeDocx
 					return;
 				}
 			}
-	    	DocxGenerator generator = new DocxGenerator(inFile, effectiveOutFile, templateFile);
+	    	DocxGenerator generator = new DocxGenerator(inFile, effectiveOutFile, templateDoc);
 			XmlObject xml = XmlObject.Factory.parse(inFile);
 
 			generator.generate(xml);
@@ -249,15 +268,15 @@ public class MakeDocx
 	 * generated dynamically from the _Book.xml file.</p> 
 	 * @param inDir Directory to look for *.swpx files in
 	 * @param outDir Directory to write *.docx files to
-	 * @param templateFile DOTX file to use as template for new DOCX files.
+	 * @param templateDoc Template DOCX document used when constructing new document
 	 * @param log Log to write messages to.
 	 */
-	public static void handleDirectory(File inDir, File outDir, File templateFile, Logger log) {
+	public static void handleDirectory(File inDir, File outDir, XWPFDocument templateDoc, Logger log) {
 		
 		FilenameFilter filter = new SuffixFileFilter(".swpx");
 		File[] files = inDir.listFiles(filter);
 		for (File inFile : files) {
-			handleSingleSwpxDoc(inFile, outDir, templateFile, log);
+			handleSingleSwpxDoc(inFile, outDir, templateDoc, log);
 		}
 
 	}

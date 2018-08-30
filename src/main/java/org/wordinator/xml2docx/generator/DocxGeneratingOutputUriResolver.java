@@ -11,6 +11,7 @@ import javax.xml.transform.sax.SAXResult;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlSaxHandler;
 
@@ -26,27 +27,29 @@ public class DocxGeneratingOutputUriResolver implements OutputURIResolver {
 	public static Logger log = LogManager.getLogger();
 
 	private File outDir;
-	private File templateFile;
 	private XmlSaxHandler saxHandler;
 
 	private int dotsPerInch = 96; // FIXME: Need to figure out a way to make this
 	                              // configurable given that resolver is created using
 								  // newInstance()
 
+	private XWPFDocument templateDoc;
+
 	/**
 	 * 
 	 * @param outDir Directory to put new DOCX files into.
-	 * @param templateFile The DOTX template to use in constructing new DOCX files.
+	 * @param templateDoc The DOTX template to use in constructing new DOCX files.
 	 * @param log 
 	 */
-	public DocxGeneratingOutputUriResolver(File outDir, File templateFile, Logger log) {
+	public DocxGeneratingOutputUriResolver(File outDir, XWPFDocument templateDoc, Logger log) {
 		this.outDir = outDir;
-		this.templateFile = templateFile;
+		this.templateDoc = templateDoc;		
 		DocxGeneratingOutputUriResolver.log = log;
+		
 	}
 
 	public OutputURIResolver newInstance() {
-		return new DocxGeneratingOutputUriResolver(outDir, templateFile, log);
+		return new DocxGeneratingOutputUriResolver(outDir, templateDoc, log);
 	}
 
 	public Result resolve(String href, String base) throws TransformerException {
@@ -68,7 +71,7 @@ public class DocxGeneratingOutputUriResolver implements OutputURIResolver {
 			File outFile = new File(outDir, filename);
 			File inFile = new File(new URL(result.getSystemId()).toURI());
 			log.info("Generating DOCX file \"" + outFile.getAbsolutePath() + "\"");
-			DocxGenerator generator = new DocxGenerator(inFile, outFile, templateFile);
+			DocxGenerator generator = new DocxGenerator(inFile, outFile, templateDoc);
 			generator.setDotsPerInch(dotsPerInch);
 			generator.generate(xml);
 		} catch (Exception e) {

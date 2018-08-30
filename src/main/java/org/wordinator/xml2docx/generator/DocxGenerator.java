@@ -76,19 +76,21 @@ public class DocxGenerator {
 	// Map of source IDs to internal object IDs.
 	private Map<String, BigInteger> bookmarkIdToIdMap = new HashMap<String, BigInteger>();
 	private int idCtr = 0;
-	private File templateFile;
 	private File inFile;
+	private XWPFDocument templateDoc;
 
 	/**
 	 * 
 	 * @param inFile File representing input document.
 	 * @param outFile File to write DOCX result to
-	 * @param templateFile DOTX template to initialze result DOCX with (provides style definitions)
+	 * @param templateDoc DOTX template to initialize result DOCX with (provides style definitions)
+	 * @throws Exception Exception from loading the template document
+	 * @throws FileNotFoundException 
 	 */
-	public DocxGenerator(File inFile, File outFile, File templateFile) {
+	public DocxGenerator(File inFile, File outFile, XWPFDocument templateDoc) throws FileNotFoundException, Exception {
 		this.inFile = inFile;
 		this.outFile = outFile;		
-		this.templateFile = templateFile;
+		this.templateDoc = templateDoc;
 	}
 
 	/*
@@ -100,7 +102,7 @@ public class DocxGenerator {
 		
 		XWPFDocument doc = new XWPFDocument();
 		
-		setupStyles(doc);
+		setupStyles(doc, this.templateDoc);
 		constructDoc(doc, xml);
 		
 		FileOutputStream out = new FileOutputStream(outFile);
@@ -1046,21 +1048,17 @@ public class DocxGenerator {
 		return row;
 	}
 
-	private void setupStyles(XWPFDocument doc) throws DocxGenerationException {
+	private void setupStyles(XWPFDocument doc, XWPFDocument templateDoc) throws DocxGenerationException {
 		// Load template. For now this is hard coded but will need to be
 		// parameterized
 				
 		// Copy the template's styles to result document:
 				
 		try {
-			XWPFDocument templateDoc = new XWPFDocument(new FileInputStream(templateFile));
 			XWPFStyles newStyles = doc.createStyles();
 			newStyles.setStyles(templateDoc.getStyle());
-			templateDoc.close();
-		} catch (FileNotFoundException e) {
-			throw new DocxGenerationException("setupStyles(): Expected DOCX template for styles not found: " + templateFile.getAbsolutePath(), e);
 		} catch (IOException e) {
-			new DocxGenerationException(e.getClass().getSimpleName() + " loading template DOCX file: " + e.getMessage(), e);
+			new DocxGenerationException(e.getClass().getSimpleName() + " reading template DOCX file: " + e.getMessage(), e);
 		} catch (XmlException e) {
 			new DocxGenerationException(e.getClass().getSimpleName() + " Copying styles from template doc: " + e.getMessage(), e);
 		}

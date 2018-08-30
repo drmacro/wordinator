@@ -20,7 +20,7 @@ public class TestDocxGenerator extends TestCase {
 	private static final String DOTX_TEMPLATE_PATH = "docx/Test_Template.dotx";
 
 	@Test
-	public void testMakeDocx() throws FileNotFoundException, IOException {
+	public void testMakeDocx() throws Exception {
 		ClassLoader classLoader = getClass().getClassLoader();
 		File inFile = new File(classLoader.getResource("simplewp/simplewpml-test-01.swpx").getFile());
 		File templateFile = new File(classLoader.getResource(DOTX_TEMPLATE_PATH).getFile());
@@ -35,7 +35,8 @@ public class TestDocxGenerator extends TestCase {
 			assertTrue("Failed to delete output file " + outFile.getAbsolutePath(), outFile.delete());
 		}
 		
-		DocxGenerator maker = new DocxGenerator(inFile, outFile, templateFile);
+		XWPFDocument templateDoc = new XWPFDocument(new FileInputStream(templateFile));
+		DocxGenerator maker = new DocxGenerator(inFile, outFile, templateDoc);
 		// Generate the DOCX file:
 		
 		try {
@@ -60,7 +61,7 @@ public class TestDocxGenerator extends TestCase {
 	}
 	
   @Test
-	public void testMakeDocxWithSections() throws FileNotFoundException, IOException {
+	public void testMakeDocxWithSections() throws Exception {
 		ClassLoader classLoader = getClass().getClassLoader();
 		File inFile = new File(classLoader.getResource("simplewp/simplewpml-test-02.swpx").getFile());
 		File templateFile = new File(classLoader.getResource(DOTX_TEMPLATE_PATH).getFile());
@@ -75,7 +76,9 @@ public class TestDocxGenerator extends TestCase {
 			assertTrue("Failed to delete output file " + outFile.getAbsolutePath(), outFile.delete());
 		}
 		
-		DocxGenerator maker = new DocxGenerator(inFile, outFile, templateFile);
+		XWPFDocument templateDoc = new XWPFDocument(new FileInputStream(templateFile));
+		
+		DocxGenerator maker = new DocxGenerator(inFile, outFile, templateDoc);
 		// Generate the DOCX file:
 		
 		try {
