@@ -85,7 +85,7 @@ public class DocxGenerator {
 	 * @param outFile File to write DOCX result to
 	 * @param templateDoc DOTX template to initialize result DOCX with (provides style definitions)
 	 * @throws Exception Exception from loading the template document
-	 * @throws FileNotFoundException 
+	 * @throws FileNotFoundException If the template odcument is not found
 	 */
 	public DocxGenerator(File inFile, File outFile, XWPFDocument templateDoc) throws FileNotFoundException, Exception {
 		this.inFile = inFile;
