@@ -1,6 +1,6 @@
 # The Wordinator
 
-Version 0.7.0 
+Version 0.8.0 
 
 Generate high-quality Microsoft Word DOCX files using a simplified XML format (simple word processing XML).
 
@@ -25,6 +25,10 @@ You can use your own XSLT transform to generate SWPX files from any XML (or JSON
 If you need to go from Word documents back to XML, you may find the DITA for Publishers Word-to-DITA framework useful ([https://github.com/dita4publishers/org.dita4publishers.word2dita]). This packaged as a DITA Open Toolkit plugin but is really a general-purpose XML-to-DOCX framework. It does not depend on the DITA Open Toolkit in any way. While it is designed to generate DITA XML it can be adapted to produce any XML format, either directly or through a DITA-to-X transform applied
 
 ## Release Notes
+
+* 0.8.0
+
+Use final version of POI 4.0.0
 
 * 0.7.0
 ** Improved performance by only reading template doc once  
@@ -86,8 +90,6 @@ If you would like to contribute new features, I welcome all contributions. Use n
 
 This is a Maven project.
 
-NOTE: As of Aug 2018 this code relies on the development version of Apache POI 4.0.0. This means that you'll need to clone or fork the Apache POI sources (e.g., [https://github.com/apache/poi]) and build the POI jars directly following the POI project build instructions, which may be as easy as running the "mvn-install" Ant task.
-
 NOTE: POI 4.0.0 and this project require at least Java 8.
 
 Maven dependency:
@@ -96,7 +98,7 @@ Maven dependency:
 <dependency>
   <groupId>org.wordinator</groupId>
   <artifactId>wordinator</artifactId>
-  <version>0.7.0</version>
+  <version>0.8.0</version>
 </dependency>
 ```
 

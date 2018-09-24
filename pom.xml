@@ -5,7 +5,7 @@
   <groupId>org.wordinator</groupId>
   <artifactId>wordinator</artifactId>
   <packaging>jar</packaging>
-  <version>0.7.0</version>
+  <version>0.8.0</version>
   <organization>
     <name>wordinator.org</name>
     <url>http://wordinator.org</url>
@@ -62,12 +62,12 @@ arbitrary XML, JSON, etc.</description>
     <dependency>
       <groupId>org.apache.poi</groupId>
       <artifactId>poi</artifactId>
-      <version>4.0.0-SNAPSHOT</version>
+      <version>4.0.0</version>
     </dependency>
     <dependency>
       <groupId>org.apache.poi</groupId>
       <artifactId>poi-ooxml</artifactId>
-      <version>4.0.0-SNAPSHOT</version>
+      <version>4.0.0</version>
     </dependency>
     <dependency>
       <groupId>org.apache.xmlbeans</groupId>
