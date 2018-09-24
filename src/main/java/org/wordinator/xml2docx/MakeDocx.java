@@ -69,7 +69,7 @@ public class MakeDocx
 	 * @param options Command-line options
 	 * @param args Command-line arguments
 	 * @param log Logger to log messages to.
-	 * @throws ParseException 
+	 * @throws ParseException Thrown if there is problem parsing the input
 	 */
 	public static void handleCommandLine(
 			Options options,
@@ -233,7 +233,7 @@ public class MakeDocx
 	 * @param inFile Single SWPX file
 	 * @param outFile If this is a directory, result filename is constructed from input filename. 
 	 * @param templateDoc Template DOCX document used when constructing new document
-	 * @param log 
+	 * @param log Log to put messages to.
 	 */
 	public static void handleSingleSwpxDoc(File inFile, File outFile, XWPFDocument templateDoc, Logger log) {
 		
