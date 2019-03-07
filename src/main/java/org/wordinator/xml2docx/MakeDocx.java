@@ -15,6 +15,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
@@ -56,10 +57,25 @@ public class MakeDocx
 
 	public static void main( String[] args ) throws ParseException
     {
-    	Options options = buildOptions();
+	    boolean GOOD_OPTIONS = false;
+	    Options options = null;
+	    try {
+	      options = buildOptions();
+	      GOOD_OPTIONS = true;
+	    } catch (Exception e) {
+	      // 
+	    }
     	
-    	handleCommandLine(options, args, log); 	
-    	
+    	try {
+    	  handleCommandLine(options, args, log);
+    	} catch (ParseException e) {
+    	  GOOD_OPTIONS = false;
+    	}
+
+    	if (!GOOD_OPTIONS) {
+        HelpFormatter formatter = new HelpFormatter();
+        formatter.printHelp( "wordinator", options, true );    	  
+    	}
     }
 
 	/**
