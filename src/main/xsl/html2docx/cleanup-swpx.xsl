@@ -43,7 +43,7 @@
     
     <xsl:message>- [WARN] wp:p found in wp:p: <xsl:sequence select="."/></xsl:message>
     
-    <xsl:apply-templates mode="#current" select="@*, node()">
+    <xsl:apply-templates mode="#current" select="node()">
       <xsl:with-param name="doDebug" as="xs:boolean" tunnel="yes" select="$doDebug"/>
     </xsl:apply-templates>
   </xsl:template>
