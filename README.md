@@ -70,7 +70,65 @@ Unzip the release package into a convenient location. The release includes the W
 
 You need to be able run the `java` command using Java 8 or newer.
 
-### Running the Wordinator
+If you have ant installed you can run the Wordinator using the `build.xml` script in the root of the distributaion package (`src/main/ant/build.xml` in the project source).
+
+### Running the Wordinator With Ant
+
+The `build.xml` file in the distribution provides two targets: `html2docx` and `ditahtml2docx`. The default target is `ditahtml2docx`.
+
+If you just run the `ant` command from the Wordinator distribution directory it will run the `ditahtml2docx` target against the sample HTML file included in the distribution:
+
+```
+c:\projects\wordinator> ant
+Buildfile: /Users/ekimber/workspace/wordinator/dist/wordinator/build.xml
+
+init:
+
+ditahtml2docx:
+     [java] + 2019-03-07 22:14:54,322 [INFO ] Input document or directory='/Users/ekimber/workspace/wordinator/dist/wordinator/html/sample_web_page.html'
+     [java] + 2019-03-07 22:14:54,324 [INFO ] Output directory           ='/Users/ekimber/workspace/wordinator/dist/wordinator/out'
+     [java] + 2019-03-07 22:14:54,324 [INFO ] DOTX template              ='/Users/ekimber/workspace/wordinator/dist/wordinator/docx/Test_Template.dotx'
+     [java] + 2019-03-07 22:14:54,324 [INFO ] XSLT template              ='/Users/ekimber/workspace/wordinator/dist/wordinator/xsl/ditahtml2docx/ditahtml2docx.xsl'
+     [java] + 2019-03-07 22:14:54,325 [INFO ] Chunk level                ='root'
+...
+    [java] + 2019-03-07 22:14:55,759 [INFO ] Generating DOCX file "/Users/ekimber/workspace/wordinator/dist/wordinator/out/sample_web_page.docx"
+     [java] + 2019-03-07 22:14:56,249 [INFO ] Transform applied.
+
+BUILD SUCCESSFUL
+Total time: 4 seconds
+```
+
+Edit the `build.xml` file to see the properties you can set to specify your own values for the command-line parameters.
+
+You can create a file named `build.properties` in the same directory as the `build.xml` file to set properties statically or you can specify them using `-D` parameters to the `ant` command:
+
+```
+c:\projects\wordinator> ant -Dditahtml2docx.dotx=myTemplate.dotx
+```
+
+### Running the Wordinator From OxygenXML
+
+You can set up an Oxygen Ant transformation scenario and apply it against HTML files to generate DOCX files from them.
+
+To set up a transformation scenario follow these steps:
+
+1. Open an HTML file in OxygenXML
+1. Open the Configure Transformation Scenarios dialog
+1. Select "New" and then "Ant transformation"
+1. Give the scenario a meaningful title, e.g. "DITA HTML to DOCX"
+1. In the "Build file" field put the path and name of the `build.xml` file. Take the defaults for the other fields in this tab.
+1. Switch to the "Parameters" tab and add the following parameters:
+   * input.html: `${cfd}/${cfne}`
+   * output.dir: `${cfd}/out`
+   * ditahtml.dotx: Path to your DOTX file
+   * ditahtml.xsl: Path to your XSLT (if you have one, otherwise omit)
+1. Switch to the "Output" table and set the Output field to `${cfd}/out/${cfn}.docx`. Make sure that "Open in system application" is selected.
+
+You omit any of the parameters that you have set using a `build.properties` file.
+
+You should now be able to run the scenario against any HTML file and have the resulting DOCX file open in Microsoft Word.
+
+### Running the Wordinator From The Command Line
 
 1. Open a command window and navigate to the directory you unzipped the Wordinator package into:
 
