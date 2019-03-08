@@ -27,8 +27,36 @@
   
   
   <xsl:variable name="classToStyleNameMap" as="map(xs:string, xs:string)">
+    <!-- Mapping of DITA element types and generated classes to likely 
+         style names.
+         
+         These styles need to exist in the Word template to actually have
+         an effect.
+      -->
     <xsl:map>
-      <xsl:map-entry key="'p1'" select="'Paragraph 1'"/>
+      <xsl:map-entry key="'b'" select="'bold'"/>
+      <xsl:map-entry key="'cite'" select="'italic'"/>
+      <xsl:map-entry key="'cmd'" select="'cmd'"/>
+      <xsl:map-entry key="'cmdname'" select="'cmdname'"/>
+      <xsl:map-entry key="'codeblock'" select="'Codeblock'"/>
+      <xsl:map-entry key="'codeph'" select="'codeph'"/>
+      <xsl:map-entry key="'dd'" select="'dd'"/>
+      <xsl:map-entry key="'dlterm'" select="'normal'"/>
+      <xsl:map-entry key="'filepath'" select="'filepath'"/>
+      <xsl:map-entry key="'i'" select="'italic'"/>
+      <xsl:map-entry key="'mainbooktitle'" select="'Title'"/>
+      <xsl:map-entry key="'menucascade'" select="'menucascade'"/>
+      <xsl:map-entry key="'option'" select="'option'"/>
+      <xsl:map-entry key="'p'" select="'normal'"/>
+      <xsl:map-entry key="'parameterentity'" select="'parameterentity'"/>
+      <xsl:map-entry key="'parmname'" select="'parmname'"/>
+      <xsl:map-entry key="'shortdesc'" select="'normal'"/>
+      <xsl:map-entry key="'term'" select="'term'"/>
+      <xsl:map-entry key="'uicontrol'" select="'uicontrol'"/>
+      <xsl:map-entry key="'varname'" select="'varname'"/>
+      <xsl:map-entry key="'xmlatt'" select="'xmlatt'"/>
+      <xsl:map-entry key="'xmlelement'" select="'xmlelement'"/>
+      <xsl:map-entry key="'xmlnsname'" select="'xmlnsname'"/>
     </xsl:map>
   </xsl:variable>
     

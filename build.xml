@@ -41,6 +41,9 @@
         <include name="xsl/**/*"/>
         <include name="doctypes/**/*"/>
       </fileset>
+      <fileset dir="${src.dir}/ant">
+        <include name="**/*"/>
+      </fileset>
       <fileset dir="${basedir}">
         <include name="README.md"/>
         <include name="LICENSE"/>
