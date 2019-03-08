@@ -124,7 +124,7 @@ To set up a transformation scenario follow these steps:
    * ditahtml.xsl: Path to your XSLT (if you have one, otherwise omit)
 1. Switch to the "Output" tab and set the Output field to `${cfd}/out/${cfn}.docx`. Make sure that "Open in system application" is selected.
 
-You omit any of the parameters that you have set using a `build.properties` file.
+You can omit any of the parameters that you have set using a `build.properties` file.
 
 You should now be able to run the scenario against any HTML file and have the resulting DOCX file open in Microsoft Word.
 
