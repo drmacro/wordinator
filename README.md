@@ -122,7 +122,7 @@ To set up a transformation scenario follow these steps:
    * output.dir: `${cfd}/out`
    * ditahtml.dotx: Path to your DOTX file
    * ditahtml.xsl: Path to your XSLT (if you have one, otherwise omit)
-1. Switch to the "Output" table and set the Output field to `${cfd}/out/${cfn}.docx`. Make sure that "Open in system application" is selected.
+1. Switch to the "Output" tab and set the Output field to `${cfd}/out/${cfn}.docx`. Make sure that "Open in system application" is selected.
 
 You omit any of the parameters that you have set using a `build.properties` file.
 
