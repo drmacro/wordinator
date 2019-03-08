@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="." name="wordinator" default="package-release">
+  
+  <!-- This Ant script just manages creating the release package.
+       It's a shortcut in advance of creating a proper Maven
+       version of this.
+       
+       It assumes you've already run mvn install to generate
+       the jar files.
+    -->
+  
+  <property file="version.properties"/>
+  <property name="target.dir" value="${basedir}/target"/>
+  <property name="src.dir" value="${basedir}/src/main"/>
+  <property name="resources.dir" value="${basedir}/src/test/resources"/>
+  <property name="dist.dir" value="${basedir}/dist"/>
+  <property name="package.name" value="wordinator"/>
+  <property name="package.dir" value="${dist.dir}/${package.name}"/>
+  
+  <target name="init">
+    <tstamp/>
+    <buildnumber/>
+  </target>
+  
+  <target name="dist" depends="init" >
+    <delete dir="${dist.dir}" failonerror="false"/>
+    <mkdir dir="${package.dir}"/>
+    <copy todir="${package.dir}">
+      <fileset dir="${target.dir}">
+        <include name="wordinator-*-jar-with-dependencies.jar"/>
+      </fileset>
+      <regexpmapper from="^(.+)\-[\d]+\..+\.jar$" to="\1.jar"/>
+    </copy>
+    <copy todir="${package.dir}">
+      <fileset dir="${resources.dir}">
+        <include name="docx/**/*"/>
+        <include name="html/**/*"/>
+        <exclude name="**/out/**"/>
+      </fileset>
+      <fileset dir="${src.dir}">
+        <include name="xsl/**/*"/>
+        <include name="doctypes/**/*"/>
+      </fileset>
+      <fileset dir="${src.dir}/ant">
+        <include name="**/*"/>
+      </fileset>
+      <fileset dir="${basedir}">
+        <include name="README.md"/>
+        <include name="LICENSE"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="package-release" depends="dist" description="Create a release package">
+    <zip file="${dist.dir}/${package.name}_${version}.zip">
+      <fileset dir="${package.dir}">
+        <include name="**/*"/>
+      </fileset>
+    </zip>
+  </target>
+  
+</project>

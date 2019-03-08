@@ -65,8 +65,8 @@
   
   <xsl:template mode="set-run-format-attributes" as="attribute()*" 
     match="
-    xhtml:dfn |
-    xhtml:i
+    xhtml:dfn | dfn |
+    xhtml:i | i
     ">
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
     
@@ -76,8 +76,8 @@
   
   <xsl:template mode="set-run-format-attributes" as="attribute()*" 
     match="
-    xhtml:dt |
-    xhtml:b
+    xhtml:dt | dt |
+    xhtml:b | b
     ">
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
 
@@ -91,7 +91,7 @@
   
   <xsl:template mode="set-run-format-attributes" as="attribute()*" 
     match="
-      xhtml:u
+      xhtml:u | u
     ">
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
     
@@ -103,7 +103,7 @@
     
   </xsl:template>
   
-  <xsl:template mode="set-run-format-attributes" match="xhtml:*[@style]" as="attribute()*" priority="-0.5">
+  <xsl:template mode="set-run-format-attributes" match="xhtml:*[@style] | *[@style]" as="attribute()*" priority="-0.5">
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
     
     <xsl:variable name="properties" as="xs:string*" select="tokenize(., ';')"/>
@@ -137,7 +137,7 @@
     
   </xsl:template>
   
-  <xsl:template mode="set-run-format-attributes" match="xhtml:*[@class]" as="attribute()*" priority="-0.8">
+  <xsl:template mode="set-run-format-attributes" match="xhtml:*[@class] | *[@class]" as="attribute()*" priority="-0.8">
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
     
     <xsl:if test="$doDebug">

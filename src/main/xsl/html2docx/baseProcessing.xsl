@@ -17,7 +17,7 @@
   <xsl:key name="elementsById" match="*[@id]" use="@id"/>
   
  
-  <xsl:template match="xhtml:html">
+  <xsl:template match="xhtml:html | html">
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
     
 <!--    <xsl:variable name="doDebug" as="xs:boolean" select="true()"/>-->
@@ -31,14 +31,16 @@
     </xsl:apply-templates>
   </xsl:template>
   
-  <xsl:template match="xhtml:head | 
+  <xsl:template match="xhtml:head | head | body/header |
                        xhtml:body/xhtml:header"
     >
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
     <!-- No direct output from head -->
   </xsl:template>
   
-  <xsl:template match="xhtml:section[local:is-chunk(.)] | xhtml:html[local:is-chunk(.)]" priority="10">
+  <xsl:template 
+    match="xhtml:section[local:is-chunk(.)] | section[local:is-chunk(.)] | 
+           xhtml:html[local:is-chunk(.)] | html[local:is-chunk(.)]" priority="10">
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
         
     <xsl:if test="$doDebug">
@@ -85,20 +87,20 @@
     </xsl:result-document>
   </xsl:template>
   
-  <xsl:template mode="make-body-content" match="xhtml:html">
+  <xsl:template mode="make-body-content" match="xhtml:html | html">
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
     
     <xsl:if test="$doDebug">
       <xsl:message>+ [DEBUG] make-body-content: Handling {name(..)}/{name(.)}</xsl:message>
     </xsl:if>
     
-    <xsl:apply-templates mode="#default" select="xhtml:body">
+    <xsl:apply-templates mode="#default" select="xhtml:body | body">
       <xsl:with-param name="doDebug" as="xs:boolean" tunnel="yes" select="$doDebug"/>
     </xsl:apply-templates>
     
   </xsl:template>
   
-  <xsl:template mode="make-body-content" match="xhtml:section">
+  <xsl:template mode="make-body-content" match="xhtml:section | section">
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
     
     <xsl:if test="$doDebug">
@@ -110,7 +112,7 @@
     </xsl:apply-templates>
   </xsl:template>
   
-  <xsl:template match="xhtml:*" priority="-1">
+  <xsl:template match="xhtml:* | *" priority="-1">
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
     
     <xsl:if test="$doDebug and false()">
@@ -123,7 +125,7 @@
     
   </xsl:template>
   
-  <xsl:template match="xhtml:a[empty(@href)]">
+  <xsl:template match="xhtml:a[empty(@href)] | a[empty(@href)]">
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
     
     <xsl:apply-templates>
@@ -132,12 +134,12 @@
     
   </xsl:template>
   
-  <xsl:template match="xhtml:hr">
+  <xsl:template match="xhtml:hr | hr">
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
     <!-- Ignore -->
   </xsl:template>
   
-  <xsl:template match="xhtml:a[@href]">
+  <xsl:template match="xhtml:a[@href] | a[@href]">
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
     
     <xsl:variable name="targetId" as="xs:string?" select="tokenize(@href, '#')[last()]"/>
@@ -149,12 +151,12 @@
     </wp:hyperlink>    
   </xsl:template>
   
-  <xsl:template match="xhtml:a[@class = ('footnoteref')]" mode="running-header">
+  <xsl:template match="xhtml:a[@class = ('footnoteref')] | a[@class = ('footnoteref')]" mode="running-header">
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
     <!-- Ignore -->
   </xsl:template>
   
-  <xsl:template match="xhtml:a[@class = ('footnoteref')]">
+  <xsl:template match="xhtml:a[@class = ('footnoteref')] | a[@class = ('footnoteref')]">
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
     
     <xsl:variable name="targetId" as="xs:string?" select="tokenize(@href, '#')[last()]"/>
@@ -167,12 +169,12 @@
     </xsl:apply-templates>
   </xsl:template> 
   
-  <xsl:template match="xhtml:aside" mode="#default running-header">
+  <xsl:template match="xhtml:aside | aside" mode="#default running-header">
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
     <!-- Ignore in default mode -->
   </xsl:template>
   
-  <xsl:template match="xhtml:aside" mode="make-footnote">
+  <xsl:template match="xhtml:aside | aside" mode="make-footnote">
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
     <wp:fn>
       <xsl:apply-templates>
@@ -181,7 +183,7 @@
     </wp:fn>
   </xsl:template>
     
-  <xsl:template match="xhtml:section/xhtml:header" mode="#default">
+  <xsl:template match="xhtml:section/xhtml:header | section/header" mode="#default">
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
 
     <wp:p>
@@ -195,7 +197,7 @@
     </wp:p>
   </xsl:template>
   
-  <xsl:template match="xhtml:section/xhtml:header" mode="running-header">
+  <xsl:template match="xhtml:section/xhtml:header | section/header" mode="running-header">
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
     
     <wp:p style="Header">
@@ -210,7 +212,7 @@
        
        ================================== -->
   
-  <xsl:template match="xhtml:h1 | xhtml:h2 | xhtml:h3 | xhtml:h4 | xhtml:h5 | xhtml:h6" >
+  <xsl:template match="xhtml:h1 | h1 | xhtml:h2 | h2 | xhtml:h3 | h3 | xhtml:h4 | h4 | xhtml:h5 | h5 | xhtml:h6 | h6" >
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
     
     <xsl:if test="$doDebug">
@@ -233,7 +235,13 @@
       xhtml:h3/text() | 
       xhtml:h4/text() | 
       xhtml:h5/text() | 
-      xhtml:h6/text()
+      xhtml:h6/text() |
+      h1/text() | 
+      h2/text() | 
+      h3/text() | 
+      h4/text() | 
+      h5/text() | 
+      h6/text()
       ">
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
 
@@ -253,7 +261,7 @@
        Figures and images
        ========================== -->
   
-  <xsl:template match="xhtml:figure">
+  <xsl:template match="xhtml:figure | figure">
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
     
     <xsl:apply-templates>
@@ -261,7 +269,7 @@
     </xsl:apply-templates>      
   </xsl:template>
   
-  <xsl:template match="xhtml:img">
+  <xsl:template match="xhtml:img | img">
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
 
     <xsl:variable name="src" as="xs:string" select="@src"/>
@@ -286,7 +294,7 @@
     
   </xsl:template>
   
-  <xsl:template match="xhtml:body/xhtml:img" priority="10">
+  <xsl:template match="xhtml:body/xhtml:img | body/img" priority="10">
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
 
     <wp:p>
@@ -296,7 +304,7 @@
     </wp:p>
   </xsl:template>
   
-  <xsl:template match="xhtml:img/@width | xhtml:img/@height">
+  <xsl:template match="xhtml:img/@width | xhtml:img/@height | img/@width | img/@height">
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
     
     <!-- Change unitless values to points -->
@@ -326,7 +334,7 @@
   <!-- ==========================
        Tables
        ========================== -->
-  <xsl:template match="xhtml:table | xhtml:tbody | xhtml:thead | xhtml:tr | xhtml:col">
+  <xsl:template match="xhtml:table | table | xhtml:tbody | tbody | xhtml:thead | thead | xhtml:tr | tr | xhtml:col | col">
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
 
     <!-- FIXME: For table rows, handle vertical spanning, which means examining preceding rows to look for
@@ -341,7 +349,7 @@
     
   </xsl:template>
   
-  <xsl:template match="xhtml:td | xhtml:th">
+  <xsl:template match="xhtml:td | td | xhtml:th | th">
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
     <xsl:element name="{name(.)}" namespace="urn:ns:wordinator:simplewpml">
       <xsl:call-template name="set-cell-attributes">
@@ -353,7 +361,7 @@
     </xsl:element>
   </xsl:template>
   
-  <xsl:template match="xhtml:colgroup">
+  <xsl:template match="xhtml:colgroup | colgroup">
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
     <wp:cols>
       <xsl:apply-templates>
@@ -362,7 +370,7 @@
     </wp:cols>
   </xsl:template>
   
-  <xsl:template match="xhtml:td[empty(xhtml:p)] | xhtml:th[empty(xhtml:p)]" priority="10">
+  <xsl:template match="xhtml:td[empty(xhtml:p | p)] | td[empty(xhtml:p | p)] | xhtml:th[empty(xhtml:p | p)] | th[empty(xhtml:p | p)]" priority="10">
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
     
     <wp:td>
@@ -383,7 +391,7 @@
     </wp:td>
   </xsl:template>
   
-  <xsl:template match="xhtml:td[empty(*)] | xhtml:th[empty(*)]" priority="15">
+  <xsl:template match="xhtml:td[empty(*)] | td[empty(*)] | xhtml:th[empty(*)] | th[empty(*)]" priority="15">
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
     <wp:td>
       <xsl:call-template name="set-cell-attributes">
@@ -409,7 +417,7 @@
     <xsl:if test="$doDebug">
       <xsl:message>+ [DEBUG] set-cell-attributes: Applying templates in mode set-cell-attributes to ancestor table...</xsl:message>
     </xsl:if>
-    <xsl:apply-templates select="ancestor::xhtml:table[1]" mode="set-cell-attributes">
+    <xsl:apply-templates select="ancestor::xhtml:table[1] | ancestor::table[1]" mode="set-cell-attributes">
       <xsl:with-param name="doDebug" as="xs:boolean" tunnel="yes" select="$doDebug"/>
     </xsl:apply-templates>
     <xsl:if test="$doDebug">
@@ -427,7 +435,7 @@
     
   </xsl:template>
   
-  <xsl:template mode="set-cell-attributes" match="xhtml:table" name="set-cell-attributes-from-class">
+  <xsl:template mode="set-cell-attributes" match="xhtml:table | table" name="set-cell-attributes-from-class">
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
     
     <!-- Default for all table cells is centered text (see Tables_Common.css) -->
@@ -476,10 +484,10 @@
        ========================== -->
   
   <xsl:template match="
-    xhtml:p | 
-    xhtml:dt | 
-    xhtml:dd[empty(xhtml:p)] | 
-    xhtml:pre">
+    xhtml:p | p | 
+    xhtml:dt | dt | 
+    xhtml:dd[empty(xhtml:p)] | dd[empty(p)] | 
+    xhtml:pre | pre">
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
 
     <wp:p>
@@ -499,7 +507,7 @@
   </xsl:template>
   
   <xsl:template priority="10"
-    match="xhtml:div/text()"
+    match="xhtml:div/text() | div/text()"
   >
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
     
@@ -528,8 +536,20 @@
       xhtml:i/text() |
       xhtml:b/text() |
       xhtml:u/text() |
-      xhtml:tt/text()
-    ">
+      xhtml:tt/text() |
+      span/text() | 
+      dfn/text() |
+      a//text() |
+      pre//text() |
+      li//text() |
+      dt//text() |
+      dd//text() |
+      code/text() |
+      i/text() |
+      b/text() |
+      u/text() |
+      tt/text()
+      ">
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
     
     <wp:run>
@@ -590,7 +610,7 @@
        Lists
        ========================== -->
   
-  <xsl:template match="xhtml:li[empty(xhtml:p)]">
+  <xsl:template match="xhtml:li[empty(xhtml:p)] | li[empty(p)]">
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
     
     
@@ -598,12 +618,12 @@
       <xsl:call-template name="set-style">
         <xsl:with-param name="doDebug" as="xs:boolean" tunnel="yes" select="$doDebug"/>
       </xsl:call-template>
-      <xsl:apply-templates select="node() except (xhtml:ul, xhtml:ol)">
+      <xsl:apply-templates select="node() except (xhtml:ul, xhtml:ol, ul, ol)">
         <xsl:with-param name="doDebug" as="xs:boolean" tunnel="yes" select="$doDebug"/>
       </xsl:apply-templates>
     </wp:p>
     
-    <xsl:apply-templates select="xhtml:ul | xhtml:ol">
+    <xsl:apply-templates select="xhtml:ul | xhtml:ol | ul | ol">
       <xsl:with-param name="doDebug" as="xs:boolean" tunnel="yes" select="$doDebug"/>
     </xsl:apply-templates>
     
@@ -614,14 +634,14 @@
        
        FIXME: Provide a more general way of handing a mix of text nodes and block nodes.
     -->
-  <xsl:template match="xhtml:li[xhtml:p]">
+  <xsl:template match="xhtml:li[xhtml:p] | li[p]">
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
     
-    <xsl:apply-templates select="* except (xhtml:ul, xhtml:ol)">
+    <xsl:apply-templates select="* except (xhtml:ul, xhtml:ol | ul | ol)">
       <xsl:with-param name="doDebug" as="xs:boolean" tunnel="yes" select="$doDebug"/>
     </xsl:apply-templates>
     
-    <xsl:apply-templates select="xhtml:ul | xhtml:ol">
+    <xsl:apply-templates select="xhtml:ul | xhtml:ol | ul | ol">
       <xsl:with-param name="doDebug" as="xs:boolean" tunnel="yes" select="$doDebug"/>
     </xsl:apply-templates>
     
@@ -631,7 +651,7 @@
        Inline things
        ========================== -->
   
-  <xsl:template match="xhtml:br">
+  <xsl:template match="xhtml:br | br">
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
     <xsl:if test="$doDebug">
       <xsl:message>+ [DEBUG] xhtml:br: {name(../..)}/{name(..)}/{name(.)}</xsl:message>      
@@ -640,7 +660,7 @@
     <wp:run><wp:break type="line"/></wp:run>
   </xsl:template>
   
-  <xsl:template match="xhtml:br[not(ancestor::xhtml:p|ancestor::xhtml:dd)]" priority="10">
+  <xsl:template match="xhtml:br[not(ancestor::xhtml:p|ancestor::xhtml:dd)] | br[not(ancestor::p|ancestor::dd)]" priority="10">
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
     <wp:p>
       <xsl:next-match>
@@ -653,7 +673,7 @@
        Fallback templates
        ========================== -->
   
-  <xsl:template match="xhtml:p//text() | xhtml:td//text()" priority="-0.5">
+  <xsl:template match="xhtml:p//text() | xhtml:td//text() | p//text() | td//text()" priority="-0.5">
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
     
     <xsl:if test="$doDebug">
@@ -737,7 +757,7 @@
        modes
        ============================== -->
   
-  <xsl:template mode="text-before text-after" match="xhtml:p" priority="20">
+  <xsl:template mode="text-before text-after" match="xhtml:p | p" priority="20">
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
     
     <xsl:if test="$doDebug">
@@ -848,7 +868,9 @@
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
 
     <xsl:variable name="chunknum" as="xs:integer"
-      select="count(./preceding::xhtml:section[local:is-chunk(.)] |
+      select="count(
+      ./preceding::xhtml:section[local:is-chunk(.)] |
+      ./preceding::section[local:is-chunk(.)] |
       ./ancestor-or-self::*[local:is-chunk(.)])"
     />
     <xsl:variable name="result" as="xs:string"

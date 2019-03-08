@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-model href="../simplewpml.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<?xml-stylesheet type="text/css" href="../css/simplewpml.css" title="Simple WP View" alternate="no"?>
 <document xmlns="urn:ns:wordinator:simplewpml">
   <body>
     <p style="Head1">
