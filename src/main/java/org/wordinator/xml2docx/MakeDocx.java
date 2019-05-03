@@ -267,7 +267,7 @@ public class MakeDocx
 					return;
 				}
 			}
-	    	DocxGenerator generator = new DocxGenerator(inFile, effectiveOutFile, templateDoc);
+	    DocxGenerator generator = new DocxGenerator(inFile, effectiveOutFile, templateDoc);
 			XmlObject xml = XmlObject.Factory.parse(inFile);
 
 			generator.generate(xml);

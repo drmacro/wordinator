@@ -1135,6 +1135,84 @@
           </a:documentation>
         </attribute>
       </optional>
+      <optional>
+        <attribute name="rowsep">
+          <a:documentation>
+            <p>Indicates whether or not there are rules between rows. 1=show rule, 0=no rule.</p>
+          </a:documentation>
+          <choice>
+            <value>1</value>
+            <value>0</value>
+          </choice>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="colsep">
+          <a:documentation>
+            <p>Indicates whether or not there are rules between columns. 1=show rule, 0=no rule.</p>
+          </a:documentation>
+          <choice>
+            <value>1</value>
+            <value>0</value>
+          </choice>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="borderstyle">
+          <a:documentation>
+            <p>Specifies the border style.</p>
+          </a:documentation>
+          <ref name="borderstyles"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="borderstylebottom">
+          <a:documentation>
+            <p>Specifies the bottom border style.</p>
+          </a:documentation>
+          <ref name="borderstyles"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="borderstyletop">
+          <a:documentation>
+            <p>Specifies the top border style.</p>
+          </a:documentation>
+          <ref name="borderstyles"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="borderstyleleft">
+          <a:documentation>
+            <p>Specifies the left border style.</p>
+          </a:documentation>
+          <ref name="borderstyles"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="borderstyleright">
+          <a:documentation>
+            <p>Specifies the right border style.</p>
+          </a:documentation>
+          <ref name="borderstyles"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="borderstyleinside">
+          <a:documentation>
+            <p>Specifies the inside border style.</p>
+          </a:documentation>
+          <ref name="borderstyles"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="borderstyleoutside">
+          <a:documentation>
+            <p>Specifies the outside border style.</p>
+          </a:documentation>
+          <ref name="borderstyles"/>
+        </attribute>
+      </optional>
     </element>
   </define>
   
@@ -1178,5 +1256,64 @@
     <data type="string">
       <param name="pattern">[0-9A-F]{6}|auto</param>
     </data>
+  </define>
+  
+  <define name="borderstyles">
+    <a:documentation>
+      <p>Border style values. See ST_Border (Border Styles) in the OOXML spec.</p>
+    </a:documentation>
+    <choice>
+      <!-- This is not a complete list. See the docs -->
+      <value>basicBlackDashes</value>
+      <value>basicBlackDots</value>
+      <value>basicBlackSquares</value>
+      <value>basicThinLines</value>
+      <value>basicWhiteDashes</value>
+      <value>basicWhiteDots</value>
+      <value>basicWhiteSquares</value>
+      <value>basicWideInline</value>
+      <value>basicWideMidline</value>
+      <value>basicWideOutline</value>
+      <value>bats</value>
+      <value>birds</value>
+      <value>birdsFlight</value>
+      <value>cabins</value>
+      <value>cakeSlice</value>
+      <value>candyCorn</value>
+      <value>celticKnotwork</value>
+      <value>certificateBanner</value>
+      <value>chainLink</value>
+      <value>champagneBottle</value>
+      <value>checkedBarBlack</value>
+      <value>checkedBarColor</value>
+      <value>checkered</value>
+      <value>christmasTree</value>
+      <value>circlesLines</value>
+      <value>circlesRectangles</value>
+      <value>classicalWave</value>
+      <value>dashed</value>
+      <value>dashSmallGap</value>
+      <value>dotDash</value>
+      <value>dotDotDash</value>
+      <value>dotted</value>
+      <value>double</value>
+      <value>nil</value>
+      <value>none</value>
+      <value>single</value>
+      <value>thick</value>
+      <value>thickThinLargeGap</value>
+      <value>thickThinMediumGap</value>
+      <value>thickThinSmallGap</value>
+      <value>thinThickLargeGap</value>
+      <value>thinThickMediumGap</value>
+      <value>thinThickSmallGap</value>
+      <value>thinThickThinLargeGap</value>
+      <value>thinThickThinMediumGap</value>
+      <value>thinThickThinSmallGap</value>
+      <value>threeDEmboss</value>
+      <value>threeDEngrave</value>
+      <value>triple</value>
+      <value>wave</value>
+    </choice>
   </define>
 </grammar>

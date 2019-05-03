@@ -39,6 +39,7 @@ import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.apache.poi.xwpf.usermodel.XWPFStyle;
 import org.apache.poi.xwpf.usermodel.XWPFStyles;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
+import org.apache.poi.xwpf.usermodel.XWPFTable.XWPFBorderType;
 import org.apache.poi.xwpf.usermodel.XWPFTableCell;
 import org.apache.poi.xwpf.usermodel.XWPFTableCell.XWPFVertAlign;
 import org.apache.poi.xwpf.usermodel.XWPFTableRow;
@@ -47,6 +48,7 @@ import org.apache.xmlbeans.XmlCursor.TokenType;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBookmark;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBorder;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDecimalNumber;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTHyperlink;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTMarkupRange;
@@ -55,8 +57,10 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTRPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSimpleField;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTStyle;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTcBorders;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTcPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTVMerge;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.STBorder;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STMerge;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STOnOff;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STStyleType;
@@ -875,12 +879,42 @@ public class DocxGenerator {
 		
 		String widthValue = cursor.getAttributeText(DocxConstants.QNAME_WIDTH_ATT);
 		if (null != widthValue) {
-			try {
-				table.setWidth(widthValue);
-			} catch (Exception e) {
-				log.warn("makeTable(): " + e.getClass().getSimpleName() + " - " + e.getMessage());
-			}
+		  if (widthValue.endsWith("%") || widthValue.equals("auto")) {
+		    table.setWidth(widthValue);
+		  } else {
+  			try {
+  			  int twips = Measurement.toTwips(widthValue, getDotsPerInch());
+  				table.setWidth(twips);
+  			} catch (Exception e) {
+  				log.warn("makeTable(): " + e.getClass().getSimpleName() + " - " + e.getMessage());
+  			}
+		  }
 		}
+		
+		Map<QName, String> defaults = new HashMap<QName, String>();
+		String rowsep = cursor.getAttributeText(DocxConstants.QNAME_ROWSEP_ATT);
+		if (rowsep != null) {
+		  defaults.put(DocxConstants.QNAME_ROWSEP_ATT, rowsep);
+		}
+    String colsep = cursor.getAttributeText(DocxConstants.QNAME_COLSEP_ATT);
+    if (colsep != null) {
+      defaults.put(DocxConstants.QNAME_COLSEP_ATT, colsep);
+    }
+    
+    int borderWidth = 8; // 8 8ths of a point, i.e. 1pt
+    int borderSpace = 8; // ???
+    String borderColor = "auto";
+    
+    if (rowsep != null || colsep != null) {
+      if (rowsep != null) {
+        XWPFBorderType borderType = (rowsep.equals("1") ? XWPFBorderType.SINGLE : XWPFBorderType.NONE);
+        table.setInsideHBorder(borderType, borderWidth, borderSpace, borderColor);
+      }
+      if (colsep != null) {
+        XWPFBorderType borderType = (rowsep.equals("1") ? XWPFBorderType.SINGLE : XWPFBorderType.NONE);
+        table.setInsideVBorder(borderType, borderWidth, borderSpace, borderColor);
+      }
+    }
 
 		// Not setting a grid on the tables because it only uses absolute 
 		// measurements. 
@@ -918,7 +952,7 @@ public class DocxGenerator {
 				RowSpanManager rowSpanManager = new RowSpanManager();
 				do {
 					// Process the rows
-					XWPFTableRow row = makeTableRow(table, cursor.getObject(), colDefs, rowSpanManager);
+					XWPFTableRow row = makeTableRow(table, cursor.getObject(), colDefs, rowSpanManager, defaults);
 					row.setRepeatHeader(true);
 				} while(cursor.toNextSibling());
 			}
@@ -932,7 +966,7 @@ public class DocxGenerator {
 				RowSpanManager rowSpanManager = new RowSpanManager();
 				do {
 					// Process the rows
-					XWPFTableRow row = makeTableRow(table, cursor.getObject(), colDefs, rowSpanManager);
+					XWPFTableRow row = makeTableRow(table, cursor.getObject(), colDefs, rowSpanManager, defaults);
 					// Adjust row as needed.
 					row.getCtRow(); // For setting low-level properties.
 				} while(cursor.toNextSibling());
@@ -947,6 +981,7 @@ public class DocxGenerator {
 	 * @param xml The <row> element to add to the table
 	 * @param colDefs Column definitions
 	 * @param rowSpanManager Manages setting vertical spanning across multiple rows.
+	 * @param defaults Defaults inherited from the table (or elsewhere)
 	 * @return Constructed row object
 	 * @throws DocxGenerationException 
 	 */
@@ -954,7 +989,8 @@ public class DocxGenerator {
 			XWPFTable table, 
 			XmlObject xml, 
 			TableColumnDefinitions colDefs, 
-			RowSpanManager rowSpanManager) 
+			RowSpanManager rowSpanManager, 
+			Map<QName, String> defaults) 
 					throws DocxGenerationException {
 		XmlCursor cursor = xml.newCursor();
 		XWPFTableRow row = table.createRow();
@@ -979,6 +1015,47 @@ public class DocxGenerator {
 			String colspan = cursor.getAttributeText(DocxConstants.QNAME_COLSPAN_ATT);
 			String rowspan = cursor.getAttributeText(DocxConstants.QNAME_ROWSPAN_ATT);
 			
+			String rowsep = cursor.getAttributeText(DocxConstants.QNAME_ROWSEP_ATT);
+			if (rowsep == null) {
+			  rowsep = defaults.get(DocxConstants.QNAME_ROWSEP_ATT);
+			}
+      String colsep = cursor.getAttributeText(DocxConstants.QNAME_COLSEP_ATT);
+      if (colsep == null) {
+        colsep = defaults.get(DocxConstants.QNAME_COLSEP_ATT);
+      }
+      
+      String borderStyleValue = cursor.getAttributeText(DocxConstants.QNAME_BORDER_STYLE_ATT);
+      STBorder.Enum borderStyle = STBorder.SINGLE; // Default
+      if (borderStyleValue != null) {
+        borderStyle = STBorder.Enum.forString(borderStyleValue);
+      }
+      
+      // Rowsep and colsep values are "0" (no border) and "1" (border).
+      // FIXME: Need to handle edges of cells that are leftmost or
+      // rightmost relative to table's border setting.
+      CTTcBorders borders = ctTcPr.addNewTcBorders();
+      if (rowsep != null) {
+        CTBorder bottom = borders.addNewBottom();
+        CTBorder top = borders.addNewTop();
+        if (rowsep.equals("1")) {
+          bottom.setVal(borderStyle);
+          top.setVal(borderStyle);
+        } else {
+          bottom.setVal(STBorder.NONE);
+          top.setVal(STBorder.NONE);
+        }
+      }
+      if (colsep != null) {
+        CTBorder left = borders.addNewLeft();
+        CTBorder right = borders.addNewLeft();
+        if (colsep.equals("1")) {
+          left.setVal(borderStyle);
+          right.setVal(borderStyle);
+        } else {
+          left.setVal(STBorder.NONE);
+          right.setVal(STBorder.NONE);
+        }
+      }
 			
 			try {
 				String widthValue = cursor.getAttributeText(DocxConstants.QNAME_WIDTH_ATT);

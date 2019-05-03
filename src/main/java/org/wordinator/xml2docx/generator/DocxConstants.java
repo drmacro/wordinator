@@ -18,6 +18,7 @@ public final class DocxConstants {
 	public static final QName QNAME_INSTR_ATT = new QName(OO_WPML_NS, "instr");
 	public static final QName QNAME_ALIGN_ATT = new QName("", "align");
 	public static final QName QNAME_BOLD_ATT = new QName("", "bold");
+  public static final QName QNAME_BORDER_STYLE_ATT = new QName("", "borderstyle");
 	public static final QName QNAME_BOTTOM_ATT = new QName("", "bottom");
 	public static final QName QNAME_CALCULATEDWIDTH_ATT = new QName("", "calculatedWidth");
 	public static final QName QNAME_CAPS_ATT = new QName("", "caps");
