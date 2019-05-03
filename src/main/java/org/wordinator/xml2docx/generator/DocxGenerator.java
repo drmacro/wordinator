@@ -1015,47 +1015,7 @@ public class DocxGenerator {
 			String colspan = cursor.getAttributeText(DocxConstants.QNAME_COLSPAN_ATT);
 			String rowspan = cursor.getAttributeText(DocxConstants.QNAME_ROWSPAN_ATT);
 			
-			String rowsep = cursor.getAttributeText(DocxConstants.QNAME_ROWSEP_ATT);
-			if (rowsep == null) {
-			  rowsep = defaults.get(DocxConstants.QNAME_ROWSEP_ATT);
-			}
-      String colsep = cursor.getAttributeText(DocxConstants.QNAME_COLSEP_ATT);
-      if (colsep == null) {
-        colsep = defaults.get(DocxConstants.QNAME_COLSEP_ATT);
-      }
-      
-      String borderStyleValue = cursor.getAttributeText(DocxConstants.QNAME_BORDER_STYLE_ATT);
-      STBorder.Enum borderStyle = STBorder.SINGLE; // Default
-      if (borderStyleValue != null) {
-        borderStyle = STBorder.Enum.forString(borderStyleValue);
-      }
-      
-      // Rowsep and colsep values are "0" (no border) and "1" (border).
-      // FIXME: Need to handle edges of cells that are leftmost or
-      // rightmost relative to table's border setting.
-      CTTcBorders borders = ctTcPr.addNewTcBorders();
-      if (rowsep != null) {
-        CTBorder bottom = borders.addNewBottom();
-        CTBorder top = borders.addNewTop();
-        if (rowsep.equals("1")) {
-          bottom.setVal(borderStyle);
-          top.setVal(borderStyle);
-        } else {
-          bottom.setVal(STBorder.NONE);
-          top.setVal(STBorder.NONE);
-        }
-      }
-      if (colsep != null) {
-        CTBorder left = borders.addNewLeft();
-        CTBorder right = borders.addNewLeft();
-        if (colsep.equals("1")) {
-          left.setVal(borderStyle);
-          right.setVal(borderStyle);
-        } else {
-          left.setVal(STBorder.NONE);
-          right.setVal(STBorder.NONE);
-        }
-      }
+			setCellBorders(defaults, cursor, ctTcPr);            
 			
 			try {
 				String widthValue = cursor.getAttributeText(DocxConstants.QNAME_WIDTH_ATT);
@@ -1124,6 +1084,79 @@ public class DocxGenerator {
 		} while(cursor.toNextSibling());
 		return row;
 	}
+	
+	
+	/**
+	 * Set the borders on the cells.
+	 * @param defaults Table-level defaults
+	 * @param cursor cursor for the table cell markup
+	 * @param ctTcPr Table cell style properties
+	 */
+  private void setCellBorders(Map<QName, String> defaults, XmlCursor cursor, CTTcPr ctTcPr) {
+    String rowsep = cursor.getAttributeText(DocxConstants.QNAME_ROWSEP_ATT);
+    if (rowsep == null) {
+      rowsep = defaults.get(DocxConstants.QNAME_ROWSEP_ATT);
+    }
+    String colsep = cursor.getAttributeText(DocxConstants.QNAME_COLSEP_ATT);
+    if (colsep == null) {
+      colsep = defaults.get(DocxConstants.QNAME_COLSEP_ATT);
+    }
+    
+    String borderStyleValue = cursor.getAttributeText(DocxConstants.QNAME_BORDER_STYLE_ATT);
+    STBorder.Enum borderStyle = STBorder.SINGLE; // Default
+    CTTcBorders borders = ctTcPr.addNewTcBorders();
+    CTBorder bottom = borders.addNewBottom();
+    CTBorder top = borders.addNewTop();
+    CTBorder left = borders.addNewLeft();
+    CTBorder right = borders.addNewRight();
+
+    if (borderStyleValue != null) {
+      borderStyle = STBorder.Enum.forString(borderStyleValue);
+    }
+    
+    // Rowsep and colsep values are "0" (no border) and "1" (border).
+    if (rowsep != null) {
+      if (rowsep.equals("1")) {
+        bottom.setVal(borderStyle);
+        top.setVal(borderStyle);
+      } else {
+        bottom.setVal(STBorder.NONE);
+        top.setVal(STBorder.NONE);
+      }
+    }
+    if (colsep != null) {
+      if (colsep.equals("1")) {
+        left.setVal(borderStyle);
+        right.setVal(borderStyle);
+      } else {
+        left.setVal(STBorder.NONE);
+        right.setVal(STBorder.NONE);
+      }
+    }
+    
+    // Borders can be set per edge as well:
+    
+    String borderStyleBottom = cursor.getAttributeText(DocxConstants.QNAME_BORDER_STYLE_BOTTOM_ATT);
+    if (borderStyleBottom != null) {
+      borderStyle = STBorder.Enum.forString(borderStyleBottom);
+      bottom.setVal(borderStyle);
+    }
+    String borderStyleTop = cursor.getAttributeText(DocxConstants.QNAME_BORDER_STYLE_TOP_ATT);
+    if (borderStyleTop != null) {
+      borderStyle = STBorder.Enum.forString(borderStyleTop);
+      top.setVal(borderStyle);
+    }
+    String borderStyleLeft = cursor.getAttributeText(DocxConstants.QNAME_BORDER_STYLE_LEFT_ATT);
+    if (borderStyleLeft != null) {
+      borderStyle = STBorder.Enum.forString(borderStyleLeft);
+      left.setVal(borderStyle);
+    }
+    String borderStyleRight = cursor.getAttributeText(DocxConstants.QNAME_BORDER_STYLE_RIGHT_ATT);
+    if (borderStyleRight != null) {
+      borderStyle = STBorder.Enum.forString(borderStyleRight);
+      right.setVal(borderStyle);
+    }
+  }
 
 	private void setupStyles(XWPFDocument doc, XWPFDocument templateDoc) throws DocxGenerationException {
 		// Load template. For now this is hard coded but will need to be

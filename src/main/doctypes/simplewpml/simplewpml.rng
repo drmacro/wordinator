@@ -1197,22 +1197,6 @@
           <ref name="borderstyles"/>
         </attribute>
       </optional>
-      <optional>
-        <attribute name="borderstyleinside">
-          <a:documentation>
-            <p>Specifies the inside border style.</p>
-          </a:documentation>
-          <ref name="borderstyles"/>
-        </attribute>
-      </optional>
-      <optional>
-        <attribute name="borderstyleoutside">
-          <a:documentation>
-            <p>Specifies the outside border style.</p>
-          </a:documentation>
-          <ref name="borderstyles"/>
-        </attribute>
-      </optional>
     </element>
   </define>
   
@@ -1260,41 +1244,14 @@
   
   <define name="borderstyles">
     <a:documentation>
-      <p>Border style values. See ST_Border (Border Styles) in the OOXML spec.</p>
+      <p>Border style values. 17.4.66 tcBorders (Table Cell Borders)</p>
     </a:documentation>
     <choice>
       <!-- This is not a complete list. See the docs -->
-      <value>basicBlackDashes</value>
-      <value>basicBlackDots</value>
-      <value>basicBlackSquares</value>
-      <value>basicThinLines</value>
-      <value>basicWhiteDashes</value>
-      <value>basicWhiteDots</value>
-      <value>basicWhiteSquares</value>
-      <value>basicWideInline</value>
-      <value>basicWideMidline</value>
-      <value>basicWideOutline</value>
-      <value>bats</value>
-      <value>birds</value>
-      <value>birdsFlight</value>
-      <value>cabins</value>
-      <value>cakeSlice</value>
-      <value>candyCorn</value>
-      <value>celticKnotwork</value>
-      <value>certificateBanner</value>
-      <value>chainLink</value>
-      <value>champagneBottle</value>
-      <value>checkedBarBlack</value>
-      <value>checkedBarColor</value>
-      <value>checkered</value>
-      <value>christmasTree</value>
-      <value>circlesLines</value>
-      <value>circlesRectangles</value>
-      <value>classicalWave</value>
       <value>dashed</value>
-      <value>dashSmallGap</value>
       <value>dotDash</value>
       <value>dotDotDash</value>
+      <value>dashDotStroked</value>
       <value>dotted</value>
       <value>double</value>
       <value>nil</value>
@@ -1314,6 +1271,9 @@
       <value>threeDEngrave</value>
       <value>triple</value>
       <value>wave</value>
+      <value>doubleWave</value>
+      <value>outset</value>
+      <value>inset</value>
     </choice>
   </define>
 </grammar>
