@@ -2,8 +2,6 @@ package org.wordinator.xml2docx;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.Iterator;
 
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
@@ -24,7 +22,7 @@ public class TestDocxGenerator extends TestCase {
 		ClassLoader classLoader = getClass().getClassLoader();
 		File inFile = new File(classLoader.getResource("simplewp/simplewpml-test-01.swpx").getFile());
 		File templateFile = new File(classLoader.getResource(DOTX_TEMPLATE_PATH).getFile());
-		File outFile = new File("out/output.docx");
+		File outFile = new File("out/testMakeDocx.docx");
 		File outDir = outFile.getParentFile();
 		System.out.println("Input file: " + inFile.getAbsolutePath());
 		System.out.println("Output file: " + outFile.getAbsolutePath());

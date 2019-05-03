@@ -1017,6 +1017,47 @@
       <optional>
         <ref name="tagName.att"/>
       </optional>
+      <optional>
+        <attribute name="framestyle">
+          <a:documentation>
+            <p>Specifies the frame style. May be overridden by side-specific attributes.</p>
+          </a:documentation>
+          <ref name="borderstyles"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="framestyleBottom">
+          <a:documentation>
+            <p>Specifies the bottom frame style.</p>
+          </a:documentation>
+          <ref name="borderstyles"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="framestyleTop">
+          <a:documentation>
+            <p>Specifies the top frame style.</p>
+          </a:documentation>
+          <ref name="borderstyles"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="framestyleLeft">
+          <a:documentation>
+            <p>Specifies the left frame style.</p>
+          </a:documentation>
+          <ref name="borderstyles"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="framestyleRight">
+          <a:documentation>
+            <p>Specifies the right frame style.</p>
+          </a:documentation>
+          <ref name="borderstyles"/>
+        </attribute>
+      </optional>
+      
     </element>
   </define>
   

@@ -39,6 +39,11 @@ public final class DocxConstants {
 	public static final QName QNAME_FOOTER_ATT = new QName("", "footer");
 	public static final QName QNAME_FORMAT_ATT = new QName("", "format");
 	public static final QName QNAME_FRAME_ATT = new QName("", "frame");
+	public static final QName QNAME_FRAMESTYLE_ATT = new QName("", "framestyle");
+  public static final QName QNAME_FRAMESTYLE_BOTTOM_ATT = new QName("", "framestyleBottom");
+  public static final QName QNAME_FRAMESTYLE_LEFT_ATT = new QName("", "framestyleLeft");
+  public static final QName QNAME_FRAMESTYLE_RIGHT_ATT = new QName("", "framestyleRight");
+  public static final QName QNAME_FRAMESTYLE_TOP_ATT = new QName("", "framestyleTop");
 	public static final QName QNAME_GUTTER_ATT = new QName("", "gutter");
 	public static final QName QNAME_HEADER_ATT = new QName("", "header");
 	public static final QName QNAME_HEIGHT_ATT = new QName("", "height");
@@ -82,4 +87,5 @@ public final class DocxConstants {
 	public static final QName QNAME_P_ELEM = new QName(SIMPLE_WP_NS, "p");
 	public static final QName QNAME_ROW_ELEM = new QName(SIMPLE_WP_NS, "row");
 	public static final QName QNAME_VSPAN_ELEM = new QName(SIMPLE_WP_NS, "vspan");
+  
 }

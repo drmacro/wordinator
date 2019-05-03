@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?xml-stylesheet type="text/css" href="../../../../main/doctypes/simplewpml/css/simplewpml.css"?>
-<?xml-model href="../../../../main/doctypes/simplewpml/simplewpml.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<?xml-stylesheet type="text/css" href="../../../main/doctypes/simplewpml/css/simplewpml.css"?>
+<?xml-model href="../../../main/doctypes/simplewpml/simplewpml.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
 <document xmlns="urn:ns:wordinator:simplewpml">
   <page-sequence-properties>
     <page-number-properties
@@ -100,7 +100,7 @@
       <hyperlink href="#bm1"><run>Link to bookmark 1</run></hyperlink>
       <run>. After the hyperlink.</run>
     </p>  
-    <p><run>A table (cols: 2in, 3in):</run></p>
+    <p><run>A table (cols: 2in, 3in), frame=topbot:</run></p>
     <table frame="topbot" colsep="0" rowsep="1" tagName="simpletable">
       <cols>
         <col colwidth="2in"/>
@@ -122,8 +122,8 @@
         </tr>
         <tr>
           <td><p><run>R2C1</run></p></td>
-          <td colspan="2" align="center">
-            <p><run>Span 2 columns</run></p>
+          <td colspan="2" align="center" borderstyle="dotted">
+            <p><run>Span 2 columns. Dotted border style.</run></p>
           </td>
         </tr>
         <tr>
@@ -148,5 +148,248 @@
       <hyperlink href="#bm1"><run>Link to bookmark 1</run></hyperlink>
       <run>. After the hyperlink.</run>
     </p>
+    <p><run>A table to exercise cell borders. colsep=0 rowsep=0, frame=none</run></p>
+    <table frame="none" colsep="0" rowsep="0" tagName="simpletable">
+      <cols>
+        <col colwidth="2in"/>
+        <col colwidth="3in"/>
+        <col colwidth="1in"/>
+      </cols>
+      <thead>
+        <tr>
+          <td><p><run>Header 1</run></p></td>
+          <td><p><run>Header 2</run></p></td>
+          <td><p><run>Header 3</run></p></td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><p><run>No border spec</run></p></td>
+          <td borderstyle="doubleWave"><p><run>borderstyle="doubleWave"</run></p></td>
+          <td borderstyle="threeDEmboss"><p><run>borderstyle="threeDEmboss"</run></p></td>
+        </tr>
+        <tr>
+          <td><p><run>No border spec</run></p></td>
+          <td ><p><run>No border spec</run></p></td>
+          <td ><p><run>No border spec</run></p></td>
+        </tr>
+        <tr>
+          <td ><p><run>No border spec</run></p></td>
+          <td borderstyletop="dotted" 
+            borderstyleleft="outset"
+            borderstyleright="thick"
+            borderstylebottom="triple"
+            ><p><run>borderstyletop="dotted", borderstyleleft="outset", borderstyleright="thick",
+              borderstylebottom="triple"</run></p></td>
+          <td ><p><run>No border spec</run></p></td>
+        </tr>
+        <tr>
+          <td>
+            <p>
+              <run>No border spec</run>
+            </p>
+          </td>
+          <td>
+            <p>
+              <run>No border spec</run>
+            </p>
+          </td>
+          <td>
+            <p>
+              <run>No border spec</run>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td borderstyleleft="dashDotStroked"><p><run>borderstyleleft="dashDotStroked"</run></p></td>
+          <td borderstyletop="dashed"
+            borderstylebottom="dotDash"
+            ><p><run>borderstyletop="dashed", borderstylebottom="dotDash"</run></p></td>
+          <td borderstyleright="thickThinLargeGap"><p><run>borderstyleright="thickThinLargeGap"</run></p></td>
+        </tr>
+        <tr>
+          <td><p><run>No border spec</run></p></td>
+          <td ><p><run>No border spec</run></p></td>
+          <td ><p><run>No border spec</run></p></td>
+        </tr>
+        <tr>
+          <td borderstyleleft="thickThinMediumGap"><p><run>borderstyleleft="thickThinMediumGap"</run></p></td>
+          <td borderstyletop="thickThinSmallGap"
+            borderstylebottom="thickThinMediumGap"
+            ><p><run>borderstyletop="thickThinSmallGap"
+              borderstylebottom="thickThinMediumGap"</run></p></td>
+          <td borderstyleright="thinThickLargeGap"><p><run>borderstyleright="thinThickLargeGap"</run></p></td>
+        </tr>
+      </tbody>
+    </table>  
+    <p><run>Another table, frame unspecified</run></p>
+    <table tagName="simpletable">
+      <cols>
+        <col colwidth="2in"/>
+        <col colwidth="3in"/>
+        <col colwidth="1in"/>
+      </cols>
+      <thead>
+        <tr>
+          <td><p><run>Header 1</run></p></td>
+          <td><p><run>Header 2</run></p></td>
+          <td><p><run>Header 3</run></p></td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><p><run>No border spec</run></p></td>
+          <td borderstyle="doubleWave"><p><run>borderstyle="doubleWave"</run></p></td>
+          <td borderstyle="threeDEmboss"><p><run>borderstyle="threeDEmboss"</run></p></td>
+        </tr>
+        <tr>
+          <td><p><run>No border spec</run></p></td>
+          <td ><p><run>No border spec</run></p></td>
+          <td ><p><run>No border spec</run></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <p><run>Another table, frame=sides</run></p>
+    <table tagName="simpletable" frame="sides">
+      <cols>
+        <col colwidth="2in"/>
+        <col colwidth="3in"/>
+        <col colwidth="1in"/>
+      </cols>
+      <thead>
+        <tr>
+          <td><p><run>Header 1</run></p></td>
+          <td><p><run>Header 2</run></p></td>
+          <td><p><run>Header 3</run></p></td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><p><run>No border spec</run></p></td>
+          <td borderstyle="doubleWave"><p><run>borderstyle="doubleWave"</run></p></td>
+          <td borderstyle="threeDEmboss"><p><run>borderstyle="threeDEmboss"</run></p></td>
+        </tr>
+        <tr>
+          <td><p><run>No border spec</run></p></td>
+          <td ><p><run>No border spec</run></p></td>
+          <td ><p><run>No border spec</run></p></td>
+        </tr>
+      </tbody>
+    </table>    
+    <p><run>Another table, frame=top</run></p>
+    <table tagName="simpletable" frame="top">
+      <cols>
+        <col colwidth="2in"/>
+        <col colwidth="3in"/>
+        <col colwidth="1in"/>
+      </cols>
+      <thead>
+        <tr>
+          <td><p><run>Header 1</run></p></td>
+          <td><p><run>Header 2</run></p></td>
+          <td><p><run>Header 3</run></p></td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><p><run>No border spec</run></p></td>
+          <td borderstyle="doubleWave"><p><run>borderstyle="doubleWave"</run></p></td>
+          <td borderstyle="threeDEmboss"><p><run>borderstyle="threeDEmboss"</run></p></td>
+        </tr>
+        <tr>
+          <td><p><run>No border spec</run></p></td>
+          <td ><p><run>No border spec</run></p></td>
+          <td ><p><run>No border spec</run></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <p><run>Another table, frame=bottom</run></p>
+    <table tagName="simpletable" frame="bottom">
+      <cols>
+        <col colwidth="2in"/>
+        <col colwidth="3in"/>
+        <col colwidth="1in"/>
+      </cols>
+      <thead>
+        <tr>
+          <td><p><run>Header 1</run></p></td>
+          <td><p><run>Header 2</run></p></td>
+          <td><p><run>Header 3</run></p></td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><p><run>No border spec</run></p></td>
+          <td borderstyle="doubleWave"><p><run>borderstyle="doubleWave"</run></p></td>
+          <td borderstyle="threeDEmboss"><p><run>borderstyle="threeDEmboss"</run></p></td>
+        </tr>
+        <tr>
+          <td><p><run>No border spec</run></p></td>
+          <td ><p><run>No border spec</run></p></td>
+          <td ><p><run>No border spec</run></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <p><run>Another table, framestyle="wave"</run></p>
+    <table tagName="simpletable"
+      framestyle="wave"
+      >
+      <cols>
+        <col colwidth="2in"/>
+        <col colwidth="3in"/>
+        <col colwidth="1in"/>
+      </cols>
+      <thead>
+        <tr>
+          <td><p><run>Header 1</run></p></td>
+          <td><p><run>Header 2</run></p></td>
+          <td><p><run>Header 3</run></p></td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><p><run>No border spec</run></p></td>
+          <td borderstyle="doubleWave"><p><run>borderstyle="doubleWave"</run></p></td>
+          <td borderstyle="threeDEmboss"><p><run>borderstyle="threeDEmboss"</run></p></td>
+        </tr>
+        <tr>
+          <td><p><run>No border spec</run></p></td>
+          <td ><p><run>No border spec</run></p></td>
+          <td ><p><run>No border spec</run></p></td>
+        </tr>
+      </tbody>
+    </table>  
+    <p><run>Another table, framestyleTop="double", framestyleBottom="triple", framestyleLeft="wave", framestyleRight="threeDEmboss</run></p>
+    <table tagName="simpletable"
+      framestyleTop="double"
+      framestyleBottom="triple"
+      framestyleLeft="wave"
+      framestyleRight="threeDEmboss"
+      >
+      <cols>
+        <col colwidth="2in"/>
+        <col colwidth="3in"/>
+        <col colwidth="1in"/>
+      </cols>
+      <thead>
+        <tr>
+          <td><p><run>Header 1</run></p></td>
+          <td><p><run>Header 2</run></p></td>
+          <td><p><run>Header 3</run></p></td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><p><run>No border spec</run></p></td>
+          <td borderstyle="doubleWave"><p><run>borderstyle="doubleWave"</run></p></td>
+          <td borderstyle="threeDEmboss"><p><run>borderstyle="threeDEmboss"</run></p></td>
+        </tr>
+        <tr>
+          <td><p><run>No border spec</run></p></td>
+          <td ><p><run>No border spec</run></p></td>
+          <td ><p><run>No border spec</run></p></td>
+        </tr>
+      </tbody>
+    </table>  
   </body>
 </document>

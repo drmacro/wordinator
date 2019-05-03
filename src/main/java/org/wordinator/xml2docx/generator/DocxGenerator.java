@@ -891,6 +891,8 @@ public class DocxGenerator {
 		  }
 		}
 		
+		setTableFrame(table, cursor);
+		
 		Map<QName, String> defaults = new HashMap<QName, String>();
 		String rowsep = cursor.getAttributeText(DocxConstants.QNAME_ROWSEP_ATT);
 		if (rowsep != null) {
@@ -974,8 +976,184 @@ public class DocxGenerator {
 		}
 		table.removeRow(0); // Remove the first row that's always added automatically (FIXME: This may not be needed any more)
 	}
+
+  private void setTableFrame(XWPFTable table, XmlCursor cursor) {
+    int frameWidth = 8; // 1pt
+		int frameSpace = 0;
+		String frameColor = "auto";
+		XWPFBorderType frameStyle = XWPFBorderType.SINGLE;
+		
+		String frameStyleValue= cursor.getAttributeText(DocxConstants.QNAME_FRAMESTYLE_ATT);
+		if (frameStyleValue != null) {
+		  frameStyle = xwpfBorderType(frameStyleValue);
+		}
+		
+		// FIXME: Set frameStyle using table attributes.
+    XWPFBorderType frameStyleBottom = frameStyle;
+    XWPFBorderType frameStyleTop = frameStyle;
+    XWPFBorderType frameStyleLeft = frameStyle;
+    XWPFBorderType frameStyleRight = frameStyle;
+
+    String frameStyleBottomValue= cursor.getAttributeText(DocxConstants.QNAME_FRAMESTYLE_BOTTOM_ATT);
+    if (frameStyleBottomValue != null) {
+      frameStyleBottom = xwpfBorderType(frameStyleBottomValue);
+    }
+    String frameStyleTopValue= cursor.getAttributeText(DocxConstants.QNAME_FRAMESTYLE_TOP_ATT);
+    if (frameStyleTopValue != null) {
+      frameStyleTop = xwpfBorderType(frameStyleTopValue);
+    }
+    String frameStyleLeftValue= cursor.getAttributeText(DocxConstants.QNAME_FRAMESTYLE_LEFT_ATT);
+    if (frameStyleLeftValue != null) {
+      frameStyleLeft = xwpfBorderType(frameStyleLeftValue);
+    }
+    String frameStyleRightValue= cursor.getAttributeText(DocxConstants.QNAME_FRAMESTYLE_RIGHT_ATT);
+    if (frameStyleRightValue != null) {
+      frameStyleRight = xwpfBorderType(frameStyleRightValue);
+    }
+
+		String frameValue = cursor.getAttributeText(DocxConstants.QNAME_FRAME_ATT);
+		
+    XWPFBorderType topBorder = frameStyleTop;
+    XWPFBorderType bottomBorder = frameStyleBottom;
+    XWPFBorderType leftBorder = frameStyleLeft;
+    XWPFBorderType rightBorder = frameStyleRight;
+
+		if (frameValue != null) {
+		  if ("none".equals(frameValue)) {
+	      topBorder = XWPFBorderType.NONE;
+	      bottomBorder = XWPFBorderType.NONE;
+	      leftBorder = XWPFBorderType.NONE;
+	      rightBorder = XWPFBorderType.NONE;
+		  } else if ("all".equals(frameValue)) {
+        // This is the default
+      } else if ("topbot".equals(frameValue)) {
+        topBorder = frameStyleTop;
+        bottomBorder = frameStyleBottom;
+        leftBorder = XWPFBorderType.NONE;
+        rightBorder = XWPFBorderType.NONE;
+      } else if ("sides".equals(frameValue)) {
+        topBorder = XWPFBorderType.NONE;
+        bottomBorder = XWPFBorderType.NONE;
+        leftBorder = frameStyleLeft;
+        rightBorder = frameStyleRight;
+      } else if ("top".equals(frameValue)) {
+        topBorder = frameStyleTop;
+        bottomBorder = XWPFBorderType.NONE;
+        leftBorder = XWPFBorderType.NONE;
+        rightBorder = XWPFBorderType.NONE;
+      } else if ("bottom".equals(frameValue)) {
+        topBorder = XWPFBorderType.NONE;
+        bottomBorder = frameStyleBottom;
+        leftBorder = XWPFBorderType.NONE;
+        rightBorder = XWPFBorderType.NONE;
+      }
+		  
+		}
+    table.setBottomBorder(bottomBorder, frameWidth, frameSpace, frameColor);
+    table.setTopBorder(topBorder, frameWidth, frameSpace, frameColor);
+    table.setLeftBorder(leftBorder, frameWidth, frameSpace, frameColor);
+    table.setRightBorder(rightBorder, frameWidth, frameSpace, frameColor);
+  }
 	
-	/**
+  /**
+   * Get the XWPFBorderType for the specified STBorder value.
+   * @param borderValue Border value (e.g., "wave").
+   * @return Corresponding XWPFBorderType value or null if there is no corresponding value.
+   */
+	private XWPFBorderType xwpfBorderType(String borderValue) {
+	  
+	  STBorder.Enum borderStyle = STBorder.Enum.forString(borderValue);
+	  
+	  // There's not a direct correspondence between STBorder int values
+	  // and XWPFBorderType so just building a switch statement.
+	  XWPFBorderType xwpfType = null;
+	  switch (borderStyle.intValue()) {
+	  case STBorder.INT_DOT_DASH:
+	    xwpfType = XWPFBorderType.DOT_DASH;
+	    break;
+    case STBorder.INT_DASH_SMALL_GAP:
+      xwpfType = XWPFBorderType.DASH_SMALL_GAP;
+      break;
+    case STBorder.INT_DASH_DOT_STROKED:
+      xwpfType = XWPFBorderType.DASH_DOT_STROKED;
+      break;
+    case STBorder.INT_DASHED:
+      xwpfType = XWPFBorderType.DASHED;
+      break;
+    case STBorder.INT_DOT_DOT_DASH:
+      xwpfType = XWPFBorderType.DOT_DOT_DASH;
+      break;
+    case STBorder.INT_DOTTED:
+      xwpfType = XWPFBorderType.DOTTED;
+      break;
+    case STBorder.INT_DOUBLE:
+      xwpfType = XWPFBorderType.DOUBLE;
+      break;
+    case STBorder.INT_DOUBLE_WAVE:
+      xwpfType = XWPFBorderType.DOUBLE_WAVE;
+      break;
+    case STBorder.INT_INSET:
+      xwpfType = XWPFBorderType.INSET;
+      break;
+    case STBorder.INT_NIL:
+      xwpfType = XWPFBorderType.NIL;
+      break;
+    case STBorder.INT_NONE:
+      xwpfType = XWPFBorderType.NONE;
+      break;
+    case STBorder.INT_OUTSET:
+      xwpfType = XWPFBorderType.OUTSET;
+      break;
+    case STBorder.INT_SINGLE:
+      xwpfType = XWPFBorderType.SINGLE;
+      break;
+    case STBorder.INT_THICK:
+      xwpfType = XWPFBorderType.THICK;
+      break;
+    case STBorder.INT_THICK_THIN_LARGE_GAP:
+      xwpfType = XWPFBorderType.THICK_THIN_LARGE_GAP;
+      break;
+    case STBorder.INT_THICK_THIN_MEDIUM_GAP:
+      xwpfType = XWPFBorderType.THICK_THIN_MEDIUM_GAP;
+      break;
+    case STBorder.INT_THICK_THIN_SMALL_GAP:
+      xwpfType = XWPFBorderType.THICK_THIN_SMALL_GAP;
+      break;
+    case STBorder.INT_THIN_THICK_LARGE_GAP:
+      xwpfType = XWPFBorderType.THIN_THICK_LARGE_GAP;
+      break;
+    case STBorder.INT_THIN_THICK_MEDIUM_GAP:
+      xwpfType = XWPFBorderType.THIN_THICK_MEDIUM_GAP;
+      break;
+    case STBorder.INT_THIN_THICK_SMALL_GAP:
+      xwpfType = XWPFBorderType.THIN_THICK_SMALL_GAP;
+      break;
+    case STBorder.INT_THIN_THICK_THIN_LARGE_GAP:
+      xwpfType = XWPFBorderType.THIN_THICK_THIN_LARGE_GAP;
+      break;
+    case STBorder.INT_THIN_THICK_THIN_MEDIUM_GAP:
+      xwpfType = XWPFBorderType.THIN_THICK_THIN_MEDIUM_GAP;
+      break;
+    case STBorder.INT_THIN_THICK_THIN_SMALL_GAP:
+      xwpfType = XWPFBorderType.THIN_THICK_THIN_SMALL_GAP;
+      break;
+    case STBorder.INT_THREE_D_EMBOSS:
+      xwpfType = XWPFBorderType.THREE_D_EMBOSS;
+      break;
+    case STBorder.INT_THREE_D_ENGRAVE:
+      xwpfType = XWPFBorderType.THREE_D_ENGRAVE;
+      break;
+    case STBorder.INT_TRIPLE:
+      xwpfType = XWPFBorderType.TRIPLE;
+      break;
+    case STBorder.INT_WAVE:
+      xwpfType = XWPFBorderType.WAVE;
+      break;	  
+	  }
+	  return xwpfType;
+  }
+
+  /**
 	 * Construct a table row
 	 * @param table The table to add the row to
 	 * @param xml The <row> element to add to the table
@@ -1115,8 +1293,8 @@ public class DocxGenerator {
     }
     
     // Rowsep and colsep values are "0" (no border) and "1" (border).
-    if (rowsep != null) {
-      if (rowsep.equals("1")) {
+    if (rowsep != null || borderStyleValue != null) {
+      if ("1".equals(rowsep) || borderStyleValue != null) {
         bottom.setVal(borderStyle);
         top.setVal(borderStyle);
       } else {
@@ -1124,8 +1302,8 @@ public class DocxGenerator {
         top.setVal(STBorder.NONE);
       }
     }
-    if (colsep != null) {
-      if (colsep.equals("1")) {
+    if (colsep != null || borderStyleValue != null) {
+      if ("1".equals(colsep) || borderStyleValue != null) {
         left.setVal(borderStyle);
         right.setVal(borderStyle);
       } else {
