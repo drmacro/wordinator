@@ -414,7 +414,7 @@ public class DocxGenerator {
 				} else if ("bookmarkEnd".equals(tagName)) {
 					makeBookmarkEnd(para, cursor);
 				} else if ("fn".equals(tagName)) {
-					makeFootnote(para, cursor);
+					makeFootnote(para, cursor.getObject());
 				} else if ("hyperlink".equals(tagName)) {
 					makeHyperlink(para, cursor);
 				} else if ("image".equals(tagName)) {
@@ -628,8 +628,10 @@ public class DocxGenerator {
 	 * @param para the paragraph containing the footnote.
 	 * @param cursor Pointing at the &lt;fn> element
 	 */
-	private void makeFootnote(XWPFParagraph para, XmlCursor cursor) throws DocxGenerationException {
+	private void makeFootnote(XWPFParagraph para, XmlObject xml) throws DocxGenerationException {
 		
+	  XmlCursor cursor = xml.newCursor();
+	  
 		String type = cursor.getAttributeText(DocxConstants.QNAME_TYPE_ATT);
 		
 		XWPFAbstractFootnoteEndnote note = null;
@@ -660,7 +662,7 @@ public class DocxGenerator {
 		}
 
 		para.addFootnoteReference(note);
-	
+		cursor.pop();
 	}
 
 	/**

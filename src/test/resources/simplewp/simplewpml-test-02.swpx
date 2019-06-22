@@ -32,6 +32,19 @@
       <run style="Strong">Document With Sections</run>
     </p>
     <p>
+      <run>To illustrate a build‑up approach, assume that Asset A is a contractual right
+        to receive CU800</run>
+      <fn>
+        <p style="IASB Normal" styleId="IASBNormal">
+          <run>In this IFRS monetary amounts are denominated in ‘currency units
+            (CU)’.</run>
+        </p>
+      </fn>
+      <run> in one year (ie there is no timing uncertainty). There is an established
+        market for comparable assets, and information about those assets, including
+        price information, is available. Of those comparable assets:</run>      
+    </p>
+    <p>
       <run>Before footnote reference.</run>
       <fn>
         <p>
@@ -85,6 +98,7 @@
           </tbody>
         </table>
       </fn>
+      <run> After footnote reference</run>
       <bookmarkStart id="bm1" name="h1">Heading 1</bookmarkStart>
       <run> This is before a bookmark start for bookmark "bm1". </run>
       <bookmarkStart id="bm1" name="Bookmark bm1 name value"/>
