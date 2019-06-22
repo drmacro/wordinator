@@ -167,27 +167,12 @@
         <run>Link to bookmark 1</run>
       </hyperlink>
       <run>. After the hyperlink.</run>
-    </p>    <section type="continuous">
-      <page-sequence-properties>
-        <headers-and-footers>
-          <header>
-            <p>
-              <run>Header for First Section</run>
-            </p>              
-          </header>
-          <footer>
-            <p>
-              <page-number-ref format="lowerRoman"/>
-            </p>
-          </footer>
-        </headers-and-footers>
-      </page-sequence-properties>
+    </p>    
+    <p><run>Before first section.</run></p>
+    <section type="continuous">
       <body>
         <p style="Heading 1">
-          <run>First Section</run>
-        </p>
-        <p>
-          <run>Page numbers should be lowercase Roman numerals.</run>
+          <run>Start of First Section. Should not break the page</run>
         </p>
         <p page-break-before="true"><run>There should be a page break before this paragraph (@page-break-before="true")</run></p>
         <p>
@@ -251,6 +236,7 @@
     </section>
     <section type="nextPage">
       <page-sequence-properties>
+        <page-number-properties format="lowerRoman" chapter-separator="emDash" chapter-style="1" start="99"/>
         <headers-and-footers>
           <header>
             <p>
@@ -266,7 +252,7 @@
       </page-sequence-properties>
       <body>
         <p style="Heading 1">
-          <run>Second Section</run>
+          <run>Start of Second Section</run>
         </p>
         <p>
           <run>This section should start on a new page. Page numbers should be lowercase Roman numerals.</run>

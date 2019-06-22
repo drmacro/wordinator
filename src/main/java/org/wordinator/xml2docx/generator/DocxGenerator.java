@@ -26,6 +26,7 @@ import org.apache.poi.ss.formula.eval.NotImplementedException;
 import org.apache.poi.util.Units;
 import org.apache.poi.wp.usermodel.HeaderFooterType;
 import org.apache.poi.xwpf.usermodel.BreakType;
+import org.apache.poi.xwpf.usermodel.IBodyElement;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.apache.poi.xwpf.usermodel.UnderlinePatterns;
 import org.apache.poi.xwpf.usermodel.XWPFAbstractFootnoteEndnote;
@@ -47,22 +48,31 @@ import org.apache.xmlbeans.XmlCursor;
 import org.apache.xmlbeans.XmlCursor.TokenType;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBody;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBookmark;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBorder;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDecimalNumber;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDocument1;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTHyperlink;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTMarkupRange;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTOnOff;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPPr;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageNumber;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTRPr;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectPr;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectType;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSimpleField;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTStyle;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTcBorders;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTcPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTVMerge;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STBorder;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.STChapterSep;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STMerge;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.STNumberFormat;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STOnOff;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.STSectionMark;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STStyleType;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STVerticalAlignRun;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.impl.STOnOffImpl;
@@ -73,7 +83,6 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.impl.STOnOffImpl;
 public class DocxGenerator {
 	
 	public static final Logger log = LogManager.getLogger();
-
 
 	private File outFile;
 	private int dotsPerInch = 72; /* DPI */
@@ -123,52 +132,54 @@ public class DocxGenerator {
 		XmlCursor cursor = xml.newCursor();
 		cursor.toFirstChild(); // Put us on the root element of the document
 		cursor.push();
+		XmlObject pageSequenceProperties = null;
 		if (cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "page-sequence-properties"))) {
-			setupPageSequence(doc, cursor.getObject());
+		  // Set up document-level headers. These will apply to the whole
+		  // document if there are no sections, or to the last section if
+		  // there are sections. Results in a w:sectPr as  the last child 
+		  // of w:body.
+      setupPageSequence(doc, cursor.getObject());
+			pageSequenceProperties = cursor.getObject();
 		}
 		cursor.pop();
 		cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "body"));
-		handleBody(doc, cursor.getObject());
+		handleBody(doc, cursor.getObject(), pageSequenceProperties);
 		
 		
 	}
 
   /**
-   * Process the elements in &lt;body&gt;
-   * @param doc Document to add paragraphs to.
-   * @param xml Body element
-   * @throws DocxGenerationException
-   */
-	private void handleBody(XWPFDocument doc, XmlObject object) throws DocxGenerationException {
-    handleBody(doc, object, new HashMap<String, String>());    
-  }
-
-  /**
 	 * Process the elements in &lt;body&gt;
 	 * @param doc Document to add paragraphs to.
 	 * @param xml Body element
-	 * @param sectionProperties Properties for the section to set on the first paragraph.
+   * @param pageSequenceProperties Document-level page sequence properties. Used
+   * if there are no section-level page sequence properties.
+   * @return Last paragraph of the body (if any)
 	 * @throws DocxGenerationException
 	 */
-	private void handleBody(
+	private XWPFParagraph handleBody(
 	    XWPFDocument doc, 
-	    XmlObject xml, 
-	    Map<String, String> sectionProperties) 
+	    XmlObject xml, XmlObject pageSequenceProperties) 
 	        throws DocxGenerationException {
+	  if (log.isDebugEnabled()) {
+	    log.debug("handleBody(): starting...");
+	  }
 		XmlCursor cursor = xml.newCursor();
-		Map<String, String> additionalProperties = new HashMap<String, String>();
-		additionalProperties.putAll(sectionProperties);
+		XWPFParagraph lastChild = null;
 		if (cursor.toFirstChild()) {
+		  IBodyElement lastElement = null;
 			do {
 				String tagName = cursor.getName().getLocalPart();
 				String namespace = cursor.getName().getNamespaceURI();
 				if ("p".equals(tagName)) {
 					XWPFParagraph p = doc.createParagraph();
-					makeParagraph(p, cursor, additionalProperties);
+					lastElement = p;
+					makeParagraph(p, cursor);
 				} else if ("section".equals(tagName)) {
-					handleSection(doc, cursor.getObject());
+					handleSection(doc, cursor.getObject(), pageSequenceProperties);
 				} else if ("table".equals(tagName)) {
 					XWPFTable table = doc.createTable();
+					lastElement = table;
 					makeTable(table, cursor.getObject());
 				} else if ("object".equals(tagName)) {
 					// FIXME: This is currently unimplemented.
@@ -176,66 +187,103 @@ public class DocxGenerator {
 				} else {
 					log.warn("handleBody(): Unexpected element {" + namespace + "}:'" + tagName + "' in <body>. Ignored.");
 				}
-				// Reset the additional properties
-				additionalProperties = new HashMap<String, String>();
 			} while (cursor.toNextSibling());
+			
+			if (lastElement != null) {
+			  if (!(lastElement instanceof XWPFParagraph)) {
+			    lastChild = doc.createParagraph();
+			  } else {
+			    lastChild = (XWPFParagraph)lastElement;
+			  }
+			}
 		}
+		return lastChild;
 	}
 
 	/**
 	 * Handle a &lt;section&gt; element
 	 * @param doc Document we're adding to
 	 * @param xml &lt;section&gt; element
+	 * @param docPageSequenceProperties Document-level page sequence properties
 	 */
-	@SuppressWarnings("unused")
-	private void handleSection(XWPFDocument doc, XmlObject xml) throws DocxGenerationException {
+	private void handleSection(
+	    XWPFDocument doc, 
+	    XmlObject xml, 
+	    XmlObject docPageSequenceProperties) 
+	        throws DocxGenerationException {
 		XmlCursor cursor = xml.newCursor();
+				
+		XmlObject localPageSequenceProperties = null;
 		
-		/**
-		 * From the Office Open documentation for w:sectPr:
-		 * 
-		 *   For all sections except the final section, the sectPr
-		 *   element is stored as a child element of the last paragraph in the section. 
-		 *   For the final section, this information is 
-		 *   stored as the last child element of the body element,
-		 * 
-		 * This means we need to create a w:sectPr element and then put it in the last
-		 * paragraph of all but final sections.
-		 */
+    cursor.push();
+    if (cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "page-sequence-properties"))) {
+      localPageSequenceProperties = cursor.getObject();
+    }
+    cursor.pop();
+    
+    if (localPageSequenceProperties == null) {
+      localPageSequenceProperties = docPageSequenceProperties;
+    }
 		
-		log.warn("Section-level headers and footers and page numbering not yet implemented.");
-		// FIXME: The section-specific properties go in the first paragraph of the section.
-		cursor.push();
-    Map<String, String> sectionProperties = new HashMap<String, String>();
-    sectionProperties.put(DocxConstants.PROPERTY_PAGEBREAK, cursor.getAttributeText(DocxConstants.QNAME_TYPE_ATT));
-		if (false && cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "page-sequence-properties"))) {
-			setupPageSequence(doc, cursor.getObject());
-		}
+    cursor.push();
+		cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "body"));
+		XWPFParagraph lastPara = handleBody(doc, cursor.getObject(), localPageSequenceProperties);
 		cursor.pop();
 		
-		
-		
-		cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "body"));
-		handleBody(doc, cursor.getObject(), sectionProperties);
+    if (log.isDebugEnabled()) {
+      log.debug("handleBody(): Setting sectPr on last paragraph.");
+    }
+    CTPPr ppr = (lastPara.getCTP().isSetPPr() ? lastPara.getCTP().getPPr() : lastPara.getCTP().addNewPPr()); 
+    CTSectPr sectPr = ppr.addNewSectPr();
+
+    String sectionType = cursor.getAttributeText(DocxConstants.QNAME_TYPE_ATT);
+
+    if (sectionType != null) {
+      CTSectType type = sectPr.addNewType();
+      type.setVal(STSectionMark.Enum.forString(sectionType));
+    }
+
+    setupPageSequence(doc, localPageSequenceProperties, sectPr);
+    
+    ppr.setSectPr(sectPr);        
 		
 	}
 
 	/**
+	 * Set up a page sequence for a section, as opposed to for the document
+	 * as a whole.
+	 * @param doc Document
+	 * @param object The page-sequence-properties element 
+	 * @param sectPr The sectPr object to set the page sequence properties on.
+	 */
+	private void setupPageSequence(XWPFDocument doc, XmlObject xml, CTSectPr sectPr) {
+    XmlCursor cursor = xml.newCursor();
+    
+    setPageNumberProperties(cursor, sectPr);
+    
+    cursor.push();
+    if (cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "headers-and-footers"))) {
+      // FIXME: Need the equivalent for sections.
+      // constructHeadersAndFooters(doc, cursor.getObject());
+    }
+    cursor.pop();
+  }
+
+  /**
 	 * Set up page sequence properties for the entire document, including page geometry, numbering, and headers and footers.
 	 * @param doc Document to be constructed
 	 * @param xml page-sequence-properties element
+	 * @param sectPr Section properties to store the page sequence details on.
 	 * @throws DocxGenerationException 
 	 */
 	private void setupPageSequence(XWPFDocument doc, XmlObject xml) throws DocxGenerationException {
 		XmlCursor cursor = xml.newCursor();
-		cursor.push();
-		if (cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "page-number-properties"))) {
-			String format = cursor.getAttributeText(DocxConstants.QNAME_FORMAT_ATT);
-			if (null != format) {
-				// FIXME: Not sure how to set this up with the POI API yet.
-			}
-		}
-		cursor.pop();
+		
+		CTDocument1 document = doc.getDocument();
+		CTBody body = (document.isSetBody() ? document.getBody() : document.addNewBody());
+		CTSectPr sectPr = (body.isSetSectPr() ? body.getSectPr() : body.addNewSectPr());
+		
+		setPageNumberProperties(cursor, sectPr);
 		cursor.push();
 		if (cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "headers-and-footers"))) {
 			constructHeadersAndFooters(doc, cursor.getObject());
@@ -243,6 +291,54 @@ public class DocxGenerator {
 		cursor.pop();
 		
 	}
+
+  private void setPageNumberProperties(XmlCursor cursor, CTSectPr sectPr) {
+    cursor.push();
+		if (cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "page-number-properties"))) {
+      String start = cursor.getAttributeText(DocxConstants.QNAME_START_ATT);
+			String format = cursor.getAttributeText(DocxConstants.QNAME_FORMAT_ATT);
+      String chapterSep = cursor.getAttributeText(DocxConstants.QNAME_CHAPTER_SEPARATOR_ATT);
+      String chapterStyle = cursor.getAttributeText(DocxConstants.QNAME_CHAPTER_STYLE_ATT);
+      if (null != format || null != chapterSep || null != chapterStyle || null != start) {
+        CTPageNumber pageNumber = (sectPr.isSetPgNumType() ? sectPr.getPgNumType() : sectPr.addNewPgNumType());
+  			if (null != format) {
+  				if ("custom".equals(format)) {
+  				  // FIXME: Implement translation from XSLT number format values to the equivalent Word 
+  				  // number formatting values.
+  				  log.warn("Page number format \"" + format + "\" not supported. Use Word-specific values. Using \"decimal\"");
+  				  format = "decimal";
+  				}
+  				STNumberFormat.Enum fmt = STNumberFormat.Enum.forString(format); 
+  				if (fmt != null) {
+  	        pageNumber.setFmt(fmt);				  
+  				}				
+  			}
+  			if (chapterSep != null) {
+  			  STChapterSep.Enum sep = STChapterSep.Enum.forString(chapterSep);
+  			  if (sep != null) {
+  			    pageNumber.setChapSep(sep);
+  			  }
+  			}
+        if (chapterStyle != null) {
+          try {
+            long val = Long.valueOf(chapterStyle);
+            pageNumber.setChapStyle(BigInteger.valueOf(val));
+          } catch (NumberFormatException e) {
+            log.warn("Value \"" + chapterStyle + "\" of @chapter-style attribute is not an integer.");
+          }
+        }
+        if (start != null) {
+          try {
+            long val = Long.valueOf(start);
+            pageNumber.setStart(BigInteger.valueOf(val));
+          } catch (NumberFormatException e) {
+            log.warn("Value \"" + start + "\" of @start attribute is not an integer.");
+          }
+        }
+      }
+		}
+		cursor.pop();
+  }
 
 	/**
 	 * Construct headers and footers for the document.
@@ -346,8 +442,8 @@ public class DocxGenerator {
    * @param cursor Cursor pointing at the <p> element the paragraph will reflect.
    * @return Paragraph (should be same object as passed in).
    */
-  private void makeParagraph(XWPFParagraph p, XmlCursor cursor) throws DocxGenerationException {
-    makeParagraph(p, cursor, null);
+  private XWPFParagraph makeParagraph(XWPFParagraph p, XmlCursor cursor) throws DocxGenerationException {
+    return makeParagraph(p, cursor, null);
   }
 
 	/**

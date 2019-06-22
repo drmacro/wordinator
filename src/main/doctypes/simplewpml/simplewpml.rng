@@ -102,6 +102,43 @@
       <optional>
         <ref name="number-format-att"/>
       </optional>
+      <optional>
+        <attribute name="chapter-separator">
+          <choice>
+            <value>colon</value>
+            <value>emDash</value>
+            <value>enDash</value>
+            <value>hyphen</value>
+            <value>period</value>
+          </choice>
+          <a:documentation>
+            <p>Specifies the separator character that shall appear between the chapter and page
+              number, if a chapter style has been set for page numbers in this section.</p>
+            <p>See 17.18.6 ST_ChapterSep (Chapter Separator Types)</p>
+          </a:documentation>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="chapter-style">
+          <choice>
+            <value>1</value>
+            <value>2</value>
+            <value>2</value>
+            <value>4</value>
+            <value>5</value>
+            <value>6</value>
+            <value>7</value>
+            <value>8</value>
+            <value>9</value>
+          </choice>
+          <a:documentation>
+            <p>Specifies the one-based index of the heading style applied to chapter titles in the
+              document which shall be used as chapter headings in all page numbers for this section,
+              by locating the nearest heading of that style and extracting the numbering information.</p>
+            <p>17.6.12 pgNumType (Page Numbering Settings), chapStyle</p>
+          </a:documentation>
+        </attribute>
+      </optional>
     </element>
   </define>
   
@@ -301,6 +338,9 @@
     <element name="body" ns="urn:ns:wordinator:simplewpml">
       <a:documentation>
         <p>Contains the body content of the document, as distinct from any preamble or metadata.</p>
+        <p>In MS Word, sections define the properties for all the paragraphs that precede the
+        end of the section up to the end of any preceding section. This means that any non-section
+        content that precedes the first section (if any), will be formatted as part of that section.</p>
       </a:documentation>
       <ref name="body-content"/>
       <zeroOrMore>
@@ -313,6 +353,9 @@
     <element name="section" ns="urn:ns:wordinator:simplewpml">
       <a:documentation>
         <p>Represents a distinct page sequence with its own headers and footers, end notes, and so.</p>
+        <p>In MS Word, sections define the properties for all the paragraphs that precede the
+          end of the section up to the end of any preceding section. This means that any non-section
+          content that precedes the first section (if any), will be formatted as part of that section.</p>
       </a:documentation>
       <optional>
         <ref name="page-sequence-properties"/>

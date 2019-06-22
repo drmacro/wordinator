@@ -97,7 +97,7 @@ public class TestDocxGenerator extends TestCase {
 			for (XWPFParagraph para : doc.getParagraphs()) {
 				String text = para.getParagraphText();
 				// System.out.printn("+ [DEBUG] text=\"" + text + "\"");
-				if ("First Section".equals(text)) {
+				if ("Start of First Section. Should not break the page".equals(text)) {
 					found = true;
 					break;
 				}

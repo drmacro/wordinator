@@ -27,7 +27,9 @@ public final class DocxConstants {
   public static final QName QNAME_BORDER_STYLE_TOP_ATT = new QName("", "borderstyletop");
 	public static final QName QNAME_BOTTOM_ATT = new QName("", "bottom");
 	public static final QName QNAME_CALCULATEDWIDTH_ATT = new QName("", "calculatedWidth");
-	public static final QName QNAME_CAPS_ATT = new QName("", "caps");
+	public static final QName QNAME_CAPS_ATT = new QName("", "caps");	
+  public static final QName QNAME_CHAPTER_SEPARATOR_ATT = new QName("", "chapter-separator");
+  public static final QName QNAME_CHAPTER_STYLE_ATT = new QName("", "chapter-style");
 	public static final QName QNAME_COLSEP_ATT = new QName("", "colsep");
 	public static final QName QNAME_COLSPAN_ATT = new QName("", "colspan");
 	public static final QName QNAME_COLWIDTH_ATT = new QName("", "colwidth");
