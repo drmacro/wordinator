@@ -87,5 +87,7 @@ public final class DocxConstants {
 	public static final QName QNAME_P_ELEM = new QName(SIMPLE_WP_NS, "p");
 	public static final QName QNAME_ROW_ELEM = new QName(SIMPLE_WP_NS, "row");
 	public static final QName QNAME_VSPAN_ELEM = new QName(SIMPLE_WP_NS, "vspan");
+  public static final String PROPERTY_VALUE_CONTINUOUS = "continuous";
+  public static final String PROPERTY_PAGEBREAK = "pagebreak";
   
 }

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/css" href="../../../../main/doctypes/simplewpml/css/simplewpml.css"?>
+<?xml-model href="../../../main/doctypes/simplewpml/simplewpml.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
 <document xmlns="urn:ns:wordinator:simplewpml">
   <page-sequence-properties>
     <page-number-properties format="custom" start="1" xslt-format="1."/>
@@ -152,8 +153,7 @@
         <run>Link to bookmark 1</run>
       </hyperlink>
       <run>. After the hyperlink.</run>
-    </p>
-    <section>
+    </p>    <section type="continuous">
       <page-sequence-properties>
         <headers-and-footers>
           <header>
@@ -174,6 +174,88 @@
         </p>
         <p>
           <run>Page numbers should be lowercase Roman numerals.</run>
+        </p>
+        <p page-break-before="true"><run>There should be a page break before this paragraph (@page-break-before="true")</run></p>
+        <p>
+          <run>A table (cols: 2in, 3in):</run>
+        </p>
+        <table width="100%" 
+          colsep="0" frame="topbot" rowsep="1" tagName="simpletable">
+          <cols>
+            <col colwidth="2in"/>
+            <col colwidth="3in"/>
+          </cols>
+          <thead>
+            <tr>
+              <td>
+                <p>
+                  <run>Header 1</run>
+                </p>
+              </td>
+              <td>
+                <p>
+                  <run>Header 2</run>
+                </p>
+              </td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <p>
+                  <run>R1C1</run>
+                </p>
+              </td>
+              <td>
+                <p>
+                  <run>R1C2</run>
+                </p>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <p>
+                  <run>R2C1</run>
+                </p>
+              </td>
+              <td>
+                <p>
+                  <run>R2C2</run>
+                </p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <p>
+          <run>After the table: A hyperlink: </run>
+          <hyperlink href="#bm1">
+            <run>Link to bookmark 1</run>
+          </hyperlink>
+          <run>. After the hyperlink.</run>
+        </p>
+      </body>
+    </section>
+    <section type="nextPage">
+      <page-sequence-properties>
+        <headers-and-footers>
+          <header>
+            <p>
+              <run>Header for Second Section</run>
+            </p>              
+          </header>
+          <footer>
+            <p>
+              <page-number-ref format="lowerRoman"/>
+            </p>
+          </footer>
+        </headers-and-footers>
+      </page-sequence-properties>
+      <body>
+        <p style="Heading 1">
+          <run>Second Section</run>
+        </p>
+        <p>
+          <run>This section should start on a new page. Page numbers should be lowercase Roman numerals.</run>
         </p>
         <p>
           <run>A table (cols: 2in, 3in):</run>

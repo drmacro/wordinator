@@ -133,21 +133,38 @@ public class DocxGenerator {
 		
 	}
 
-	/**
+  /**
+   * Process the elements in &lt;body&gt;
+   * @param doc Document to add paragraphs to.
+   * @param xml Body element
+   * @throws DocxGenerationException
+   */
+	private void handleBody(XWPFDocument doc, XmlObject object) throws DocxGenerationException {
+    handleBody(doc, object, new HashMap<String, String>());    
+  }
+
+  /**
 	 * Process the elements in &lt;body&gt;
 	 * @param doc Document to add paragraphs to.
 	 * @param xml Body element
+	 * @param sectionProperties Properties for the section to set on the first paragraph.
 	 * @throws DocxGenerationException
 	 */
-	private void handleBody(XWPFDocument doc, XmlObject xml) throws DocxGenerationException {
+	private void handleBody(
+	    XWPFDocument doc, 
+	    XmlObject xml, 
+	    Map<String, String> sectionProperties) 
+	        throws DocxGenerationException {
 		XmlCursor cursor = xml.newCursor();
+		Map<String, String> additionalProperties = new HashMap<String, String>();
+		additionalProperties.putAll(sectionProperties);
 		if (cursor.toFirstChild()) {
 			do {
 				String tagName = cursor.getName().getLocalPart();
 				String namespace = cursor.getName().getNamespaceURI();
 				if ("p".equals(tagName)) {
 					XWPFParagraph p = doc.createParagraph();
-					makeParagraph(p, cursor);
+					makeParagraph(p, cursor, additionalProperties);
 				} else if ("section".equals(tagName)) {
 					handleSection(doc, cursor.getObject());
 				} else if ("table".equals(tagName)) {
@@ -159,6 +176,8 @@ public class DocxGenerator {
 				} else {
 					log.warn("handleBody(): Unexpected element {" + namespace + "}:'" + tagName + "' in <body>. Ignored.");
 				}
+				// Reset the additional properties
+				additionalProperties = new HashMap<String, String>();
 			} while (cursor.toNextSibling());
 		}
 	}
@@ -172,16 +191,32 @@ public class DocxGenerator {
 	private void handleSection(XWPFDocument doc, XmlObject xml) throws DocxGenerationException {
 		XmlCursor cursor = xml.newCursor();
 		
+		/**
+		 * From the Office Open documentation for w:sectPr:
+		 * 
+		 *   For all sections except the final section, the sectPr
+		 *   element is stored as a child element of the last paragraph in the section. 
+		 *   For the final section, this information is 
+		 *   stored as the last child element of the body element,
+		 * 
+		 * This means we need to create a w:sectPr element and then put it in the last
+		 * paragraph of all but final sections.
+		 */
+		
 		log.warn("Section-level headers and footers and page numbering not yet implemented.");
 		// FIXME: The section-specific properties go in the first paragraph of the section.
 		cursor.push();
+    Map<String, String> sectionProperties = new HashMap<String, String>();
+    sectionProperties.put(DocxConstants.PROPERTY_PAGEBREAK, cursor.getAttributeText(DocxConstants.QNAME_TYPE_ATT));
 		if (false && cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "page-sequence-properties"))) {
 			setupPageSequence(doc, cursor.getObject());
 		}
 		cursor.pop();
 		
+		
+		
 		cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "body"));
-		handleBody(doc, cursor.getObject());
+		handleBody(doc, cursor.getObject(), sectionProperties);
 		
 	}
 
@@ -288,7 +323,7 @@ public class DocxGenerator {
 		}
 	}
 
-	/**
+  /**
 	 * Get the header or footer type for the element at the cursor.
 	 * @param cursor
 	 * @return {@link HeaderFooterType}
@@ -305,13 +340,28 @@ public class DocxGenerator {
 		return type;
 	}
 
+  /**
+   * Construct a Word paragraph
+   * @param para The Word paragraph to construct
+   * @param cursor Cursor pointing at the <p> element the paragraph will reflect.
+   * @return Paragraph (should be same object as passed in).
+   */
+  private void makeParagraph(XWPFParagraph p, XmlCursor cursor) throws DocxGenerationException {
+    makeParagraph(p, cursor, null);
+  }
+
 	/**
 	 * Construct a Word paragraph
 	 * @param para The Word paragraph to construct
 	 * @param cursor Cursor pointing at the <p> element the paragraph will reflect.
+	 * @param additionalProperties Additional properties to add to the paragraph, i.e., from sections
 	 * @return Paragraph (should be same object as passed in).
 	 */
-	private XWPFParagraph makeParagraph(XWPFParagraph para, XmlCursor cursor) throws DocxGenerationException {
+	private XWPFParagraph makeParagraph(
+	    XWPFParagraph para, 
+	    XmlCursor cursor, 
+	    Map<String, String> additionalProperties) 
+	        throws DocxGenerationException {
 		
 		cursor.push();
 		String styleName = cursor.getAttributeText(DocxConstants.QNAME_STYLE_ATT);
@@ -328,6 +378,31 @@ public class DocxGenerator {
 			para.setStyle(styleId);
 		}
 		
+		
+		if (additionalProperties != null) {
+		  for (String propName : additionalProperties.keySet()) {
+		    String value = additionalProperties.get(propName);
+		    if (value != null) {
+		      // FIXME: This is a quick hack. Need a more general
+		      // and elegant way to manage setting of properties.
+		      if (DocxConstants.PROPERTY_PAGEBREAK.equals(propName)) {
+		        if (DocxConstants.PROPERTY_VALUE_CONTINUOUS.equals(value)) {
+		          para.setPageBreak(false);
+		        } else {
+		          para.setPageBreak(true);
+		        }
+		      }
+		    }
+		  }
+		}
+
+		// Explicit page break on a paragraph should override the section-level break I would think.
+    String pageBreakBefore = cursor.getAttributeText(DocxConstants.QNAME_PAGE_BREAK_BEFORE_ATT);
+    if (pageBreakBefore != null) {
+      boolean breakValue = Boolean.valueOf(pageBreakBefore);
+      para.setPageBreak(breakValue);
+    }
+
 		if (cursor.toFirstChild()) {
 			do {
 				String tagName = cursor.getName().getLocalPart();

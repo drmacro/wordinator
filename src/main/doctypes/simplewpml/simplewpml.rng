@@ -357,7 +357,6 @@
       </a:documentation>
       <zeroOrMore>
         <choice>
-          <ref name="break"/>
           <ref name="bookmarkStart"/>
           <ref name="bookmarkEnd"/>
           <ref name="fn"/>
