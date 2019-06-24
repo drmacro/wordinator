@@ -260,7 +260,7 @@
         <p>
           <run>A table (cols: 2in, 3in), style="Plain Table 2" (row sep only):</run>
         </p>
-        <table width="100%"  
+        <table width="100%" 
           style="Plain Table 2" 
           tagName="simpletable" >
           <cols>

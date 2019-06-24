@@ -1081,8 +1081,6 @@ public class DocxGenerator {
       table.setStyleID(styleId);
     }
 		
-		
-		
 		setTableFrame(table, cursor);
 		
 		Map<QName, String> defaults = new HashMap<QName, String>();
@@ -1173,11 +1171,13 @@ public class DocxGenerator {
     int frameWidth = 8; // 1pt
 		int frameSpace = 0;
 		String frameColor = "auto";
-		XWPFBorderType frameStyle = XWPFBorderType.SINGLE;
+		XWPFBorderType frameStyle = null;
+		XWPFBorderType defaultBorderType = XWPFBorderType.SINGLE;
 		
 		String frameStyleValue= cursor.getAttributeText(DocxConstants.QNAME_FRAMESTYLE_ATT);
 		if (frameStyleValue != null) {
 		  frameStyle = xwpfBorderType(frameStyleValue);
+		  defaultBorderType = frameStyle;
 		}
 		
 		// FIXME: Set frameStyle using table attributes.
@@ -1217,36 +1217,57 @@ public class DocxGenerator {
 	      leftBorder = XWPFBorderType.NONE;
 	      rightBorder = XWPFBorderType.NONE;
 		  } else if ("all".equals(frameValue)) {
-        // This is the default
+        topBorder = getBorderStyle(frameStyleTop, defaultBorderType);
+        bottomBorder = getBorderStyle(frameStyleBottom, defaultBorderType);;
+        leftBorder = getBorderStyle(frameStyleLeft, defaultBorderType);;;
+        rightBorder = getBorderStyle(frameStyleRight, defaultBorderType);;;
       } else if ("topbot".equals(frameValue)) {
-        topBorder = frameStyleTop;
-        bottomBorder = frameStyleBottom;
+        topBorder = getBorderStyle(frameStyleTop, defaultBorderType);
+        bottomBorder = getBorderStyle(frameStyleBottom, defaultBorderType);;
         leftBorder = XWPFBorderType.NONE;
         rightBorder = XWPFBorderType.NONE;
       } else if ("sides".equals(frameValue)) {
         topBorder = XWPFBorderType.NONE;
         bottomBorder = XWPFBorderType.NONE;
-        leftBorder = frameStyleLeft;
-        rightBorder = frameStyleRight;
+        leftBorder = getBorderStyle(frameStyleLeft, defaultBorderType);;;
+        rightBorder = getBorderStyle(frameStyleRight, defaultBorderType);;;
       } else if ("top".equals(frameValue)) {
-        topBorder = frameStyleTop;
+        topBorder = getBorderStyle(frameStyleTop, defaultBorderType);
         bottomBorder = XWPFBorderType.NONE;
         leftBorder = XWPFBorderType.NONE;
         rightBorder = XWPFBorderType.NONE;
       } else if ("bottom".equals(frameValue)) {
         topBorder = XWPFBorderType.NONE;
-        bottomBorder = frameStyleBottom;
+        bottomBorder = getBorderStyle(frameStyleBottom, defaultBorderType);;
         leftBorder = XWPFBorderType.NONE;
         rightBorder = XWPFBorderType.NONE;
       }
 		  
 		}
-    table.setBottomBorder(bottomBorder, frameWidth, frameSpace, frameColor);
-    table.setTopBorder(topBorder, frameWidth, frameSpace, frameColor);
-    table.setLeftBorder(leftBorder, frameWidth, frameSpace, frameColor);
-    table.setRightBorder(rightBorder, frameWidth, frameSpace, frameColor);
+		if (bottomBorder != null) {
+		  table.setBottomBorder(bottomBorder, frameWidth, frameSpace, frameColor);
+		}
+		if (topBorder != null) {
+		  table.setTopBorder(topBorder, frameWidth, frameSpace, frameColor);
+		}
+		if (leftBorder != null) {
+		  table.setLeftBorder(leftBorder, frameWidth, frameSpace, frameColor);
+		}
+		if (rightBorder != null) {		  
+	    table.setRightBorder(rightBorder, frameWidth, frameSpace, frameColor);
+		}
   }
 	
+  /**
+   * Get the border style, using the default if the explicit style null
+   * @param explicitStyle Explicitly-specified border style. May be null
+   * @param defaultType The default to use if explicit is null
+   * @return The effective border style
+   */
+  private XWPFBorderType getBorderStyle(XWPFBorderType explictType, XWPFBorderType defaultType) {
+    return (explictType == null ? defaultType : explictType);
+  }
+
   /**
    * Get the XWPFBorderType for the specified STBorder value.
    * @param borderValue Border value (e.g., "wave").
@@ -1464,16 +1485,16 @@ public class DocxGenerator {
 	 */
   private void setCellBorders(Map<QName, String> defaults, XmlCursor cursor, CTTcPr ctTcPr) {
     String rowsep = cursor.getAttributeText(DocxConstants.QNAME_ROWSEP_ATT);
-    if (rowsep == null) {
-      rowsep = defaults.get(DocxConstants.QNAME_ROWSEP_ATT);
-    }
     String colsep = cursor.getAttributeText(DocxConstants.QNAME_COLSEP_ATT);
-    if (colsep == null) {
-      colsep = defaults.get(DocxConstants.QNAME_COLSEP_ATT);
-    }
     
     String borderStyleValue = cursor.getAttributeText(DocxConstants.QNAME_BORDER_STYLE_ATT);
-    STBorder.Enum borderStyle = STBorder.SINGLE; // Default
+    String borderStyleBottom = cursor.getAttributeText(DocxConstants.QNAME_BORDER_STYLE_BOTTOM_ATT);
+    String borderStyleTop = cursor.getAttributeText(DocxConstants.QNAME_BORDER_STYLE_TOP_ATT);
+    String borderStyleLeft = cursor.getAttributeText(DocxConstants.QNAME_BORDER_STYLE_LEFT_ATT);
+    String borderStyleRight = cursor.getAttributeText(DocxConstants.QNAME_BORDER_STYLE_RIGHT_ATT);
+
+
+    STBorder.Enum borderStyle = null;
     CTTcBorders borders = ctTcPr.addNewTcBorders();
     CTBorder bottom = borders.addNewBottom();
     CTBorder top = borders.addNewTop();
@@ -1482,6 +1503,32 @@ public class DocxGenerator {
 
     if (borderStyleValue != null) {
       borderStyle = STBorder.Enum.forString(borderStyleValue);
+    }
+    
+    // Only want to set borders explicitly if they are explicitly
+    // set in the source markup, otherwise, leave unset so that
+    // table styles, can set them.
+    Boolean setBottom, setTop, setLeft, setRight = false;
+    
+    if ("1".equals(rowsep)) {
+      setBottom = setTop = true;
+    }
+    if ("1".equals(colsep)) {
+      setLeft = setRight = true;
+    }
+    
+    // Border style on cell overrides rowsep or colsep on table
+    if (borderStyleBottom != null) {
+      setBottom = true;
+    }
+    if (borderStyleTop != null) {
+      setTop = true;
+    }
+    if (borderStyleLeft != null) {
+      setLeft = true;
+    }
+    if (borderStyleRight != null) {
+      setRight = true;
     }
     
     // Rowsep and colsep values are "0" (no border) and "1" (border).
@@ -1506,22 +1553,18 @@ public class DocxGenerator {
     
     // Borders can be set per edge as well:
     
-    String borderStyleBottom = cursor.getAttributeText(DocxConstants.QNAME_BORDER_STYLE_BOTTOM_ATT);
     if (borderStyleBottom != null) {
       borderStyle = STBorder.Enum.forString(borderStyleBottom);
       bottom.setVal(borderStyle);
     }
-    String borderStyleTop = cursor.getAttributeText(DocxConstants.QNAME_BORDER_STYLE_TOP_ATT);
     if (borderStyleTop != null) {
       borderStyle = STBorder.Enum.forString(borderStyleTop);
       top.setVal(borderStyle);
     }
-    String borderStyleLeft = cursor.getAttributeText(DocxConstants.QNAME_BORDER_STYLE_LEFT_ATT);
     if (borderStyleLeft != null) {
       borderStyle = STBorder.Enum.forString(borderStyleLeft);
       left.setVal(borderStyle);
     }
-    String borderStyleRight = cursor.getAttributeText(DocxConstants.QNAME_BORDER_STYLE_RIGHT_ATT);
     if (borderStyleRight != null) {
       borderStyle = STBorder.Enum.forString(borderStyleRight);
       right.setVal(borderStyle);
