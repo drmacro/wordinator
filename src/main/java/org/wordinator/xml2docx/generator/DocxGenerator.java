@@ -1064,6 +1064,25 @@ public class DocxGenerator {
 		  }
 		}
 		
+    String styleName = cursor.getAttributeText(DocxConstants.QNAME_STYLE_ATT);
+    String styleId = cursor.getAttributeText(DocxConstants.QNAME_STYLEID_ATT);
+    
+    if (null != styleName && null == styleId) {
+      // Look up the style by name:
+      XWPFStyle style = table.getBody().getXWPFDocument().getStyles().getStyleWithName(styleName);
+      if (null != style) {
+        styleId = style.getStyleId();
+      } else {
+        // Try to make a style ID out of the style name:
+        styleId = styleName.replace(" ", "");
+      }
+    }
+    if (null != styleId) {
+      table.setStyleID(styleId);
+    }
+		
+		
+		
 		setTableFrame(table, cursor);
 		
 		Map<QName, String> defaults = new HashMap<QName, String>();

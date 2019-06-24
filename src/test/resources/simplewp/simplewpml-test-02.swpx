@@ -258,10 +258,11 @@
           <run>This section should start on a new page. Page numbers should be lowercase Roman numerals.</run>
         </p>
         <p>
-          <run>A table (cols: 2in, 3in):</run>
+          <run>A table (cols: 2in, 3in), style="Plain Table 2" (row sep only):</run>
         </p>
-        <table width="100%" 
-          colsep="0" frame="topbot" rowsep="1" tagName="simpletable">
+        <table width="100%"  
+          style="Plain Table 2" 
+          tagName="simpletable" >
           <cols>
             <col colwidth="2in"/>
             <col colwidth="3in"/>

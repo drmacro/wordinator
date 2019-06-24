@@ -1099,7 +1099,7 @@
           <ref name="borderstyles"/>
         </attribute>
       </optional>
-      
+      <ref name="style-atts"/>     
     </element>
   </define>
   
