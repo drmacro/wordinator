@@ -82,7 +82,190 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.impl.STOnOffImpl;
  */
 public class DocxGenerator {
 	
-	public static final Logger log = LogManager.getLogger();
+  /**
+   * Holds a set of table border styles
+   *
+   */
+	protected class TableBorderStyles {
+
+	  // Default border type is set by the @borderstyle or @framestyle attribute.
+	  // By default there are no explicit borders.
+    XWPFBorderType defaultBorderType = null;
+    XWPFBorderType topBorder = null;
+    XWPFBorderType bottomBorder = null;
+    XWPFBorderType leftBorder = null; 
+    XWPFBorderType rightBorder = null;
+    XWPFBorderType rowSepBorder = null;
+    XWPFBorderType colSepBorder = null;
+    
+    public TableBorderStyles(
+        XWPFBorderType defaultBorderType, 
+        XWPFBorderType topBorder, 
+        XWPFBorderType bottomBorder,
+        XWPFBorderType leftBorder, 
+        XWPFBorderType rightBorder) {
+      
+    }
+
+    /**
+     * Construct using specified border styles as the initial values.
+     * @param parentBorderStyles Styles to be inherited from parent
+     */
+    public TableBorderStyles(TableBorderStyles parentBorderStyles) {
+      defaultBorderType = parentBorderStyles.getDefaultBorderType();
+      topBorder = parentBorderStyles.getTopBorder();
+      bottomBorder = parentBorderStyles.getBottomBorder();
+      leftBorder = parentBorderStyles.getLeftBorder(); 
+      rightBorder = parentBorderStyles.getRightBorder();
+      rowSepBorder = parentBorderStyles.getRowSepBorder();
+      colSepBorder = parentBorderStyles.getColSepBorder();
+    }
+
+    /**
+     * Construct initial border styles from an element that may specify
+     * border frame style attributes.
+     * @param borderStyleSpecifier XML element that may specify frame style attributes (table, td)
+     */
+    public TableBorderStyles(XmlObject borderStyleSpecifier) {
+      
+      XmlCursor cursor = borderStyleSpecifier.newCursor();
+      String tagname = cursor.getName().getLocalPart(); 
+      String styleValue = null;    
+      String styleBottomValue= null;
+      String styleTopValue= null;
+      String styleLeftValue= null;
+      String styleRightValue= null;
+      
+      if ("table".equals(tagname)) {
+        styleValue = cursor.getAttributeText(DocxConstants.QNAME_FRAMESTYLE_ATT);
+        styleBottomValue= cursor.getAttributeText(DocxConstants.QNAME_FRAMESTYLE_BOTTOM_ATT);
+        styleTopValue= cursor.getAttributeText(DocxConstants.QNAME_FRAMESTYLE_TOP_ATT);
+        styleLeftValue= cursor.getAttributeText(DocxConstants.QNAME_FRAMESTYLE_LEFT_ATT);
+        styleRightValue= cursor.getAttributeText(DocxConstants.QNAME_FRAMESTYLE_RIGHT_ATT);
+      } else {
+        styleValue = cursor.getAttributeText(DocxConstants.QNAME_BORDER_STYLE_ATT);
+        styleBottomValue= cursor.getAttributeText(DocxConstants.QNAME_BORDER_STYLE_BOTTOM_ATT);
+        styleTopValue= cursor.getAttributeText(DocxConstants.QNAME_BORDER_STYLE_TOP_ATT);
+        styleLeftValue= cursor.getAttributeText(DocxConstants.QNAME_BORDER_STYLE_LEFT_ATT);
+        styleRightValue= cursor.getAttributeText(DocxConstants.QNAME_BORDER_STYLE_RIGHT_ATT);
+      }
+
+      if (styleValue != null) {
+        setDefaultBorderType(xwpfBorderType(styleValue));
+      }
+      
+      if (styleBottomValue != null) {
+        setBottomBorder(xwpfBorderType(styleBottomValue));
+      }
+      if (styleTopValue != null) {
+        setTopBorder(xwpfBorderType(styleTopValue));
+      }
+      if (styleLeftValue != null) {
+        setLeftBorder(xwpfBorderType(styleLeftValue));
+      }
+      if (styleRightValue != null) {
+        setRightBorder(xwpfBorderType(styleRightValue));
+      }
+    }
+
+    public XWPFBorderType getDefaultBorderType() {
+      return defaultBorderType;
+    }
+
+    public void setDefaultBorderType(XWPFBorderType defaultBorderType) {
+      this.defaultBorderType = defaultBorderType;
+      if (getBottomBorder() == null) setBottomBorder(defaultBorderType);
+      if (getTopBorder() == null) setTopBorder(defaultBorderType);
+      if (getLeftBorder() == null) setLeftBorder(defaultBorderType);
+      if (getRightBorder() == null) setRightBorder(defaultBorderType);
+    }
+
+    public XWPFBorderType getTopBorder() {
+      return topBorder;
+    }
+
+    public void setTopBorder(XWPFBorderType topBorder) {
+      this.topBorder = topBorder;
+    }
+
+    public XWPFBorderType getBottomBorder() {
+      return bottomBorder;
+    }
+    
+    public STBorder.Enum getBottomBorderEnum() {
+      return getBorderEnumForType(getBottomBorder());
+    }
+    public STBorder.Enum getTopBorderEnum() {
+      return getBorderEnumForType(getTopBorder());
+    }
+    public STBorder.Enum getLeftBorderEnum() {
+      return getBorderEnumForType(getLeftBorder());
+    }
+    public STBorder.Enum getRightBorderEnum() {
+      return getBorderEnumForType(getRightBorder());
+    }
+    
+    public STBorder.Enum getBorderEnumForType(XWPFBorderType type) {
+      STBorder.Enum result = null;
+      if (type != null) {
+        result = stBorderType(type);
+      }
+      return result;
+    }
+
+    public void setBottomBorder(XWPFBorderType bottomBorder) {
+      this.bottomBorder = bottomBorder;
+    }
+
+    public XWPFBorderType getLeftBorder() {
+      return leftBorder;
+    }
+
+    public void setLeftBorder(XWPFBorderType leftBorder) {
+      this.leftBorder = leftBorder;
+    }
+
+    public XWPFBorderType getRightBorder() {
+      return rightBorder;
+    }
+
+    public void setRightBorder(XWPFBorderType rightBorder) {
+      this.rightBorder = rightBorder;
+    }
+
+    public XWPFBorderType getRowSepBorder() {
+      return rowSepBorder;
+    }
+
+    public void setRowSepBorder(XWPFBorderType rowSepBorder) {
+      this.rowSepBorder = rowSepBorder;
+    }
+
+    public XWPFBorderType getColSepBorder() {
+      return colSepBorder;
+    }
+
+    public void setColSepBorder(XWPFBorderType colSepBorder) {
+      this.colSepBorder = colSepBorder;
+    }
+
+    /**
+     * Determine if any borders are explicitly set
+     * @return True if one or more borders have a defined style.
+     */
+    public boolean hasBorders() {
+      boolean result = 
+              getDefaultBorderType() != null ||
+              getBottomBorder() != null ||
+              getTopBorder() != null ||
+              getLeftBorder() != null ||
+              getRightBorder() != null;
+      return result;
+    }
+
+  }
+
+  public static final Logger log = LogManager.getLogger();
 
 	private File outFile;
 	private int dotsPerInch = 72; /* DPI */
@@ -1081,7 +1264,7 @@ public class DocxGenerator {
       table.setStyleID(styleId);
     }
 		
-		setTableFrame(table, cursor);
+		TableBorderStyles borderStyles = setTableFrame(table, cursor);
 		
 		Map<QName, String> defaults = new HashMap<QName, String>();
 		String rowsep = cursor.getAttributeText(DocxConstants.QNAME_ROWSEP_ATT);
@@ -1097,14 +1280,23 @@ public class DocxGenerator {
     int borderSpace = 8; // ???
     String borderColor = "auto";
     
+    // Rowsep is either 1 or 0
+    // Default for new tables is all frames and internal borders so need
+    // to explicitly set to none if rowsep or colsep is 0.
     if (rowsep != null || colsep != null) {
-      if (rowsep != null) {
-        XWPFBorderType borderType = (rowsep.equals("1") ? XWPFBorderType.SINGLE : XWPFBorderType.NONE);
-        table.setInsideHBorder(borderType, borderWidth, borderSpace, borderColor);
+      if ("1".equals(rowsep)) {
+        borderStyles.setRowSepBorder(borderStyles.getDefaultBorderType());
+        table.setInsideHBorder(borderStyles.getRowSepBorder(), borderWidth, borderSpace, borderColor);        
+      } else if (rowsep != null) {
+        borderStyles.setRowSepBorder(XWPFBorderType.NONE);
+        table.setInsideHBorder(borderStyles.getRowSepBorder(), 0, 0, borderColor);        
       }
-      if (colsep != null) {
-        XWPFBorderType borderType = (rowsep.equals("1") ? XWPFBorderType.SINGLE : XWPFBorderType.NONE);
-        table.setInsideVBorder(borderType, borderWidth, borderSpace, borderColor);
+      if ("1.".equals(colsep)) {
+        borderStyles.setColSepBorder(borderStyles.getDefaultBorderType());
+        table.setInsideVBorder(borderStyles.getColSepBorder(), borderWidth, borderSpace, borderColor);
+      } else if (colsep !=  null) {
+        borderStyles.setRowSepBorder(XWPFBorderType.NONE);
+        table.setInsideVBorder(borderStyles.getRowSepBorder(), 0, 0, borderColor);        
       }
     }
 
@@ -1118,8 +1310,6 @@ public class DocxGenerator {
 		if (cursor.toFirstChild()) {
 			do {
 				TableColumnDefinition colDef = colDefs.newColumnDef();
-				
-				// FIXME: Set other column properties, such as row and column separators
 				
 				String width = cursor.getAttributeText(DocxConstants.QNAME_COLWIDTH_ATT);
 				if (null != width) {
@@ -1167,48 +1357,21 @@ public class DocxGenerator {
 		table.removeRow(0); // Remove the first row that's always added automatically (FIXME: This may not be needed any more)
 	}
 
-  private void setTableFrame(XWPFTable table, XmlCursor cursor) {
+  private TableBorderStyles setTableFrame(XWPFTable table, XmlCursor cursor) {
     int frameWidth = 8; // 1pt
 		int frameSpace = 0;
 		String frameColor = "auto";
-		XWPFBorderType frameStyle = null;
-		XWPFBorderType defaultBorderType = XWPFBorderType.SINGLE;
 		
-		String frameStyleValue= cursor.getAttributeText(DocxConstants.QNAME_FRAMESTYLE_ATT);
-		if (frameStyleValue != null) {
-		  frameStyle = xwpfBorderType(frameStyleValue);
-		  defaultBorderType = frameStyle;
-		}
+    String frameValue = cursor.getAttributeText(DocxConstants.QNAME_FRAME_ATT);
+    
+    TableBorderStyles borderStyles = 
+        new TableBorderStyles(cursor.getObject());
 		
-		// FIXME: Set frameStyle using table attributes.
-    XWPFBorderType frameStyleBottom = frameStyle;
-    XWPFBorderType frameStyleTop = frameStyle;
-    XWPFBorderType frameStyleLeft = frameStyle;
-    XWPFBorderType frameStyleRight = frameStyle;
-
-    String frameStyleBottomValue= cursor.getAttributeText(DocxConstants.QNAME_FRAMESTYLE_BOTTOM_ATT);
-    if (frameStyleBottomValue != null) {
-      frameStyleBottom = xwpfBorderType(frameStyleBottomValue);
-    }
-    String frameStyleTopValue= cursor.getAttributeText(DocxConstants.QNAME_FRAMESTYLE_TOP_ATT);
-    if (frameStyleTopValue != null) {
-      frameStyleTop = xwpfBorderType(frameStyleTopValue);
-    }
-    String frameStyleLeftValue= cursor.getAttributeText(DocxConstants.QNAME_FRAMESTYLE_LEFT_ATT);
-    if (frameStyleLeftValue != null) {
-      frameStyleLeft = xwpfBorderType(frameStyleLeftValue);
-    }
-    String frameStyleRightValue= cursor.getAttributeText(DocxConstants.QNAME_FRAMESTYLE_RIGHT_ATT);
-    if (frameStyleRightValue != null) {
-      frameStyleRight = xwpfBorderType(frameStyleRightValue);
-    }
-
-		String frameValue = cursor.getAttributeText(DocxConstants.QNAME_FRAME_ATT);
-		
-    XWPFBorderType topBorder = frameStyleTop;
-    XWPFBorderType bottomBorder = frameStyleBottom;
-    XWPFBorderType leftBorder = frameStyleLeft;
-    XWPFBorderType rightBorder = frameStyleRight;
+    XWPFBorderType topBorder = borderStyles.getTopBorder();
+    XWPFBorderType bottomBorder = borderStyles.getBottomBorder();
+    XWPFBorderType leftBorder = borderStyles.getLeftBorder();
+    XWPFBorderType rightBorder = borderStyles.getRightBorder();
+    
 
 		if (frameValue != null) {
 		  if ("none".equals(frameValue)) {
@@ -1217,28 +1380,28 @@ public class DocxGenerator {
 	      leftBorder = XWPFBorderType.NONE;
 	      rightBorder = XWPFBorderType.NONE;
 		  } else if ("all".equals(frameValue)) {
-        topBorder = getBorderStyle(frameStyleTop, defaultBorderType);
-        bottomBorder = getBorderStyle(frameStyleBottom, defaultBorderType);;
-        leftBorder = getBorderStyle(frameStyleLeft, defaultBorderType);;;
-        rightBorder = getBorderStyle(frameStyleRight, defaultBorderType);;;
+        topBorder = getBorderStyle(topBorder, borderStyles.getDefaultBorderType());
+        bottomBorder = getBorderStyle(bottomBorder, borderStyles.getDefaultBorderType());
+        leftBorder = getBorderStyle(leftBorder, borderStyles.getDefaultBorderType());
+        rightBorder = getBorderStyle(rightBorder, borderStyles.getDefaultBorderType());
       } else if ("topbot".equals(frameValue)) {
-        topBorder = getBorderStyle(frameStyleTop, defaultBorderType);
-        bottomBorder = getBorderStyle(frameStyleBottom, defaultBorderType);;
+        topBorder = getBorderStyle(topBorder, borderStyles.getDefaultBorderType());
+        bottomBorder = getBorderStyle(bottomBorder, borderStyles.getDefaultBorderType());
         leftBorder = XWPFBorderType.NONE;
         rightBorder = XWPFBorderType.NONE;
       } else if ("sides".equals(frameValue)) {
         topBorder = XWPFBorderType.NONE;
         bottomBorder = XWPFBorderType.NONE;
-        leftBorder = getBorderStyle(frameStyleLeft, defaultBorderType);;;
-        rightBorder = getBorderStyle(frameStyleRight, defaultBorderType);;;
+        leftBorder = getBorderStyle(leftBorder, borderStyles.getDefaultBorderType());
+        rightBorder = getBorderStyle(rightBorder, borderStyles.getDefaultBorderType());
       } else if ("top".equals(frameValue)) {
-        topBorder = getBorderStyle(frameStyleTop, defaultBorderType);
+        topBorder = getBorderStyle(topBorder, borderStyles.getDefaultBorderType());
         bottomBorder = XWPFBorderType.NONE;
         leftBorder = XWPFBorderType.NONE;
         rightBorder = XWPFBorderType.NONE;
       } else if ("bottom".equals(frameValue)) {
         topBorder = XWPFBorderType.NONE;
-        bottomBorder = getBorderStyle(frameStyleBottom, defaultBorderType);;
+        bottomBorder = getBorderStyle(bottomBorder, borderStyles.getDefaultBorderType());
         leftBorder = XWPFBorderType.NONE;
         rightBorder = XWPFBorderType.NONE;
       }
@@ -1256,6 +1419,7 @@ public class DocxGenerator {
 		if (rightBorder != null) {		  
 	    table.setRightBorder(rightBorder, frameWidth, frameSpace, frameColor);
 		}
+    return borderStyles;
   }
 	
   /**
@@ -1367,13 +1531,109 @@ public class DocxGenerator {
   }
 
   /**
+   * Get the STBorderType.Enum for the specified STBorder value.
+   * @param borderValue Border value (e.g., "wave").
+   * @return Corresponding XWPFBorderType value or null if there is no corresponding value.
+   */
+  private STBorder.Enum stBorderType(XWPFBorderType borderType) {
+    
+    // There's not a direct correspondence between STBorder int values
+    // and XWPFBorderType so just building a switch statement.
+    STBorder.Enum stBorder = null;
+    switch (borderType) {
+    case DOT_DASH:
+      stBorder = STBorder.DOT_DASH;
+      break;
+    case DASH_SMALL_GAP:
+      stBorder = STBorder.DASH_SMALL_GAP;
+      break;
+    case DASH_DOT_STROKED:
+      stBorder = STBorder.DASH_DOT_STROKED;
+      break;
+    case DASHED:
+      stBorder = STBorder.DASHED;
+      break;
+    case DOT_DOT_DASH:
+      stBorder = STBorder.DOT_DOT_DASH;
+      break;
+    case DOTTED:
+      stBorder = STBorder.DOTTED;
+      break;
+    case DOUBLE:
+      stBorder = STBorder.DOUBLE;
+      break;
+    case DOUBLE_WAVE:
+      stBorder = STBorder.DOUBLE_WAVE;
+      break;
+    case INSET:
+      stBorder = STBorder.INSET;
+      break;
+    case NIL:
+      stBorder = STBorder.NIL;
+      break;
+    case NONE:
+      stBorder = STBorder.NONE;
+      break;
+    case OUTSET:
+      stBorder = STBorder.OUTSET;
+      break;
+    case SINGLE:
+      stBorder = STBorder.SINGLE;
+      break;
+    case THICK:
+      stBorder = STBorder.THICK;
+      break;
+    case THICK_THIN_LARGE_GAP:
+      stBorder = STBorder.THICK_THIN_LARGE_GAP;
+      break;
+    case THICK_THIN_MEDIUM_GAP:
+      stBorder = STBorder.THICK_THIN_MEDIUM_GAP;
+      break;
+    case THICK_THIN_SMALL_GAP:
+      stBorder = STBorder.THICK_THIN_SMALL_GAP;
+      break;
+    case THIN_THICK_LARGE_GAP:
+      stBorder = STBorder.THIN_THICK_LARGE_GAP;
+      break;
+    case THIN_THICK_MEDIUM_GAP:
+      stBorder = STBorder.THIN_THICK_MEDIUM_GAP;
+      break;
+    case THIN_THICK_SMALL_GAP:
+      stBorder = STBorder.THIN_THICK_SMALL_GAP;
+      break;
+    case THIN_THICK_THIN_LARGE_GAP:
+      stBorder = STBorder.THIN_THICK_THIN_LARGE_GAP;
+      break;
+    case THIN_THICK_THIN_MEDIUM_GAP:
+      stBorder = STBorder.THIN_THICK_THIN_MEDIUM_GAP;
+      break;
+    case THIN_THICK_THIN_SMALL_GAP:
+      stBorder = STBorder.THIN_THICK_THIN_SMALL_GAP;
+      break;
+    case THREE_D_EMBOSS:
+      stBorder = STBorder.THREE_D_EMBOSS;
+      break;
+    case THREE_D_ENGRAVE:
+      stBorder = STBorder.THREE_D_ENGRAVE;
+      break;
+    case TRIPLE:
+      stBorder = STBorder.TRIPLE;
+      break;
+    case WAVE:
+      stBorder = STBorder.WAVE;
+      break;    
+    }
+    return stBorder;
+  }
+
+  /**
 	 * Construct a table row
 	 * @param table The table to add the row to
 	 * @param xml The <row> element to add to the table
 	 * @param colDefs Column definitions
 	 * @param rowSpanManager Manages setting vertical spanning across multiple rows.
 	 * @param defaults Defaults inherited from the table (or elsewhere)
-	 * @return Constructed row object
+   * @return Constructed row object
 	 * @throws DocxGenerationException 
 	 */
 	private XWPFTableRow makeTableRow(
@@ -1385,9 +1645,7 @@ public class DocxGenerator {
 					throws DocxGenerationException {
 		XmlCursor cursor = xml.newCursor();
 		XWPFTableRow row = table.createRow();
-		
-		// FIXME: Handle attributes on rows (rowsep, colsep, etc.)
-		
+				
 		cursor.push();
 		cursor.toChild(DocxConstants.QNAME_TD_ELEM);
 		int cellCtr = 0;
@@ -1406,7 +1664,7 @@ public class DocxGenerator {
 			String colspan = cursor.getAttributeText(DocxConstants.QNAME_COLSPAN_ATT);
 			String rowspan = cursor.getAttributeText(DocxConstants.QNAME_ROWSPAN_ATT);
 			
-			setCellBorders(defaults, cursor, ctTcPr);            
+			setCellBorders(cursor, ctTcPr);            
 			
 			try {
 				String widthValue = cursor.getAttributeText(DocxConstants.QNAME_WIDTH_ATT);
@@ -1479,95 +1737,41 @@ public class DocxGenerator {
 	
 	/**
 	 * Set the borders on the cells.
-	 * @param defaults Table-level defaults
 	 * @param cursor cursor for the table cell markup
 	 * @param ctTcPr Table cell style properties
+	 * @return 
 	 */
-  private void setCellBorders(Map<QName, String> defaults, XmlCursor cursor, CTTcPr ctTcPr) {
-    String rowsep = cursor.getAttributeText(DocxConstants.QNAME_ROWSEP_ATT);
-    String colsep = cursor.getAttributeText(DocxConstants.QNAME_COLSEP_ATT);
+  private void setCellBorders(XmlCursor cursor, CTTcPr ctTcPr) {
     
-    String borderStyleValue = cursor.getAttributeText(DocxConstants.QNAME_BORDER_STYLE_ATT);
-    String borderStyleBottom = cursor.getAttributeText(DocxConstants.QNAME_BORDER_STYLE_BOTTOM_ATT);
-    String borderStyleTop = cursor.getAttributeText(DocxConstants.QNAME_BORDER_STYLE_TOP_ATT);
-    String borderStyleLeft = cursor.getAttributeText(DocxConstants.QNAME_BORDER_STYLE_LEFT_ATT);
-    String borderStyleRight = cursor.getAttributeText(DocxConstants.QNAME_BORDER_STYLE_RIGHT_ATT);
-
-
-    STBorder.Enum borderStyle = null;
-    CTTcBorders borders = ctTcPr.addNewTcBorders();
-    CTBorder bottom = borders.addNewBottom();
-    CTBorder top = borders.addNewTop();
-    CTBorder left = borders.addNewLeft();
-    CTBorder right = borders.addNewRight();
-
-    if (borderStyleValue != null) {
-      borderStyle = STBorder.Enum.forString(borderStyleValue);
-    }
+    // log.debug("setCellBorders(): tag is \"" + cursor.getName().getLocalPart() + "\"");
+    TableBorderStyles borderStyles = new TableBorderStyles(cursor.getObject());
     
-    // Only want to set borders explicitly if they are explicitly
-    // set in the source markup, otherwise, leave unset so that
-    // table styles, can set them.
-    Boolean setBottom, setTop, setLeft, setRight = false;
-    
-    if ("1".equals(rowsep)) {
-      setBottom = setTop = true;
-    }
-    if ("1".equals(colsep)) {
-      setLeft = setRight = true;
-    }
-    
-    // Border style on cell overrides rowsep or colsep on table
-    if (borderStyleBottom != null) {
-      setBottom = true;
-    }
-    if (borderStyleTop != null) {
-      setTop = true;
-    }
-    if (borderStyleLeft != null) {
-      setLeft = true;
-    }
-    if (borderStyleRight != null) {
-      setRight = true;
-    }
-    
-    // Rowsep and colsep values are "0" (no border) and "1" (border).
-    if (rowsep != null || borderStyleValue != null) {
-      if ("1".equals(rowsep) || borderStyleValue != null) {
-        bottom.setVal(borderStyle);
-        top.setVal(borderStyle);
-      } else {
-        bottom.setVal(STBorder.NONE);
-        top.setVal(STBorder.NONE);
+    if (borderStyles.hasBorders()) {
+      CTTcBorders borders = ctTcPr.addNewTcBorders();
+        
+      // Borders can be set per edge:
+      
+      if (borderStyles.getBottomBorder() != null) {
+        CTBorder bottom = borders.addNewBottom();
+        STBorder.Enum val = borderStyles.getBottomBorderEnum();
+        if (val != null) {
+          bottom.setVal(val);
+        } else {
+          log.warn("setCellBorders(): Failed to get STBorder.Enum value for XWPFBorderStyle \"" + borderStyles.getBottomBorder().name() + "\"");
+        }
       }
-    }
-    if (colsep != null || borderStyleValue != null) {
-      if ("1".equals(colsep) || borderStyleValue != null) {
-        left.setVal(borderStyle);
-        right.setVal(borderStyle);
-      } else {
-        left.setVal(STBorder.NONE);
-        right.setVal(STBorder.NONE);
+      if (borderStyles.getTopBorder() != null) {
+        CTBorder top = borders.addNewTop();
+        top.setVal(borderStyles.getTopBorderEnum());
       }
-    }
-    
-    // Borders can be set per edge as well:
-    
-    if (borderStyleBottom != null) {
-      borderStyle = STBorder.Enum.forString(borderStyleBottom);
-      bottom.setVal(borderStyle);
-    }
-    if (borderStyleTop != null) {
-      borderStyle = STBorder.Enum.forString(borderStyleTop);
-      top.setVal(borderStyle);
-    }
-    if (borderStyleLeft != null) {
-      borderStyle = STBorder.Enum.forString(borderStyleLeft);
-      left.setVal(borderStyle);
-    }
-    if (borderStyleRight != null) {
-      borderStyle = STBorder.Enum.forString(borderStyleRight);
-      right.setVal(borderStyle);
+      if (borderStyles.getLeftBorder() != null) {
+        CTBorder left = borders.addNewLeft();
+        left.setVal(borderStyles.getLeftBorderEnum());
+      }
+      if (borderStyles.getRightBorder() != null) {
+        CTBorder right = borders.addNewRight();
+        right.setVal(borderStyles.getRightBorderEnum());
+      }
     }
   }
 

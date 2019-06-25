@@ -62,9 +62,9 @@
           </cols>
           <tbody>
             <tr>
-              <td>
+              <td borderstylebottom="dashed">
                 <p>
-                  <run>R1 C1</run>
+                  <run>R1 C1 borderstylebottom="dashed"</run>
                 </p>
               </td>
               <td>
