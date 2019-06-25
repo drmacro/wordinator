@@ -64,6 +64,9 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectType;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSimpleField;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTStyle;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTbl;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblPr;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblWidth;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTcBorders;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTcPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTVMerge;
@@ -1235,17 +1238,10 @@ public class DocxGenerator {
 		
 		String widthValue = cursor.getAttributeText(DocxConstants.QNAME_WIDTH_ATT);
 		if (null != widthValue) {
-		  if (widthValue.endsWith("%") || widthValue.equals("auto")) {
-		    table.setWidth(widthValue);
-		  } else {
-  			try {
-  			  int twips = Measurement.toTwips(widthValue, getDotsPerInch());
-  				table.setWidth(twips);
-  			} catch (Exception e) {
-  				log.warn("makeTable(): " + e.getClass().getSimpleName() + " - " + e.getMessage());
-  			}
-		  }
+		    table.setWidth(getMeasurementValue(widthValue));
 		}
+		
+		setTableIndents(table, cursor);
 		
     String styleName = cursor.getAttributeText(DocxConstants.QNAME_STYLE_ATT);
     String styleId = cursor.getAttributeText(DocxConstants.QNAME_STYLEID_ATT);
@@ -1356,6 +1352,53 @@ public class DocxGenerator {
 		}
 		table.removeRow(0); // Remove the first row that's always added automatically (FIXME: This may not be needed any more)
 	}
+
+  private void setTableIndents(XWPFTable table, XmlCursor cursor) {
+    // Should only have left/right or inside/outside values, not both.
+    
+    CTTbl ctTbl = table.getCTTbl();
+    CTTblPr ctTblPr = (ctTbl.getTblPr());
+    if (ctTblPr == null) {
+      ctTblPr = ctTbl.addNewTblPr();
+    }
+    String leftindentValue = cursor.getAttributeText(DocxConstants.QNAME_LEFTINDENT_ATT);
+    // There only seems to be a way to set the left indent at the CT* level
+//    String rightindentValue = cursor.getAttributeText(DocxConstants.QNAME_RIGHTINDENT_ATT);
+//    String insideindentValue = cursor.getAttributeText(DocxConstants.QNAME_LEFTINDENT_ATT);
+//    String outsideindentValue = cursor.getAttributeText(DocxConstants.QNAME_RIGHTINDENT_ATT);
+        
+    if (leftindentValue != null) {
+      CTTblWidth tblWidth = CTTblWidth.Factory.newInstance();
+      String value = getMeasurementValue(leftindentValue);
+      try {
+        tblWidth.setW(new BigInteger(value));
+        ctTblPr.setTblInd(tblWidth);
+      } catch (Exception e) {
+        log.debug("setTableIndents(): leftindentVale \"" + leftindentValue + "\" not an integer", e);
+      }
+    }
+    
+  }
+
+  /**
+   * Get the word measurement value as either a keyword, a percentage, or a twips integer.
+   * @param measurement The measurement to convert
+   * @return Twips value, percentage, or "auto"
+   */
+  public String getMeasurementValue(String measurement) {
+    String result = "auto";
+    if (measurement.endsWith("%") || measurement.equals("auto")) {
+      result = measurement;
+    } else {
+      try {
+        int twips = Measurement.toTwips(measurement, getDotsPerInch());
+        result = "" + twips;
+      } catch (Exception e) {
+        log.warn("getMeasurementValue(): " + e.getClass().getSimpleName() + " - " + e.getMessage(), e);
+      }
+    }
+    return result;
+  }
 
   private TableBorderStyles setTableFrame(XWPFTable table, XmlCursor cursor) {
     int frameWidth = 8; // 1pt

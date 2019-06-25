@@ -1099,7 +1099,14 @@
           <ref name="borderstyles"/>
         </attribute>
       </optional>
-      <ref name="style-atts"/>     
+      <optional>
+        <attribute name="leftindent">
+          <a:documentation>
+            <p>Specifies the left-side indent for the table.</p>
+          </a:documentation>
+        </attribute>
+      </optional>            
+      <ref name="style-atts"/>    
     </element>
   </define>
   
