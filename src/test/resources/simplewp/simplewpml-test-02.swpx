@@ -249,10 +249,17 @@
             </p>
           </footer>
         </headers-and-footers>
+        <page-size
+          code="234"
+          height="14in"
+          width="11in"
+          orient="landscape"          
+        />          
+        
       </page-sequence-properties>
       <body>
         <p style="Heading 1">
-          <run>Start of Second Section</run>
+          <run>Start of Second Section. It should be landscape and 11 x 14</run>
         </p>
         <p>
           <run>This section should start on a new page. Page numbers should be lowercase Roman numerals.</run>
@@ -315,6 +322,11 @@
           </hyperlink>
           <run>. After the hyperlink.</run>
         </p>
+      </body>
+    </section>
+    <section type="nextPage">
+      <body>
+        <p><run>Last section of the document. Should be 8.5x11, portrait.</run></p>
       </body>
     </section>
   </body>

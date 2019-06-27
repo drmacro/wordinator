@@ -95,9 +95,9 @@ public class Measurement {
 	 * @return Number of twips
 	 * @throws MeasurementException Bad measurement value 
 	 */
-	public static int toTwips(String measurementValue, int dotsPerInch) throws MeasurementException {
+	public static long toTwips(String measurementValue, int dotsPerInch) throws MeasurementException {
 		double points = toPoints(measurementValue, dotsPerInch);
-		return (int) points * 20;
+		return (long) points * 20;
 	}
 
 }

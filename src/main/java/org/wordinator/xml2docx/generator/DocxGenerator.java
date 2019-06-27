@@ -26,7 +26,6 @@ import org.apache.poi.ss.formula.eval.NotImplementedException;
 import org.apache.poi.util.Units;
 import org.apache.poi.wp.usermodel.HeaderFooterType;
 import org.apache.poi.xwpf.usermodel.BreakType;
-import org.apache.poi.xwpf.usermodel.IBodyElement;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.apache.poi.xwpf.usermodel.UnderlinePatterns;
 import org.apache.poi.xwpf.usermodel.XWPFAbstractFootnoteEndnote;
@@ -58,6 +57,7 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTMarkupRange;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTOnOff;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageNumber;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageSz;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTRPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectPr;
@@ -75,6 +75,7 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.STChapterSep;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STMerge;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STNumberFormat;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STOnOff;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.STPageOrientation;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STSectionMark;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STStyleType;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STVerticalAlignRun;
@@ -351,21 +352,17 @@ public class DocxGenerator {
 	    log.debug("handleBody(): starting...");
 	  }
 		XmlCursor cursor = xml.newCursor();
-		XWPFParagraph lastChild = null;
 		if (cursor.toFirstChild()) {
-		  IBodyElement lastElement = null;
 			do {
 				String tagName = cursor.getName().getLocalPart();
 				String namespace = cursor.getName().getNamespaceURI();
 				if ("p".equals(tagName)) {
 					XWPFParagraph p = doc.createParagraph();
-					lastElement = p;
 					makeParagraph(p, cursor);
 				} else if ("section".equals(tagName)) {
 					handleSection(doc, cursor.getObject(), pageSequenceProperties);
 				} else if ("table".equals(tagName)) {
 					XWPFTable table = doc.createTable();
-					lastElement = table;
 					makeTable(table, cursor.getObject());
 				} else if ("object".equals(tagName)) {
 					// FIXME: This is currently unimplemented.
@@ -375,15 +372,9 @@ public class DocxGenerator {
 				}
 			} while (cursor.toNextSibling());
 			
-			if (lastElement != null) {
-			  if (!(lastElement instanceof XWPFParagraph)) {
-			    lastChild = doc.createParagraph();
-			  } else {
-			    lastChild = (XWPFParagraph)lastElement;
-			  }
-			}
 		}
-		return lastChild;
+    // The section properties always go on an empty paragraph.
+		return doc.createParagraph();
 	}
 
 	/**
@@ -453,6 +444,48 @@ public class DocxGenerator {
       // constructHeadersAndFooters(doc, cursor.getObject());
     }
     cursor.pop();
+    cursor.push();
+    if (cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "page-size"))) {
+      setPageSize(cursor, sectPr);
+    }
+    cursor.pop();
+  }
+
+  private void setPageSize(XmlCursor cursor, CTSectPr sectPr) {
+    
+    CTPageSz pageSize = (sectPr.isSetPgSz() ? sectPr.getPgSz() : sectPr.addNewPgSz());
+    String codeValue = cursor.getAttributeText(DocxConstants.QNAME_CODE_ATT);
+    if (codeValue != null) {
+      try {
+        long code = Long.parseLong(codeValue);
+        pageSize.setCode(BigInteger.valueOf(code));
+      } catch (Exception e) {
+        log.warn("setPageSize(): Value \"" + codeValue + " for attribute \"code\" is not a decimal number");
+      }
+    }
+    String orientValue = cursor.getAttributeText(DocxConstants.QNAME_ORIENT_ATT);
+    if (orientValue != null) {
+      pageSize.setOrient(STPageOrientation.Enum.forString(orientValue));
+    }
+    String widthVal = cursor.getAttributeText(DocxConstants.QNAME_WIDTH_ATT);
+    if (null != widthVal) {
+      try {
+        long width = Measurement.toTwips(widthVal, getDotsPerInch());
+        pageSize.setW(BigInteger.valueOf(width));
+      } catch (MeasurementException e) {
+        log.warn("setPageSize(): Value \"" + widthVal + " for attribute \"width\" cannot be converted to a twips value");
+      }
+    }
+
+    String heightVal = cursor.getAttributeText(DocxConstants.QNAME_HEIGHT_ATT);
+    if (null != heightVal) {
+      try {
+        long height = Measurement.toTwips(heightVal, getDotsPerInch());
+        pageSize.setH(BigInteger.valueOf(height));
+      } catch (MeasurementException e) {
+        log.warn("setPageSize(): Value \"" + heightVal + " for attribute \"height\" cannot be converted to a twips value");
+      }
+    }
   }
 
   /**
@@ -475,6 +508,11 @@ public class DocxGenerator {
 			constructHeadersAndFooters(doc, cursor.getObject());
 		}
 		cursor.pop();
+    cursor.push();
+    if (cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "page-size"))) {
+      setPageSize(cursor, sectPr);
+    }
+    cursor.pop();
 		
 	}
 
@@ -1391,7 +1429,7 @@ public class DocxGenerator {
       result = measurement;
     } else {
       try {
-        int twips = Measurement.toTwips(measurement, getDotsPerInch());
+        long twips = Measurement.toTwips(measurement, getDotsPerInch());
         result = "" + twips;
       } catch (Exception e) {
         log.warn("getMeasurementValue(): " + e.getClass().getSimpleName() + " - " + e.getMessage(), e);

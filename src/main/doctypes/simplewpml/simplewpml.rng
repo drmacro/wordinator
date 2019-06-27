@@ -48,7 +48,6 @@
       <a:documentation>
         <p>Specifies the properties of the page sequence, including headers and footers, page numbering, and page 
         geometry.</p>
-        <fixme>Add chapter number related properties.</fixme>
       </a:documentation>
       <optional>
         <ref name="page-number-properties"/>
@@ -62,6 +61,37 @@
       <optional>
         <ref name="valign-att"/>
       </optional>
+      <optional>
+        <ref name="page-size"/>
+      </optional>
+    </element>
+  </define>
+  
+  <define name="page-size">
+    <element name="page-size" ns="urn:ns:wordinator:simplewpml">
+      <a:documentation>
+        <p>Defines the page geometry details.</p>
+        <p>See 17.6.13 pgSz (Page Size)</p>
+      </a:documentation>
+      <optional>
+        <attribute name="code">
+          <a:documentation>
+            <p>The printer paper code. This code is stored solely to show a description for the current paper size.</p>
+          </a:documentation>
+        </attribute>
+      </optional>
+      <optional> 
+        <attribute name="orient">
+          <a:documentation>
+            <p>Specifies the orientation of all pages in this section.</p>            
+          </a:documentation>
+          <choice>
+            <value>portrait</value>
+            <value>landscape</value>
+          </choice>
+        </attribute>
+      </optional>
+      <ref name="width-height-atts"/>
     </element>
   </define>
   
@@ -895,39 +925,43 @@
       <optional>
         <ref name="tagName.att"/>
       </optional>
-      <optional>
-        <attribute name="width">
-          <a:documentation>
-            <p>The width in some unit. If no units are provided then the unit is pixels.</p>
-            <p>Unit support is processor dependent but processors should support at least:</p>
-            <ul>
-              <li>px - pixels</li>
-              <li>pt - points (72/inch)</li>
-              <li>in - inches</li>
-              <li>pc - picas (6/inch)</li>
-              <li>mm - millimeters</li>
-              <li>cm - centimeters</li>
-            </ul>
-          </a:documentation>
-        </attribute>
-      </optional>
-      <optional>
-        <attribute name="height">
-          <a:documentation>
-            <p>The height in some unit. If no units are provided then the unit is pixels.</p>
-            <p>Unit support is processor dependent but processors should support at least:</p>
-            <ul>
-              <li>px - pixels</li>
-              <li>pt - points (72/inch)</li>
-              <li>in - inches</li>
-              <li>pc - picas (6/inch)</li>
-              <li>mm - millimeters</li>
-              <li>cm - centimeters</li>
-            </ul>
-          </a:documentation>
-        </attribute>
-      </optional>
+      <ref name="width-height-atts"/>
     </element>
+  </define>
+  
+  <define name="width-height-atts">
+    <optional>
+      <attribute name="width">
+        <a:documentation>
+          <p>The width in some unit. If no units are provided then the unit is pixels.</p>
+          <p>Unit support is processor dependent but processors should support at least:</p>
+          <ul>
+            <li>px - pixels</li>
+            <li>pt - points (72/inch)</li>
+            <li>in - inches</li>
+            <li>pc - picas (6/inch)</li>
+            <li>mm - millimeters</li>
+            <li>cm - centimeters</li>
+          </ul>
+        </a:documentation>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="height">
+        <a:documentation>
+          <p>The height in some unit. If no units are provided then the unit is pixels.</p>
+          <p>Unit support is processor dependent but processors should support at least:</p>
+          <ul>
+            <li>px - pixels</li>
+            <li>pt - points (72/inch)</li>
+            <li>in - inches</li>
+            <li>pc - picas (6/inch)</li>
+            <li>mm - millimeters</li>
+            <li>cm - centimeters</li>
+          </ul>
+        </a:documentation>
+      </attribute>
+    </optional>    
   </define>
   
   <define name="break">

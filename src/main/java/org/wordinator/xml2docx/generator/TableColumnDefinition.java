@@ -85,8 +85,8 @@ public class TableColumnDefinition {
 			return widthSpec;			
 		} else {
 			// Must be a measurement
-			int twips = Measurement.toTwips(widthSpec, dotsPerInch);
-			return Integer.toString(twips);
+		  long twips = Measurement.toTwips(widthSpec, dotsPerInch);
+			return Long.toString(twips);
 		}
 
 	}
