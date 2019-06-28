@@ -298,8 +298,7 @@ public class DocxGenerator {
 	 * @param xml The XmlObject that holds the Simple WP XML content
 	 */
 	public void generate(XmlObject xml) throws DocxGenerationException, XmlException, IOException {
-		
-		
+				
 		XWPFDocument doc = new XWPFDocument();
 		
 		setupStyles(doc, this.templateDoc);
@@ -408,7 +407,7 @@ public class DocxGenerator {
 		cursor.pop();
 		
     if (log.isDebugEnabled()) {
-      log.debug("handleBody(): Setting sectPr on last paragraph.");
+      log.debug("handleSection(): Setting sectPr on last paragraph.");
     }
     CTPPr ppr = (lastPara.getCTP().isSetPPr() ? lastPara.getCTP().getPPr() : lastPara.getCTP().addNewPPr()); 
     CTSectPr sectPr = ppr.addNewSectPr();
