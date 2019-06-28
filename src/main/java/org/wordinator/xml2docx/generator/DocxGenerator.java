@@ -612,16 +612,13 @@ public class DocxGenerator {
 				if ("header".equals(tagName)) {
 					HeaderFooterType type = getHeaderFooterType(cursor);
 					if (type == HeaderFooterType.FIRST) {
-					  // Generating first-page headers causes the resulting Word to be invalid
-					  // for reasons that are not yet obvious, so just ignoring them for now.
-					  log.warn("First-page headers and footers not currently supported. Ignoring first-page header");
-					  continue;
-//					  CTSectPr localSectPr = sectPr;
-//					  if (localSectPr == null) {
-//					    // FIXME: Can body be null at this time?
-//					    localSectPr = doc.getDocument().getBody().getSectPr();					    
-//					  }
-//					  localSectPr.addNewTitlePg().setVal(STOnOff.TRUE);
+					  CTSectPr localSectPr = sectPr;
+					  if (localSectPr == null) {
+					    // FIXME: Can body be null at this time?
+					    localSectPr = doc.getDocument().getBody().getSectPr();					    
+					  }
+					  CTOnOff titlePg = (localSectPr.isSetTitlePg() ? localSectPr.getTitlePg() : localSectPr.addNewTitlePg());
+					  titlePg.setVal(STOnOff.TRUE);
 					}
 					if (type == HeaderFooterType.DEFAULT) {
 						haveOddHeader = true;
@@ -634,6 +631,7 @@ public class DocxGenerator {
             XWPFHeader header = doc.createHeader(type);
             makeHeaderFooter(header, cursor.getObject());
           } else {
+            log.warn("Section-level headers and footers not yet supported.");
     					// This logic is correct but POI 4.1 does not directly
     					// support section-level headers in that doc.createHeader()
     					// also sets the header on the document-level sectPr and
@@ -652,16 +650,20 @@ public class DocxGenerator {
 						haveEvenFooter = true;
 					}
           if (type == HeaderFooterType.FIRST) {
-            // Generating first-page headers causes the resulting Word to be invalid
-            // for reasons that are not yet obvious, so just ignoring them for now.
-            log.warn("First-page headers and footers not currently supported. Ignoring first-page header");
-            continue;
+            CTSectPr localSectPr = sectPr;
+            if (localSectPr == null) {
+              // FIXME: Can body be null at this time?
+              localSectPr = doc.getDocument().getBody().getSectPr();              
+            }
+            CTOnOff titlePg = (localSectPr.isSetTitlePg() ? localSectPr.getTitlePg() : localSectPr.addNewTitlePg());
+            titlePg.setVal(STOnOff.TRUE);
           }
 					if (sectPr == null) {
 					  // Document-level footer
   					XWPFFooter footer = doc.createFooter(type);
   					makeHeaderFooter(footer, cursor.getObject());
 					} else {
+            log.warn("Section-level headers and footers not yet supported.");
 //            CTHdrFtrRef ref = sectPr.addNewFooterReference();
 //            ref.setId(doc.getRelationId(footer.getPart()));
 //            setHeaderFooterRefType(type, ref);
