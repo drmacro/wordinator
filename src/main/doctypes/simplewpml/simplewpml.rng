@@ -355,6 +355,7 @@
           not been specified.</p>
         <p>There should be at most one header or footer of each type for a given
           page section.</p>
+        <p>Note that "odd" corresponds to the Office Open header type "default".</p>
       </a:documentation>
       <choice>
         <value>first</value>
