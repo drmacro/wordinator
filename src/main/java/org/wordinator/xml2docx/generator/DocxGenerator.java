@@ -52,6 +52,7 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBookmark;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBorder;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDecimalNumber;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDocument1;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTHdrFtrRef;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTHyperlink;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTMarkupRange;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTOnOff;
@@ -72,6 +73,7 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTcPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTVMerge;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STBorder;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STChapterSep;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.STHdrFtr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STMerge;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STNumberFormat;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STOnOff;
@@ -431,16 +433,16 @@ public class DocxGenerator {
 	 * @param doc Document
 	 * @param object The page-sequence-properties element 
 	 * @param sectPr The sectPr object to set the page sequence properties on.
+	 * @throws DocxGenerationException 
 	 */
-	private void setupPageSequence(XWPFDocument doc, XmlObject xml, CTSectPr sectPr) {
+	private void setupPageSequence(XWPFDocument doc, XmlObject xml, CTSectPr sectPr) throws DocxGenerationException {
     XmlCursor cursor = xml.newCursor();
     
     setPageNumberProperties(cursor, sectPr);
     
     cursor.push();
     if (cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "headers-and-footers"))) {
-      // FIXME: Need the equivalent for sections.
-      // constructHeadersAndFooters(doc, cursor.getObject());
+      constructHeadersAndFooters(doc, cursor.getObject(), sectPr);
     }
     cursor.pop();
     cursor.push();
@@ -563,13 +565,30 @@ public class DocxGenerator {
 		cursor.pop();
   }
 
+  /**
+   * Construct headers and footers on the document. If there are
+   * no sections, this also sets the headers and footers for the
+   * document (which acts as a single section), otherwise, each
+   * section must also create the appropriate header references.
+   * @param doc Document to add headers and footers to.
+   * @param xml headers-and-footers element
+   * @throws DocxGenerationException 
+   */
+  private void constructHeadersAndFooters(XWPFDocument doc, XmlObject xml) throws DocxGenerationException {
+    constructHeadersAndFooters(doc, xml, null);
+  }
+
 	/**
-	 * Construct headers and footers for the document.
+	 * Construct headers and footers on the document. If there are
+	 * no sections, this also sets the headers and footers for the
+	 * document (which acts as a single section), otherwise, each
+	 * section must also create the appropriate header references.
 	 * @param doc Document to add headers and footers to.
 	 * @param xml headers-and-footers element
+	 * @param sectPr Section properties to add header and footer references to. May be null
 	 * @throws DocxGenerationException 
 	 */
-	private void constructHeadersAndFooters(XWPFDocument doc, XmlObject xml) throws DocxGenerationException {
+	private void constructHeadersAndFooters(XWPFDocument doc, XmlObject xml, CTSectPr sectPr) throws DocxGenerationException {
 		XmlCursor cursor = xml.newCursor();
 		
 		boolean haveOddHeader = false;
@@ -591,6 +610,11 @@ public class DocxGenerator {
 					}
 					XWPFHeader header = doc.createHeader(type);
 					makeHeaderFooter(header, cursor.getObject());
+					if (sectPr != null) {
+            CTHdrFtrRef ref = sectPr.addNewHeaderReference();
+            ref.setId(doc.getRelationId(header.getPart()));
+            setHeaderFooterRefType(type, ref);
+					}
 				} else if ("footer".equals(tagName)) {
 					HeaderFooterType type = getHeaderFooterType(cursor);
 					if (type == HeaderFooterType.DEFAULT) {
@@ -601,6 +625,11 @@ public class DocxGenerator {
 					}
 					XWPFFooter footer = doc.createFooter(type);
 					makeHeaderFooter(footer, cursor.getObject());
+          if (sectPr != null) {
+            CTHdrFtrRef ref = sectPr.addNewFooterReference();
+            ref.setId(doc.getRelationId(footer.getPart()));
+            setHeaderFooterRefType(type, ref);
+          }
 				} else {
 					log.warn("Unexpected element {" + namespace + "}:" + tagName + " in <headers-and-footers>. Ignored.");
 				}
@@ -613,6 +642,20 @@ public class DocxGenerator {
 		}
 		
 	}
+
+  public void setHeaderFooterRefType(HeaderFooterType type, CTHdrFtrRef ref) {
+    switch (type) {
+    case EVEN:
+      ref.setType(STHdrFtr.EVEN);
+      break;
+    case FIRST:
+      ref.setType(STHdrFtr.DEFAULT);
+      break;
+    default:
+      ref.setType(STHdrFtr.DEFAULT);
+      break;
+    }
+  }
 
 	/**
 	 * Construct the content of a page header or footer
