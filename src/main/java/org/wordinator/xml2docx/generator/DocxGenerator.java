@@ -14,6 +14,7 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
@@ -25,7 +26,6 @@ import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.formula.eval.NotImplementedException;
 import org.apache.poi.util.Units;
 import org.apache.poi.wp.usermodel.HeaderFooterType;
-import org.apache.poi.xwpf.model.XWPFHeaderFooterPolicy;
 import org.apache.poi.xwpf.usermodel.BreakType;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.apache.poi.xwpf.usermodel.UnderlinePatterns;
@@ -83,6 +83,7 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.STSectionMark;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STStyleType;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STVerticalAlignRun;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.impl.STOnOffImpl;
+import org.wordinator.xml2docx.xwpf.model.XWPFHeaderFooterPolicy;
 
 /**
  * Generates DOCX files from Simple Word Processing Markup Language XML.
@@ -597,18 +598,18 @@ public class DocxGenerator {
 		boolean haveOddFooter = false;
 		boolean haveEvenFooter = false;
 		
-		// If this is a section (have a sectPr), then start
-		// by creating references to the document-level
-		// headers.
-		
-		if (sectPr != null) {
-	    setDefaultSectionHeadersAndFooters(doc, sectPr);
-		}
-		
+		boolean isDocument = sectPr == null;
+				
 		if (cursor.toFirstChild()) {
+      XWPFHeaderFooterPolicy sectionHfPolicy = null;
+      if (!isDocument) {
+        sectionHfPolicy = new XWPFHeaderFooterPolicy(doc, sectPr);
+      }
 			do {
 				String tagName = cursor.getName().getLocalPart();
-				String namespace = cursor.getName().getNamespaceURI();
+				String namespace = cursor.getName().getNamespaceURI();				
+				List<CTHdrFtrRef> refs = null;
+
 				if ("header".equals(tagName)) {
 					HeaderFooterType type = getHeaderFooterType(cursor);
 					if (type == HeaderFooterType.FIRST) {
@@ -626,20 +627,17 @@ public class DocxGenerator {
 					if (type == HeaderFooterType.EVEN) {
 						haveEvenHeader = true;
 					}
-					if (sectPr == null) {
+					if (isDocument) {
 					  // Make document-level header
             XWPFHeader header = doc.createHeader(type);
             makeHeaderFooter(header, cursor.getObject());
           } else {
-            log.warn("Section-level headers and footers not yet supported.");
-    					// This logic is correct but POI 4.1 does not directly
-    					// support section-level headers in that doc.createHeader()
-    					// also sets the header on the document-level sectPr and
-    					// therefore always returns the document-level header of the
-    					// specified type, rather than creating a new header.
-//            CTHdrFtrRef ref = sectPr.addNewHeaderReference();
-//            ref.setId(doc.getRelationId(header.getPart()));
-//            setHeaderFooterRefType(type, ref);
+            XWPFHeader header = sectionHfPolicy.createHeader(getSTHFTypeForXWPFHFType(type));
+            makeHeaderFooter(header, cursor.getObject());
+            refs = sectPr.getHeaderReferenceList();
+            CTHdrFtrRef ref = getHeadeFooterRefForType(sectPr, refs, type);
+            ref.setId(doc.getRelationId(header.getPart()));
+            setHeaderFooterRefType(type, ref);
 					}
 				} else if ("footer".equals(tagName)) {
 					HeaderFooterType type = getHeaderFooterType(cursor);
@@ -658,20 +656,26 @@ public class DocxGenerator {
             CTOnOff titlePg = (localSectPr.isSetTitlePg() ? localSectPr.getTitlePg() : localSectPr.addNewTitlePg());
             titlePg.setVal(STOnOff.TRUE);
           }
-					if (sectPr == null) {
+					if (isDocument) {
 					  // Document-level footer
   					XWPFFooter footer = doc.createFooter(type);
   					makeHeaderFooter(footer, cursor.getObject());
 					} else {
-            log.warn("Section-level headers and footers not yet supported.");
-//            CTHdrFtrRef ref = sectPr.addNewFooterReference();
-//            ref.setId(doc.getRelationId(footer.getPart()));
-//            setHeaderFooterRefType(type, ref);
+            XWPFFooter footer = sectionHfPolicy.createFooter(getSTHFTypeForXWPFHFType(type));
+            makeHeaderFooter(footer, cursor.getObject());
+            refs = sectPr.getFooterReferenceList();
+            CTHdrFtrRef ref = getHeadeFooterRefForType(sectPr, refs, type);
+            ref.setId(doc.getRelationId(footer.getPart()));
+            setHeaderFooterRefType(type, ref);
           }
 				} else {
 					log.warn("Unexpected element {" + namespace + "}:" + tagName + " in <headers-and-footers>. Ignored.");
 				}
 			} while(cursor.toNextSibling());
+			if (!isDocument) {
+			  // setDefaultSectionHeadersAndFooters(doc, sectPr, sectionHfPolicy);
+			}
+			// Now set any default headers and footers from the document:
 		}
 		
 		if ((haveOddHeader || haveOddFooter) && 
@@ -681,67 +685,95 @@ public class DocxGenerator {
 		
 	}
 
-  public void setDefaultSectionHeadersAndFooters(XWPFDocument doc, CTSectPr sectPr) {
-    XWPFHeaderFooterPolicy hfPolicy = doc.getHeaderFooterPolicy();
-    if (hfPolicy != null) {
+  private CTHdrFtrRef getHeadeFooterRefForType(CTSectPr sectPr, List<CTHdrFtrRef> refs, HeaderFooterType type) {
+    CTHdrFtrRef ref =  null;
+    STHdrFtr.Enum stType = getSTHFTypeForXWPFHFType(type);
+    for (CTHdrFtrRef cand : refs) {
+      if (cand.getType() == stType) {
+        ref = cand;
+        break;
+      }
+    }
+    if (ref == null) {
+      ref = sectPr.addNewHeaderReference();
+    }
+    return ref;
+  }
+
+	/**
+	 * Sets the default headers and footers for a section, creating references to the document's
+	 * headers and footers, if any, for any header on the document but not already set on the section.
+	 * @param doc Document containing the section
+	 * @param sectPr Section properties for the section to set the headers on.
+	 * @param sectionHfPolicy The section header/footer policy that holds any headers 
+	 * set on th esection.
+	 */
+  public void setDefaultSectionHeadersAndFooters(
+      XWPFDocument doc, 
+      CTSectPr sectPr, 
+      XWPFHeaderFooterPolicy sectionHfPolicy) {
+    XWPFHeaderFooterPolicy docHfPolicy = new XWPFHeaderFooterPolicy(doc);
+    if (docHfPolicy != null) {
       XWPFHeader header = null;
       XWPFFooter footer = null;
       // Default header:
-      header = hfPolicy.getDefaultHeader();
-      if (header != null) {
+      header = docHfPolicy.getDefaultHeader();
+      if (sectionHfPolicy.getDefaultHeader() == null && header != null) {
         CTHdrFtrRef ref = sectPr.addNewHeaderReference();
         ref.setId(doc.getRelationId(header.getPart()));
         ref.setType(STHdrFtr.DEFAULT);
       }
       // Even header:
-      header = hfPolicy.getEvenPageHeader();
-      if (header != null) {
+      header = docHfPolicy.getEvenPageHeader();
+      if (sectionHfPolicy.getEvenPageHeader() == null && header != null) {
         CTHdrFtrRef ref = sectPr.addNewHeaderReference();
         ref.setId(doc.getRelationId(header.getPart()));
         ref.setType(STHdrFtr.EVEN);
       }
       // First header:
-      header = hfPolicy.getFirstPageHeader();
-      if (header != null) {
+      header = docHfPolicy.getFirstPageHeader();
+      if (sectionHfPolicy.getFirstPageHeader() == null && header != null) {
         CTHdrFtrRef ref = sectPr.addNewHeaderReference();
         ref.setId(doc.getRelationId(header.getPart()));
         ref.setType(STHdrFtr.FIRST);
       }
-      footer = hfPolicy.getDefaultFooter();
-      if (footer != null) {
+      footer = docHfPolicy.getDefaultFooter();
+      if (sectionHfPolicy.getDefaultFooter() == null && footer != null) {
         CTHdrFtrRef ref = sectPr.addNewFooterReference();
         ref.setId(doc.getRelationId(footer.getPart()));
         ref.setType(STHdrFtr.DEFAULT);
       }
       // Even footer:
-      footer = hfPolicy.getEvenPageFooter();
-      if (footer != null) {
+      footer = docHfPolicy.getEvenPageFooter();
+      if (sectionHfPolicy.getEvenPageFooter() == null && footer != null) {
         CTHdrFtrRef ref = sectPr.addNewFooterReference();
         ref.setId(doc.getRelationId(footer.getPart()));
         ref.setType(STHdrFtr.EVEN);
       }
       // First footer:
-      footer = hfPolicy.getFirstPageFooter();
-      if (footer != null) {
+      footer = docHfPolicy.getFirstPageFooter();
+      if (sectionHfPolicy.getFirstPageFooter() == null && footer != null) {
         CTHdrFtrRef ref = sectPr.addNewFooterReference();
         ref.setId(doc.getRelationId(footer.getPart()));
         ref.setType(STHdrFtr.FIRST);
       }
     }
   }
-
-  public void setHeaderFooterRefType(HeaderFooterType type, CTHdrFtrRef ref) {
+  
+  public STHdrFtr.Enum getSTHFTypeForXWPFHFType(HeaderFooterType type) {
     switch (type) {
     case EVEN:
-      ref.setType(STHdrFtr.EVEN);
-      break;
+      return STHdrFtr.EVEN;
     case FIRST:
-      ref.setType(STHdrFtr.DEFAULT);
-      break;
+      return STHdrFtr.FIRST;
     default:
-      ref.setType(STHdrFtr.DEFAULT);
-      break;
+      return STHdrFtr.DEFAULT;
     }
+
+  }
+
+  public void setHeaderFooterRefType(HeaderFooterType type, CTHdrFtrRef ref) {
+      ref.setType(getSTHFTypeForXWPFHFType(type));
   }
 
 	/**

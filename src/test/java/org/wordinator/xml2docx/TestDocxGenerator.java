@@ -3,11 +3,17 @@ package org.wordinator.xml2docx;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.Iterator;
+import java.util.List;
 
+import org.apache.poi.xwpf.model.XWPFHeaderFooterPolicy;
+import org.apache.poi.xwpf.usermodel.IBodyElement;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFFooter;
+import org.apache.poi.xwpf.usermodel.XWPFHeader;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.xmlbeans.XmlObject;
 import org.junit.Test;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectPr;
 import org.wordinator.xml2docx.generator.DocxGenerator;
 
 import junit.framework.TestCase;
@@ -97,18 +103,66 @@ public class TestDocxGenerator extends TestCase {
 			for (XWPFParagraph para : doc.getParagraphs()) {
 				String text = para.getParagraphText();
 				// System.out.printn("+ [DEBUG] text=\"" + text + "\"");
-				if ("Start of First Section. Should not break the page".equals(text)) {
+				if ("Document With Sections".equals(text)) {
 					found = true;
 					break;
 				}
 			}
 			assertTrue("Did not find expected start of first section", found);
 			
-			// FIXME: Support for sections not yet implemented. Requires enhancing the POI API to provide for creation of
-			// Paragraph-level section properties.
-			// So this test should pass but should emit a warning about section-level running headers and page numbering
-			// not being supported.
-			
+			CTSectPr docSectPr = doc.getDocument().getBody().getSectPr();
+			assertEquals("Expected 3 headers", 3, docSectPr.getHeaderReferenceList().size());			
+      assertEquals("Expected 3 footers", 3, docSectPr.getFooterReferenceList().size());
+      
+      // Document-level headers and footers:
+      XWPFHeaderFooterPolicy hfPolicy = doc.getHeaderFooterPolicy();
+
+      // Headers:
+      XWPFHeader header = hfPolicy.getDefaultHeader();
+      List<IBodyElement> bodyElems = header.getBodyElements();
+      assertEquals("Expected 1 paragraph", 1, bodyElems.size());
+      header = hfPolicy.getEvenPageHeader();
+      bodyElems = header.getBodyElements();
+      assertEquals("Expected 1 paragraph", 1, bodyElems.size());
+      header = hfPolicy.getFirstPageHeader();
+      bodyElems = header.getBodyElements();
+      assertEquals("Expected 1 paragraph", 1, bodyElems.size());
+
+      // Footers:
+      XWPFFooter footer = hfPolicy.getDefaultFooter();
+      bodyElems = footer.getBodyElements();
+      assertEquals("Expected 1 paragraph", 1, bodyElems.size());
+      footer = hfPolicy.getEvenPageFooter();
+      bodyElems = header.getBodyElements();
+      assertEquals("Expected 1 paragraph", 1, bodyElems.size());
+      footer = hfPolicy.getFirstPageFooter();
+      bodyElems = header.getBodyElements();
+      assertEquals("Expected 1 paragraph", 1, bodyElems.size());
+      
+      // Section headers and footers:
+      
+      boolean foundHeadersOrFooters = false;
+      Iterator<IBodyElement> iter = doc.getBodyElementsIterator();
+      do {
+        IBodyElement e = iter.next();
+        if (e instanceof XWPFParagraph) {
+          p = (XWPFParagraph)e;
+          if (p.getCTP().isSetPPr()) {
+            CTSectPr sectPr = p.getCTP().getPPr().getSectPr();
+            if (sectPr != null) {
+              assertTrue("Expected no more than 3 headers for paragraph, found " + sectPr.getHeaderReferenceList().size(), 
+                  sectPr.getHeaderReferenceList().size() <= 3);
+              assertTrue("Expected no more than 3 footers for paragraph, found " + sectPr.getFooterReferenceList().size(), 
+                  sectPr.getFooterReferenceList().size() <= 3);
+              foundHeadersOrFooters = foundHeadersOrFooters || 
+                  sectPr.getHeaderReferenceList().size() > 0  || 
+                  sectPr.getFooterReferenceList().size() > 0; 
+            }
+          }
+        }
+      } while(iter.hasNext());
+      assertTrue("No section headers or footers", foundHeadersOrFooters);
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail("Got unexpected " + e.getClass().getSimpleName() + ": " + e.getMessage());

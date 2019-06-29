@@ -30,13 +30,17 @@
           <page-number-ref format="numberInDash"/>
         </p>
       </footer>
+      <footer type="first">
+        <p><run>(document-level first) </run><page-number-ref format="numberInDash"/></p>
+      </footer>
     </headers-and-footers>
   </page-sequence-properties>
   <body>
     <p style="Heading1">
       <run style="Strong">Document With Sections</run>
     </p>
-    <p>
+    <p><run>This is before the first tagged section. It should reflect document-level headers and footers</run></p>
+    <p>      
       <run>To illustrate a build‑up approach, assume that Asset A is a contractual right
         to receive CU800</run>
       <fn>
@@ -177,7 +181,7 @@
     <section type="continuous">
       <body>
         <p style="Heading 1">
-          <run>Start of First Section. Should not break the page</run>
+          <run>Start of First Section. Should not break the page. Does not define its own headers and footers.</run>
         </p>
         <p page-break-before="true"><run>There should be a page break before this paragraph (@page-break-before="true")</run></p>
         <p>
@@ -243,13 +247,23 @@
       <page-sequence-properties>
         <page-number-properties format="lowerRoman" chapter-separator="emDash" chapter-style="1" start="99"/>
         <headers-and-footers>
-          <header>
+          <header type="odd">
             <p>
-              <run>Header for landscape Section</run>
+              <run>Odd Header for landscape Section</run>
             </p>              
           </header>
-          <footer>
-            <p><run>Footer for landscape section: </run>
+          <header type="even">
+            <p>
+              <run>Even Header for landscape Section</run>
+            </p>              
+          </header>
+          <footer type="odd">
+            <p><run>Odd Footer for landscape section: </run>
+              <page-number-ref format="lowerRoman"/>
+            </p>
+          </footer>
+          <footer type="even">
+            <p><run>Even Footer for landscape section: </run>
               <page-number-ref format="lowerRoman"/>
             </p>
           </footer>
@@ -327,6 +341,7 @@
           </hyperlink>
           <run>. After the hyperlink.</run>
         </p>
+        <p page-break-before="true"><run>Second page in the landscape section.</run></p>
       </body>
     </section>
     <section type="nextPage">
@@ -334,11 +349,11 @@
         <headers-and-footers>
           <header>
             <p>
-              <run>Header for last Section</run>
+              <run>Default/odd Header for last Section</run>
             </p>              
           </header>
           <footer>
-            <p><run>Footer for last section: </run>
+            <p><run>Default/even Footer for last section: </run>
               <page-number-ref/>
             </p>
           </footer>
@@ -346,6 +361,7 @@
       </page-sequence-properties>
       <body>
         <p><run>Last section of the document. Should be 8.5x11, portrait.</run></p>
+        <p page-break-before="true"><run>Second page of Last section of the document. Should be 8.5x11, portrait.</run></p>
       </body>
     </section>
   </body>
