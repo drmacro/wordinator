@@ -377,7 +377,10 @@ public class DocxGenerator {
 			
 		}
     // The section properties always go on an empty paragraph.
-		return doc.createParagraph();
+		XWPFParagraph lastPara = doc.createParagraph();
+    lastPara.setSpacingBefore(0);
+    lastPara.setSpacingAfter(0);
+		return lastPara;
 	}
 
 	/**

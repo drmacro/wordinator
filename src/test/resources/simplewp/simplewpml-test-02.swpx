@@ -177,8 +177,7 @@
       </hyperlink>
       <run>. After the hyperlink.</run>
     </p>    
-    <p><run>Before first section.</run></p>
-    <section type="continuous">
+    <p><run>Before first section.</run></p>    <section type="continuous">
       <body>
         <p style="Heading 1">
           <run>Start of First Section. Should not break the page. Does not define its own headers and footers.</run>
@@ -243,6 +242,13 @@
         </p>
       </body>
     </section>
+    <section type="continuous">
+      <body>
+        <p style="Heading 1">
+          <run>Start of second Section. Should not break the page. Does not define its own headers and footers.</run>
+        </p>
+      </body>
+    </section>
     <section type="nextPage">
       <page-sequence-properties>
         <page-number-properties format="lowerRoman" chapter-separator="emDash" chapter-style="1" start="99"/>
@@ -278,7 +284,7 @@
       </page-sequence-properties>
       <body>
         <p style="Heading 1">
-          <run>Start of Second Section. It should be landscape and 11 x 14</run>
+          <run>Start of Third Section. It should be landscape and 11 x 14</run>
         </p>
         <p>
           <run>This section should start on a new page. Page numbers should be lowercase Roman numerals.</run>
