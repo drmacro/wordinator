@@ -66,24 +66,20 @@
         <table width="100%">
           <cols>
             <col colwidth="10%"/>
-            <col colwidth="30%"/>
+            <col colwidth="10%"/>
+            <col colwidth="20%"/>
             <col colwidth="60%"/>
           </cols>
           <tbody>
             <tr>
-              <td borderstylebottom="dashed">
+              <td borderstylebottom="dashed" colspan="3">
                 <p>
-                  <run>R1 C1 borderstylebottom="dashed"</run>
+                  <run>R1 C1 borderstylebottom="dashed" colspan="3". Effective width should be 40%</run>
                 </p>
               </td>
               <td>
                 <p>
-                  <run>R1 C2</run>
-                </p>
-              </td>
-              <td>
-                <p>
-                  <run>R1 C3</run>
+                  <run>R1 C4</run>
                 </p>
               </td>
             </tr>
@@ -101,6 +97,11 @@
               <td>
                 <p>
                   <run>R2 C3</run>
+                </p>
+              </td>
+              <td>
+                <p>
+                  <run>R2 C4</run>
                 </p>
               </td>
             </tr>
@@ -123,6 +124,107 @@
         </p>
       </fn>
     </p>
+    <table width="100%">
+      <cols>
+        <col colwidth="10%"/>
+        <col colwidth="10%"/>
+        <col colwidth="20%"/>
+        <col colwidth="60%"/>
+      </cols>
+      <tbody>
+        <tr>
+          <td borderstylebottom="dashed" colspan="3">
+            <p>
+              <run>colwidths are 10%, 10%, 20%, 60%. </run>
+              <run>R1 C1 borderstylebottom="dashed" colspan="3". Effective width should be 40%</run>
+            </p>
+          </td>
+          <td>
+            <p>
+              <run>R1 C4</run>
+            </p>
+          </td>
+        </tr>        
+        <tr>
+          <td>
+            <p>
+              <run>R2 C1</run>
+            </p>
+          </td>
+          <td>
+            <p>
+              <run>R2 C2</run>
+            </p>
+          </td>
+          <td>
+            <p>
+              <run>R2 C3</run>
+            </p>
+          </td>
+          <td>
+            <p>
+              <run>R2 C4</run>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <p>
+              <run>R3 C1</run>
+            </p>
+          </td>
+          <td colspan="2">
+            <p>
+              <run>Spans columns 2 and 3</run>
+            </p>
+          </td>
+          <td>
+            <p>
+              <run>R3 C4</run>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <p>
+              <run>R4 C1</run>
+            </p>
+          </td>
+          <td>
+            <p>
+              <run>R4 C2</run>
+            </p>
+          </td>
+          <td colspan="2">
+            <p>
+              <run>Spans columns 3 and 4</run>
+            </p>
+          </td>
+        </tr>        
+        <tr>
+          <td>
+            <p>
+              <run>R5 C1</run>
+            </p>
+          </td>
+          <td>
+            <p>
+              <run>R5 C2</run>
+            </p>
+          </td>
+          <td>
+            <p>
+              <run>R5 C3</run>
+            </p>
+          </td>
+          <td>
+            <p>
+              <run>R5 C4</run>
+            </p>
+          </td>
+        </tr>      
+      </tbody>
+    </table>    
     <p style="Heading2">
       <run>This is a Heading 2</run>
     </p>

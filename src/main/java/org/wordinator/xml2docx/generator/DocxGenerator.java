@@ -13,6 +13,7 @@ import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -1499,8 +1500,8 @@ public class DocxGenerator {
     }
 
 		// Not setting a grid on the tables because it only uses absolute 
-		// measurements. 
-		
+		// measurements. And there's no XWPF API for it.
+    
 		// So setting widths on columns, which allows percentages as well as
 		// explicit values.
 		TableColumnDefinitions colDefs = new TableColumnDefinitions();
@@ -1916,7 +1917,25 @@ public class DocxGenerator {
 				if (null != widthValue) {
 					cell.setWidth(TableColumnDefinition.interpretWidthSpecification(widthValue, getDotsPerInch()));
 				} else {
-					cell.setWidth(colDef.getWidth());
+				  String width = null;
+          width = colDef.getWidth();
+				  if (colspan != null) {
+				    // Set the gridspan on the cell to the span count. This will
+				    // set up the width correctly when Word lays out the table
+				    // regardless of what the nominal column width is. This is because
+				    // Word infers the table grid from the columns and cells automatically.
+				    try {
+              long spanCount = Integer.parseInt(colspan);
+              CTDecimalNumber gridSpan = CTDecimalNumber.Factory.newInstance();
+              gridSpan.setVal(BigInteger.valueOf(spanCount));
+              cell.getCTTc().getTcPr().setGridSpan(gridSpan);
+            } catch (Exception e) {
+              log.error("makeTableRow(): @colspan value \"" + colspan + "\" is not an integer. Using first column's width.");
+               
+            }
+				    width = colDef.getWidth();
+				  }
+					cell.setWidth(width);
 					//log.debug("makeTableRow():   Setting width from column definition: " + colDef.getWidth() + " (" + colDef.getSpecifiedWidth() + ")");
 				}
 			} catch (Exception e) {
