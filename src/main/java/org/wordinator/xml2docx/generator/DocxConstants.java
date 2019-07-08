@@ -30,7 +30,7 @@ public final class DocxConstants {
 	public static final QName QNAME_CAPS_ATT = new QName("", "caps");	
   public static final QName QNAME_CHAPTER_SEPARATOR_ATT = new QName("", "chapter-separator");
   public static final QName QNAME_CHAPTER_STYLE_ATT = new QName("", "chapter-style");
-  public static final QName QNAME_CODE_ATT = new QName(SIMPLE_WP_NS, "code");;
+  public static final QName QNAME_CODE_ATT = new QName(SIMPLE_WP_NS, "code");
 	public static final QName QNAME_COLSEP_ATT = new QName("", "colsep");
 	public static final QName QNAME_COLSPAN_ATT = new QName("", "colspan");
 	public static final QName QNAME_COLWIDTH_ATT = new QName("", "colwidth");
@@ -69,6 +69,7 @@ public final class DocxConstants {
   public static final QName QNAME_RIGHTINDENT_ATT = new QName("", "rightindent");
 	public static final QName QNAME_ROWSEP_ATT = new QName("", "rowsep");
 	public static final QName QNAME_ROWSPAN_ATT = new QName("", "rowspan");
+  public static final QName QNAME_SHADE_ATT = new QName("", "shade");
 	public static final QName QNAME_SHADOW_ATT = new QName("", "shadow");
 	public static final QName QNAME_SMALL_CAPS_ATT = new QName("", "small-caps");
 	public static final QName QNAME_SRC_ATT = new QName("", "src");

@@ -72,9 +72,9 @@
           </cols>
           <tbody>
             <tr>
-              <td borderstylebottom="dashed" colspan="3">
+              <td borderstylebottom="dashed" colspan="3" shade="FFFF00">
                 <p>
-                  <run>R1 C1 borderstylebottom="dashed" colspan="3". Effective width should be 40%</run>
+                  <run>R1 C1 borderstylebottom="dashed" colspan="3". Effective width should be 40%. Yellow shade.</run>
                 </p>
               </td>
               <td>

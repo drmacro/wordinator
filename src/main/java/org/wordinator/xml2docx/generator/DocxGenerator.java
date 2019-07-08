@@ -13,7 +13,6 @@ import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,6 +64,7 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTRPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectType;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTShd;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSimpleField;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTStyle;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTbl;
@@ -81,6 +81,7 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.STNumberFormat;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STOnOff;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STPageOrientation;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STSectionMark;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.STShd;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STStyleType;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STVerticalAlignRun;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.impl.STOnOffImpl;
@@ -1909,6 +1910,7 @@ public class DocxGenerator {
 			String valign = cursor.getAttributeText(DocxConstants.QNAME_VALIGN_ATT);
 			String colspan = cursor.getAttributeText(DocxConstants.QNAME_COLSPAN_ATT);
 			String rowspan = cursor.getAttributeText(DocxConstants.QNAME_ROWSPAN_ATT);
+			String shade = cursor.getAttributeText(DocxConstants.QNAME_SHADE_ATT);
 			
 			setCellBorders(cursor, ctTcPr);            
 			
@@ -1967,6 +1969,20 @@ public class DocxGenerator {
 				} catch (NumberFormatException e) {
 					log.warn("Non-numeric value for @rowspan: \"" + rowspan + "\". Ignored.");
 				}
+			}
+			
+			if (null != shade) {
+			  try {
+			    CTShd ctShd = CTShd.Factory.newInstance();
+			    // <w:shd w:val="clear" w:color="auto" w:fill="FFFF00"/>
+			    ctShd.setFill(shade);
+			    ctShd.setColor("auto");
+			    ctShd.setVal(STShd.CLEAR);
+			    ctTcPr.setShd(ctShd);
+			    log.info("Setting shade value to \"" + shade + "\"");
+			  } catch (Exception e) {
+			    log.warn("Shade value must be 6-digit hex string, got \"" + shade + "\"");
+			  }
 			}
 			
 			cursor.push();

@@ -542,15 +542,7 @@
         </choice>
       </optional>
       <optional>
-        <attribute name="color">
-          <a:documentation>
-            <p>Set foreground color for the run</p>
-            <p>For now must be an RGB color value. May add support for color names at some point.</p>
-          </a:documentation>
-          <data type="string">
-            <param name="pattern">[0-9A-Fa-f]{6}</param>
-          </data>  
-        </attribute>
+        <ref name="color.att"/>
       </optional>
       <optional>
         <choice>
@@ -818,6 +810,17 @@
     </attribute> 
   </define>
   
+  <define name="color.att">
+    <attribute name="color">
+      <a:documentation>
+        <p>Set foreground color</p>
+        <p>For now must be an RGB color value, e.g. "C0C0C0". May add support for color names at some point.</p>
+      </a:documentation>
+      <data type="string">
+        <param name="pattern">[0-9A-Fa-f]{6}</param>
+      </data>  
+    </attribute>    
+  </define>
   <define name="bookmarkStart">
     <element name="bookmarkStart" ns="urn:ns:wordinator:simplewpml">
       <a:documentation>
@@ -1320,6 +1323,15 @@
             <p>Specifies the right border style.</p>
           </a:documentation>
           <ref name="borderstyles"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="shade">
+          <a:documentation>
+            <p>Specifies the background color (shading) for the cell.
+              Value must be a 6-digit hex number, e.g. "FFFF00"</p>
+          </a:documentation>
+          <ref name="hexcolor"/>
         </attribute>
       </optional>
     </element>
