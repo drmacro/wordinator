@@ -2021,9 +2021,8 @@ public class DocxGenerator {
 			    ctShd.setColor("auto");
 			    ctShd.setVal(STShd.CLEAR);
 			    ctTcPr.setShd(ctShd);
-			    log.info("Setting shade value to \"" + shade + "\"");
 			  } catch (Exception e) {
-			    log.warn("Shade value must be 6-digit hex string, got \"" + shade + "\"");
+			    log.warn("Shade value must be a 6-digit hex string, got \"" + shade + "\"");
 			  }
 			}
 			
