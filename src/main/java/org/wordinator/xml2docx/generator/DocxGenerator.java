@@ -13,6 +13,7 @@ import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -1922,20 +1923,56 @@ public class DocxGenerator {
 				  String width = null;
           width = colDef.getWidth();
 				  if (colspan != null) {
-				    // Set the gridspan on the cell to the span count. This will
-				    // set up the width correctly when Word lays out the table
-				    // regardless of what the nominal column width is. This is because
-				    // Word infers the table grid from the columns and cells automatically.
 				    try {
               long spanCount = Integer.parseInt(colspan);
-              CTDecimalNumber gridSpan = CTDecimalNumber.Factory.newInstance();
-              gridSpan.setVal(BigInteger.valueOf(spanCount));
-              cell.getCTTc().getTcPr().setGridSpan(gridSpan);
+              // Try to add up the widths of the spanned columns.
+              // This is only possible if the values are all percents
+              // or are all measurements. Since we don't the actual
+              // width of the table itself necessarily, there's no way
+              // to reliably convert percentages to explicit widths.
+              List<String> spanWidths = new ArrayList<String>();
+              for (int i = cellCtr; i < cellCtr + spanCount; i++) {
+                spanWidths.add(colDefs.get(i).getSpecifiedWidth());
+              }
+              boolean allPercents = true;
+              for (String cand : spanWidths) {
+                allPercents = allPercents && cand.endsWith("%");
+              }
+              boolean allNumbers = true;
+              for (String cand : spanWidths) {
+                allNumbers = allNumbers && !cand.endsWith("%") && !cand.equals("auto");
+              }
+              if (allPercents) {
+                double spanPercent = 0;
+                for (String cand : spanWidths) {
+                  String number = cand.substring(0, cand.lastIndexOf("%"));
+                  try {
+                    spanPercent += Double.parseDouble(number);
+                  } catch (NumberFormatException e) {
+                    log.warn("Calculating width of column-spanning cell: Expected percent value \"" + cand + "\" is not numeric.");
+                  }
+                }
+                width = "" + spanPercent + "%";
+              } else if (allNumbers) {
+                int spanMeasurement = 0;
+                for (String cand : spanWidths) {
+                  String number = TableColumnDefinition.interpretWidthSpecification(cand, getDotsPerInch());
+                  try {
+                    spanMeasurement += Integer.parseInt(number);
+                  } catch (NumberFormatException e) {
+                    log.warn("Expected percent value \"" + cand + "\" is not numeric.");
+                  }
+                }
+                width = "" + spanMeasurement;
+              } else {
+                log.warn("Widths of spanned columns are neither all percents or all measurements, cannot calculate exact spanned width");
+                log.warn("Widths are \"" + String.join("\", \"", spanWidths) + "\"");
+              }
+              cell.setWidth(width);
             } catch (Exception e) {
-              log.error("makeTableRow(): @colspan value \"" + colspan + "\" is not an integer. Using first column's width.");
-               
+              log.error("makeTableRow(): @colspan value \"" + colspan + "\" is not an integer. Using first column's width.");               
             }
-				    width = colDef.getWidth();
+				    
 				  }
 					cell.setWidth(width);
 					//log.debug("makeTableRow():   Setting width from column definition: " + colDef.getWidth() + " (" + colDef.getSpecifiedWidth() + ")");
@@ -1952,6 +1989,11 @@ public class DocxGenerator {
 					int spanval = Integer.parseInt(colspan);
 					CTDecimalNumber spanNumber = CTDecimalNumber.Factory.newInstance();
 					spanNumber.setVal(BigInteger.valueOf(spanval));
+          // Set the gridspan on the cell to the span count. This will usually
+          // set up the width correctly when Word lays out the table
+          // regardless of what the nominal column width is. This is because
+          // Word infers the table grid from the columns and cells automatically.
+          // However, it appears this doesn't always work as expected.					
 					ctTcPr.setGridSpan(spanNumber);
 				} catch (NumberFormatException e) {
 					log.warn("Non-numeric value for @colspan: \"" + colspan + "\". Ignored.");
