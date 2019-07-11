@@ -1913,7 +1913,8 @@ public class DocxGenerator {
 			String rowspan = cursor.getAttributeText(DocxConstants.QNAME_ROWSPAN_ATT);
 			String shade = cursor.getAttributeText(DocxConstants.QNAME_SHADE_ATT);
 			
-			setCellBorders(cursor, ctTcPr);            
+			setCellBorders(cursor, ctTcPr);     
+			long spanCount = 1; // Default value;
 			
 			try {
 				String widthValue = cursor.getAttributeText(DocxConstants.QNAME_WIDTH_ATT);
@@ -1924,7 +1925,7 @@ public class DocxGenerator {
           width = colDef.getWidth();
 				  if (colspan != null) {
 				    try {
-              long spanCount = Integer.parseInt(colspan);
+              spanCount = Integer.parseInt(colspan);
               // Try to add up the widths of the spanned columns.
               // This is only possible if the values are all percents
               // or are all measurements. Since we don't the actual
@@ -1932,7 +1933,7 @@ public class DocxGenerator {
               // to reliably convert percentages to explicit widths.
               List<String> spanWidths = new ArrayList<String>();
               for (int i = cellCtr; i < cellCtr + spanCount; i++) {
-                spanWidths.add(colDefs.get(i).getSpecifiedWidth());
+                spanWidths.add(colDefs.get(i).getSpecifiedWidth());                
               }
               boolean allPercents = true;
               for (String cand : spanWidths) {
@@ -2050,7 +2051,7 @@ public class DocxGenerator {
 				}
 			}
 			cursor.pop();
-			cellCtr++;
+			cellCtr += spanCount;
 		} while(cursor.toNextSibling());
 		return row;
 	}
