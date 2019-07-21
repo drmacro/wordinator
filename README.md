@@ -72,7 +72,7 @@ The Wordinator supports generation of documents with the following Word features
 * Running heads and feet
 * Bookmarks
 * Hyperlinks
-* Multiple sections (full support pending)
+* Multiple sections with section-specific running heads and feet, page geomentry
 
 ## Getting Started
 
