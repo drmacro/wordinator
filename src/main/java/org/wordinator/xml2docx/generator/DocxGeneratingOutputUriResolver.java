@@ -39,7 +39,7 @@ public class DocxGeneratingOutputUriResolver implements OutputURIResolver {
 	 * 
 	 * @param outDir Directory to put new DOCX files into.
 	 * @param templateDoc The DOTX template to use in constructing new DOCX files.
-	 * @param log 
+	 * @param log Log to write messages to
 	 */
 	public DocxGeneratingOutputUriResolver(File outDir, XWPFDocument templateDoc, Logger log) {
 		this.outDir = outDir;

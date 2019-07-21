@@ -22,7 +22,8 @@ public class TableColumnDefinition {
 	/**
 	 * Set the width of the column
 	 * @param width Width value, one of "auto", a measurement, or a percentage.
-	 * @throws MeasurementException 
+	 * @param dotsPerInch dots-per-inch value used to interpret some measurements
+	 * @throws MeasurementException If measurement is not understandable
 	 */
 	public void setWidth(String width, int dotsPerInch) throws MeasurementException {
 		this.specifiedWidth = width;
@@ -75,7 +76,7 @@ public class TableColumnDefinition {
 	 * @param widthSpec Width specification ("auto", percentage, or measurement)
 	 * @param dotsPerInch Dots per inch to use in converting measurements to twips
 	 * @return Measurement value appropriate for use on XWPFTable.setWidth()
-	 * @throws MeasurementException
+	 * @throws MeasurementException If the measurement is not understandable
 	 */
 	public static String interpretWidthSpecification(
 								String widthSpec, 
