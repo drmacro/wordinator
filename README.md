@@ -206,6 +206,20 @@ The XSLT file `xsl/html2docx/baseProcessing.xsl` does most of the work of genera
 
 If you are generating SWPX files be sure to validate them against the simplewpml.rng grammar. One easy way to do this is to use Oxygen to associate the RNG with the the SWPX file using the Document -> Schema -> Associate Schema menu.
 
+### Table Spans and Column Widths
+
+The Wordinator supports complex table spans and will correctly calculate the width of cells that span multiple columns.
+
+However, there is a limitation in how the table's column widths are specified: All the values involved in calculating the width of a spanned cell must be of the same type, either all explicit widths or all percentage widths.
+
+This is because at the time the table is generated Wordinator does not know how wide the table will be and therefore cannot convert a mix of absolute and percentage values into absolute values.
+
+When all the values are percentages the resulting Word is generated with percentage values, allowing Word to correctly calculate the widths of the cells. When all the values are absolute then calculation of the spanned width is simple math.
+
+As a rule, it is best to use percentages for table column widths.
+
+If you have tables with a mix of percentage and absolute values for column widths and you have cells that span columns where the widths involved are mixed, Wordinator issues a warning message. The resulting table will likely not be correct.
+
 ### Customizing the HTML-to-SWPX Transforms
 
 The module `xsl/html2docx/get-style-name.xsl` implements the default mapping from HTML elements to style names. It uses a variable that is a map from @class attribute values to Word style names:
