@@ -1,6 +1,6 @@
 # The Wordinator
 
-Version 0.9.2
+Version 1.0.1
 
 Generate high-quality Microsoft Word DOCX files using a simplified XML format (simple word processing XML).
 
@@ -25,6 +25,17 @@ You can use your own XSLT transform to generate SWPX files from any XML (or JSON
 If you need to go from Word documents back to XML, you may find the DITA for Publishers Word-to-DITA framework useful ([https://github.com/dita4publishers/org.dita4publishers.word2dita]). This packaged as a DITA Open Toolkit plugin but is really a general-purpose XML-to-DOCX framework. It does not depend on the DITA Open Toolkit in any way. While it is designed to generate DITA XML it can be adapted to produce any XML format, either directly or through a DITA-to-X transform applied
 
 ## Release Notes
+
+* 1.0.0
+
+  * Section-specific running heads and feet, page geomentry, page numbers
+  * Improved table generation:
+    * Table spans should be 100% correct
+    * Use table styles
+    * Correct setting of row- and cell-level vertical spacing
+    * Borders on tables and cells
+    * Support "shade" property on cells (background color) 
+  * Fixed issue where runs after footnotes were dropped.
 
 * 0.9.2
 
@@ -120,13 +131,13 @@ To set up a transformation scenario follow these steps:
 1. Open an HTML file in OxygenXML
 1. Open the Configure Transformation Scenarios dialog
 1. Select "New" and then "Ant transformation"
-1. Give the scenario a meaningful title, e.g. "DITA HTML to DOCX"
+1. Give the scenario a meaningful title, i.e. "DITA HTML to DOCX"
 1. In the "Build file" field put the path and name of the `build.xml` file. Take the defaults for the other fields in this tab.
 1. Switch to the "Parameters" tab and add the following parameters:
    * input.html: `${cfd}/${cfne}`
    * output.dir: `${cfd}/out`
-   * ditahtml.dotx: Path to your DOTX file
-   * ditahtml.xsl: Path to your XSLT (if you have one, otherwise omit)
+   * html2docx.dotx: Path to your DOTX file
+   * html2docx.xsl: Path to your XSLT (if you have one, otherwise omit)
 1. Switch to the "Output" tab and set the Output field to `${cfd}/out/${cfn}.docx`. Make sure that "Open in system application" is selected.
 
 You can omit any of the parameters that you have set using a `build.properties` file.
@@ -172,7 +183,7 @@ The base HTML-to-DOCX transform is very basic and is not intended to be used as 
 To create good results for your content you will need the following:
 
 * A Word template (DOTX) that defines the named styles you need to achieve your in-Word styling requirements. For many documents the built-in Word styles will suffice. You may also have existing templates that that you need to map to. The important thing for the mapping to Word is the style names: the mapping from your input XML to Word is in terms of named paragraph, character, and table styles.
-* A custom XSLT style sheet that implements the mapping from your input XML to Simple Word Procesing XML that is then the input to the DOCX generation phase. A a minimum you need to provide the mapping from element type names and @class values to paragraph abnd character style names. This can be done with relatively simple XSLT module that overrides the base HTML-to-DOCX transform.
+* A custom XSLT style sheet that implements the mapping from your input XML to Simple Word Procesing XML that is then the input to the DOCX generation phase. A a minimum you need to provide the mapping from element type names and @class values to paragraph and character style names. This can be done with a relatively simple XSLT module that overrides the base HTML-to-DOCX transform.
 * The XML from which you will generate the Word documents. This can be any XML but the Wordinator-provided transforms are set up for XHTML and HTML5, so if you are either authoring in HTML5 or you can generate XHTML or HTML5 from your XML then the transform is relatively simple. For example, the provided ditahtml2docx transform handles the HTML5 produced by the DITA Open Toolkit.
 
 ### Java Integration
@@ -193,6 +204,8 @@ The SWPX format is defined in the simplewpml.rng file in the `doctypes/simplewpm
 
 The XSLT file `xsl/html2docx/baseProcessing.xsl` does most of the work of generating SWPX from HTML and it also serves to demonstrate how to generate SWPX if you want to implement direct generation from some other XML format.
 
+If you are generating SWPX files be sure to validate them against the simplewpml.rng grammar. One easy way to do this is to use Oxygen to associate the RNG with the the SWPX file using the Document -> Schema -> Associate Schema menu.
+
 ### Customizing the HTML-to-SWPX Transforms
 
 The module `xsl/html2docx/get-style-name.xsl` implements the default mapping from HTML elements to style names. It uses a variable that is a map from @class attribute values to Word style names:
@@ -209,7 +222,7 @@ Each `<xsl:map-entry>` element maps a @class name (`key="'p1'"`) to a style name
 
 You can override this variable in a custom XSLT to add your own mapping.
 
-Note that the values of the @key and @select attributes are XSLT  string literals: `'p1'` and `'Paragraph 1'`. Note the straight single quotes (`'`) around the strings. If you forget those your results will be strange.
+Note that the values of the @key and @select attributes are XSLT string literals: `'p1'` and `'Paragraph 1'`. Note the straight single quotes (`'`) around the strings. If you forget those your results will be strange.
 
 The map variable is used like so:
 
@@ -271,7 +284,7 @@ If you would like to contribute new features, I welcome all contributions. Use n
 
 This is a Maven project.
 
-NOTE: POI 4.0.0 and this project require at least Java 8.
+NOTE: POI 4.x and this project require at least Java 8.
 
 Maven dependency:
 
@@ -279,7 +292,7 @@ Maven dependency:
 <dependency>
   <groupId>org.wordinator</groupId>
   <artifactId>wordinator</artifactId>
-  <version>0.9.1</version>
+  <version>1.0.0</version>
 </dependency>
 ```
 
