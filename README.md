@@ -1,6 +1,6 @@
 # The Wordinator
 
-Version 1.0.1
+Version 1.0.0
 
 Generate high-quality Microsoft Word DOCX files using a simplified XML format (simple word processing XML).
 
