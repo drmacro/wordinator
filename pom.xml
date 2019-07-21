@@ -5,7 +5,7 @@
   <groupId>org.wordinator</groupId>
   <artifactId>wordinator</artifactId>
   <packaging>jar</packaging>
-  <version>0.9.3</version>
+  <version>1.0.0</version>
   <organization>
     <name>wordinator.org</name>
     <url>http://wordinator.org</url>
