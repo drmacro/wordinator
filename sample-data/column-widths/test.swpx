@@ -1,0 +1,2142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="urn:ns:wordinator:simplewpml">
+	<page-sequence-properties>
+		<headers-and-footers>
+			<header type="odd">
+				<p style="Header" styleId="Header">
+					<run>
+						<tab/>
+					</run>
+					<run>
+						<tab/>
+					</run>
+					<run>IFRS 13</run>
+				</p>
+			</header>
+			<header type="even">
+				<p style="Header" styleId="Header">
+					<run>IFRS 13</run>
+				</p>
+			</header>
+			<footer type="odd">
+				<p style="Footer" styleId="Footer">
+					<run>
+						<tab/>
+					</run>
+					<run>© IFRS Foundation</run>
+					<run>
+						<tab/>
+					</run>
+					<page-number-ref/>
+				</p>
+			</footer>
+			<footer type="even">
+				<p style="Footer" styleId="Footer">
+					<page-number-ref/>
+					<run>
+						<tab/>
+					</run>
+					<run>© IFRS Foundation</run>
+				</p>
+			</footer>
+		</headers-and-footers>
+	</page-sequence-properties>
+	<body>
+		<section type="continuous">
+			<body>
+				<p style="IASB Section Title2 Ind" styleId="IASBSectionTitle2Ind">
+					<run>Example 15—Assets measured at fair value</run>
+				</p>
+				<section type="continuous">
+					<body>
+						<p style="IASB Normal npara" styleId="IASBNormalnpara">
+							<run>IE60</run>
+							<run>
+								<tab/>
+							</run>
+							<run>For assets and liabilities measured at fair value at the end of the reporting period, the IFRS requires quantitative disclosures about the fair value measurements for each class of assets and liabilities. An entity might disclose the following for assets to comply with paragraph 93(a) and (b) of the IFRS:</run>
+						</p>
+						<p style="IASB Normal npara" styleId="IASBNormalnpara">
+							<run>
+								<tab/>
+							</run>
+						</p>
+						<table frame="all" colsep="0" rowsep="0">
+							<cols>
+								<col colwidth="4%"/>
+								<col colwidth="4%"/>
+								<col colwidth="20%"/>
+								<col colwidth="2%"/>
+								<col colwidth="12%"/>
+								<col colwidth="2%"/>
+								<col colwidth="12%"/>
+								<col colwidth="2%"/>
+								<col colwidth="12%"/>
+								<col colwidth="2%"/>
+								<col colwidth="12%"/>
+								<col colwidth="2%"/>
+								<col colwidth="12%"/>
+								<col colwidth="2%"/>
+								<!--col colwidth="0.3in"/>
+								<col colwidth="0.3in"/>
+								<col colwidth="1.5in"/>
+								<col colwidth="0.15in"/>
+								<col colwidth="0.9in"/>
+								<col colwidth="0.15in"/>
+								<col colwidth="0.9in"/>
+								<col colwidth="0.15in"/>
+								<col colwidth="0.9in"/>
+								<col colwidth="0.15in"/>
+								<col colwidth="0.9in"/>
+								<col colwidth="0.15in"/>
+								<col colwidth="0.9in"/>
+								<col colwidth="0.15in"/-->
+							</cols>
+							<thead>
+								<tr>
+									<td colspan="3" align="left" valign="top">
+										<p style="IASB Table Bold Arial" styleId="IASBTableBoldArial">
+											<run>(CU in millions)</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Bold Arial" styleId="IASBTableBoldArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Bold Arial" styleId="IASBTableBoldArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Bold Arial" styleId="IASBTableBoldArial"/>
+									</td>
+									<td colspan="5" align="center" valign="top" borderstylebottom="single">
+										<p style="IASB Table Bold Arial" styleId="IASBTableBoldArial">
+											<run>Fair value measurements at the end of the reporting period using </run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Bold Arial" styleId="IASBTableBoldArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Bold Arial" styleId="IASBTableBoldArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Bold Arial" styleId="IASBTableBoldArial"/>
+									</td>
+								</tr>
+								<tr>
+									<td colspan="3" align="left" valign="top" borderstylebottom="single">
+										<p style="IASB Table Bold Arial" styleId="IASBTableBoldArial">
+											<run>Description</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Bold Arial" styleId="IASBTableBoldArial"/>
+									</td>
+									<td align="left" valign="top" borderstylebottom="single">
+										<p style="IASB Table Bold Arial" styleId="IASBTableBoldArial">
+											<run>31/12/X9</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Bold Arial" styleId="IASBTableBoldArial"/>
+									</td>
+									<td align="left" valign="top" borderstylebottom="single">
+										<p style="IASB Table Bold Arial" styleId="IASBTableBoldArial">
+											<run>Quoted prices in active markets for identical assets (Level 1)</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Bold Arial" styleId="IASBTableBoldArial"/>
+									</td>
+									<td align="left" valign="top" borderstylebottom="single">
+										<p style="IASB Table Bold Arial" styleId="IASBTableBoldArial">
+											<run>Significant other observable inputs (Level 2)</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Bold Arial" styleId="IASBTableBoldArial"/>
+									</td>
+									<td align="left" valign="top" borderstylebottom="single">
+										<p style="IASB Table Bold Arial" styleId="IASBTableBoldArial">
+											<run>Significant unobservable inputs (Level 3)</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Bold Arial" styleId="IASBTableBoldArial"/>
+									</td>
+									<td align="center" valign="top" borderstylebottom="single">
+										<p style="IASB Table Bold Arial" styleId="IASBTableBoldArial">
+											<run>Total gains (losses)</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Bold Arial" styleId="IASBTableBoldArial"/>
+									</td>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td colspan="4" align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run bold="true">Recurring fair value measurements</run>
+											<run> </run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+								</tr>
+								<!--tr>
+									<td colspan="4" align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>Trading equity securities:</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+								</tr>
+								<tr>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td colspan="3" align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>Real estate industry</run>
+										</p>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>93</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>70</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>23</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+								</tr>
+								<tr>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td colspan="3" align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>Oil and gas industry</run>
+										</p>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>45</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>45</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+								</tr>
+								<tr>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td colspan="3" align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>Other</run>
+										</p>
+									</td>
+									<td align="right" borderstylebottom="single">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>15</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right" borderstylebottom="single">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>15</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right" borderstylebottom="single">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+								</tr>
+								<tr>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td colspan="2" align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>Total trading equity securities</run>
+										</p>
+									</td>
+									<td align="right" valign="bottom" borderstylebottom="double">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>153</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right" valign="bottom" borderstylebottom="double">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>130</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right" valign="bottom" borderstylebottom="double">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>23</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+								</tr>
+								<tr>
+									<td colspan="14" align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+								</tr>
+								<tr>
+									<td colspan="4" align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>Other equity securities:</run>
+											<run>(a)</run>
+										</p>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+								</tr>
+								<tr>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td colspan="3" align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>Financial services industry</run>
+										</p>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>150</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>150</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+								</tr>
+								<tr>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td colspan="3" align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>Healthcare industry</run>
+										</p>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>163</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>110</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>53</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+								</tr>
+								<tr>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td colspan="3" align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>Energy industry</run>
+										</p>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>32</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>32</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+								</tr>
+								<tr>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td colspan="3" align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>Private equity fund investments</run>
+										</p>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>25</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>25</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+								</tr>
+								<tr>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td colspan="3" align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>Other</run>
+										</p>
+									</td>
+									<td align="right" borderstylebottom="single">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>15</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right" borderstylebottom="single">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>15</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right" borderstylebottom="single">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+								</tr>
+								<tr>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td colspan="2" align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>Total other equity securities</run>
+										</p>
+									</td>
+									<td align="right" valign="bottom" borderstylebottom="double">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>385</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right" valign="bottom" borderstylebottom="double">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>275</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right" valign="bottom" borderstylebottom="double">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>110</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+								</tr>
+								<tr>
+									<td colspan="14" align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+								</tr>
+								<tr>
+									<td colspan="4" align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>Debt securities:</run>
+										</p>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+								</tr>
+								<tr>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td colspan="3" align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>Residential mortgage-backed securities</run>
+										</p>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>149</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>24</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>125</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+								</tr>
+								<tr>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td colspan="3" align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>Commercial mortgage-backed securities</run>
+										</p>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>50</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>50</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+								</tr>
+								<tr>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td colspan="3" align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>Collateralised debt obligations</run>
+										</p>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>35</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>35</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+								</tr>
+								<tr>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td colspan="3" align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>Risk-free government securities</run>
+										</p>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>85</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>85</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+								</tr>
+								<tr>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td colspan="3" align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>Corporate bonds</run>
+										</p>
+									</td>
+									<td align="right" borderstylebottom="single">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>93</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right" borderstylebottom="single">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>9</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right" borderstylebottom="single">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>84</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right" borderstylebottom="single">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+								</tr>
+								<tr>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td colspan="2" align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>Total debt securities</run>
+										</p>
+									</td>
+									<td align="right" valign="bottom" borderstylebottom="double">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>412</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right" valign="bottom" borderstylebottom="double">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>94</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right" borderstylebottom="double">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>108</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right" valign="bottom" borderstylebottom="double">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>210</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+								</tr>
+								<tr>
+									<td colspan="14" align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+								</tr>
+								<tr>
+									<td colspan="4" align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>Hedge fund investments: </run>
+										</p>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+								</tr>
+								<tr>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td colspan="3" align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>Equity long/short</run>
+										</p>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>55</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>55</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+								</tr>
+								<tr>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td colspan="3" align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>Global opportunities</run>
+										</p>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>35</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>35</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+								</tr>
+								<tr>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td colspan="3" align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>High-yield debt securities</run>
+										</p>
+									</td>
+									<td align="right" borderstylebottom="single">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>90</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right" borderstylebottom="single">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right" borderstylebottom="single">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>90</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+								</tr>
+								<tr>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td colspan="2" align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>Total hedge fund investments</run>
+										</p>
+									</td>
+									<td align="right" valign="bottom" borderstylebottom="double">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>180</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right" borderstylebottom="double">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>90</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right" valign="bottom" borderstylebottom="double">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>90</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right" valign="bottom">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+								</tr>
+								<tr>
+									<td colspan="14" align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+								</tr>
+								<tr>
+									<td colspan="4" align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>Derivatives:</run>
+										</p>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+								</tr>
+								<tr>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td colspan="3" align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>Interest rate contracts</run>
+										</p>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>57</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>57</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+								</tr>
+								<tr>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td colspan="3" align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>Foreign exchange contracts</run>
+										</p>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>43</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>43</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+								</tr>
+								<tr>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td colspan="3" align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>Credit contracts</run>
+										</p>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>38</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>38</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+								</tr>
+								<tr>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td colspan="3" align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>Commodity futures contracts </run>
+										</p>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>78</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>78</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+								</tr>
+								<tr>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td colspan="3" align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>Commodity forward contracts</run>
+										</p>
+									</td>
+									<td align="right" borderstylebottom="single">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>20</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right" borderstylebottom="single">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right" borderstylebottom="single">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>20</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right" borderstylebottom="single">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+								</tr>
+								<tr>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td colspan="2" align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>Total derivatives</run>
+										</p>
+									</td>
+									<td align="right" valign="bottom" borderstylebottom="double">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>236</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right" valign="bottom" borderstylebottom="double">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>78</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right" valign="bottom" borderstylebottom="double">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>120</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right" valign="bottom" borderstylebottom="double">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>38</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+								</tr>
+								<tr>
+									<td colspan="14" align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>Investment properties:</run>
+										</p>
+									</td>
+								</tr>
+								<tr>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td colspan="3" align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>Commercial—Asia</run>
+										</p>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>31</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>31</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+								</tr>
+								<tr>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td colspan="3" align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>Commercial—Europe</run>
+										</p>
+									</td>
+									<td align="right" borderstylebottom="single">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>27</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right" borderstylebottom="single">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>27</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+								</tr>
+								<tr>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td colspan="2" align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>Total investment properties</run>
+										</p>
+									</td>
+									<td align="right" valign="bottom" borderstylebottom="double">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>58</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right" valign="bottom" borderstylebottom="double">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>58</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+								</tr>
+								<tr>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td colspan="3" align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>Total recurring fair value measurements</run>
+										</p>
+									</td>
+									<td align="right" valign="bottom" borderstylebottom="double">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>1,424</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right" valign="bottom" borderstylebottom="double">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>577</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right" valign="bottom" borderstylebottom="double">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>341</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right" valign="bottom" borderstylebottom="double">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>506</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+								</tr>
+								<tr>
+									<td colspan="14" align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+								</tr>
+								<tr>
+									<td colspan="4" align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run bold="true">Non-recurring fair value measurements</run>
+										</p>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+								</tr>
+								<tr>
+									<td colspan="4" align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>Assets held for sale</run>
+										</p>
+									</td>
+									<td align="right" borderstylebottom="single">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>26</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right" borderstylebottom="single">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>26</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right" borderstylebottom="single">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>15</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+								</tr>
+								<tr>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td colspan="3" align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>Total non-recurring fair value measurements</run>
+										</p>
+									</td>
+									<td align="right" valign="bottom" borderstylebottom="double">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>26</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right" valign="bottom" borderstylebottom="double">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>26</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right" valign="bottom">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="right" valign="bottom" borderstylebottom="double">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>15</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+								</tr>
+								<tr>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+								</tr>
+								<tr>
+									<td colspan="14" align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run>(Note: A similar table would be presented for liabilities unless another format is deemed more appropriate by the entity.)</run>
+										</p>
+									</td>
+								</tr-->
+							</tbody>
+						</table>
+						<p style="IASB Normal npara" styleId="IASBNormalnpara">
+							<run>
+								<tab/>
+							</run>
+						</p>
+						<table frame="all" colsep="0" rowsep="0">
+							<cols>
+								<col colwidth="28%"/>
+								<col colwidth="2%"/>
+								<col colwidth="12%"/>
+								<col colwidth="2%"/>
+								<col colwidth="12%"/>
+								<col colwidth="2%"/>
+								<col colwidth="12%"/>
+								<col colwidth="2%"/>
+								<col colwidth="12%"/>
+								<col colwidth="2%"/>
+								<col colwidth="12%"/>
+								<col colwidth="2%"/>
+								<!--col colwidth="2.1in"/>
+								<col colwidth="0.15in"/>
+								<col colwidth="0.9in"/>
+								<col colwidth="0.15in"/>
+								<col colwidth="0.9in"/>
+								<col colwidth="0.15in"/>
+								<col colwidth="0.9in"/>
+								<col colwidth="0.15in"/>
+								<col colwidth="0.9in"/>
+								<col colwidth="0.15in"/>
+								<col colwidth="0.9in"/>
+								<col colwidth="0.15in"/-->
+							</cols>
+							<thead>
+								<tr>
+									<td align="left" valign="top">
+										<p style="IASB Table Bold Arial" styleId="IASBTableBoldArial">
+											<run>(CU in millions)</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Bold Arial" styleId="IASBTableBoldArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Bold Arial" styleId="IASBTableBoldArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Bold Arial" styleId="IASBTableBoldArial"/>
+									</td>
+									<td colspan="5" align="center" valign="top" borderstylebottom="single">
+										<p style="IASB Table Bold Arial" styleId="IASBTableBoldArial">
+											<run>Fair value measurements at the end of the reporting period using </run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Bold Arial" styleId="IASBTableBoldArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Bold Arial" styleId="IASBTableBoldArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Bold Arial" styleId="IASBTableBoldArial"/>
+									</td>
+								</tr>
+								<tr>
+									<td align="left" valign="top" borderstylebottom="single">
+										<p style="IASB Table Bold Arial" styleId="IASBTableBoldArial">
+											<run>Description</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Bold Arial" styleId="IASBTableBoldArial"/>
+									</td>
+									<td align="left" valign="top" borderstylebottom="single">
+										<p style="IASB Table Bold Arial" styleId="IASBTableBoldArial">
+											<run>31/12/X9</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Bold Arial" styleId="IASBTableBoldArial"/>
+									</td>
+									<td align="left" valign="top" borderstylebottom="single">
+										<p style="IASB Table Bold Arial" styleId="IASBTableBoldArial">
+											<run>Quoted prices in active markets for identical assets (Level 1)</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Bold Arial" styleId="IASBTableBoldArial"/>
+									</td>
+									<td align="left" valign="top" borderstylebottom="single">
+										<p style="IASB Table Bold Arial" styleId="IASBTableBoldArial">
+											<run>Significant other observable inputs (Level 2)</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Bold Arial" styleId="IASBTableBoldArial"/>
+									</td>
+									<td align="left" valign="top" borderstylebottom="single">
+										<p style="IASB Table Bold Arial" styleId="IASBTableBoldArial">
+											<run>Significant unobservable inputs (Level 3)</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Bold Arial" styleId="IASBTableBoldArial"/>
+									</td>
+									<td align="center" valign="top" borderstylebottom="single">
+										<p style="IASB Table Bold Arial" styleId="IASBTableBoldArial">
+											<run>Total gains (losses)</run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Bold Arial" styleId="IASBTableBoldArial"/>
+									</td>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td colspan="2" align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial">
+											<run bold="true">Recurring fair value measurements</run>
+											<run> </run>
+										</p>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+									<td align="left">
+										<p style="IASB Table Arial" styleId="IASBTableArial"/>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+						<p style="IASB Normal npara" styleId="IASBNormalnpara">
+							<run>
+								<tab/>
+							</run>
+						</p>
+					</body>
+				</section>
+			</body>
+		</section>
+	</body>
+</document>
