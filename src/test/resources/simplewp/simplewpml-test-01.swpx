@@ -95,13 +95,13 @@
       </cols>
       <tbody>
         <tr>
-          <td><p><run>R1 C1</run></p></td>
-          <td><p><run>R1 C2</run></p></td>
-          <td><p><run>R1 C3</run></p></td>
+          <td align="left"><p><run>R1 C1 Left align</run></p></td>
+          <td align="center"><p><run>R1 C2 center align</run></p></td>
+          <td align="right"><p><run>R1 C3 right align</run></p></td>
         </tr>
         <tr>
-          <td><p><run>R2 C1</run></p></td>
-          <td><p><run>R2 C2</run></p></td>
+          <td align="char"><p><run>R2 C1 "char" align</run></p></td>
+          <td align="justify"><p><run>R2 C2 justify align</run></p></td>
           <td><p><run>R2 C3</run></p></td>
         </tr>
       </tbody>
