@@ -2042,6 +2042,13 @@ public class DocxGenerator {
 						XWPFParagraph p = cell.addParagraph();
 						makeParagraph(p, cursor);
 						if (null != align) {
+						  if ("JUSTIFY".equalsIgnoreCase(align)) {
+						    align = "DISTRIBUTE"; // Slight mistmatch between markup and model
+						  }
+              if ("CHAR".equalsIgnoreCase(align)) {
+                // I'm not sure this is the best mapping but it seemed close enough
+                align = "NUM_TAB"; // Slight mistmatch between markup and model
+              }
 							ParagraphAlignment alignment = ParagraphAlignment.valueOf(align.toUpperCase());
 							p.setAlignment(alignment);
 						}
