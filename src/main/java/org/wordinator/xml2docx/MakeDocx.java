@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.transform.Source;
+import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.cli.CommandLine;
@@ -23,6 +24,7 @@ import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.xml.resolver.Resolver;
 import org.apache.xmlbeans.XmlObject;
 import org.wordinator.xml2docx.generator.DocxGeneratingOutputUriResolver;
 import org.wordinator.xml2docx.generator.DocxGenerator;
@@ -38,6 +40,8 @@ import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.s9api.Xslt30Transformer;
 import net.sf.saxon.s9api.XsltCompiler;
 import net.sf.saxon.s9api.XsltExecutable;
+import net.sf.saxon.trans.XPathException;
+import net.sf.saxon.trans.XmlCatalogResolver;
 
 /**
  * Command-line application to generate DOCX files from
@@ -50,7 +54,9 @@ import net.sf.saxon.s9api.XsltExecutable;
 public class MakeDocx 
 {
 	
-	public static final String OPTION_CHAR_CHUNKLEVEL = "c";
+	private static final String APACHE_RESOLVER_CLASS = "org.apache.xml.resolver.CatalogManager";
+
+  public static final String OPTION_CHAR_CHUNKLEVEL = "c";
 
   public static final String OPTION_CHAR_CATALOG = "k";
 
@@ -113,10 +119,13 @@ public class MakeDocx
     	String docxPath = cmd.getOptionValue(OPTION_CHAR_OUTPUTPATH).trim();
     	String templatePath = cmd.getOptionValue(OPTION_CHAR_TEMPLATEPATH).trim();
     	String transformPath = cmd.getOptionValue(OPTION_CHAR_TRANSFORMPATH);
-    	String catalog = cmd.getOptionValue(OPTION_CHAR_CATALOG);
     	if (transformPath != null) {
     	  transformPath = transformPath.trim();
     	}
+      String catalog = cmd.getOptionValue(OPTION_CHAR_CATALOG);
+      if (catalog != null) {
+        catalog = catalog.trim();
+      }
     	String chunkLevel = cmd.getOptionValue(OPTION_CHAR_CHUNKLEVEL);
     	if (chunkLevel != null) {
     	  chunkLevel = chunkLevel.trim();
@@ -193,7 +202,7 @@ public class MakeDocx
     			if (inFile.getName().endsWith(".swpx")) {
 	    			handleSingleSwpxDoc(inFile, outFile, templateDoc, log);
 	    		} else {
-	    			transformXml(inFile, outDir, templateDoc, transformFile, xsltParameters, log);
+	    			transformXml(inFile, outDir, templateDoc, transformFile, catalog, xsltParameters, log);
 	    		}
     		}
     	} catch (Exception e) {
@@ -214,6 +223,7 @@ public class MakeDocx
 	 * @param outDir Directory to put the DOCX files in
 	 * @param templateDoc Template DOCX document
 	 * @param transformFile The file containing the XSLT transform for generating SWPX documents
+	 * @param catalog List of catalog files (as for Saxon -catalog option). Maybe null.
 	 * @param xsltParameters Map of parameter names to values to be passed to the XSLT transform.
 	 * @param log Log to write messages to.
 	 * @throws Exception Any kind of error
@@ -223,6 +233,7 @@ public class MakeDocx
 			File outDir, 
 			XWPFDocument templateDoc, 
 			File transformFile, 
+			String catalog, 
 			Map<String, String> xsltParameters, 
 			Logger log) throws Exception {
 		// Apply transform to book file to generate Simple WP XML documents
@@ -238,6 +249,22 @@ public class MakeDocx
 		Processor processor = new Processor(false);
 		DocxGeneratingOutputUriResolver outputResolver = new DocxGeneratingOutputUriResolver(outDir, templateDoc, log);
 		processor.setConfigurationProperty(FeatureKeys.OUTPUT_URI_RESOLVER, outputResolver);
+		
+    if (catalog != null) {
+      // Adapted from Saxon CommandLineOptions.java:
+      try {
+        Class<?> klass = processor.getClass().getClassLoader().loadClass(APACHE_RESOLVER_CLASS);
+        if (klass == null) {
+          throw new RuntimeException("-k/-catalog option specified but failed to load class " + APACHE_RESOLVER_CLASS);
+        }
+        XmlCatalogResolver.setCatalog(catalog, processor.getUnderlyingConfiguration(), false);
+      } catch (XPathException err) {
+          throw new XPathException("Failed to load Apache catalog resolver library", err);
+      }
+    }
+    
+
+		
 		
 		// FIXME: Set up proper logger. See 
 		// https://www.saxonica.com/html/documentation/using-xsl/embedding/s9api-transformation.html

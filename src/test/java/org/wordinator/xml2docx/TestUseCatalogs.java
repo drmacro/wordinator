@@ -27,6 +27,9 @@ public class TestUseCatalogs extends TestCase {
     File inFile = new File(classLoader.getResource("html/sample_web_page.html").getFile());
     File templateFile = new File(classLoader.getResource(DOTX_TEMPLATE_PATH).getFile());
     File xformFile = new File(classLoader.getResource("xsl/test-catalog-resolution.xsl").getFile());
+    // NOTE: The running test uses the catalog as copied to the target/test-classes/catalog directory,
+    //       not the source diretory, so if you're testing the catalog, e.g., in Oxygen, use 
+    //       the copy in the target directory or the relative path won't resolve.
     File catalogFile = new File(classLoader.getResource(CATALOG_FILE_PATH).getFile());
     File outFile = new File("out/testCatalogResolution.docx");
     if (outFile.exists()) {
@@ -68,7 +71,6 @@ public class TestUseCatalogs extends TestCase {
     } catch (Throwable e) {
       fail("Got exception from handleCommandLine(): " + e.getMessage());
     }
-    assertTrue("No DOCX file", outFile.exists());
 
   }
 

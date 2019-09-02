@@ -10,7 +10,8 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
 	TestDocxGenerator.class,
-	TestMeasurement.class
+	TestMeasurement.class,
+	TestUseCatalogs.class
 })
 
 public final class AllTests {
