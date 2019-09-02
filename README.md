@@ -1,6 +1,6 @@
 # The Wordinator
 
-Version 1.0.1
+Version 1.0.2
 
 Generate high-quality Microsoft Word DOCX files using a simplified XML format (simple word processing XML).
 
@@ -25,6 +25,10 @@ You can use your own XSLT transform to generate SWPX files from any XML (or JSON
 If you need to go from Word documents back to XML, you may find the DITA for Publishers Word-to-DITA framework useful ([https://github.com/dita4publishers/org.dita4publishers.word2dita]). This packaged as a DITA Open Toolkit plugin but is really a general-purpose XML-to-DOCX framework. It does not depend on the DITA Open Toolkit in any way. While it is designed to generate DITA XML it can be adapted to produce any XML format, either directly or through a DITA-to-X transform applied
 
 ## Release Notes
+
+* 1.0.2
+
+  * Added support for catalog resolution with Saxon. Added new command-line option -k/-catalog that specifies a list of catalog files as for Saxon's -catalog option.
 
 * 1.0.1
 
@@ -176,7 +180,9 @@ It's not a very pretty test but it demonstrates that the tool is working.
 * -i The input XML file or directory
 * -o The output directory
 * -t The DOTX Word template
-* -x The XSLT transform to apply to the input file to generate SWPX files.
+* -x (optional) The XSLT transform to apply to the input file to generate SWPX files.
+* -k (optional) Semicolon-separated list of catalog files to used with Saxon. Same as Saxon's -catalog option.
+* -c (optional) Chunk level. Specifies the section level or type to create separate DOCX files for. The value to use is determined by the details of the XSLT transform (local:is-chunk() function).
 
 If the `-i` parameter is a directory then it looks for `*.swpx` files and generates a DOCX file for each one.
 
