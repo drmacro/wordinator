@@ -101,7 +101,12 @@ arbitrary XML, JSON, etc.</description>
 	    <artifactId>log4j-core</artifactId>
 	    <version>2.11.2</version>
 	</dependency>
-	
+	<!-- https://mvnrepository.com/artifact/xml-resolver/xml-resolver -->
+	<dependency>
+	    <groupId>xml-resolver</groupId>
+	    <artifactId>xml-resolver</artifactId>
+	    <version>1.2</version>
+	</dependency>	
   </dependencies>
   <distributionManagement>
     <snapshotRepository>
