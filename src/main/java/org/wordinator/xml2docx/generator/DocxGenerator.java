@@ -1513,7 +1513,7 @@ public class DocxGenerator {
 				TableColumnDefinition colDef = colDefs.newColumnDef();
 				
 				String width = cursor.getAttributeText(DocxConstants.QNAME_COLWIDTH_ATT);
-				if (null != width) {
+				if (null != width && !width.equals("")) {
 					try {
 						colDef.setWidth(width, getDotsPerInch());
 					} catch (MeasurementException e) {
