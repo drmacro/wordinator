@@ -8,7 +8,7 @@
   <version>1.0.2</version>
   <organization>
     <name>wordinator.org</name>
-    <url>http://wordinator.org</url>
+    <url>https://wordinator.org</url>
   </organization>
   <name>${project.groupId}:${project.artifactId}</name>
   <description>Simplifies the creation of DOCX files from XML, HTML, or similar sources through the
@@ -18,14 +18,14 @@ arbitrary XML, JSON, etc.</description>
   <licenses>
     <license>
       <name>The Apache License, Version 2.0</name>
-      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
     </license>
   </licenses>
   <repositories>
     <repository>
       <id>central</id>
       <name>Central Repository</name>
-      <url>http://repo.maven.apache.org/maven2</url>
+      <url>https://repo.maven.apache.org/maven2</url>
       <layout>default</layout>
       <snapshots>
         <enabled>false</enabled>
@@ -37,7 +37,7 @@ arbitrary XML, JSON, etc.</description>
       <name>Eliot Kimber</name>
       <email>drmacro@gmail.com</email>
       <organization>Contrext, LLC</organization>
-      <organizationUrl>http://www.contrext.com</organizationUrl>
+      <organizationUrl>https://www.contrext.com</organizationUrl>
       <timezone>-6</timezone>
     </developer>
   </developers>
@@ -47,16 +47,11 @@ arbitrary XML, JSON, etc.</description>
     <url>https://github.com/drmacro/wordinator/tree/master</url>
   </scm>
   <dependencies>
-    <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-core</artifactId>
-      <version>2.11.1</version>
-    </dependency>
+    <!-- https://mvnrepository.com/artifact/junit/junit -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.12</version>
+      <version>4.13</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -84,10 +79,11 @@ arbitrary XML, JSON, etc.</description>
       <artifactId>commons-io</artifactId>
       <version>2.6</version>
     </dependency>
+    <!-- https://mvnrepository.com/artifact/net.sf.saxon/Saxon-HE -->
     <dependency>
       <groupId>net.sf.saxon</groupId>
       <artifactId>Saxon-HE</artifactId>
-      <version>9.8.0-14</version>
+      <version>10.0</version>
     </dependency>
     <!-- https://mvnrepository.com/artifact/org.apache.poi/ooxml-schemas -->
 	<dependency>
@@ -95,12 +91,12 @@ arbitrary XML, JSON, etc.</description>
 	    <artifactId>ooxml-schemas</artifactId>
 	    <version>1.4</version>
 	</dependency>    
-	<!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
-	<dependency>
-	    <groupId>org.apache.logging.log4j</groupId>
-	    <artifactId>log4j-core</artifactId>
-	    <version>2.11.2</version>
-	</dependency>
+  <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
+  <dependency>
+    <groupId>org.apache.logging.log4j</groupId>
+    <artifactId>log4j-core</artifactId>
+    <version>2.13.1</version>
+  </dependency>
 	<!-- https://mvnrepository.com/artifact/xml-resolver/xml-resolver -->
 	<dependency>
 	    <groupId>xml-resolver</groupId>
