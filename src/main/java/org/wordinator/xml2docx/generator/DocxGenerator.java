@@ -1308,7 +1308,7 @@ public class DocxGenerator {
 		
         if (format == 0) {
         	// FIXME: Might be more appropriate to throw an exception here.
-            log.error("Unsupported picture: " + imgFilename +
+            log.error("Unsupported picture, format code \"" + format + "\": " + imgFilename +
                     ". Expected emf|wmf|pict|jpeg|jpg|png|dib|gif|tiff|eps|bmp|wpg");
             cursor.pop();
             return;
