@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/css" href="../../../main/doctypes/simplewpml/css/simplewpml.css"?>
+<?xml-model href="../../../main/doctypes/simplewpml/simplewpml.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<document xmlns="urn:ns:wordinator:simplewpml">
+  <page-sequence-properties>
+    <page-number-properties
+      format="custom"
+      xslt-format="1."
+      start="1"
+    />
+    <headers-and-footers>
+      <header>
+        <p><run>Odd Header Paragraph 1</run></p>
+        <p><run>Odd Header Paragraph 2</run></p>
+      </header>
+      <header type="even">
+        <p><run>Even Header Paragraph 1</run></p>
+      </header>
+      <footer>
+        <p>
+          <run>Odd Footer: </run>
+          <page-number-ref format="numberInDash"/>
+          <run> After page-number-ref</run>
+        </p>
+      </footer>
+      <footer type="even">
+        <p><run>Even Footer</run></p>
+      </footer>
+    </headers-and-footers>
+  </page-sequence-properties>
+  <body>
+    <p style="Heading1">
+      <run style="Strong">Test of List Formatting</run>
+    </p>
+    <p style="List Bullet" styleId="ListBullet">
+      <run>List bullet 1</run>
+    </p>
+    <p style="List Bullet 2">
+      <run>List bullet 2</run>
+    </p>
+    <p style="List Bullet 3">
+      <run>List bullet 3</run>
+    </p>
+    <p style="normal">
+      <run>Normal paragraph</run>
+    </p>
+    <p style="List Number" styleId="ListNumber">
+      <run>List number 1</run>
+    </p>
+    <p style="List Number 2">
+      <run>List number 2</run>
+    </p>
+    <p style="List Number 3">
+      <run>List number 3</run>
+    </p>
+    <p style="normal">
+      <run>Normal paragraph 2.</run>
+    </p>
+  </body>
+</document>

@@ -3,6 +3,10 @@
  */
 package org.wordinator.xml2docx.generator;
 
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
+
 import javax.xml.namespace.QName;
 
 /**
