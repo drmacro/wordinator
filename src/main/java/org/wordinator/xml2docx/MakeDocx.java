@@ -29,15 +29,18 @@ import org.wordinator.xml2docx.generator.DocxGenerator;
 import org.wordinator.xml2docx.saxon.Log4jSaxonLogger;
 import org.wordinator.xml2docx.saxon.LoggingMessageListener;
 
-import net.sf.saxon.lib.FeatureKeys;
+import net.sf.saxon.lib.Feature;
 import net.sf.saxon.lib.StandardErrorListener;
-import net.sf.saxon.s9api.MessageListener;
+import net.sf.saxon.s9api.MessageListener2;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
+import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.s9api.Xslt30Transformer;
 import net.sf.saxon.s9api.XsltCompiler;
 import net.sf.saxon.s9api.XsltExecutable;
+import net.sf.saxon.trans.XPathException;
+import net.sf.saxon.trans.XmlCatalogResolver;
 
 /**
  * Command-line application to generate DOCX files from
@@ -50,7 +53,21 @@ import net.sf.saxon.s9api.XsltExecutable;
 public class MakeDocx 
 {
 	
-	public static final Logger log = LogManager.getLogger(MakeDocx.class.getSimpleName());
+	private static final String APACHE_RESOLVER_CLASS = "org.apache.xml.resolver.CatalogManager";
+
+  public static final String OPTION_CHAR_CHUNKLEVEL = "c";
+
+  public static final String OPTION_CHAR_CATALOG = "k";
+
+  public static final String OPTION_CHAR_TRANSFORMPATH = "x";
+
+  public static final String OPTION_CHAR_TEMPLATEPATH = "t";
+
+  public static final String OPTION_CHAR_OUTPUTPATH = "o";
+
+  public static final String OPTION_CHAR_INPUTPATH = "i";
+
+  public static final Logger log = LogManager.getLogger(MakeDocx.class.getSimpleName());
 			
 	public static final String XSLT_PARAM_CHUNKLEVEL = "chunklevel";
 
@@ -69,7 +86,10 @@ public class MakeDocx
     	  handleCommandLine(options, args, log);
     	} catch (ParseException e) {
     	  GOOD_OPTIONS = false;
-    	}
+    	} catch (Exception e) {
+    	  log.error(e.getClass().getSimpleName() + ": " + e.getMessage());
+    	  System.exit(1);
+      }
 
     	if (!GOOD_OPTIONS) {
         HelpFormatter formatter = new HelpFormatter();
@@ -89,16 +109,26 @@ public class MakeDocx
 	public static void handleCommandLine(
 			Options options,
 			String[] args,
-			Logger log) throws ParseException {
+			Logger log) throws Exception {
     	CommandLineParser parser = new DefaultParser();
     	CommandLine cmd = parser.parse( options, args);
     	
     	Map<String, String> xsltParameters = new HashMap<String, String>();
-		String inDocPath = cmd.getOptionValue("i");
-    	String docxPath = cmd.getOptionValue("o");
-    	String templatePath = cmd.getOptionValue("t");
-    	String transformPath = cmd.getOptionValue("x");
-    	String chunkLevel = cmd.getOptionValue("c");
+		  String inDocPath = cmd.getOptionValue(OPTION_CHAR_INPUTPATH).trim();
+    	String docxPath = cmd.getOptionValue(OPTION_CHAR_OUTPUTPATH).trim();
+    	String templatePath = cmd.getOptionValue(OPTION_CHAR_TEMPLATEPATH).trim();
+    	String transformPath = cmd.getOptionValue(OPTION_CHAR_TRANSFORMPATH);
+    	if (transformPath != null) {
+    	  transformPath = transformPath.trim();
+    	}
+      String catalog = cmd.getOptionValue(OPTION_CHAR_CATALOG);
+      if (catalog != null) {
+        catalog = catalog.trim();
+      }
+    	String chunkLevel = cmd.getOptionValue(OPTION_CHAR_CHUNKLEVEL);
+    	if (chunkLevel != null) {
+    	  chunkLevel = chunkLevel.trim();
+    	}
     	
     	chunkLevel = chunkLevel == null ? "root" : chunkLevel;
     	
@@ -106,6 +136,7 @@ public class MakeDocx
     	log.info("Output directory           ='" + docxPath + "'");
     	log.info("DOTX template              ='" + templatePath + "'");
     	log.info("XSLT template              =" + (transformPath == null ? "Not specified" : "'" + transformPath + "'"));
+      log.info("Catalog                    =" + (catalog == null ? "Not specified" : "'" + catalog + "'"));
     	log.info("Chunk level                ='" + chunkLevel + "'");
     	
     	// Check that the input file exists.
@@ -113,21 +144,18 @@ public class MakeDocx
     	
     	File inFile = new File(inDocPath);
     	if (!inFile.exists()) {
-    		log.error("Input file '" + inFile.getAbsolutePath() + "' not found. Cannot continue."); 
-    		System.exit(1);
+    		throw new RuntimeException("Input file '" + inFile.getAbsolutePath() + "' not found. Cannot continue."); 
     	}
     	File templateFile = new File(templatePath);
     	if (!templateFile.exists()) {
-    		log.error("Template file '" + templateFile.getAbsolutePath() + "' not found. Cannot continue."); 
-    		System.exit(1);
+    	  throw new RuntimeException("Template file '" + templateFile.getAbsolutePath() + "' not found. Cannot continue."); 
     	}
     	
 		XWPFDocument templateDoc = null;
 		try {
 			templateDoc = new XWPFDocument(new FileInputStream(templateFile));
 		} catch (Exception e) {
-			log.error(e.getClass().getSimpleName() +  " loading template DOCX file \"" + templateFile.getAbsolutePath() + "\"");
-			System.exit(1);
+		  throw new RuntimeException(e.getClass().getSimpleName() +  " loading template DOCX file \"" + templateFile.getAbsolutePath() + "\"");
 		}
     	
     	File outFile = new File(docxPath);
@@ -140,8 +168,12 @@ public class MakeDocx
     	if (!outDir.exists()) {
     		log.info("Making output directory '" + outDir.getAbsolutePath() + "'...");
     		if (!outDir.mkdirs()) {
-    			log.error("Failed to create output directory '" + outDir.getAbsolutePath() + "'. Cannot continue");
-        		System.exit(1);
+    		  try {
+            templateDoc.close();
+          } catch (IOException e) {
+            // Don't care about this should it ever happen.
+          }
+    		  throw new RuntimeException("Failed to create output directory '" + outDir.getAbsolutePath() + "'. Cannot continue");
     		}
     	}
     	
@@ -149,8 +181,12 @@ public class MakeDocx
     	if (null != transformPath) {
     		transformFile = new File(transformPath);
         	if (!transformFile.exists()) {
-        		log.error("XSLT transform file '" + transformFile.getAbsolutePath() + "' not found. Cannot continue."); 
-        		System.exit(1);
+        	  try {
+              templateDoc.close();
+            } catch (IOException e) {
+              // Don't care about this should it ever happen.
+            }
+        	  throw new RuntimeException("XSLT transform file '" + transformFile.getAbsolutePath() + "' not found. Cannot continue."); 
         	}
         	if (!xsltParameters.containsKey(XSLT_PARAM_CHUNKLEVEL)) {
         		xsltParameters.put(XSLT_PARAM_CHUNKLEVEL, chunkLevel);
@@ -165,12 +201,11 @@ public class MakeDocx
     			if (inFile.getName().endsWith(".swpx")) {
 	    			handleSingleSwpxDoc(inFile, outFile, templateDoc, log);
 	    		} else {
-	    			transformXml(inFile, outDir, templateDoc, transformFile, xsltParameters, log);
+	    			transformXml(inFile, outDir, templateDoc, transformFile, catalog, xsltParameters, log);
 	    		}
     		}
     	} catch (Exception e) {
-    		log.error(e.getClass().getSimpleName() + ": " + e.getMessage(), e);
-    		System.exit(1);
+    	  throw new RuntimeException(e.getClass().getSimpleName() + ": " + e.getMessage(), e);
     	} finally {
 			try {
 				templateDoc.close();
@@ -187,6 +222,7 @@ public class MakeDocx
 	 * @param outDir Directory to put the DOCX files in
 	 * @param templateDoc Template DOCX document
 	 * @param transformFile The file containing the XSLT transform for generating SWPX documents
+	 * @param catalog List of catalog files (as for Saxon -catalog option). Maybe null.
 	 * @param xsltParameters Map of parameter names to values to be passed to the XSLT transform.
 	 * @param log Log to write messages to.
 	 * @throws Exception Any kind of error
@@ -196,6 +232,7 @@ public class MakeDocx
 			File outDir, 
 			XWPFDocument templateDoc, 
 			File transformFile, 
+			String catalog, 
 			Map<String, String> xsltParameters, 
 			Logger log) throws Exception {
 		// Apply transform to book file to generate Simple WP XML documents
@@ -210,7 +247,25 @@ public class MakeDocx
 		
 		Processor processor = new Processor(false);
 		DocxGeneratingOutputUriResolver outputResolver = new DocxGeneratingOutputUriResolver(outDir, templateDoc, log);
-		processor.setConfigurationProperty(FeatureKeys.OUTPUT_URI_RESOLVER, outputResolver);
+		// Saxon 9.9+ version:
+		processor.setConfigurationProperty(Feature.OUTPUT_URI_RESOLVER, outputResolver);
+    // processor.setConfigurationProperty(FeatureKeys.OUTPUT_URI_RESOLVER, outputResolver);
+		
+    if (catalog != null) {
+      // Adapted from Saxon CommandLineOptions.java:
+      try {
+        Class<?> klass = processor.getClass().getClassLoader().loadClass(APACHE_RESOLVER_CLASS);
+        if (klass == null) {
+          throw new RuntimeException("-k/-catalog option specified but failed to load class " + APACHE_RESOLVER_CLASS);
+        }
+        XmlCatalogResolver.setCatalog(catalog, processor.getUnderlyingConfiguration(), false);
+      } catch (XPathException err) {
+          throw new XPathException("Failed to load Apache catalog resolver library", err);
+      }
+    }
+    
+
+		
 		
 		// FIXME: Set up proper logger. See 
 		// https://www.saxonica.com/html/documentation/using-xsl/embedding/s9api-transformation.html
@@ -224,7 +279,7 @@ public class MakeDocx
 		Xslt30Transformer transformer = executable.load30();
 		transformer.setErrorListener(errorListener);
 		
-		MessageListener messageListener = new LoggingMessageListener(log);
+		MessageListener2 messageListener = new LoggingMessageListener(log);
 		transformer.setMessageListener(messageListener);
 
 		Map<QName, XdmValue> parameters = new HashMap<QName, XdmValue>();
@@ -236,6 +291,10 @@ public class MakeDocx
 		transformer.setStylesheetParameters(parameters);
 		
 		Source docSource = new StreamSource(docFile);
+		
+		XdmNode sourceDoc = processor.newDocumentBuilder().build(docSource);
+		transformer.setGlobalContextItem(sourceDoc);
+
 		log.info("Applying transform to source document " + docFile.getAbsolutePath() + "...");
 	
 		@SuppressWarnings("unused")
@@ -302,38 +361,53 @@ public class MakeDocx
 	 */
 	public static Options buildOptions() {
 		Options options = new Options();
-    	Option input = Option.builder("i")
+    	Option input = Option.builder(OPTION_CHAR_INPUTPATH)
 						.required(true)
 						.hasArg(true)
 						.desc("The path and filename of the Simple WP XML document or directory containing .swpx files.")
 						.build();
-    	Option output = Option.builder("o")
+    	Option output = Option.builder(OPTION_CHAR_OUTPUTPATH)
 						.required(true)
 						.hasArg(true)
 						.desc("The path and filename of the result DOCX file, or directory to contain generated DOCX files")
 						.build();
-    	Option template = Option.builder("t")
+    	Option template = Option.builder(OPTION_CHAR_TEMPLATEPATH)
 				.required(true)
 				.hasArg(true)
 				.desc("The path and filename of the template DOTX file.")
 				.build();
-    	Option transform = Option.builder("x")
+    	Option transform = Option.builder(OPTION_CHAR_TRANSFORMPATH)
 				.required(false)
 				.hasArg(true)
 				.desc("The path and filename of the XSLT transform for generating SWPX documents.")
 				.build();
-    	Option dpi = Option.builder("d")
-    			.longOpt("dpi")
-				.required(false)
-				.hasArg(true)
-				.desc("The dots-per-inch value to use when converting pixels to absolute measurements, e.g., \"72\" or \"96\".")
-				.build();
+      Option dpi = Option.builder("d")
+          .longOpt("dpi")
+        .required(false)
+        .hasArg(true)
+        .desc("The dots-per-inch value to use when converting pixels to absolute measurements, e.g., \"72\" or \"96\".")
+        .build();
+      Option chunkLevel = Option.builder(OPTION_CHAR_CHUNKLEVEL)
+          .longOpt("chunklevel")
+        .required(false)
+        .hasArg(true)
+        .desc("Control generation of separate DOCX files from input sections. Default is \"root\", create a single chunk. "
+            + "Values are determined by the details of the XSLT transform.")
+        .build();
+      Option catalog = Option.builder(OPTION_CHAR_CATALOG)
+          .longOpt("catalog")
+        .required(false)
+        .hasArg(true)
+        .desc("Semicolon-separated list of XML catalog file names, as for the Saxon -catalog option.")
+        .build();
     			
     	options.addOption(input);
     	options.addOption(output);
     	options.addOption(template);
     	options.addOption(transform);
     	options.addOption(dpi);
+      options.addOption(chunkLevel);
+    	options.addOption(catalog);
 
 		return options;
 	}

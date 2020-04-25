@@ -1308,7 +1308,7 @@ public class DocxGenerator {
 		
         if (format == 0) {
         	// FIXME: Might be more appropriate to throw an exception here.
-            log.error("Unsupported picture: " + imgFilename +
+            log.error("Unsupported picture, format code \"" + format + "\": " + imgFilename +
                     ". Expected emf|wmf|pict|jpeg|jpg|png|dib|gif|tiff|eps|bmp|wpg");
             cursor.pop();
             return;
@@ -1513,7 +1513,7 @@ public class DocxGenerator {
 				TableColumnDefinition colDef = colDefs.newColumnDef();
 				
 				String width = cursor.getAttributeText(DocxConstants.QNAME_COLWIDTH_ATT);
-				if (null != width) {
+				if (null != width && !width.equals("")) {
 					try {
 						colDef.setWidth(width, getDotsPerInch());
 					} catch (MeasurementException e) {
@@ -1932,16 +1932,15 @@ public class DocxGenerator {
               // width of the table itself necessarily, there's no way
               // to reliably convert percentages to explicit widths.
               List<String> spanWidths = new ArrayList<String>();
-              for (int i = cellCtr; i < cellCtr + spanCount; i++) {
-                spanWidths.add(colDefs.get(i).getSpecifiedWidth());                
-              }
               boolean allPercents = true;
-              for (String cand : spanWidths) {
-                allPercents = allPercents && cand.endsWith("%");
-              }
               boolean allNumbers = true;
-              for (String cand : spanWidths) {
-                allNumbers = allNumbers && !cand.endsWith("%") && !cand.equals("auto");
+              boolean allAuto = true;
+              for (int i = cellCtr; i < cellCtr + spanCount; i++) {
+                String widthVal = colDefs.get(i).getSpecifiedWidth(); 
+                spanWidths.add(widthVal);
+                allPercents = allPercents && widthVal.endsWith("%");
+                allNumbers = allNumbers && !widthVal.endsWith("%") && !widthVal.equals("auto");
+                allAuto = allAuto && widthVal.equals("auto");
               }
               if (allPercents) {
                 double spanPercent = 0;
@@ -1953,6 +1952,11 @@ public class DocxGenerator {
                     log.warn("Calculating width of column-spanning cell: Expected percent value \"" + cand + "\" is not numeric.");
                   }
                 }
+                width = "" + spanPercent + "%";
+              } else if (allAuto) {
+                // Set widths to equal percents so we can calculate span widths.
+                int colCount = colDefs.getColumnDefinitions().size();
+                double spanPercent = 100.0 / colCount;
                 width = "" + spanPercent + "%";
               } else if (allNumbers) {
                 int spanMeasurement = 0;
@@ -1966,7 +1970,7 @@ public class DocxGenerator {
                 }
                 width = "" + spanMeasurement;
               } else {
-                log.warn("Widths of spanned columns are neither all percents or all measurements, cannot calculate exact spanned width");
+                log.warn("Widths of spanned columns are neither all percents, all auto, or all measurements, cannot calculate exact spanned width");
                 log.warn("Widths are \"" + String.join("\", \"", spanWidths) + "\"");
               }
               cell.setWidth(width);

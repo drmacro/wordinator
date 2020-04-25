@@ -46,7 +46,8 @@
   />
   
   <!-- Controls level at which new result SWPX documents are generated, by
-       default the root document.
+       default the root document. Value is a string that is used to determine
+       if an element is or is not the start of a new chunk. 
        
        Enables creating multiple DOCX files from a single input document.
        
