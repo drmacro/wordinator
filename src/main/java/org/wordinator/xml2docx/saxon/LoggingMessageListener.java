@@ -5,13 +5,15 @@ import javax.xml.transform.SourceLocator;
 import org.apache.logging.log4j.Logger;
 
 import net.sf.saxon.s9api.MessageListener;
+import net.sf.saxon.s9api.MessageListener2;
+import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.XdmNode;
 
 /**
  * Put Saxon xsl:message output to a log4j log
  *
  */
-public class LoggingMessageListener implements MessageListener {
+public class LoggingMessageListener implements MessageListener, MessageListener2 {
 
 	private Logger log;
 
@@ -31,5 +33,10 @@ public class LoggingMessageListener implements MessageListener {
 		}
 
 	}
+
+  @Override
+  public void message(XdmNode content, QName errorCode, boolean terminate, SourceLocator locator) {
+    message(content, terminate, locator);
+  }
 
 }

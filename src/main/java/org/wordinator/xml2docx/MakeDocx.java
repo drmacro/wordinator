@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.transform.Source;
-import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.cli.CommandLine;
@@ -24,18 +23,18 @@ import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.apache.xml.resolver.Resolver;
 import org.apache.xmlbeans.XmlObject;
 import org.wordinator.xml2docx.generator.DocxGeneratingOutputUriResolver;
 import org.wordinator.xml2docx.generator.DocxGenerator;
 import org.wordinator.xml2docx.saxon.Log4jSaxonLogger;
 import org.wordinator.xml2docx.saxon.LoggingMessageListener;
 
-import net.sf.saxon.lib.FeatureKeys;
+import net.sf.saxon.lib.Feature;
 import net.sf.saxon.lib.StandardErrorListener;
-import net.sf.saxon.s9api.MessageListener;
+import net.sf.saxon.s9api.MessageListener2;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
+import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.s9api.Xslt30Transformer;
 import net.sf.saxon.s9api.XsltCompiler;
@@ -248,7 +247,9 @@ public class MakeDocx
 		
 		Processor processor = new Processor(false);
 		DocxGeneratingOutputUriResolver outputResolver = new DocxGeneratingOutputUriResolver(outDir, templateDoc, log);
-		processor.setConfigurationProperty(FeatureKeys.OUTPUT_URI_RESOLVER, outputResolver);
+		// Saxon 9.9+ version:
+		processor.setConfigurationProperty(Feature.OUTPUT_URI_RESOLVER, outputResolver);
+    // processor.setConfigurationProperty(FeatureKeys.OUTPUT_URI_RESOLVER, outputResolver);
 		
     if (catalog != null) {
       // Adapted from Saxon CommandLineOptions.java:
@@ -278,7 +279,7 @@ public class MakeDocx
 		Xslt30Transformer transformer = executable.load30();
 		transformer.setErrorListener(errorListener);
 		
-		MessageListener messageListener = new LoggingMessageListener(log);
+		MessageListener2 messageListener = new LoggingMessageListener(log);
 		transformer.setMessageListener(messageListener);
 
 		Map<QName, XdmValue> parameters = new HashMap<QName, XdmValue>();
@@ -290,6 +291,10 @@ public class MakeDocx
 		transformer.setStylesheetParameters(parameters);
 		
 		Source docSource = new StreamSource(docFile);
+		
+		XdmNode sourceDoc = processor.newDocumentBuilder().build(docSource);
+		transformer.setGlobalContextItem(sourceDoc);
+
 		log.info("Applying transform to source document " + docFile.getAbsolutePath() + "...");
 	
 		@SuppressWarnings("unused")
