@@ -2047,7 +2047,8 @@ public class DocxGenerator {
 						makeParagraph(p, cursor);
 						if (null != align) {
 						  if ("JUSTIFY".equalsIgnoreCase(align)) {
-						    align = "DISTRIBUTE"; // Slight mistmatch between markup and model
+						    // Issue 18: "BOTH" is the better match to "JUSTIFY"
+						    align = "BOTH"; // Slight mistmatch between markup and model
 						  }
               if ("CHAR".equalsIgnoreCase(align)) {
                 // I'm not sure this is the best mapping but it seemed close enough

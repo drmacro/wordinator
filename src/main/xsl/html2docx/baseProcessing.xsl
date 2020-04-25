@@ -443,17 +443,17 @@
     
     <xsl:variable name="class-values" as="xs:string*" select="tokenize(@class, ' ')"/>
     <xsl:choose>
-      <xsl:when test="($class-values ! contains(., 'center')) = true()">
+      <xsl:when test="$class-values = ('center')">
         <xsl:attribute name="align" select="'center'"/>
       </xsl:when>
-      <xsl:when test="($class-values ! contains(., 'left')) = true()">
+      <xsl:when test="$class-values = ('left')">
         <xsl:attribute name="align" select="'left'"/>
       </xsl:when>
-      <xsl:when test="($class-values ! contains(., 'right')) = true()">
+      <xsl:when test="$class-values = ('right')">
         <xsl:attribute name="align" select="'right'"/>
       </xsl:when>
-      <xsl:when test="($class-values ! contains(., 'justify')) = true()">
-        <xsl:attribute name="align" select="'justify'"/>
+      <xsl:when test="$class-values = ('both', 'justify')">
+        <xsl:attribute name="align" select="'both'"/>
       </xsl:when>
     </xsl:choose>
   </xsl:template>
