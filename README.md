@@ -26,7 +26,7 @@ If you need to go from Word documents back to XML, you may find the DITA for Pub
 
 ## Release Notes
 
-* 1.0.2
+* 1.0.3
 
   * Issue 11: Added support for catalog resolution with Saxon. Added new command-line option -k/-catalog that specifies a list of catalog files as for Saxon's -catalog option.
   * Issue 15: Copy numbering definitions to the generated DOCX. Resolves issue with list paragraphs not having bullets or numbers when they should.
@@ -34,6 +34,10 @@ If you need to go from Word documents back to XML, you may find the DITA for Pub
   * Issue 18: Recognize "both" as a synonym for "justify" in base HTML-to-SWZPX tranform. Use "both" rather than "distribute" for "justify" in generated DOCX.
   * Fixed issue with failure when using Saxon 9.9+ (failure to set global XSLT context).
   * Upgraded to Saxon 10.0 HE and POI 4.1.2
+  
+* 1.0.2
+
+  * Accidently skipped 1.0.2 by releasing the 1.0.2 code as 1.0.3.  
 
 * 1.0.1
 
