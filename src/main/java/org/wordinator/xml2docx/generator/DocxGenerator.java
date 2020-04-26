@@ -864,7 +864,11 @@ public class DocxGenerator {
 			if (null != style) {
 				styleId = style.getStyleId();
 			} else {
-			  // see if this is a latent style
+			  // Issue 23: see if this is a latent style and report it
+			  //
+			  // This will require an enhancement to the POI API as there is no easy
+			  // way to get the list of latent styles except to parse out the XML,
+			  // which I'm not going to--better to fix POI.
 			  // Unfortunately, there does not appear to be a documented or reliable
 			  // way to go from Word-defined latent style names to the actual style ID
 			  // of the style Word *will create* by some internal magic. In addition,

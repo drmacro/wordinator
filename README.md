@@ -28,7 +28,12 @@ If you need to go from Word documents back to XML, you may find the DITA for Pub
 
 * 1.0.2
 
-  * Added support for catalog resolution with Saxon. Added new command-line option -k/-catalog that specifies a list of catalog files as for Saxon's -catalog option.
+  * Issue 11: Added support for catalog resolution with Saxon. Added new command-line option -k/-catalog that specifies a list of catalog files as for Saxon's -catalog option.
+  * Issue 15: Copy numbering definitions to the generated DOCX. Resolves issue with list paragraphs not having bullets or numbers when they should.
+  * Issue 16: Scale images proportionally when only one dimension is specified in the SWPX. 
+  * Issue 18: Recognize "both" as a synonym for "justify" in base HTML-to-SWZPX tranform. Use "both" rather than "distribute" for "justify" in generated DOCX.
+  * Fixed issue with failure when using Saxon 9.9+ (failure to set global XSLT context).
+  * Upgraded to Saxon 10.0 HE and POI 4.1.2
 
 * 1.0.1
 
@@ -181,7 +186,7 @@ It's not a very pretty test but it demonstrates that the tool is working.
 * -o The output directory
 * -t The DOTX Word template
 * -x (optional) The XSLT transform to apply to the input file to generate SWPX files.
-* -k (optional) Semicolon-separated list of catalog files to used with Saxon. Same as Saxon's -catalog option.
+* -k (optional) Semicolon-separated list of catalog files to use with Saxon. Same as Saxon's -catalog option.
 * -c (optional) Chunk level. Specifies the section level or type to create separate DOCX files for. The value to use is determined by the details of the XSLT transform (local:is-chunk() function).
 
 If the `-i` parameter is a directory then it looks for `*.swpx` files and generates a DOCX file for each one.
@@ -279,6 +284,22 @@ To create and manage styles use this general procedure:
 3. To add or modify styles, create a new document from the DOTX file. Going forward you will use this new file to create new styles or modify existing styles.
 4. When you create or modify styles in the document, be sure to check the "Add to template" check mark on the style dialog. This will cause the template document to be updated with the new style information when you save the document you are editing.
 
+### A Note About Latent Styles
+
+Word has the concept of "latent styles". These are styles where the name is defined but the style definition does not actually exist in the document. You might reasonably think that you can specify latent style names in your SWPX and have them become real styles when Word opens the generated DOCX file. Unfortunately that is not possible.
+
+Latent styles are mapped to real styles by magic inside Word. This means that there is no way to know, _a-priori_, what the style ID will be for the style ultimately created for a latent style. In addition, the style ID that Word uses will depend on a number of variables, including the version of Word, the locale, and so on.
+
+Thus, it is impossible for Wordinator (or any processor other than Word itself) to go from the name of a latent style to a real style by its Word-assigned style ID. 
+
+That is, given the name of a latent style (which you can look up in the styles.xml file in the list of latent styles) there is no way to generate a style ID that will reliably resolve to a real style when Word opens the document. Even if you create the real style and get the ID Word assigned to it *on your machine*, that ID may be different in different environments, especially in different locales.
+
+This means that all styles used in your SWPX file must also be real styles in your DOTX file. 
+
+The behavior when you have specified a latent style name in the SWPX is that the resulting paragraph or run will not have any style associated with it (because the lookup of the style by name will fail because the style doesn't exist in the template).
+
+See [issue 23](https://github.com/drmacro/wordinator/issues/23): Reporting the use of a latent style requires an enhancement to POI first.
+
 ### Using the Style Organizer
 
 If you forget to do "Add to template" or you want to copy styles from an existing Word document, you can use the style organizer.
@@ -316,7 +337,7 @@ Maven dependency:
 <dependency>
   <groupId>org.wordinator</groupId>
   <artifactId>wordinator</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.2</version>
 </dependency>
 ```
 
