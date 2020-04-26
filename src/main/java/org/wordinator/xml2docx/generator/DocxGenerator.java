@@ -1339,11 +1339,15 @@ public class DocxGenerator {
 			log.warn("" + e.getClass().getSimpleName() + " exception loading image file '" + imgFile +"': " +
                      e.getMessage());
 		}		
-		 
 		String widthVal = cursor.getAttributeText(DocxConstants.QNAME_WIDTH_ATT);
-		if (null != widthVal) {
+    String heightVal = cursor.getAttributeText(DocxConstants.QNAME_HEIGHT_ATT);
+    boolean goodWidth = false;
+    boolean goodHeight = false;
+
+    if (null != widthVal) {
 			try {
 				width = (int) Measurement.toPixels(widthVal, getDotsPerInch());
+				goodWidth = true;
 			} catch (MeasurementException e) {
 				log.error(e.getClass().getSimpleName() + ": " + e.getMessage());
 				log.error("Using default width value " + width);
@@ -1353,10 +1357,10 @@ public class DocxGenerator {
 			width = intrinsicWidth > 0 ? intrinsicWidth : width;			
 		}
 
-		String heightVal = cursor.getAttributeText(DocxConstants.QNAME_HEIGHT_ATT);
 		if (null != heightVal) {
 			try {
 				height = (int) Measurement.toPixels(heightVal, getDotsPerInch());
+				goodHeight = true;
 			} catch (MeasurementException e) {
 				log.error(e.getClass().getSimpleName() + ": " + e.getMessage());
 				log.error("Using default height value " + height);
@@ -1365,6 +1369,17 @@ public class DocxGenerator {
 		} else {
 			height = intrinsicHeight > 0 ? intrinsicHeight : height;
 		}
+
+		// Issue 16: If either dimension is not specified, scale the intrinsic width
+		//           proportionally.
+		if (widthVal == null && heightVal != null && (intrinsicWidth > 0) && goodHeight) {
+		  double factor = height / intrinsicHeight;
+		  width = (int)Math.round(intrinsicWidth * factor);
+		}
+    if (widthVal != null && heightVal == null && (intrinsicHeight > 0) && goodWidth) {
+      double factor = (double)width / intrinsicWidth;
+      height = (int)Math.round(intrinsicHeight * factor);
+    }
 		
 		// At this point, the measurement is pixels. If the original specification
 		// was also pixels, we need to convert to inches and then back to pixels

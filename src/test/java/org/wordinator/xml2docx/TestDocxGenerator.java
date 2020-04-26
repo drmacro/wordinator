@@ -15,6 +15,8 @@ import org.apache.poi.xwpf.usermodel.XWPFHeader;
 import org.apache.poi.xwpf.usermodel.XWPFNum;
 import org.apache.poi.xwpf.usermodel.XWPFNumbering;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.apache.poi.xwpf.usermodel.XWPFPicture;
+import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.apache.xmlbeans.XmlObject;
 import org.junit.Test;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectPr;
@@ -60,6 +62,34 @@ public class TestDocxGenerator extends TestCase {
 			assertNotNull("Expected a paragraph", p);
 			assertEquals("Heading 1 Text", p.getText());
 			System.out.println("Paragraph text='" + p.getText() + "'");
+			while (iterator.hasNext()) {
+			  p = iterator.next();
+			  // Issue 16: Verify scaling of intrinsic dimensions:
+			  if (p.getText().startsWith("[Image 1]")) {
+			    XWPFRun run = p.getRuns().get(1); // Second run should contain the picture
+			    assertNotNull("Extected a second run", run);
+			    XWPFPicture picture = run.getEmbeddedPictures().get(0);
+			    assertNotNull("Expected a picture", picture);
+			    assertEquals("Expected width of 100", picture.getWidth(), 100.0);
+          assertEquals("Expected height (depth) of 50", picture.getDepth(), 50.0);
+			  }
+        if (p.getText().startsWith("[Image 2]")) {
+          XWPFRun run = p.getRuns().get(1); // Second run should contain the picture
+          assertNotNull("Extected a second run", run);
+          XWPFPicture picture = run.getEmbeddedPictures().get(0);
+          assertNotNull("Expected a picture", picture);
+          assertEquals("Expected width of 100", picture.getWidth(), 100.0);
+          assertEquals("Expected height (depth) of 100", picture.getDepth(), 100.0);
+        }
+        if (p.getText().startsWith("[Image 3]")) {
+          XWPFRun run = p.getRuns().get(1); // Second run should contain the picture
+          assertNotNull("Extected a second run", run);
+          XWPFPicture picture = run.getEmbeddedPictures().get(0);
+          assertNotNull("Expected a picture", picture);
+          assertEquals("Expected width of 50", picture.getWidth(), 50.0);
+          assertEquals("Expected height (depth) of 50", picture.getDepth(), 50.0);
+        }
+			}
 			
 		} catch (Exception e) {
 			e.printStackTrace();
