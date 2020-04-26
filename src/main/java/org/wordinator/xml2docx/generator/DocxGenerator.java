@@ -31,11 +31,14 @@ import org.apache.poi.xwpf.usermodel.BreakType;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.apache.poi.xwpf.usermodel.UnderlinePatterns;
 import org.apache.poi.xwpf.usermodel.XWPFAbstractFootnoteEndnote;
+import org.apache.poi.xwpf.usermodel.XWPFAbstractNum;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFFooter;
 import org.apache.poi.xwpf.usermodel.XWPFHeader;
 import org.apache.poi.xwpf.usermodel.XWPFHeaderFooter;
 import org.apache.poi.xwpf.usermodel.XWPFHyperlinkRun;
+import org.apache.poi.xwpf.usermodel.XWPFNum;
+import org.apache.poi.xwpf.usermodel.XWPFNumbering;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.apache.poi.xwpf.usermodel.XWPFStyle;
@@ -308,7 +311,8 @@ public class DocxGenerator {
 				
 		XWPFDocument doc = new XWPFDocument();
 		
-		setupStyles(doc, this.templateDoc);
+		setupNumbering(doc, this.templateDoc);
+    setupStyles(doc, this.templateDoc);
 		constructDoc(doc, xml);
 		
 		FileOutputStream out = new FileOutputStream(outFile);
@@ -853,18 +857,31 @@ public class DocxGenerator {
 		cursor.push();
 		String styleName = cursor.getAttributeText(DocxConstants.QNAME_STYLE_ATT);
 		String styleId = cursor.getAttributeText(DocxConstants.QNAME_STYLEID_ATT);
-		
+
 		if (null != styleName && null == styleId) {
 			// Look up the style by name:
 			XWPFStyle style = para.getDocument().getStyles().getStyleWithName(styleName);
 			if (null != style) {
 				styleId = style.getStyleId();
+			} else {
+			  // Issue 23: see if this is a latent style and report it
+			  //
+			  // This will require an enhancement to the POI API as there is no easy
+			  // way to get the list of latent styles except to parse out the XML,
+			  // which I'm not going to--better to fix POI.
+			  // Unfortunately, there does not appear to be a documented or reliable
+			  // way to go from Word-defined latent style names to the actual style ID
+			  // of the style Word *will create* by some internal magic. In addition,
+			  // any such mapping varies by Word version, locale, etc.
+			  //
+			  // That means that in order to use any style it must exist as a proper
+			  // style.
 			}
 		}
 		if (null != styleId) {
 			para.setStyle(styleId);
 		}
-		
+			
 		
 		if (additionalProperties != null) {
 		  for (String propName : additionalProperties.keySet()) {
@@ -1326,11 +1343,15 @@ public class DocxGenerator {
 			log.warn("" + e.getClass().getSimpleName() + " exception loading image file '" + imgFile +"': " +
                      e.getMessage());
 		}		
-		 
 		String widthVal = cursor.getAttributeText(DocxConstants.QNAME_WIDTH_ATT);
-		if (null != widthVal) {
+    String heightVal = cursor.getAttributeText(DocxConstants.QNAME_HEIGHT_ATT);
+    boolean goodWidth = false;
+    boolean goodHeight = false;
+
+    if (null != widthVal) {
 			try {
 				width = (int) Measurement.toPixels(widthVal, getDotsPerInch());
+				goodWidth = true;
 			} catch (MeasurementException e) {
 				log.error(e.getClass().getSimpleName() + ": " + e.getMessage());
 				log.error("Using default width value " + width);
@@ -1340,10 +1361,10 @@ public class DocxGenerator {
 			width = intrinsicWidth > 0 ? intrinsicWidth : width;			
 		}
 
-		String heightVal = cursor.getAttributeText(DocxConstants.QNAME_HEIGHT_ATT);
 		if (null != heightVal) {
 			try {
 				height = (int) Measurement.toPixels(heightVal, getDotsPerInch());
+				goodHeight = true;
 			} catch (MeasurementException e) {
 				log.error(e.getClass().getSimpleName() + ": " + e.getMessage());
 				log.error("Using default height value " + height);
@@ -1352,6 +1373,17 @@ public class DocxGenerator {
 		} else {
 			height = intrinsicHeight > 0 ? intrinsicHeight : height;
 		}
+
+		// Issue 16: If either dimension is not specified, scale the intrinsic width
+		//           proportionally.
+		if (widthVal == null && heightVal != null && (intrinsicWidth > 0) && goodHeight) {
+		  double factor = height / intrinsicHeight;
+		  width = (int)Math.round(intrinsicWidth * factor);
+		}
+    if (widthVal != null && heightVal == null && (intrinsicHeight > 0) && goodWidth) {
+      double factor = (double)width / intrinsicWidth;
+      height = (int)Math.round(intrinsicHeight * factor);
+    }
 		
 		// At this point, the measurement is pixels. If the original specification
 		// was also pixels, we need to convert to inches and then back to pixels
@@ -2126,6 +2158,47 @@ public class DocxGenerator {
 		
 
 	}
+
+  private void setupNumbering(XWPFDocument doc, XWPFDocument templateDoc) throws DocxGenerationException {
+    // Load the template's numbering definitions to the new document
+                
+    try {
+      XWPFNumbering templateNumbering = templateDoc.getNumbering();
+      XWPFNumbering numbering = doc.createNumbering();
+      // There is no method to just get all the abstract and concrete
+      // numbers or their IDs so we just iterate until we don't get any more
+      
+      // Abstract numbers:
+      int i = 1;
+      XWPFAbstractNum abstractNum = null;
+      // Number IDs appear to always be integers starting at 1 
+      // so we're really just guessing.
+      do {
+        abstractNum = templateNumbering.getAbstractNum(BigInteger.valueOf(i));
+        i++;
+        if (abstractNum != null) {
+          numbering.addAbstractNum(abstractNum);
+        }
+      } while (abstractNum != null);
+
+      // Concrete numbers:
+      XWPFNum num = null;
+      i = 1;
+      do {
+        num = templateNumbering.getNum(BigInteger.valueOf(i));
+        i++;
+        if (num != null) {
+          numbering.addNum(num);
+        }
+      } while (num != null);
+            
+
+    } catch (Exception e) {
+      new DocxGenerationException(e.getClass().getSimpleName() + " Copying numbering definitions from template doc: " + e.getMessage(), e);
+    }
+    
+    
+  }
 
 	/**
 	 * Set up any custom styles.
