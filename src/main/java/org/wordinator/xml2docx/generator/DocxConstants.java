@@ -31,6 +31,7 @@ public final class DocxConstants {
   public static final QName QNAME_BORDER_STYLE_TOP_ATT = new QName("", "borderstyletop");
 	public static final QName QNAME_BOTTOM_ATT = new QName("", "bottom");
 	public static final QName QNAME_CALCULATEDWIDTH_ATT = new QName("", "calculatedWidth");
+  public static final QName QNAME_CALLOUT_ATT = new QName("", "callout");
 	public static final QName QNAME_CAPS_ATT = new QName("", "caps");	
   public static final QName QNAME_CHAPTER_SEPARATOR_ATT = new QName("", "chapter-separator");
   public static final QName QNAME_CHAPTER_STYLE_ATT = new QName("", "chapter-style");
@@ -69,6 +70,7 @@ public final class DocxConstants {
   public static final QName QNAME_OUTSIDEINDENT_ATT = new QName("", "outsideindent");
 	public static final QName QNAME_PAGE_BREAK_BEFORE_ATT = new QName("", "page-break-before");
 	public static final QName QNAME_POSITION_ATT = new QName("", "position");
+  public static final QName QNAME_REFERENCE_CALLOUT_ATT = new QName("", "reference-callout");
 	public static final QName QNAME_RIGHT_ATT = new QName("", "right");
   public static final QName QNAME_RIGHTINDENT_ATT = new QName("", "rightindent");
 	public static final QName QNAME_ROWSEP_ATT = new QName("", "rowsep");
