@@ -2165,11 +2165,13 @@ public class DocxGenerator {
     try {
       XWPFNumbering templateNumbering = templateDoc.getNumbering();
       XWPFNumbering numbering = doc.createNumbering();
-      // There is no method to just get all the abstract and concrete
+      // In 4.1.2 There is no method to just get all the abstract and concrete
       // numbers or their IDs so we just iterate until we don't get any more
+      // Trunk has new methods for this as of 4/26/2020
       
       // Abstract numbers:
       int i = 1;
+      
       XWPFAbstractNum abstractNum = null;
       // Number IDs appear to always be integers starting at 1 
       // so we're really just guessing.
