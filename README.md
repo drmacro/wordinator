@@ -1,6 +1,6 @@
 # The Wordinator
 
-Version 1.0.2
+Version 1.0.4
 
 Generate high-quality Microsoft Word DOCX files using a simplified XML format (simple word processing XML).
 
@@ -25,6 +25,10 @@ You can use your own XSLT transform to generate SWPX files from any XML (or JSON
 If you need to go from Word documents back to XML, you may find the DITA for Publishers Word-to-DITA framework useful ([https://github.com/dita4publishers/org.dita4publishers.word2dita]). This packaged as a DITA Open Toolkit plugin but is really a general-purpose XML-to-DOCX framework. It does not depend on the DITA Open Toolkit in any way. While it is designed to generate DITA XML it can be adapted to produce any XML format, either directly or through a DITA-to-X transform applied
 
 ## Release Notes
+
+* 1.0.4
+  
+  * TBD...
 
 * 1.0.3
 
