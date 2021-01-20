@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/css" href="../../../main/doctypes/simplewpml/css/simplewpml.css"?>
+<?xml-model href="../../../main/doctypes/simplewpml/simplewpml.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<document xmlns="urn:ns:wordinator:simplewpml">
+  <page-sequence-properties>
+    <page-number-properties
+      format="custom"
+      xslt-format="1."
+      start="1"
+    />
+    <headers-and-footers>
+      <header>
+        <p><run>Odd Header Paragraph 1</run></p>
+        <p><run>Odd Header Paragraph 2</run></p>
+      </header>
+      <header type="even">
+        <p><run>Even Header Paragraph 1</run></p>
+      </header>
+      <footer>
+        <p>
+          <run>Odd Footer: </run>
+          <page-number-ref format="numberInDash"/>
+          <run> After page-number-ref</run>
+        </p>
+      </footer>
+      <footer type="even">
+        <p><run>Even Footer</run></p>
+      </footer>
+    </headers-and-footers>
+  </page-sequence-properties>
+  <body>
+    <p style="Heading1">
+      <run style="Strong">Issue #29: Test of Literal Footnote Callouts</run>
+    </p>
+    <p style="normal">
+      <run>This paragraph has a normal footnote. It should have a generated callout of "1".</run>
+      <fn><p><run>This is a normal footnote. It should have a callout of 1</run></p></fn>
+    </p>
+    <p style="normal">
+      <run>This paragraph has a custom footnote. It specifies a literal callout of "FN-1".</run>
+      <fn callout="FN-1"><p><run>This is a custom footnote. It specifies a literal callout of "FN-1".</run></p></fn>
+    </p>
+    <p style="normal">
+      <run>This paragraph has a custom footnote. It specifies a literal callout of "FN-2" and a reference callout of "Ref-2".</run>
+      <fn callout="FN-2" reference-callout="Ref-2"><p><run>This is a custom footnote. It specifies a literal callout of "FN-2" and a reference callout of "Ref-2".</run></p></fn>
+    </p>
+  </body>
+</document>

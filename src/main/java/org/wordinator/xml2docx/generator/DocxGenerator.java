@@ -57,6 +57,7 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBookmark;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBorder;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDecimalNumber;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDocument1;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTFtnEdn;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTHdrFtrRef;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTHyperlink;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTMarkupRange;
@@ -1137,6 +1138,8 @@ public class DocxGenerator {
 	  XmlCursor cursor = xml.newCursor();
 	  
 		String type = cursor.getAttributeText(DocxConstants.QNAME_TYPE_ATT);
+    String callout = cursor.getAttributeText(DocxConstants.QNAME_CALLOUT_ATT);
+    String referenceCallout = cursor.getAttributeText(DocxConstants.QNAME_REFERENCE_CALLOUT_ATT);
 		
 		XWPFAbstractFootnoteEndnote note = null;
 		if ("endnote".equals(type)) {
@@ -1145,7 +1148,7 @@ public class DocxGenerator {
 			note = para.getDocument().createFootnote();
 		}
 		
-		// NOTE: The paragraph is not created with any initial paragraph.
+		// NOTE: The footnote is not created with any initial paragraph.
 		
 		if (cursor.toFirstChild()) {
 			do {
@@ -1165,7 +1168,52 @@ public class DocxGenerator {
 			} while (cursor.toNextSibling());
 		}
 
-		para.addFootnoteReference(note);
+    para.addFootnoteReference(note);
+
+    // Issue #29: For footnotes with explict callouts, have to replace the markup for generated
+    //            refs with the literal callout from the input XML.
+
+		if (callout != null) {
+      if (referenceCallout == null) {
+        referenceCallout = callout;
+      }
+		  
+		  XmlCursor paraCursor = para.getCTP().newCursor();
+		  
+		  if (paraCursor.toLastChild()) {
+		    // Should be the run created for the footnote reference.
+		    if (paraCursor.toChild(DocxConstants.QNAME_FOOTNOTEREFEREMCE_ELEM)) {
+		      paraCursor.setAttributeText(DocxConstants.QNAME_CUSTOMMARKFOLLOWS_ATT, "on");
+		      paraCursor.toParent();
+		      paraCursor.toEndToken();
+		      paraCursor.insertElementWithText(DocxConstants.QNAME_T_ELEM, referenceCallout);
+		    }
+		  
+		  }
+		  
+		  // Set literal callout on the footnote itself:
+      CTFtnEdn ctfNote = note.getCTFtnEdn();
+      
+      XmlCursor noteCursor = ctfNote.newCursor();
+      
+      // Find the first run. This should have a <w:footnoteRef/> element as it's content. 
+      // Remove that and replace it with a w:t with the callout.
+      if (noteCursor.toChild(DocxConstants.QNAME_W_P_ELEM)) {
+        if (noteCursor.toChild(DocxConstants.QNAME_R_ELEM)) {
+          cursor.push();
+          if (noteCursor.toChild(DocxConstants.QNAME_FOOTNOTEREF_ELEM)) {
+            noteCursor.removeXml();        
+          }
+          cursor.pop();
+          // Now construct a literal footnote reference callout.
+          noteCursor.insertElementWithText(DocxConstants.QNAME_T_ELEM, callout);
+        }
+      }
+      
+      noteCursor.dispose();
+		  
+		}
+		
 		cursor.pop();
 	}
 
@@ -2165,11 +2213,13 @@ public class DocxGenerator {
     try {
       XWPFNumbering templateNumbering = templateDoc.getNumbering();
       XWPFNumbering numbering = doc.createNumbering();
-      // There is no method to just get all the abstract and concrete
+      // In 4.1.2 There is no method to just get all the abstract and concrete
       // numbers or their IDs so we just iterate until we don't get any more
+      // Trunk has new methods for this as of 4/26/2020
       
       // Abstract numbers:
       int i = 1;
+      
       XWPFAbstractNum abstractNum = null;
       // Number IDs appear to always be integers starting at 1 
       // so we're really just guessing.
@@ -2281,3 +2331,4 @@ public class DocxGenerator {
 
 
 }
+

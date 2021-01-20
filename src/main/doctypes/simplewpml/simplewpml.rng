@@ -855,7 +855,7 @@
         <p>A footnote within a paragraph or run. 
           Represents the point of reference of the footnote as well as the content of the footnote itself.</p>
         <p>A footnote has one or more paragraphs.</p>
-        <!-- FIXME: May need a way to capture the callout or callout number stream or stream type (e.g., counter format). -->
+        <p>Issue #29: Added @callout attribute.</p>
       </a:documentation>
       <zeroOrMore>
         <choice>
@@ -879,6 +879,26 @@
             <value>bottom-of-page</value>
             <value>endnote</value>
           </choice>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="callout">
+          <a:documentation>
+            <p>Specifies a literal callout to use in place of the normal generated callout.
+            If only @callout is specified, this value is used for both the reference and
+            the footnote in the footnote area.</p>
+            <p>@since: 1.0.4</p>
+          </a:documentation>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="reference-callout">
+          <a:documentation>
+            <p>Specifies the callout to use for the footnot reference when @callout is also
+              specified. If not specified, the value of @callout is used for the footnote reference
+              callout.</p>
+            <p>@since: 1.0.4</p>
+          </a:documentation>
         </attribute>
       </optional>
     </element>

@@ -257,4 +257,56 @@ public class TestDocxGenerator extends TestCase {
     
   }
 
+  @Test
+  public void testFootnoteGeneration() throws Exception {
+    ClassLoader classLoader = getClass().getClassLoader();
+    File inFile = new File(classLoader.getResource("simplewp/simplewpml-issue-29.swpx").getFile());
+    File templateFile = new File(classLoader.getResource(DOTX_TEMPLATE_PATH).getFile());
+    File outFile = new File("out/output-issue-29.docx");
+    File outDir = outFile.getParentFile();
+    System.out.println("Input file: " + inFile.getAbsolutePath());
+    System.out.println("Output file: " + outFile.getAbsolutePath());
+    if (!outDir.exists()) {
+      assertTrue("Failed to create directories for output file " + outFile.getAbsolutePath(), outFile.mkdirs());      
+    }
+    if (outFile.exists()) {
+      assertTrue("Failed to delete output file " + outFile.getAbsolutePath(), outFile.delete());
+    }
+    
+    XWPFDocument templateDoc = new XWPFDocument(new FileInputStream(templateFile));
+    
+    DocxGenerator maker = new DocxGenerator(inFile, outFile, templateDoc);
+    // Generate the DOCX file:
+    
+    try {
+      XmlObject xml = XmlObject.Factory.parse(inFile);
+
+      maker.generate(xml);
+      assertTrue("DOCX file does not exist", outFile.exists());
+      FileInputStream inStream = new FileInputStream(outFile);
+      XWPFDocument doc = new XWPFDocument(inStream);
+      assertNotNull(doc);
+      Iterator<XWPFParagraph> iterator = doc.getParagraphsIterator();
+      XWPFParagraph p = iterator.next();
+      assertNotNull("Expected a paragraph", p);
+      assertEquals("Issue #29: Test of Literal Footnote Callouts", p.getText());
+      // Normal footnote with generated ref
+      p = iterator.next();
+      assertEquals(" [1: This is a normal footnote. It should have a callout of 1] ", p.getFootnoteText());
+      // Custom footnote with literal callout with same value for ref and footnote:
+      p = iterator.next();
+      String fnText = p.getFootnoteText();
+      assertEquals(" [2: FN-1This is a custom footnote. It specifies a literal callout of \"FN-1\".] ", fnText);
+      // Custom footnote with literal callout with different values for ref and footnote:
+      p = iterator.next();
+      fnText = p.getFootnoteText();
+      assertEquals(" [3: FN-2This is a custom footnote. It specifies a literal callout of \"FN-2\" and a reference callout of \"Ref-2\".] ", p.getFootnoteText());
+      
+    } catch (Exception e) {
+      e.printStackTrace();
+      fail("Got unexpected " + e.getClass().getSimpleName() + ": " + e.getMessage());
+    }
+    
+  }
+
 }
