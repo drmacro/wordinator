@@ -28,7 +28,7 @@ If you need to go from Word documents back to XML, you may find the DITA for Pub
 
 * 1.0.4
   
-  * TBD...
+  * Issue 29: Support literal callouts and reference callouts for footnotes. Added new attributes to fn element for specifying the callout and, optionally, reference callout text.
 
 * 1.0.3
 

@@ -295,11 +295,12 @@ public class TestDocxGenerator extends TestCase {
       assertEquals(" [1: This is a normal footnote. It should have a callout of 1] ", p.getFootnoteText());
       // Custom footnote with literal callout with same value for ref and footnote:
       p = iterator.next();
-      assertEquals(" [FN-1: This is a custom footnote. It specifies a literal callout of \"FN-1\".] ", p.getFootnoteText());
+      String fnText = p.getFootnoteText();
+      assertEquals(" [2: FN-1This is a custom footnote. It specifies a literal callout of \"FN-1\".] ", fnText);
       // Custom footnote with literal callout with different values for ref and footnote:
       p = iterator.next();
-      System.out.println("[4] Paragraph text='" + p.getText() + "'");
-      assertEquals(" [FN-2: This is a custom footnote. It specifies a literal callout of \"FN-2\" and a reference callout of \"Ref-2\".] ", p.getFootnoteText());
+      fnText = p.getFootnoteText();
+      assertEquals(" [3: FN-2This is a custom footnote. It specifies a literal callout of \"FN-2\" and a reference callout of \"Ref-2\".] ", p.getFootnoteText());
       
     } catch (Exception e) {
       e.printStackTrace();
