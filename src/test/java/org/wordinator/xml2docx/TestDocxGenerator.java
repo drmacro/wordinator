@@ -7,6 +7,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.poi.xwpf.model.XWPFHeaderFooterPolicy;
+import org.apache.poi.xwpf.usermodel.BodyElementType;
+import org.apache.poi.xwpf.usermodel.IBody;
 import org.apache.poi.xwpf.usermodel.IBodyElement;
 import org.apache.poi.xwpf.usermodel.XWPFAbstractNum;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
@@ -17,9 +19,15 @@ import org.apache.poi.xwpf.usermodel.XWPFNumbering;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFPicture;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
+import org.apache.poi.xwpf.usermodel.XWPFTable;
+import org.apache.poi.xwpf.usermodel.XWPFTableCell;
+import org.apache.poi.xwpf.usermodel.XWPFTableRow;
+import org.apache.xmlbeans.XmlCursor;
 import org.apache.xmlbeans.XmlObject;
 import org.junit.Test;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectPr;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTc;
+import org.wordinator.xml2docx.generator.DocxConstants;
 import org.wordinator.xml2docx.generator.DocxGenerator;
 
 import junit.framework.TestCase;
@@ -307,6 +315,122 @@ public class TestDocxGenerator extends TestCase {
       fail("Got unexpected " + e.getClass().getSimpleName() + ": " + e.getMessage());
     }
     
+  }
+
+  @Test
+  public void testTableGeneration() throws Exception {
+    ClassLoader classLoader = getClass().getClassLoader();
+    File inFile = new File(classLoader.getResource("simplewp/simplewpml-issue-30.swpx").getFile());
+    File templateFile = new File(classLoader.getResource(DOTX_TEMPLATE_PATH).getFile());
+    File outFile = new File("out/output-issue-30.docx");
+    File outDir = outFile.getParentFile();
+    System.out.println("Input file: " + inFile.getAbsolutePath());
+    System.out.println("Output file: " + outFile.getAbsolutePath());
+    if (!outDir.exists()) {
+      assertTrue("Failed to create directories for output file " + outFile.getAbsolutePath(), outFile.mkdirs());      
+    }
+    if (outFile.exists()) {
+      assertTrue("Failed to delete output file " + outFile.getAbsolutePath(), outFile.delete());
+    }
+    
+    XWPFDocument templateDoc = new XWPFDocument(new FileInputStream(templateFile));
+    
+    DocxGenerator maker = new DocxGenerator(inFile, outFile, templateDoc);
+    try {
+      XmlObject xml = XmlObject.Factory.parse(inFile);
+
+      maker.generate(xml);
+      assertTrue("DOCX file does not exist", outFile.exists());
+      FileInputStream inStream = new FileInputStream(outFile);
+      XWPFDocument doc = new XWPFDocument(inStream);
+      assertNotNull(doc);
+      Iterator<XWPFTable> iterator = doc.getTablesIterator();
+      
+      XWPFTable table;
+      table = iterator.next();
+      assertNotNull("Did not find any tables", table);
+
+      // Look for table details here.
+      
+      // System.out.println("Table rows:");
+      /*
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="2880" w:type="dxa"/>
+            <w:tcBorders>
+              <w:top w:val="single"/>
+              <w:left w:val="single"/>
+              <w:bottom w:val="single"/>
+              <w:right w:val="single"/>
+            </w:tcBorders>
+          </w:tcPr>
+       */
+      // int n = 0;
+      // First table should have all single borders
+      for (XWPFTableRow row : table.getRows()) {
+        // System.out.println("Row " + ++n);
+        for (XWPFTableCell cell : row.getTableCells()) {
+           XmlCursor cursor = cell.getCTTc().newCursor();
+           assertTrue("No tcPr element", cursor.toChild(DocxConstants.QNAME_TCPR_ELEM));
+           assertTrue("No tcBorders element", cursor.toChild(DocxConstants.QNAME_TCBORDERS_ELEM));
+           assertTrue("No top element", cursor.toChild(DocxConstants.QNAME_TOP_ELEM));
+           assertEquals("single", cursor.getAttributeText(DocxConstants.QNAME_VAL_ATT));
+           assertNull("Did not expect a color attribute", cursor.getAttributeText(DocxConstants.QNAME_COLOR_ATT));
+           cursor.toNextSibling(); // Left
+           assertEquals("single", cursor.getAttributeText(DocxConstants.QNAME_VAL_ATT));
+           assertNull("Did not expect a color attribute", cursor.getAttributeText(DocxConstants.QNAME_COLOR_ATT));
+           cursor.toNextSibling(); // Bottom
+           assertEquals("single", cursor.getAttributeText(DocxConstants.QNAME_VAL_ATT));
+           assertNull("Did not expect a color attribute", cursor.getAttributeText(DocxConstants.QNAME_COLOR_ATT));
+           cursor.toNextSibling(); // Right
+           assertEquals("single", cursor.getAttributeText(DocxConstants.QNAME_VAL_ATT));
+           assertNull("Did not expect a color attribute", cursor.getAttributeText(DocxConstants.QNAME_COLOR_ATT));
+        }
+      }
+      
+      assertTrue("Expected a second table", iterator.hasNext());
+      table = iterator.next();
+
+      for (XWPFTableRow row : table.getRows()) {
+        // System.out.println("Row " + ++n);
+        for (XWPFTableCell cell : row.getTableCells()) {
+           XmlCursor cursor = cell.getCTTc().newCursor();
+           assertTrue("No tcPr element", cursor.toChild(DocxConstants.QNAME_TCPR_ELEM));
+           assertTrue("No tcBorders element", cursor.toChild(DocxConstants.QNAME_TCBORDERS_ELEM));
+           assertTrue("No top element", cursor.toChild(DocxConstants.QNAME_TOP_ELEM));
+           assertNotNull("Expected a color attribute", cursor.getAttributeText(DocxConstants.QNAME_COLOR_ATT));
+           cursor.toNextSibling(); // Left
+           assertNotNull("Expected a color attribute", cursor.getAttributeText(DocxConstants.QNAME_COLOR_ATT));
+           cursor.toNextSibling(); // Bottom
+           assertNotNull("Expected a color attribute", cursor.getAttributeText(DocxConstants.QNAME_COLOR_ATT));
+           cursor.toNextSibling(); // Right
+           assertNotNull("Expected a color attribute", cursor.getAttributeText(DocxConstants.QNAME_COLOR_ATT));
+        }
+      }
+
+      assertTrue("Expected a third table", iterator.hasNext());
+      table = iterator.next();
+      XWPFTableRow row = table.getRow(0); // Header row.
+      XWPFTableCell cell = row.getCell(1); // Center cell
+      XmlCursor cursor = cell.getCTTc().newCursor();
+      assertTrue(cursor.toChild(DocxConstants.QNAME_TCPR_ELEM));
+      assertTrue(cursor.toChild(DocxConstants.QNAME_TCBORDERS_ELEM));
+      assertTrue(cursor.toChild(DocxConstants.QNAME_LEFT_ELEM));
+      assertEquals("00FF00", cursor.getAttributeText(DocxConstants.QNAME_COLOR_ATT));
+      cursor.toParent();
+      assertTrue(cursor.toChild(DocxConstants.QNAME_RIGHT_ELEM));
+      assertEquals("0000FF", cursor.getAttributeText(DocxConstants.QNAME_COLOR_ATT));
+      cursor.toParent();
+      assertTrue(cursor.toChild(DocxConstants.QNAME_TOP_ELEM));
+      assertEquals("F0F0F0", cursor.getAttributeText(DocxConstants.QNAME_COLOR_ATT));
+      cursor.toParent();
+      assertTrue(cursor.toChild(DocxConstants.QNAME_BOTTOM_ELEM));
+      assertEquals("0F0F0F", cursor.getAttributeText(DocxConstants.QNAME_COLOR_ATT));
+
+    } catch (Exception e) {
+      e.printStackTrace();
+      fail("Got unexpected " + e.getClass().getSimpleName() + ": " + e.getMessage());
+    }
   }
 
 }

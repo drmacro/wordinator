@@ -23,6 +23,11 @@ public final class DocxConstants {
 	// Attributes:
 	public static final QName QNAME_ALIGN_ATT = new QName("", "align");
 	public static final QName QNAME_BOLD_ATT = new QName("", "bold");
+  public static final QName QNAME_BORDER_COLOR_ATT = new QName("", "bordercolor");
+  public static final QName QNAME_BORDER_COLOR_TOP_ATT = new QName("", "bordercolortop");
+  public static final QName QNAME_BORDER_COLOR_LEFT_ATT = new QName("", "bordercolorleft");
+  public static final QName QNAME_BORDER_COLOR_BOTTOM_ATT = new QName("", "bordercolorbottom");
+  public static final QName QNAME_BORDER_COLOR_RIGHT_ATT = new QName("", "bordercolorright");
   public static final QName QNAME_BORDER_STYLE_ATT = new QName("", "borderstyle");
   public static final QName QNAME_BORDER_STYLE_BOTTOM_ATT = new QName("", "borderstylebottom");
   public static final QName QNAME_BORDER_STYLE_LEFT_ATT = new QName("", "borderstyleleft");
@@ -37,6 +42,7 @@ public final class DocxConstants {
   public static final QName QNAME_CHAPTER_SEPARATOR_ATT = new QName("", "chapter-separator");
   public static final QName QNAME_CHAPTER_STYLE_ATT = new QName("", "chapter-style");
   public static final QName QNAME_CODE_ATT = new QName(SIMPLE_WP_NS, "code");
+  public static final QName QNAME_COLOR_ATT = new QName(OO_WPML_NS, "color");
 	public static final QName QNAME_COLSEP_ATT = new QName("", "colsep");
 	public static final QName QNAME_COLSPAN_ATT = new QName("", "colspan");
 	public static final QName QNAME_COLWIDTH_ATT = new QName("", "colwidth");
@@ -115,5 +121,12 @@ public final class DocxConstants {
 
 	public static final String PROPERTY_VALUE_CONTINUOUS = "continuous";
   public static final String PROPERTY_PAGEBREAK = "pagebreak";
+  public static final QName QNAME_TCPR_ELEM = new QName(OO_WPML_NS, "tcPr");
+  public static final QName QNAME_TCBORDERS_ELEM = new QName(OO_WPML_NS, "tcBorders");
+  public static final QName QNAME_TOP_ELEM = new QName(OO_WPML_NS, "top");
+  public static final QName QNAME_VAL_ATT = new QName(OO_WPML_NS, "val");
+  public static final QName QNAME_LEFT_ELEM = new QName(OO_WPML_NS, "left");
+  public static final QName QNAME_RIGHT_ELEM = new QName(OO_WPML_NS, "right");
+  public static final QName QNAME_BOTTOM_ELEM = new QName(OO_WPML_NS, "bottom");
   
 }

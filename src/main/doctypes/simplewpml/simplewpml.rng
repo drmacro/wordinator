@@ -816,9 +816,7 @@
         <p>Set foreground color</p>
         <p>For now must be an RGB color value, e.g. "C0C0C0". May add support for color names at some point.</p>
       </a:documentation>
-      <data type="string">
-        <param name="pattern">[0-9A-Fa-f]{6}</param>
-      </data>  
+      <ref name="hexcolor"/>
     </attribute>    
   </define>
   <define name="bookmarkStart">
@@ -1343,6 +1341,46 @@
             <p>Specifies the right border style.</p>
           </a:documentation>
           <ref name="borderstyles"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="bordercolor">
+          <a:documentation>
+            <p>Specifies the border color for the cell's borders.</p>
+          </a:documentation>
+          <ref name="hexcolor"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="bordercolorbottom">
+          <a:documentation>
+            <p>Specifies the bottom border color.</p>
+          </a:documentation>
+          <ref name="hexcolor"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="bordercolortop">
+          <a:documentation>
+            <p>Specifies the top border color.</p>
+          </a:documentation>
+          <ref name="hexcolor"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="bordercolorleft">
+          <a:documentation>
+            <p>Specifies the left border color.</p>
+          </a:documentation>
+          <ref name="hexcolor"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="bordercolorright">
+          <a:documentation>
+            <p>Specifies the right border color.</p>
+          </a:documentation>
+          <ref name="hexcolor"/>
         </attribute>
       </optional>
       <optional>
