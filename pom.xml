@@ -5,7 +5,7 @@
   <groupId>org.wordinator</groupId>
   <artifactId>wordinator</artifactId>
   <packaging>jar</packaging>
-  <version>1.0.3</version>
+  <version>1.0.4</version>
   <organization>
     <name>wordinator.org</name>
     <url>https://wordinator.org</url>
@@ -51,7 +51,7 @@ arbitrary XML, JSON, etc.</description>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.13</version>
+      <version>4.13.1</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -83,7 +83,7 @@ arbitrary XML, JSON, etc.</description>
     <dependency>
 	  <groupId>net.sf.saxon</groupId>
 	  <artifactId>Saxon-HE</artifactId>
-	  <version>10.0</version>
+	  <version>10.3</version>
 	</dependency>
     <!-- https://mvnrepository.com/artifact/org.apache.poi/ooxml-schemas -->
 	<dependency>

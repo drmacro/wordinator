@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/css" href="../../../main/doctypes/simplewpml/css/simplewpml.css"?>
+<?xml-model href="../../../main/doctypes/simplewpml/simplewpml.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<document xmlns="urn:ns:wordinator:simplewpml">
+  <page-sequence-properties>
+    <page-number-properties
+      format="custom"
+      xslt-format="1."
+      start="1"
+    />
+    <headers-and-footers>
+      <header>
+        <p><run>Odd Header Paragraph 1</run></p>
+        <p><run>Odd Header Paragraph 2</run></p>
+      </header>
+      <header type="even">
+        <p><run>Even Header Paragraph 1</run></p>
+      </header>
+      <footer>
+        <p>
+          <run>Odd Footer: </run>
+          <page-number-ref format="numberInDash"/>
+          <run> After page-number-ref</run>
+        </p>
+      </footer>
+      <footer type="even">
+        <p><run>Even Footer</run></p>
+      </footer>
+    </headers-and-footers>
+  </page-sequence-properties>
+  <body>
+    <p style="Heading1">
+      <run style="Strong">Issue #30: Table Border Color Tests</run>
+    </p>
+    <p style="normal">
+      <run>Table with no border colors. Should have all borders.</run>
+    </p>
+    <table frame="all" colsep="1" rowsep="1" calculatedWidth="6in" >
+      <cols>
+        <col colwidth="2in"/>
+        <col colwidth="1in"/>
+        <col colwidth="3in"/>
+      </cols>
+      <thead>
+        <tr>
+          <td borderstyle="single"><p><run>Column 1</run></p></td>
+          <td borderstyle="single"><p><run>Column 2</run></p></td>
+          <td borderstyle="single"><p><run>Column 3</run></p></td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td borderstyle="single"><p><run>R1C1</run></p></td>
+          <td borderstyle="single"><p><run>R1C2</run></p></td>
+          <td borderstyle="single"><p><run>R1C3</run></p></td>
+        </tr>
+        <tr>
+          <td borderstyle="single"><p><run>R2C1</run></p></td>
+          <td borderstyle="single"><p><run>R2C2</run></p></td>
+          <td borderstyle="single"><p><run>R2C3</run></p></td>
+        </tr>
+        <tr>
+          <td borderstyle="single"><p><run>R3C1</run></p></td>
+          <td borderstyle="single"><p><run>R3C2</run></p></td>
+          <td borderstyle="single"><p><run>R3C3</run></p></td>
+        </tr>        
+      </tbody>
+    </table>
+    <p style="normal">
+      <run>Table with border color. Should have all red borders.</run>
+    </p>
+    <table frame="all" colsep="1" rowsep="1" calculatedWidth="6in" >
+      <cols>
+        <col colwidth="2in"/>
+        <col colwidth="1in"/>
+        <col colwidth="3in"/>
+      </cols>
+      <thead>
+        <tr>
+          <td borderstyle="single" bordercolor="FF0000" ><p><run>Column 1</run></p></td>
+          <td borderstyle="single" bordercolor="FF0000"><p><run>Column 2</run></p></td>
+          <td borderstyle="single" bordercolor="FF0000"><p><run>Column 3</run></p></td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td borderstyle="single" bordercolor="FF0000"><p><run>R1C1</run></p></td>
+          <td borderstyle="single" bordercolor="FF0000"><p><run>R1C2</run></p></td>
+          <td borderstyle="single" bordercolor="FF0000"><p><run>R1C3</run></p></td>
+        </tr>
+        <tr>
+          <td borderstyle="single" bordercolor="FF0000"><p><run>R2C1</run></p></td>
+          <td borderstyle="single" bordercolor="FF0000"><p><run>R2C2</run></p></td>
+          <td borderstyle="single" bordercolor="FF0000"><p><run>R2C3</run></p></td>
+        </tr>
+        <tr>
+          <td borderstyle="single" bordercolor="FF0000"><p><run>R3C1</run></p></td>
+          <td borderstyle="single" bordercolor="FF0000"><p><run>R3C2</run></p></td>
+          <td borderstyle="single" bordercolor="FF0000"><p><run>R3C3</run></p></td>
+        </tr>        
+      </tbody>
+    </table>
+    <p style="normal">
+      <run>Table with border color. Each row has different colors.</run>
+    </p>
+    <table frame="all" colsep="1" rowsep="1" calculatedWidth="6in" >
+      <cols>
+        <col colwidth="2in"/>
+        <col colwidth="1in"/>
+        <col colwidth="3in"/>
+      </cols>
+      <thead>
+        <tr>
+          <td borderstyle="single" ><p><run>Column 1 no border color</run></p></td>
+          <td borderstyle="single" bordercolorleft="00FF00" bordercolortop="F0F0F0" bordercolorright="0000FF" bordercolorbottom="0F0F0F"><p><run>Left: Green, top: F0F0F0, right: Blue, Bottom: 0F0F0F</run></p></td>
+          <td borderstyle="single" ><p><run>Column 3 no border color</run></p></td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td borderstyle="single" bordercolor="FF0000"><p><run>R1C1</run></p></td>
+          <td borderstyle="single" bordercolor="FF0000"><p><run>R1C2</run></p></td>
+          <td borderstyle="single" bordercolor="FF0000"><p><run>R1C3</run></p></td>
+        </tr>
+        <tr>
+          <td borderstyle="single" ><p><run>R2C1 no border color</run></p></td>
+          <td borderstyle="single" bordercolorleft="00FF00" bordercolortop="F0F0F0" bordercolorright="0000FF" bordercolorbottom="0F0F0F"><p><run>R2C2 Left: Green, top: F0F0F0, right: Blue, Bottom: 0F0F0F</run></p></td>
+          <td borderstyle="single" ><p><run>R2C3 no border color</run></p></td>
+        </tr>
+        <tr>
+          <td borderstyle="single" bordercolor="FF0000"><p><run>R3C1</run></p></td>
+          <td borderstyle="single" bordercolor="FF0000"><p><run>R3C2</run></p></td>
+          <td borderstyle="single" bordercolor="FF0000"><p><run>R3C3</run></p></td>
+        </tr>        
+      </tbody>
+    </table>
+  </body>
+</document>

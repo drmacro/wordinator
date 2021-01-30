@@ -57,6 +57,7 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBookmark;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBorder;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDecimalNumber;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDocument1;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTFtnEdn;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTHdrFtrRef;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTHyperlink;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTMarkupRange;
@@ -112,6 +113,12 @@ public class DocxGenerator {
     XWPFBorderType rowSepBorder = null;
     XWPFBorderType colSepBorder = null;
     
+    String defaultColor = null;
+    String topColor = null; 
+    String leftColor = null; 
+    String bottomColor = null; 
+    String rightColor = null;
+    
     public TableBorderStyles(
         XWPFBorderType defaultBorderType, 
         XWPFBorderType topBorder, 
@@ -133,6 +140,8 @@ public class DocxGenerator {
       rightBorder = parentBorderStyles.getRightBorder();
       rowSepBorder = parentBorderStyles.getRowSepBorder();
       colSepBorder = parentBorderStyles.getColSepBorder();
+      
+      // Get default border colors from parent?
     }
 
     /**
@@ -150,6 +159,14 @@ public class DocxGenerator {
       String styleLeftValue= null;
       String styleRightValue= null;
       
+      String colorValue = null;
+      String colorBottomValue= null;
+      String colorTopValue= null;
+      String colorLeftValue= null;
+      String colorRightValue= null;
+      
+      // Issue 30: Also get the border color values.
+      
       if ("table".equals(tagname)) {
         styleValue = cursor.getAttributeText(DocxConstants.QNAME_FRAMESTYLE_ATT);
         styleBottomValue= cursor.getAttributeText(DocxConstants.QNAME_FRAMESTYLE_BOTTOM_ATT);
@@ -162,6 +179,12 @@ public class DocxGenerator {
         styleTopValue= cursor.getAttributeText(DocxConstants.QNAME_BORDER_STYLE_TOP_ATT);
         styleLeftValue= cursor.getAttributeText(DocxConstants.QNAME_BORDER_STYLE_LEFT_ATT);
         styleRightValue= cursor.getAttributeText(DocxConstants.QNAME_BORDER_STYLE_RIGHT_ATT);
+        
+        colorValue = cursor.getAttributeText(DocxConstants.QNAME_BORDER_COLOR_ATT);
+        colorBottomValue = cursor.getAttributeText(DocxConstants.QNAME_BORDER_COLOR_BOTTOM_ATT);
+        colorTopValue = cursor.getAttributeText(DocxConstants.QNAME_BORDER_COLOR_TOP_ATT);
+        colorLeftValue = cursor.getAttributeText(DocxConstants.QNAME_BORDER_COLOR_LEFT_ATT);
+        colorRightValue = cursor.getAttributeText(DocxConstants.QNAME_BORDER_COLOR_RIGHT_ATT);
       }
 
       if (styleValue != null) {
@@ -180,6 +203,64 @@ public class DocxGenerator {
       if (styleRightValue != null) {
         setRightBorder(xwpfBorderType(styleRightValue));
       }
+
+      if (colorValue != null) {
+        setDefaultBorderColor(colorValue);
+      }
+      
+      if (colorBottomValue != null) {
+        setBottomColor(colorBottomValue);
+      }
+      if (colorTopValue != null) {
+        setTopColor(colorTopValue);
+      }
+      if (colorLeftValue != null) {
+        setLeftColor(colorLeftValue);
+      }
+      if (colorRightValue != null) {
+        setRightColor(colorRightValue);
+      }
+    }
+
+    public void setDefaultBorderColor(String colorValue) {
+      this.defaultColor = colorValue;
+      if (this.getBottomColor() == null) this.setBottomColor(colorValue);
+      if (this.getTopColor() == null) this.setTopColor(colorValue);
+      if (this.getLeftColor() == null) this.setLeftColor(colorValue);
+      if (this.getRightColor() == null) this.setRightColor(colorValue);
+      
+    }
+
+    public String getBottomColor() {
+      return this.bottomColor;
+    }
+
+    public String getTopColor() {
+      return this.topColor;
+    }
+
+    public String getLeftColor() {
+      return this.leftColor;
+    }
+
+    public String getRightColor() {
+      return this.rightColor;
+    }
+
+    public void setBottomColor(String colorValue) {
+      this.bottomColor = colorValue;
+    }
+
+    public void setTopColor(String colorValue) {
+      this.topColor = colorValue;
+    }
+
+    public void setLeftColor(String colorValue) {
+      this.leftColor = colorValue;
+    }
+
+    public void setRightColor(String colorValue) {
+      this.rightColor = colorValue;
     }
 
     public XWPFBorderType getDefaultBorderType() {
@@ -303,7 +384,7 @@ public class DocxGenerator {
 		this.templateDoc = templateDoc;
 	}
 
-	/*
+  /*
 	 * Generate the DOCX file from the input Simple WP ML document. 
 	 * @param xml The XmlObject that holds the Simple WP XML content
 	 */
@@ -1137,6 +1218,8 @@ public class DocxGenerator {
 	  XmlCursor cursor = xml.newCursor();
 	  
 		String type = cursor.getAttributeText(DocxConstants.QNAME_TYPE_ATT);
+    String callout = cursor.getAttributeText(DocxConstants.QNAME_CALLOUT_ATT);
+    String referenceCallout = cursor.getAttributeText(DocxConstants.QNAME_REFERENCE_CALLOUT_ATT);
 		
 		XWPFAbstractFootnoteEndnote note = null;
 		if ("endnote".equals(type)) {
@@ -1145,7 +1228,7 @@ public class DocxGenerator {
 			note = para.getDocument().createFootnote();
 		}
 		
-		// NOTE: The paragraph is not created with any initial paragraph.
+		// NOTE: The footnote is not created with any initial paragraph.
 		
 		if (cursor.toFirstChild()) {
 			do {
@@ -1165,7 +1248,52 @@ public class DocxGenerator {
 			} while (cursor.toNextSibling());
 		}
 
-		para.addFootnoteReference(note);
+    para.addFootnoteReference(note);
+
+    // Issue #29: For footnotes with explict callouts, have to replace the markup for generated
+    //            refs with the literal callout from the input XML.
+
+		if (callout != null) {
+      if (referenceCallout == null) {
+        referenceCallout = callout;
+      }
+		  
+		  XmlCursor paraCursor = para.getCTP().newCursor();
+		  
+		  if (paraCursor.toLastChild()) {
+		    // Should be the run created for the footnote reference.
+		    if (paraCursor.toChild(DocxConstants.QNAME_FOOTNOTEREFEREMCE_ELEM)) {
+		      paraCursor.setAttributeText(DocxConstants.QNAME_CUSTOMMARKFOLLOWS_ATT, "on");
+		      paraCursor.toParent();
+		      paraCursor.toEndToken();
+		      paraCursor.insertElementWithText(DocxConstants.QNAME_T_ELEM, referenceCallout);
+		    }
+		  
+		  }
+		  
+		  // Set literal callout on the footnote itself:
+      CTFtnEdn ctfNote = note.getCTFtnEdn();
+      
+      XmlCursor noteCursor = ctfNote.newCursor();
+      
+      // Find the first run. This should have a <w:footnoteRef/> element as it's content. 
+      // Remove that and replace it with a w:t with the callout.
+      if (noteCursor.toChild(DocxConstants.QNAME_W_P_ELEM)) {
+        if (noteCursor.toChild(DocxConstants.QNAME_R_ELEM)) {
+          cursor.push();
+          if (noteCursor.toChild(DocxConstants.QNAME_FOOTNOTEREF_ELEM)) {
+            noteCursor.removeXml();        
+          }
+          cursor.pop();
+          // Now construct a literal footnote reference callout.
+          noteCursor.insertElementWithText(DocxConstants.QNAME_T_ELEM, callout);
+        }
+      }
+      
+      noteCursor.dispose();
+		  
+		}
+		
 		cursor.pop();
 	}
 
@@ -2125,18 +2253,30 @@ public class DocxGenerator {
         } else {
           log.warn("setCellBorders(): Failed to get STBorder.Enum value for XWPFBorderStyle \"" + borderStyles.getBottomBorder().name() + "\"");
         }
+        if (borderStyles.getBottomColor() != null) {
+          bottom.setColor(borderStyles.getBottomColor());
+        }
       }
       if (borderStyles.getTopBorder() != null) {
         CTBorder top = borders.addNewTop();
         top.setVal(borderStyles.getTopBorderEnum());
+        if (borderStyles.getTopColor() != null) {
+          top.setColor(borderStyles.getTopColor());
+        }
       }
       if (borderStyles.getLeftBorder() != null) {
         CTBorder left = borders.addNewLeft();
         left.setVal(borderStyles.getLeftBorderEnum());
+        if (borderStyles.getLeftColor() != null) {
+          left.setColor(borderStyles.getLeftColor());
+        }
       }
       if (borderStyles.getRightBorder() != null) {
         CTBorder right = borders.addNewRight();
         right.setVal(borderStyles.getRightBorderEnum());
+        if (borderStyles.getRightColor() != null) {
+          right.setColor(borderStyles.getRightColor());
+        }
       }
     }
   }
@@ -2165,11 +2305,13 @@ public class DocxGenerator {
     try {
       XWPFNumbering templateNumbering = templateDoc.getNumbering();
       XWPFNumbering numbering = doc.createNumbering();
-      // There is no method to just get all the abstract and concrete
+      // In 4.1.2 There is no method to just get all the abstract and concrete
       // numbers or their IDs so we just iterate until we don't get any more
+      // Trunk has new methods for this as of 4/26/2020
       
       // Abstract numbers:
       int i = 1;
+      
       XWPFAbstractNum abstractNum = null;
       // Number IDs appear to always be integers starting at 1 
       // so we're really just guessing.
@@ -2281,3 +2423,4 @@ public class DocxGenerator {
 
 
 }
+
