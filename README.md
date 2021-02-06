@@ -29,6 +29,7 @@ If you need to go from Word documents back to XML, you may find the DITA for Pub
 * 1.0.4
   
   * Issue 29: Support literal callouts and reference callouts for footnotes. Added new attributes to fn element for specifying the callout and, optionally, reference callout text.
+  * Issue 30: Support cell border color. Added new attributes @bordercolor, @bordercolortop, , @bordercolorbottom, @bordercolorleft, and @bordercolorright. Normal Word border precedence rules apply so it's up to the SWPX file to specify the appropriate values on the appropriate cells to get the desired rendered effect.
 
 * 1.0.3
 
