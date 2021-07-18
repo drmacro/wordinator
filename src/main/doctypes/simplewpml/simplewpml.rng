@@ -1392,6 +1392,16 @@
           <ref name="hexcolor"/>
         </attribute>
       </optional>
+      <optional>
+        <attribute name="colnum">
+          <a:documentation>
+            <p>The column number of the cell where "1" is the first column.
+            Used to capture cell position resulting from vertical spans when
+            converting from Word.
+            </p>
+          </a:documentation>
+        </attribute>
+      </optional>
     </element>
   </define>
   
