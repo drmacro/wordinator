@@ -31,7 +31,15 @@
   <body>
     <p style="Heading1">
       <run style="Strong">Heading 1 Text</run>
+      <bookmarkStart id="bm1" name="bm1"/>
     </p>
+    <!-- ToC -->
+    <toc arg-d="-" arg-x="true">
+      <tocentry bookmarkRef="bm1">
+        <tocentry bookmarkRef="bm2"/>
+        <tocentry bookmarkRef="bm3"/>
+      </tocentry>
+    </toc>
     <p>
       <run highlight="cyan">Cyan highlight</run>
     </p>

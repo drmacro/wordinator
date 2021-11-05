@@ -418,6 +418,7 @@
         <ref name="p"/>
         <ref name="table"/>
         <ref name="object"/>                      
+        <ref name="toc"/>                      
       </choice>
     </zeroOrMore>    
   </define>
@@ -799,6 +800,7 @@
       <a:documentation>
         <p>Unique identifier for the element</p>
       </a:documentation>
+      <data type="Name"/>
     </attribute> 
   </define>
   
@@ -1425,6 +1427,154 @@
       <empty/>
     </element>
   </define>
+  
+  <define name="toc">
+    <element name="toc" ns="urn:ns:wordinator:simplewpml">
+      <a:documentation>
+        <p>Represents a table of contents field. Results in a Word table of contents field.</p>
+        <p>See 17.16.5.68 TOC in ECMA-376-1:2016
+          Office Open XML File Formats — Fundamentals
+          and Markup Language Reference</p>
+        <p>Supported options to the TOC field code are represented by "arg-*" attributes,
+        where "*" is the option code (i.e., option \c is attribute @arg-c).</p>
+      </a:documentation>
+      <zeroOrMore>
+        <ref name="tocentry"/>
+      </zeroOrMore>
+      <optional>
+        <attribute name="arg-d">
+          <a:documentation>
+            <p>Specifies the separator between sequence and page numbers.</p>
+          </a:documentation>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="arg-f">
+          <a:documentation>
+            <p>Specifies the list type to include. Value is a value specified as the @arg-f attribute on a tocentry element.</p>
+          </a:documentation>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="arg-h" a:defaultValue="true">
+          <a:documentation>
+            <p>Indicates whether or not to make ToC entries into hyperlinks.</p>
+          </a:documentation>
+          <ref name="true-false-value"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="arg-o">
+          <a:documentation>
+            <p>Uses paragraphs formatted with all or the specified range of builtin
+              heading styles. Headings in a style range are specified as a range of
+              integers,
+              where each integer corresponds to the style with a style ID of
+              HeadingX, i.e., "1-3" includes styles Heading1, Heading2, and Heading3.</p>
+            <p>If the value "all" is specified, then all heading styles are included.</p>
+          </a:documentation>
+          <data type="string">
+            <param name="pattern">'all'|([0-9]+\-[0-9]+)</param>
+          </data>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="arg-p">
+          <a:documentation>
+            <p>Specifies a sequence of
+              characters that separate an entry and its page number</p>
+          </a:documentation>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="arg-t">
+          <a:documentation>
+            <p>Specifies the styles to list in the ToC
+              as a set of comma-separated doublets, with each doublet
+              being a comma-separated set of style name and table of content
+              level, i.e.: "Heading 1,1,Heading 2,2,Appendix 1,1,Appendix 2,2,Unnumbered Heading,1"</p>
+          </a:documentation>          
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="arg-s">
+          <a:documentation>
+            <p>For entries numbered with a SEQ field (§17.16.5.56), adds a prefix
+              to the page number. The prefix depends on the type of entry. The value
+              must match the identifier in the SEQ
+              field.</p>
+          </a:documentation>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="arg-u" a:defaultValue="false">
+          <a:documentation>
+            <p>Uses the applied paragraph outline level.</p>
+          </a:documentation>
+          <ref name="true-false-value"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="arg-w" a:defaultValue="false">
+          <a:documentation>
+            <p>Preserves tab entries within table entries.</p>
+          </a:documentation>
+          <ref name="true-false-value"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="arg-x" a:defaultValue="false">
+          <a:documentation>
+            <p>Preserves newline characters within table entries.</p>
+          </a:documentation>
+          <ref name="true-false-value"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="arg-z" a:defaultValue="true">
+          <a:documentation>
+            <p>Hides tab leader and page numbers in web page view (§17.18.102).</p>
+          </a:documentation>
+          <ref name="true-false-value"/>
+        </attribute>
+      </optional>
+    </element>
+  </define>
+    
+  <define name="tocentry">
+    <element name="tocentry" ns="urn:ns:wordinator:simplewpml">
+      <a:documentation>
+        <p>An entry in a table of contents. </p>
+        <p>The toc entry level is determined by the hierarchy of tocentry elements.</p>
+        <p>See 17.16.5.63 TC</p>
+      </a:documentation>
+      <zeroOrMore>
+        <ref name="tocentry"/>
+      </zeroOrMore>
+      <attribute name="bookmarkRef">
+        <a:documentation>
+          <p>Specifies the @id the bookmark that is the target of the ToC entry.</p>
+        </a:documentation>
+        <data type="Name"/>
+      </attribute>
+      <optional>
+        <attribute name="arg-f">
+          <a:documentation>
+            <p>Specifies the list type, i.e., "i" for "illustration" entries. </p>
+          </a:documentation>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="arg-n" a:defaultValue="false">
+          <a:documentation>
+            <p>Omit the page number for the entry.</p>
+          </a:documentation>
+          <ref name="true-false-value"/>
+        </attribute>
+      </optional>
+    </element>    
+  </define>                      
+  
   
   <define name="measurement">
     <data type="string">
