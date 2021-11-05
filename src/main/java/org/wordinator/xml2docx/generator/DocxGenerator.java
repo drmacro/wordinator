@@ -370,6 +370,11 @@ public class DocxGenerator {
 	private File inFile;
 	private XWPFDocument templateDoc;
 
+	// Set to false when a style warning is issued.
+  private boolean isFirstParagraphStyleWarning = true;
+  private boolean isFirstCharacterStyleWarning = true;
+  private boolean isFirstTableStyleWarning = true;
+
 	/**
 	 * 
 	 * @param inFile File representing input document.
@@ -945,18 +950,36 @@ public class DocxGenerator {
 			if (null != style) {
 				styleId = style.getStyleId();
 			} else {
-			  // Issue 23: see if this is a latent style and report it
-			  //
-			  // This will require an enhancement to the POI API as there is no easy
-			  // way to get the list of latent styles except to parse out the XML,
-			  // which I'm not going to--better to fix POI.
-			  // Unfortunately, there does not appear to be a documented or reliable
-			  // way to go from Word-defined latent style names to the actual style ID
-			  // of the style Word *will create* by some internal magic. In addition,
-			  // any such mapping varies by Word version, locale, etc.
-			  //
-			  // That means that in order to use any style it must exist as a proper
-			  // style.
+			  // Try style name as styleId
+			  
+			  style = para.getDocument().getStyles().getStyle(styleName);
+			  if (null != style) {
+			    styleId = styleName;
+			  } else {
+			  
+  			  // Issue 23: see if this is a latent style and report it
+  			  //
+  			  // This will require an enhancement to the POI API as there is no easy
+  			  // way to get the list of latent styles except to parse out the XML,
+  			  // which I'm not going to--better to fix POI.
+  			  // Unfortunately, there does not appear to be a documented or reliable
+  			  // way to go from Word-defined latent style names to the actual style ID
+  			  // of the style Word *will create* by some internal magic. In addition,
+  			  // any such mapping varies by Word version, locale, etc.
+  			  //
+  			  // That means that in order to use any style it must exist as a proper
+  			  // style.
+          log.warn("Paragraph style name \"" + styleName + "\" not found in the document.");
+  			  if (this.isFirstParagraphStyleWarning) {
+  			    // log.info("Available paragraph styles:");
+  			    // FIXME: The POI 4.x API doesn't provide a way to get the list of styles
+  			    //        or the list of style names that I can find short of parsing the
+  			    //        underlying document part XML, so no way to report the
+  			    //        style names at this time.
+  			    
+  			  }
+  			  this.isFirstParagraphStyleWarning = false;
+			  }
 			}
 		}
 		if (null != styleId) {
@@ -1058,6 +1081,20 @@ public class DocxGenerator {
 			XWPFStyle style = para.getDocument().getStyles().getStyleWithName(styleName);
 			if (null != style) {
 				styleId = style.getStyleId();
+			} else {
+	      style = para.getDocument().getStyles().getStyle(styleName);
+	      if (null != style) {
+	         styleId = styleName;
+	      } else {
+           log.warn("Character style name \"" + styleName + "\" not found in the document.");
+    	     if (this.isFirstCharacterStyleWarning) {
+    	          // FIXME: The POI 4.x API doesn't provide a way to get the list of styles
+    	          //        or the list of style names that I can find short of parsing the
+    	          //        underlying document part XML, so no way to report the
+    	          //        style names at this time.
+    	     }
+    	     this.isFirstCharacterStyleWarning = false;
+    		}
 			}
 		}
 		
@@ -1617,6 +1654,14 @@ public class DocxGenerator {
       if (null != style) {
         styleId = style.getStyleId();
       } else {
+        log.warn("Table style name \"" + styleName + "\" not found.");
+        if (this.isFirstTableStyleWarning) {
+          // FIXME: The POI 4.x API doesn't provide a way to get the list of styles
+          //        or the list of style names that I can find short of parsing the
+          //        underlying document part XML, so no way to report the
+          //        style names at this time.          
+        }
+        this.isFirstTableStyleWarning = false;
         // Try to make a style ID out of the style name:
         styleId = styleName.replace(" ", "");
       }

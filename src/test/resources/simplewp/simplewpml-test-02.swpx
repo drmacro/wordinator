@@ -36,7 +36,7 @@
     </headers-and-footers>
   </page-sequence-properties>
   <body>
-    <p style="Heading1">
+    <p style="heading 1">
       <run style="Strong">Document With Sections</run>
     </p>
     <p><run>This is before the first tagged section. It should reflect document-level headers and footers</run></p>
@@ -109,7 +109,7 @@
         </table>
       </fn>
       <run> After footnote reference</run>
-      <bookmarkStart id="bm1" name="h1">Heading 1</bookmarkStart>
+      <bookmarkStart id="bm1" name="h1">heading 1</bookmarkStart>
       <run> This is before a bookmark start for bookmark "bm1". </run>
       <bookmarkStart id="bm1" name="Bookmark bm1 name value"/>
       <run>Before the bookmark end.</run>
@@ -225,7 +225,7 @@
         </tr>      
       </tbody>
     </table>    
-    <p style="Heading2">
+    <p style="heading 2">
       <run>This is a Heading 2</run>
     </p>
     <p>
@@ -281,7 +281,7 @@
     </p>    
     <p><run>Before first section.</run></p>    <section type="continuous">
       <body>
-        <p style="Heading 1">
+        <p style="heading 1">
           <run>Start of First Section. Should not break the page. Does not define its own headers and footers.</run>
         </p>
         <p page-break-before="true"><run>There should be a page break before this paragraph (@page-break-before="true")</run></p>
@@ -346,7 +346,7 @@
     </section>
     <section type="continuous">
       <body>
-        <p style="Heading 1">
+        <p style="heading 1">
           <run>Start of second Section. Should not break the page. Does not define its own headers and footers.</run>
         </p>
       </body>
@@ -385,7 +385,7 @@
         
       </page-sequence-properties>
       <body>
-        <p style="Heading 1">
+        <p style="heading 1">
           <run>Start of Third Section. It should be landscape and 11 x 14</run>
         </p>
         <p>
