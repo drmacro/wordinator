@@ -70,8 +70,11 @@ public class TestDocxGenerator extends TestCase {
 			assertNotNull("Expected a paragraph", p);
 			assertEquals("Heading 1 Text", p.getText());
 			System.out.println("Paragraph text='" + p.getText() + "'");
+			boolean foundToc = false;
 			while (iterator.hasNext()) {
 			  p = iterator.next();
+			  // Issue 42: Get style ID
+			  String styleId = p.getStyle();
 			  // Issue 16: Verify scaling of intrinsic dimensions:
 			  if (p.getText().startsWith("[Image 1]")) {
 			    XWPFRun run = p.getRuns().get(1); // Second run should contain the picture
@@ -97,8 +100,12 @@ public class TestDocxGenerator extends TestCase {
           assertEquals("Expected width of 50", picture.getWidth(), 50.0);
           assertEquals("Expected height (depth) of 50", picture.getDepth(), 50.0);
         }
+        if ("TOC1".equals(styleId)) {
+          foundToc = true;
+        }
 			}
 			
+			assertTrue("Did not find expected table of contents paragraphs", foundToc);
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail("Got unexpected " + e.getClass().getSimpleName() + ": " + e.getMessage());

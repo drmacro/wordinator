@@ -463,6 +463,8 @@ public class DocxGenerator {
 				} else if ("object".equals(tagName)) {
 					// FIXME: This is currently unimplemented.
 					makeObject(doc, cursor);
+        } else if ("toc".equals(tagName)) {
+          makeTableOfContents(doc, cursor.getObject());
 				} else {
 					log.warn("handleBody(): Unexpected element {" + namespace + "}:'" + tagName + "' in <body>. Ignored.");
 				}
@@ -477,6 +479,27 @@ public class DocxGenerator {
 	}
 
 	/**
+	 * Generate a table of contents field.
+	 * @param doc Document we're adding to
+	 * @param xml &lt;toc&gt; element
+	 */
+	private void makeTableOfContents(
+	    XWPFDocument doc, 
+      XmlObject xml) 
+          throws DocxGenerationException 
+	{
+    XmlCursor cursor = xml.newCursor();
+    log.debug("Constructing table of contents");
+    cursor.push();
+    if (cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "tocentry"))) {
+      // Handle the toc entries
+      log.debug("Found tocentry children of toc");
+    }
+    cursor.pop();
+    
+  }
+
+  /**
 	 * Handle a &lt;section&gt; element
 	 * @param doc Document we're adding to
 	 * @param xml &lt;section&gt; element
