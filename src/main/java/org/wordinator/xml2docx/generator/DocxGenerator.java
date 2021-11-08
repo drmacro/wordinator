@@ -52,6 +52,7 @@ import org.apache.xmlbeans.XmlCursor;
 import org.apache.xmlbeans.XmlCursor.TokenType;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
+import org.apache.xmlbeans.impl.xb.xmlschema.SpaceAttribute.Space;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBody;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBookmark;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBorder;
@@ -77,9 +78,11 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblWidth;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTcBorders;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTcPr;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTText;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTVMerge;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STBorder;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STChapterSep;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.STFldCharType;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STHdrFtr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STMerge;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STNumberFormat;
@@ -489,14 +492,141 @@ public class DocxGenerator {
           throws DocxGenerationException 
 	{
     XmlCursor cursor = xml.newCursor();
-    log.debug("Constructing table of contents");
     cursor.push();
+    XWPFParagraph para = doc.createParagraph();
+    String tocStyleId = "TOC1";
+    XWPFStyle tocStyle = para.getDocument().getStyles().getStyle(tocStyleId);
+    if (tocStyle == null) {
+      makeParagraphStyle(doc, tocStyleId, tocStyleId);
+    }
+    para.setStyle(tocStyleId);
+    
+    // Start the outer field
+    
+    makeTocStartField(cursor, para);
+    
+    para.createRun().getCTR().addNewFldChar().setFldCharType(STFldCharType.SEPARATE);
+
     if (cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "tocentry"))) {
-      // Handle the toc entries
-      log.debug("Found tocentry children of toc");
+      int tocLevel = 1;
+      handleTocEntry(doc, cursor, tocLevel);
+    }
+    cursor.pop();
+    para = doc.createParagraph();
+    para.createRun().getCTR().addNewFldChar().setFldCharType(STFldCharType.END);    
+    
+  }
+	
+  /**
+   * Handles a table of contents entry
+   * @param doc Document to add the ToC entry to
+   * @param cursor Cursor pointing at <tocentry> element
+   * @param tocLevel The current ToC level. 1 (one) = highest level
+   * @throws DocxGenerationException 
+   */
+	private void handleTocEntry(XWPFDocument doc, XmlCursor cursor, int tocLevel) throws DocxGenerationException {
+	  
+	  // The tocentry element can contain a <p> that provides the text of the toc entry
+	  // It can also contain nested <tocentry> elements.
+
+	  // With POI 5 and XML Beans 4 we can use XPath and XQuery with Saxon 10 but with 
+	  // POI 4 we would need Saxon 9.0.0.4 and don't want to include that in the dependencies
+	  // since it would interfere with Saxon 10 as far as I know.
+	  // So for now just using a simple walk of the children.
+
+	  cursor.push();
+
+  
+    XWPFParagraph para = doc.createParagraph();
+    cursor.push();
+    if (cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "p"))) {
+      this.makeParagraph(para, cursor);
     }
     cursor.pop();
     
+    // Set to TOC style
+    String tocStyleId = "TOC" + tocLevel;
+    XWPFStyle tocStyle = para.getDocument().getStyles().getStyle(tocStyleId);
+    if (tocStyle == null) {
+      makeParagraphStyle(doc, tocStyleId, tocStyleId);
+    }
+    para.setStyle(tocStyleId);
+
+    if (cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "tocentry"))) {
+      cursor.push();
+      do {
+        // Assuming all children are tocentry from here on.
+        handleTocEntry(doc, cursor, tocLevel + 1);
+      } while (cursor.toNextSibling());
+      cursor.pop();
+    }
+
+	  cursor.pop();
+
+	}
+
+	/**
+	 * Makes the start field for a table of contents complex field.
+	 * 
+	 * @param cursor The XML cursor pointing at a <toc> element.	 * 
+	 * @param para The paragraph that will contain the field.
+	 */
+  private void makeTocStartField(XmlCursor cursor, XWPFParagraph para) {
+    para.createRun().getCTR().addNewFldChar().setFldCharType(STFldCharType.BEGIN);    
+    CTText ctText = para.createRun().getCTR().addNewInstrText();
+    ctText.setSpace(Space.PRESERVE);
+    String tocOptions = "";
+    String attValue = null;
+    
+    // Sequence separator character
+    attValue = cursor.getAttributeText(DocxConstants.QNAME_ARG_D_ATT);
+    if (null != attValue) {
+      tocOptions += " \\d \"" + attValue + "\"";
+    } // No default
+    
+    // The list type to include
+    attValue = cursor.getAttributeText(DocxConstants.QNAME_ARG_F_ATT);
+    if (null != attValue) {
+      tocOptions += " \\f \"" + attValue + "\"";
+    } 
+    
+    // Use hyperlinks
+    attValue = cursor.getAttributeText(DocxConstants.QNAME_ARG_H_ATT);
+    if ("false".equalsIgnoreCase(attValue)) {
+      // Omit \h option
+    } else {
+      tocOptions += " \\h";
+    }
+
+    // Heading levels to include
+    attValue = cursor.getAttributeText(DocxConstants.QNAME_ARG_O_ATT);
+    if (null != attValue) {
+      tocOptions += " \\o \"" + attValue + "\"";
+    } 
+    
+    // Omit page numbers in web view
+    attValue = cursor.getAttributeText(DocxConstants.QNAME_ARG_Z_ATT);
+    if ("false".equalsIgnoreCase(attValue)) {
+      // Omit \h option
+    } else {
+      tocOptions += " \\z";
+    }
+
+    // FIXME: Do the rest of the edge case options: p, s, u, w, x
+
+    ctText.setStringValue("TOC " + tocOptions);
+  }
+
+  private void makeParagraphStyle(XWPFDocument doc, String styleId, String string) {
+    CTStyle style = CTStyle.Factory.newInstance();
+    style.setStyleId(styleId);
+    style.setType(STStyleType.PARAGRAPH);
+    style.addNewName().setVal(styleId);
+    style.addNewBasedOn().setVal("DefaultParagraphFont");
+    style.addNewUiPriority().setVal(new BigInteger("99"));
+    style.addNewSemiHidden();
+    style.addNewUnhideWhenUsed();
+    doc.getStyles().addStyle(new XWPFStyle(style));
   }
 
   /**

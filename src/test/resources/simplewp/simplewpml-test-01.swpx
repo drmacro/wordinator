@@ -33,11 +33,15 @@
       <run style="Strong">Heading 1 Text</run>
       <bookmarkStart id="bm1" name="bm1"/>
     </p>
+    <p style="Heading2">
+      <run style="Strong">Table of Contents</run>
+    </p>
     <!-- ToC -->
     <toc arg-d="-" arg-x="true">
       <tocentry bookmarkRef="bm1">
-        <tocentry bookmarkRef="bm2"/>
-        <tocentry bookmarkRef="bm3"/>
+        <p><run>Toc entry 1</run></p>
+        <tocentry bookmarkRef="bm2"><p><run>Toc entry 2</run></p></tocentry>
+        <tocentry bookmarkRef="bm3"><p><run>Toc entry 3</run></p></tocentry>
       </tocentry>
     </toc>
     <p>

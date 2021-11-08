@@ -1546,8 +1546,13 @@
       <a:documentation>
         <p>An entry in a table of contents. </p>
         <p>The toc entry level is determined by the hierarchy of tocentry elements.</p>
+        <p>If the paragraph is omitted the ToC entry will not have any text when opened in Word. Will need to
+        update the field.</p>
         <p>See 17.16.5.63 TC</p>
       </a:documentation>
+      <optional>
+        <ref name="p"/>
+      </optional>
       <zeroOrMore>
         <ref name="tocentry"/>
       </zeroOrMore>
