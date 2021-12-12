@@ -22,6 +22,17 @@ public final class DocxConstants {
 	
 	// Attributes:
 	public static final QName QNAME_ALIGN_ATT = new QName("", "align");
+  public static final QName QNAME_ARG_D_ATT = new QName("", "arg-d");
+  public static final QName QNAME_ARG_F_ATT = new QName("", "arg-f");
+  public static final QName QNAME_ARG_H_ATT = new QName("", "arg-h");
+  public static final QName QNAME_ARG_O_ATT = new QName("", "arg-o");
+  public static final QName QNAME_ARG_P_ATT = new QName("", "arg-p");
+  public static final QName QNAME_ARG_S_ATT = new QName("", "arg-s");
+  public static final QName QNAME_ARG_T_ATT = new QName("", "arg-t");
+  public static final QName QNAME_ARG_U_ATT = new QName("", "arg-u");
+  public static final QName QNAME_ARG_W_ATT = new QName("", "arg-w");
+  public static final QName QNAME_ARG_X_ATT = new QName("", "arg-x");
+  public static final QName QNAME_ARG_Z_ATT = new QName("", "arg-z");
 	public static final QName QNAME_BOLD_ATT = new QName("", "bold");
   public static final QName QNAME_BORDER_COLOR_ATT = new QName("", "bordercolor");
   public static final QName QNAME_BORDER_COLOR_TOP_ATT = new QName("", "bordercolortop");
