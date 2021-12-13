@@ -64,6 +64,7 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTHyperlink;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTMarkupRange;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTOnOff;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPPr;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageMar;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageNumber;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageSz;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
@@ -419,19 +420,28 @@ public class DocxGenerator {
 		cursor.toFirstChild(); // Put us on the root element of the document
 		cursor.push();
 		XmlObject pageSequenceProperties = null;
-		if (cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "page-sequence-properties"))) {
-		  // Set up document-level headers. These will apply to the whole
-		  // document if there are no sections, or to the last section if
-		  // there are sections. Results in a w:sectPr as  the last child 
-		  // of w:body.
-      setupPageSequence(doc, cursor.getObject());
-			pageSequenceProperties = cursor.getObject();
-		}
-		cursor.pop();
 		cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "body"));
 		handleBody(doc, cursor.getObject(), pageSequenceProperties);
 		
+		// Issue 51: If there are sections then the document-level page sequence properties
+		//           will have been set by the last section.
 		
+		boolean isSections = cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "section"));
+		
+		cursor.pop();
+		
+    if (cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "page-sequence-properties"))) {
+      if (!isSections) {
+        // Set up document-level headers. These will apply to the whole
+        // document if there are no sections, or to the last section if
+        // there are sections. Results in a w:sectPr as  the last child 
+        // of w:body.
+        setupPageSequence(doc, cursor.getObject());
+        pageSequenceProperties = cursor.getObject();
+      }
+    }
+    cursor.pop();
+
 	}
 
   /**
@@ -450,16 +460,22 @@ public class DocxGenerator {
 	  if (log.isDebugEnabled()) {
 	    // log.debug("handleBody(): starting...");
 	  }
-		XmlCursor cursor = xml.newCursor();
+    XWPFParagraph lastPara = null;
+    XmlCursor cursor = xml.newCursor();
 		if (cursor.toFirstChild()) {
+	    int sectionCount = countSections(xml.newCursor());
+		  int sectionIndex = 0; // Count sections as we go through.
 			do {
+			  lastPara = null;
 				String tagName = cursor.getName().getLocalPart();
 				String namespace = cursor.getName().getNamespaceURI();
 				if ("p".equals(tagName)) {
 					XWPFParagraph p = doc.createParagraph();
 					makeParagraph(p, cursor);
+					lastPara = p;
 				} else if ("section".equals(tagName)) {
-					handleSection(doc, cursor.getObject(), pageSequenceProperties);
+				  sectionIndex++;
+					handleSection(doc, cursor.getObject(), pageSequenceProperties, sectionIndex == sectionCount);
 				} else if ("table".equals(tagName)) {
 					XWPFTable table = doc.createTable();
 					makeTable(table, cursor.getObject());
@@ -474,14 +490,26 @@ public class DocxGenerator {
 			} while (cursor.toNextSibling());
 			
 		}
-    // The section properties always go on an empty paragraph.
-		XWPFParagraph lastPara = doc.createParagraph();
-    lastPara.setSpacingBefore(0);
-    lastPara.setSpacingAfter(0);
 		return lastPara;
 	}
 
 	/**
+	 * Count the number of section elements within the document body
+	 * @param cursor A cursor created from the body element to count the sections in.
+	 * @return The number of sections found.
+	 */
+	private int countSections(XmlCursor cursor) {
+	  int count = 0;
+	  if (cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "section"))) {
+	    count++;
+	    while (cursor.toNextSibling(new QName(DocxConstants.SIMPLE_WP_NS, "section"))) {
+	      count++;
+	    }
+	  }
+    return count;
+  }
+
+  /**
 	 * Generate a table of contents field.
 	 * @param doc Document we're adding to
 	 * @param xml &lt;toc&gt; element
@@ -634,11 +662,13 @@ public class DocxGenerator {
 	 * @param doc Document we're adding to
 	 * @param xml &lt;section&gt; element
 	 * @param docPageSequenceProperties Document-level page sequence properties
+   * @param isLastSection 
 	 */
 	private void handleSection(
 	    XWPFDocument doc, 
 	    XmlObject xml, 
-	    XmlObject docPageSequenceProperties) 
+	    XmlObject docPageSequenceProperties, 
+	    boolean isLastSection) 
 	        throws DocxGenerationException {
 		XmlCursor cursor = xml.newCursor();
 				
@@ -654,18 +684,42 @@ public class DocxGenerator {
       localPageSequenceProperties = docPageSequenceProperties;
     }
 		
-    cursor.push();
-		cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "body"));
-		XWPFParagraph lastPara = handleBody(doc, cursor.getObject(), localPageSequenceProperties);
-		cursor.pop();
-		
-    if (log.isDebugEnabled()) {
-      // log.debug("handleSection(): Setting sectPr on last paragraph.");
-    }
-    CTPPr ppr = (lastPara.getCTP().isSetPPr() ? lastPara.getCTP().getPPr() : lastPara.getCTP().addNewPPr()); 
-    CTSectPr sectPr = ppr.addNewSectPr();
-
     String sectionType = cursor.getAttributeText(DocxConstants.QNAME_TYPE_ATT);
+
+    cursor.push();
+    cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "body"));
+
+    XWPFParagraph lastPara = handleSectionContent(doc, cursor.getObject(), localPageSequenceProperties);
+
+    
+    // Issue 51: Treat the last section's formatting details as the document-level
+    //           details.
+    //
+    //           It may be necessary to make this behavior switchable, as it's possible
+    //           that someone might want the document-level page layout to be different
+    //           from the layout of the last section. Note that in this case Word will
+    //           always force a new page in this case.
+    //
+    //           The alternative would be to require SWPX to only have <section> when you
+    //           really do want to have a section.
+
+    CTSectPr sectPr = null;
+    if (!isLastSection) {
+      
+      if (log.isDebugEnabled()) {
+        // log.debug("handleSection(): Setting sectPr on last paragraph.");
+      }
+      CTPPr ppr = (lastPara.getCTP().isSetPPr() ? lastPara.getCTP().getPPr() : lastPara.getCTP().addNewPPr()); 
+      sectPr = ppr.addNewSectPr();
+      ppr.setSectPr(sectPr); 
+    } else {
+      // Put the sectPr directly on body.
+      CTDocument1 document = doc.getDocument();
+      CTBody body = (document.isSetBody() ? document.getBody() : document.addNewBody());
+      // NOTE: This will have the effect of overwriting any document-level page layout
+      //       stuff that was set previously.
+      sectPr = (body.isSetSectPr() ? body.getSectPr() : body.addNewSectPr());
+    }
 
     if (sectionType != null) {
       CTSectType type = sectPr.addNewType();
@@ -673,12 +727,39 @@ public class DocxGenerator {
     }
 
     setupPageSequence(doc, localPageSequenceProperties, sectPr);
-    
-    ppr.setSectPr(sectPr);        
-		
+
+    cursor.pop();
+
 	}
 
 	/**
+	 * Handle the contents of a section
+	 * 
+	 * Issue 51: Fac
+	 * @param doc
+	 * @param object
+	 * @param localPageSequenceProperties
+	 * @return The last paragraph in the section
+	 * @throws DocxGenerationException 
+	 */
+	private XWPFParagraph handleSectionContent(
+	    XWPFDocument doc, 
+	    XmlObject object,
+      XmlObject localPageSequenceProperties) throws DocxGenerationException {
+	  XWPFParagraph lastPara = handleBody(doc, object, localPageSequenceProperties);
+	  
+    // For sections, the section properties go on the last paragraph, so if the last thing
+    // in the section isn't already a paragraph, create one.
+    if (lastPara == null) {
+      lastPara = doc.createParagraph();
+      lastPara.setSpacingBefore(0);
+      lastPara.setSpacingAfter(0);
+    }
+
+    return lastPara;
+  }
+
+  /**
 	 * Set up a page sequence for a section, as opposed to for the document
 	 * as a whole.
 	 * @param doc Document
@@ -691,16 +772,99 @@ public class DocxGenerator {
     
     setPageNumberProperties(cursor, sectPr);
     
+
+    // Issue 46: Use page margins
+    cursor.push();
+    if (cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "page-margins"))) {
+      setPageMargins(cursor, sectPr);
+    }
+    cursor.pop();
+    
     cursor.push();
     if (cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "headers-and-footers"))) {
       constructHeadersAndFooters(doc, cursor.getObject(), sectPr);
     }
     cursor.pop();
+    
     cursor.push();
     if (cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "page-size"))) {
       setPageSize(cursor, sectPr);
     }
     cursor.pop();
+    
+  }
+
+	/**
+	 * Set the page margins for a page sequence
+	 * @param cursor Cursor pointing to page-margins element
+	 * @param sectPr Section properties to put margins on
+	 */
+  private void setPageMargins(XmlCursor cursor, CTSectPr sectPr) {
+    CTPageMar pageMar = (sectPr.isSetPgMar() ? sectPr.getPgMar() : sectPr.addNewPgMar());
+    String left = cursor.getAttributeText(DocxConstants.QNAME_LEFT_ATT);
+    if (left != null) {
+      try {
+        long length = Measurement.toTwips(left, getDotsPerInch());
+        pageMar.setLeft(BigInteger.valueOf(length));
+      } catch (Exception e) {
+        log.warn("setPageMargins(): Value \"" + left + " for attribute \"left\" is not a decimal number");
+      }
+    }
+    String right = cursor.getAttributeText(DocxConstants.QNAME_RIGHT_ATT);
+    if (right != null) {
+      try {
+        long length = Measurement.toTwips(right, getDotsPerInch());
+        pageMar.setRight(BigInteger.valueOf(length));
+      } catch (Exception e) {
+        log.warn("setPageMargins(): Value \"" + right + " for attribute \"right\" is not a decimal number");
+      }
+    }
+    String top = cursor.getAttributeText(DocxConstants.QNAME_TOP_ATT);
+    if (top != null) {
+      try {
+        long length = Measurement.toTwips(top, getDotsPerInch());
+        pageMar.setTop(BigInteger.valueOf(length));
+      } catch (Exception e) {
+        log.warn("setPageMargins(): Value \"" + top + " for attribute \"top\" is not a decimal number");
+      }
+    }
+    String bottom = cursor.getAttributeText(DocxConstants.QNAME_BOTTOM_ATT);
+    if (bottom != null) {
+      try {
+        long length = Measurement.toTwips(bottom, getDotsPerInch());
+        pageMar.setBottom(BigInteger.valueOf(length));
+      } catch (Exception e) {
+        log.warn("setPageMargins(): Value \"" + bottom + " for attribute \"bottom\" is not a decimal number");
+      }
+    }
+    String footer = cursor.getAttributeText(DocxConstants.QNAME_FOOTER_ATT);
+    if (footer != null) {
+      try {
+        long length = Measurement.toTwips(footer, getDotsPerInch());
+        pageMar.setFooter(BigInteger.valueOf(length));
+      } catch (Exception e) {
+        log.warn("setPageMargins(): Value \"" + footer + " for attribute \"footer\" is not a decimal number");
+      }
+    }
+    String header = cursor.getAttributeText(DocxConstants.QNAME_HEADER_ATT);
+    if (header != null) {
+      try {
+        long length = Measurement.toTwips(header, getDotsPerInch());
+        pageMar.setHeader(BigInteger.valueOf(length));
+      } catch (Exception e) {
+        log.warn("setPageMargins(): Value \"" + header + " for attribute \"header\" is not a decimal number");
+      }
+    }
+    String gutter = cursor.getAttributeText(DocxConstants.QNAME_GUTTER_ATT);
+    if (gutter != null) {
+      try {
+        long length = Measurement.toTwips(gutter, getDotsPerInch());
+        pageMar.setGutter(BigInteger.valueOf(length));
+      } catch (Exception e) {
+        log.warn("setPageMargins(): Value \"" + gutter + " for attribute \"gutter\" is not a decimal number");
+      }
+    }
+    
   }
 
   private void setPageSize(XmlCursor cursor, CTSectPr sectPr) {
