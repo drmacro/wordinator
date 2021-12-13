@@ -64,6 +64,7 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTHyperlink;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTMarkupRange;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTOnOff;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPPr;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageMar;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageNumber;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageSz;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
@@ -771,16 +772,99 @@ public class DocxGenerator {
     
     setPageNumberProperties(cursor, sectPr);
     
+
+    // Issue 46: Use page margins
+    cursor.push();
+    if (cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "page-margins"))) {
+      setPageMargins(cursor, sectPr);
+    }
+    cursor.pop();
+    
     cursor.push();
     if (cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "headers-and-footers"))) {
       constructHeadersAndFooters(doc, cursor.getObject(), sectPr);
     }
     cursor.pop();
+    
     cursor.push();
     if (cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "page-size"))) {
       setPageSize(cursor, sectPr);
     }
     cursor.pop();
+    
+  }
+
+	/**
+	 * Set the page margins for a page sequence
+	 * @param cursor Cursor pointing to page-margins element
+	 * @param sectPr Section properties to put margins on
+	 */
+  private void setPageMargins(XmlCursor cursor, CTSectPr sectPr) {
+    CTPageMar pageMar = (sectPr.isSetPgMar() ? sectPr.getPgMar() : sectPr.addNewPgMar());
+    String left = cursor.getAttributeText(DocxConstants.QNAME_LEFT_ATT);
+    if (left != null) {
+      try {
+        long length = Measurement.toTwips(left, getDotsPerInch());
+        pageMar.setLeft(BigInteger.valueOf(length));
+      } catch (Exception e) {
+        log.warn("setPageMargins(): Value \"" + left + " for attribute \"left\" is not a decimal number");
+      }
+    }
+    String right = cursor.getAttributeText(DocxConstants.QNAME_RIGHT_ATT);
+    if (right != null) {
+      try {
+        long length = Measurement.toTwips(right, getDotsPerInch());
+        pageMar.setRight(BigInteger.valueOf(length));
+      } catch (Exception e) {
+        log.warn("setPageMargins(): Value \"" + right + " for attribute \"right\" is not a decimal number");
+      }
+    }
+    String top = cursor.getAttributeText(DocxConstants.QNAME_TOP_ATT);
+    if (top != null) {
+      try {
+        long length = Measurement.toTwips(top, getDotsPerInch());
+        pageMar.setTop(BigInteger.valueOf(length));
+      } catch (Exception e) {
+        log.warn("setPageMargins(): Value \"" + top + " for attribute \"top\" is not a decimal number");
+      }
+    }
+    String bottom = cursor.getAttributeText(DocxConstants.QNAME_BOTTOM_ATT);
+    if (bottom != null) {
+      try {
+        long length = Measurement.toTwips(bottom, getDotsPerInch());
+        pageMar.setBottom(BigInteger.valueOf(length));
+      } catch (Exception e) {
+        log.warn("setPageMargins(): Value \"" + bottom + " for attribute \"bottom\" is not a decimal number");
+      }
+    }
+    String footer = cursor.getAttributeText(DocxConstants.QNAME_FOOTER_ATT);
+    if (footer != null) {
+      try {
+        long length = Measurement.toTwips(footer, getDotsPerInch());
+        pageMar.setFooter(BigInteger.valueOf(length));
+      } catch (Exception e) {
+        log.warn("setPageMargins(): Value \"" + footer + " for attribute \"footer\" is not a decimal number");
+      }
+    }
+    String header = cursor.getAttributeText(DocxConstants.QNAME_HEADER_ATT);
+    if (header != null) {
+      try {
+        long length = Measurement.toTwips(header, getDotsPerInch());
+        pageMar.setHeader(BigInteger.valueOf(length));
+      } catch (Exception e) {
+        log.warn("setPageMargins(): Value \"" + header + " for attribute \"header\" is not a decimal number");
+      }
+    }
+    String gutter = cursor.getAttributeText(DocxConstants.QNAME_GUTTER_ATT);
+    if (gutter != null) {
+      try {
+        long length = Measurement.toTwips(gutter, getDotsPerInch());
+        pageMar.setGutter(BigInteger.valueOf(length));
+      } catch (Exception e) {
+        log.warn("setPageMargins(): Value \"" + gutter + " for attribute \"gutter\" is not a decimal number");
+      }
+    }
+    
   }
 
   private void setPageSize(XmlCursor cursor, CTSectPr sectPr) {
