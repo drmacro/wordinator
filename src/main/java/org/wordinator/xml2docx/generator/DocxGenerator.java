@@ -679,11 +679,7 @@ public class DocxGenerator {
       localPageSequenceProperties = cursor.getObject();
     }
     cursor.pop();
-    
-    if (localPageSequenceProperties == null) {
-      localPageSequenceProperties = docPageSequenceProperties;
-    }
-		
+    		
     String sectionType = cursor.getAttributeText(DocxConstants.QNAME_TYPE_ATT);
 
     cursor.push();
@@ -726,7 +722,14 @@ public class DocxGenerator {
       type.setVal(STSectionMark.Enum.forString(sectionType));
     }
 
-    setupPageSequence(doc, localPageSequenceProperties, sectPr);
+    // Issue 51: If there are doc-level page sequence properties, use those first:
+    if (docPageSequenceProperties != null && localPageSequenceProperties != null) {
+      setupPageSequence(doc, docPageSequenceProperties, sectPr);
+    }
+    // Now use the local page sequence properties, if any to merge them together
+    if (localPageSequenceProperties != null) {
+      setupPageSequence(doc, localPageSequenceProperties, sectPr);      
+    }
 
     cursor.pop();
 
