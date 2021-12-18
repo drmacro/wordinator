@@ -552,7 +552,7 @@ public class DocxGenerator {
    * @param doc Document to add the ToC entry to
    * @param cursor Cursor pointing at <tocentry> element
    * @param tocLevel The current ToC level. 1 (one) = highest level
-   * @throws DocxGenerationException 
+   * @throws Exception 
    */
 	private void handleTocEntry(XWPFDocument doc, XmlCursor cursor, int tocLevel) throws DocxGenerationException {
 	  
@@ -1244,6 +1244,7 @@ public class DocxGenerator {
    * @param para The Word paragraph to construct
    * @param cursor Cursor pointing at the <p> element the paragraph will reflect.
    * @return Paragraph (should be same object as passed in).
+   * @throws Exception 
    */
   private XWPFParagraph makeParagraph(XWPFParagraph p, XmlCursor cursor) throws DocxGenerationException {
     return makeParagraph(p, cursor, null);
@@ -1255,6 +1256,7 @@ public class DocxGenerator {
 	 * @param cursor Cursor pointing at the <p> element the paragraph will reflect.
 	 * @param additionalProperties Additional properties to add to the paragraph, i.e., from sections
 	 * @return Paragraph (should be same object as passed in).
+	 * @throws Exception 
 	 */
 	private XWPFParagraph makeParagraph(
 	    XWPFParagraph para, 
@@ -1389,7 +1391,7 @@ public class DocxGenerator {
 	 * @param para The output paragraph to add the run to.
 	 * @param xml The <run> element.
 	 */
-	private void makeRun(XWPFParagraph para, XmlObject xml) throws DocxGenerationException {
+	private XWPFRun makeRun(XWPFParagraph para, XmlObject xml) throws DocxGenerationException {
 		XmlCursor cursor = xml.newCursor();
 		
 		// String tagname = cursor.getName().getLocalPart(); // For debugging
@@ -1469,6 +1471,7 @@ public class DocxGenerator {
 		} 
 		
 		cursor.pop();
+		return run;
 	}
 	
 	private void handleFormattingAttributes(XWPFRun run, XmlObject xml) {
@@ -1571,6 +1574,7 @@ public class DocxGenerator {
 	 * Construct a footnote
 	 * @param para the paragraph containing the footnote.
 	 * @param cursor Pointing at the &lt;fn> element
+	 * @throws DocxGenerationException 
 	 */
 	private void makeFootnote(XWPFParagraph para, XmlObject xml) throws DocxGenerationException {
 		
@@ -1735,6 +1739,7 @@ public class DocxGenerator {
 	 * Construct a hyperlink
 	 * @param doc
 	 * @param cursor
+	 * @throws Exception 
 	 */
 	private void makeHyperlink(XWPFParagraph para, XmlCursor cursor) throws DocxGenerationException {
 		
@@ -1750,8 +1755,6 @@ public class DocxGenerator {
 		// while everything else is a URI to an external resource.
 		
 		CTHyperlink hyperlink = para.getCTP().addNewHyperlink();
-		CTR run = hyperlink.addNewR();
-		run.addNewT().setStringValue(cursor.getTextValue());
 		
 		// Set the appropriate target:
 		
@@ -1767,9 +1770,88 @@ public class DocxGenerator {
 			// throw new NotImplementedException("Links to external resources not yet implemented.");
 		}
 		
-		XWPFHyperlinkRun hyperlinkRun = new XWPFHyperlinkRun(hyperlink, run, para);
+		XWPFHyperlinkRun hyperlinkRun = makeHyperlinkRun(hyperlink, cursor, para);
 		para.addRun(hyperlinkRun);
 		
+	}
+	
+	
+	/**
+	 * Create runs within a hyperlink element
+	 * @param hyperlink The CTHyperlink to add the runs to
+	 * @param cursor Points to the SWPF hyperlink element
+	 * @param para 
+	 * @throws Exception 
+	 */
+	private XWPFHyperlinkRun makeHyperlinkRun(
+	    CTHyperlink hyperlink, 
+	    XmlCursor cursor, 
+	    XWPFParagraph para) throws DocxGenerationException {
+	  // The POI 4.2 API doesn't quite match the Word structure for hyperlinks.
+	  // A w:hyperlink goes within a paragraph as a peer to w:run and may then contain
+	  // one or more w:run elements.
+	  //
+	  // The XWPF API should have XWPFHyperlinkRun implement 
+
+	  // Workaround here is to add the runs to the paragraph then move
+	  // them to the hyperlink run.
+
+    int runIndex =  para.getRuns().size(); // Index of first new run
+
+	  List<XWPFRun> newRuns = new ArrayList<XWPFRun>();
+	  
+	  // Add runs to the paragraph and capture them so we can then
+	  // move them to the hyperlink.
+	  if (cursor.toFirstChild()) {
+	     do {
+	       String tagName = cursor.getName().getLocalPart();
+	       String namespace = cursor.getName().getNamespaceURI();
+	       if ("run".equals(tagName)) {
+	         newRuns.add(makeRun(para, cursor.getObject()));
+	       } else {
+	         log.warn("Unexpected element {" + namespace + "}:" + tagName + " in <hyperlink>. Ignored.");
+	       }
+	    } while(cursor.toNextSibling());
+	  }
+
+    XWPFHyperlinkRun hyperlinkRun = new XWPFHyperlinkRun(hyperlink, CTR.Factory.newInstance() , para);
+    CTHyperlink ctHyperlink = hyperlinkRun.getCTHyperlink();
+
+	  if (newRuns.size() > 0) {
+	    for (XWPFRun run : newRuns) {
+	      CTR ctRun = run.getCTR();
+	      XmlCursor runCursor = ctRun.newCursor();
+	      if (runCursor.toFirstChild()) {
+	        CTR newRun = ctHyperlink.addNewR();
+	        // Copy the ctRun values to the new run
+	        do {
+	          String tagName = runCursor.getName().getLocalPart();
+	          String namespace = cursor.getName().getNamespaceURI();
+	          // We expect to find w:rPr and w:text
+	          if (tagName.equals("rPr")) {
+              // Copy the rPr values
+	            runCursor.push();
+              CTRPr newRpr = newRun.addNewRPr();
+              newRpr.set(runCursor.getObject());
+              runCursor.pop();
+	          } else if (tagName.equals("t")) {
+	            CTText text = newRun.addNewT();
+	            text.set(runCursor.getObject());
+	          } else {
+	            log.warn("Unexpected element {" + namespace + "}:" + tagName + " in run in hyperlink. Ignored.");
+	          }
+  
+	        } while(runCursor.toNextSibling());
+	        
+	      }
+	      para.removeRun(runIndex);
+	    }
+	  } else {
+	    CTR run = hyperlink.addNewR();
+	    run.addNewT().setStringValue(cursor.getTextValue());	    
+	  }
+
+	  return hyperlinkRun;
 	}
 
 	/**
@@ -1949,7 +2031,7 @@ public class DocxGenerator {
 	 * Construct a table.
 	 * @param table Table object to construct
 	 * @param xml The &lt;table&gt; element
-	 * @throws DocxGenerationException
+	 * @throws DocxGenerationException 
 	 */
 	private void makeTable(XWPFTable table, XmlObject xml) throws DocxGenerationException {
 		
@@ -2440,7 +2522,7 @@ public class DocxGenerator {
 	 * @param rowSpanManager Manages setting vertical spanning across multiple rows.
 	 * @param defaults Defaults inherited from the table (or elsewhere)
    * @return Constructed row object
-	 * @throws DocxGenerationException 
+   * @throws DocxGenerationException 
 	 */
 	private XWPFTableRow makeTableRow(
 			XWPFTable table, 
