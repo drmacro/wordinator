@@ -135,9 +135,12 @@
         width="50"
         src="images/picture-01.gif"/></p>
     <p style="Heading4"><run>Heading 4</run></p>
-       <p>      
-      <run> A hyperlink: </run>
-      <hyperlink href="#bm1"><run>Link to bookmark 1</run></hyperlink>
+    <p>      
+      <run shadow="true"> A hyperlink: </run>
+      <hyperlink href="#bm1">
+        <run shadow="true" bold="true">Link to bookmark 1. Should have shadow bold styling.</run>
+        <run color="00FF00">Second run in hyperlink. Should be #00FF00</run>
+      </hyperlink>
       <run>. After the hyperlink.</run>
     </p>  
     <p><run>A table (cols: 2in, 3in), frame=topbot:</run></p>

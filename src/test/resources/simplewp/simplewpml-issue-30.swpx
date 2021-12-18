@@ -33,7 +33,7 @@
       <run style="Strong">Issue #30: Table Border Color Tests</run>
     </p>
     <p style="normal">
-      <run>Table with no border colors. Should have all borders.</run>
+      <run>Table with no border colors. Should have all borders. Layout is default of "fixed"</run>
     </p>
     <table frame="all" colsep="1" rowsep="1" calculatedWidth="6in" >
       <cols>
@@ -67,9 +67,9 @@
       </tbody>
     </table>
     <p style="normal">
-      <run>Table with border color. Should have all red borders.</run>
+      <run>Table with border color. Should have all red borders. Layout is explicitly set to "fixed"</run>
     </p>
-    <table frame="all" colsep="1" rowsep="1" calculatedWidth="6in" >
+    <table frame="all" colsep="1" rowsep="1" calculatedWidth="6in"  layout="fixed">
       <cols>
         <col colwidth="2in"/>
         <col colwidth="1in"/>
@@ -101,9 +101,9 @@
       </tbody>
     </table>
     <p style="normal">
-      <run>Table with border color. Each row has different colors.</run>
+      <run>Table with border color. Each row has different colors. Layout is "auto"</run>
     </p>
-    <table frame="all" colsep="1" rowsep="1" calculatedWidth="6in" >
+    <table frame="all" colsep="1" rowsep="1" calculatedWidth="6in" layout="auto">
       <cols>
         <col colwidth="2in"/>
         <col colwidth="1in"/>
