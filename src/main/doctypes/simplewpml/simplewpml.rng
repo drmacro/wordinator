@@ -1163,7 +1163,20 @@
             <p>Specifies the left-side indent for the table.</p>
           </a:documentation>
         </attribute>
-      </optional>            
+      </optional>
+      <optional>
+        <attribute name="layout" a:defaultValue="fixed">
+          <a:documentation>
+            <p>Controls whether the table layout is fixed or automatic. Automatic layout allows 
+            Word to resize columns based on cell content. Default is "fixed".</p>
+          </a:documentation>
+          <choice>
+            <value>auto</value>
+            <value>fixed</value>
+          </choice>
+        </attribute>
+      </optional>
+      
       <ref name="style-atts"/>    
     </element>
   </define>

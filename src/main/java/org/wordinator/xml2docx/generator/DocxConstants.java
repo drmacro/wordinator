@@ -81,6 +81,7 @@ public final class DocxConstants {
   public static final QName QNAME_INSIDEINDENT_ATT = new QName("", "insideindent");
   public static final QName QNAME_INSTR_ATT = new QName(OO_WPML_NS, "instr");
 	public static final QName QNAME_ITALIC_ATT = new QName("", "italic");
+  public static final QName QNAME_LAYOUT_ATT = new QName("", "layout");
 	public static final QName QNAME_LEFT_ATT = new QName("", "left");
   public static final QName QNAME_LEFTINDENT_ATT = new QName("", "leftindent");
 	public static final QName QNAME_NAME_ATT = new QName("", "name");
@@ -139,5 +140,9 @@ public final class DocxConstants {
   public static final QName QNAME_LEFT_ELEM = new QName(OO_WPML_NS, "left");
   public static final QName QNAME_RIGHT_ELEM = new QName(OO_WPML_NS, "right");
   public static final QName QNAME_BOTTOM_ELEM = new QName(OO_WPML_NS, "bottom");
+  public static final QName QNAME_TBLPR_ELEM = new QName(OO_WPML_NS, "tblPr");
+  public static final QName QNAME_TBLLAYOUT_ELEM = new QName(OO_WPML_NS, "tblLayout");
+  public static final QName QNAME_WTYPE_ATT = new QName(OO_WPML_NS, "type");
+  
   
 }

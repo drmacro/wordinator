@@ -7,8 +7,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.poi.xwpf.model.XWPFHeaderFooterPolicy;
-import org.apache.poi.xwpf.usermodel.BodyElementType;
-import org.apache.poi.xwpf.usermodel.IBody;
 import org.apache.poi.xwpf.usermodel.IBodyElement;
 import org.apache.poi.xwpf.usermodel.XWPFAbstractNum;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
@@ -26,7 +24,6 @@ import org.apache.xmlbeans.XmlCursor;
 import org.apache.xmlbeans.XmlObject;
 import org.junit.Test;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectPr;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTc;
 import org.wordinator.xml2docx.generator.DocxConstants;
 import org.wordinator.xml2docx.generator.DocxGenerator;
 
@@ -395,13 +392,21 @@ public class TestDocxGenerator extends TestCase {
         }
       }
       
+      // Issue 49: Should have fixed table layout
+      XmlCursor cursor = table.getCTTbl().newCursor();
+      cursor.push();
+      assertTrue("Expected a w:tblPr child", cursor.toChild(DocxConstants.QNAME_TBLPR_ELEM));
+      assertTrue("Expected a w:tblLayout child", cursor.toChild(DocxConstants.QNAME_TBLLAYOUT_ELEM));
+      assertEquals("expected value 'fixed' for tblLayout", "fixed", cursor.getAttributeText(DocxConstants.QNAME_WTYPE_ATT));
+      cursor.pop();
+      
       assertTrue("Expected a second table", iterator.hasNext());
       table = iterator.next();
 
       for (XWPFTableRow row : table.getRows()) {
         // System.out.println("Row " + ++n);
         for (XWPFTableCell cell : row.getTableCells()) {
-           XmlCursor cursor = cell.getCTTc().newCursor();
+           cursor = cell.getCTTc().newCursor();
            assertTrue("No tcPr element", cursor.toChild(DocxConstants.QNAME_TCPR_ELEM));
            assertTrue("No tcBorders element", cursor.toChild(DocxConstants.QNAME_TCBORDERS_ELEM));
            assertTrue("No top element", cursor.toChild(DocxConstants.QNAME_TOP_ELEM));
@@ -417,9 +422,18 @@ public class TestDocxGenerator extends TestCase {
 
       assertTrue("Expected a third table", iterator.hasNext());
       table = iterator.next();
+
+      // Issue 49: Should have auto table layout
+      cursor = table.getCTTbl().newCursor();
+      cursor.push();
+      assertTrue("Expected a w:tblPr child", cursor.toChild(DocxConstants.QNAME_TBLPR_ELEM));
+      assertTrue("Expected a w:tblLayout child", cursor.toChild(DocxConstants.QNAME_TBLLAYOUT_ELEM));
+      assertEquals("expected value 'autofit' for tblLayout", "autofit", cursor.getAttributeText(DocxConstants.QNAME_WTYPE_ATT));
+      cursor.pop();
+
       XWPFTableRow row = table.getRow(0); // Header row.
       XWPFTableCell cell = row.getCell(1); // Center cell
-      XmlCursor cursor = cell.getCTTc().newCursor();
+      cursor = cell.getCTTc().newCursor();
       assertTrue(cursor.toChild(DocxConstants.QNAME_TCPR_ELEM));
       assertTrue(cursor.toChild(DocxConstants.QNAME_TCBORDERS_ELEM));
       assertTrue(cursor.toChild(DocxConstants.QNAME_LEFT_ELEM));
