@@ -75,6 +75,7 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTShd;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSimpleField;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTStyle;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTbl;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblLayoutType;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblWidth;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTcBorders;
@@ -92,6 +93,7 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.STPageOrientation;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STSectionMark;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STShd;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STStyleType;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.STTblLayoutType;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STVerticalAlignRun;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.impl.STOnOffImpl;
 import org.wordinator.xml2docx.xwpf.model.XWPFHeaderFooterPolicy;
@@ -1964,6 +1966,9 @@ public class DocxGenerator {
 		}
 		
 		setTableIndents(table, cursor);
+		setTableLayout(table, cursor);
+		
+
 		
     String styleName = cursor.getAttributeText(DocxConstants.QNAME_STYLE_ATT);
     String styleId = cursor.getAttributeText(DocxConstants.QNAME_STYLEID_ATT);
@@ -1989,9 +1994,8 @@ public class DocxGenerator {
     if (null != styleId) {
       table.setStyleID(styleId);
     }
-		
+    
 		TableBorderStyles borderStyles = setTableFrame(table, cursor);
-		
 		Map<QName, String> defaults = new HashMap<QName, String>();
 		String rowsep = cursor.getAttributeText(DocxConstants.QNAME_ROWSEP_ATT);
 		if (rowsep != null) {
@@ -2106,6 +2110,35 @@ public class DocxGenerator {
       } catch (Exception e) {
         // log.debug("setTableIndents(): leftindentVale \"" + leftindentValue + "\" not an integer", e);
       }
+    }
+    
+  }
+
+
+  /**
+   * Sets the w:tblLayout to fixed or auto
+   * @param table The table object
+   * @param cursor Cursor pointing at the SWPX table element.
+   */
+  private void setTableLayout(XWPFTable table, XmlCursor cursor) {
+    // Should only have left/right or inside/outside values, not both.
+    
+    CTTbl ctTbl = table.getCTTbl();
+    CTTblPr ctTblPr = (ctTbl.getTblPr());
+    if (ctTblPr == null) {
+      ctTblPr = ctTbl.addNewTblPr();
+    }
+    
+
+    String layoutValue = cursor.getAttributeText(DocxConstants.QNAME_LAYOUT_ATT);
+    
+    CTTblLayoutType ctTblLayout = ctTblPr.getTblLayout();
+    if (ctTblLayout == null) {
+      ctTblLayout = ctTblPr.addNewTblLayout();
+    }
+    ctTblLayout.setType(STTblLayoutType.FIXED);
+    if ("auto".equals(layoutValue)) {
+      ctTblLayout.setType(STTblLayoutType.AUTOFIT);
     }
     
   }
