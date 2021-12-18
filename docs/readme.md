@@ -26,6 +26,9 @@ If you need to go from Word documents back to XML, you may find the DITA for Pub
 
 ## Release Notes
 
+* 1.1.0
+  * Treat page sequence properties of last section as document-level properties. This avoids unnecessary extra page Word requires following an explicit section end. With this change, a single-section document should behave exactly the same as the equivalent no-section document.
+  *  
 * 1.0.0
 
   * Section-specific running heads and feet, page geomentry, page numbers
@@ -219,6 +222,14 @@ When all the values are percentages the resulting Word is generated with percent
 As a rule, it is best to use percentages for table column widths.
 
 If you have tables with a mix of percentage and absolute values for column widths and you have cells that span columns where the widths involved are mixed, Wordinator issues a warning message. The resulting table will likely not be correct.
+
+### Handling Vertically-Spanned Cells
+
+For vertical spans, each row of the span must have a td element in the same position as the initial spanning cell and they must all specify the same value for @colspan.
+
+These placeholder cells can be empty or they may contain a vspan element.
+
+This pattern mirrors the Office Open XML markup for vertical spans.
 
 ### Customizing the HTML-to-SWPX Transforms
 
