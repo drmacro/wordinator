@@ -23,7 +23,11 @@ import org.apache.poi.xwpf.usermodel.XWPFTableRow;
 import org.apache.xmlbeans.XmlCursor;
 import org.apache.xmlbeans.XmlObject;
 import org.junit.Test;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTFldChar;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectPr;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTText;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.STFldCharType;
 import org.wordinator.xml2docx.generator.DocxConstants;
 import org.wordinator.xml2docx.generator.DocxGenerator;
 
@@ -262,6 +266,79 @@ public class TestDocxGenerator extends TestCase {
       assertNotNull("No num '9'", num);
       
       
+    } catch (Exception e) {
+      e.printStackTrace();
+      fail("Got unexpected " + e.getClass().getSimpleName() + ": " + e.getMessage());
+    }
+    
+  }
+
+  @Test
+  public void testFieldGeneration() throws Exception {
+    ClassLoader classLoader = getClass().getClassLoader();
+    File inFile = new File(classLoader.getResource("simplewp/simplewpml-issue-47.swpx").getFile());
+    File templateFile = new File(classLoader.getResource(DOTX_TEMPLATE_PATH).getFile());
+    File outFile = new File("out/output-issue-47.docx");
+    File outDir = outFile.getParentFile();
+    System.out.println("Input file: " + inFile.getAbsolutePath());
+    System.out.println("Output file: " + outFile.getAbsolutePath());
+    if (!outDir.exists()) {
+      assertTrue("Failed to create directories for output file " + outFile.getAbsolutePath(), outFile.mkdirs());      
+    }
+    if (outFile.exists()) {
+      assertTrue("Failed to delete output file " + outFile.getAbsolutePath(), outFile.delete());
+    }
+    
+    XWPFDocument templateDoc = new XWPFDocument(new FileInputStream(templateFile));
+    
+    DocxGenerator maker = new DocxGenerator(inFile, outFile, templateDoc);
+    // Generate the DOCX file:
+    
+    try {
+      XmlObject xml = XmlObject.Factory.parse(inFile);
+      maker.generate(xml);
+      assertTrue("DOCX file does not exist", outFile.exists());
+      FileInputStream inStream = new FileInputStream(outFile);
+      XWPFDocument doc = new XWPFDocument(inStream);
+      assertNotNull(doc);
+      Iterator<XWPFParagraph> iterator = doc.getParagraphsIterator();
+      XWPFParagraph p = iterator.next();
+      assertNotNull("Expected a paragraph", p);
+      assertEquals("Issue 47: Complex Fields", p.getText());
+      p = iterator.next();
+      assertNotNull("Expected a paragraph", p);
+      assertTrue("Didn't find lead-in to field", p.getText().startsWith("Complex field"));
+      List<XWPFRun> runs = p.getRuns();
+      boolean foundField = false;
+      boolean foundStart = false;
+      boolean foundEnd = false;
+      boolean foundSeparator = false;
+      String instructionText = null;
+      for (XWPFRun run : runs) {
+         // Check for field here
+         CTR r = run.getCTR();
+         List<CTFldChar> fldChars = r.getFldCharList();
+         if (fldChars != null && fldChars.size() > 0) {
+           if (fldChars.get(0).getFldCharType() == STFldCharType.BEGIN) {
+             foundStart = true;
+           }
+           if (fldChars.get(0).getFldCharType() == STFldCharType.END) {
+             foundEnd = true;
+           }
+           if (fldChars.get(0).getFldCharType() == STFldCharType.SEPARATE) {
+             foundSeparator = true;
+           }
+         }
+         List<CTText> instructions = r.getInstrTextList();
+         if (instructions != null && instructions.size() > 0) {
+           instructionText = instructions.get(0).getStringValue();
+         }
+      }
+      foundField = foundStart && foundEnd;
+      assertTrue("Did not find expected field", foundField);
+      assertTrue("Expected to find a separator", foundSeparator);
+      assertEquals("Instruction text did not match", "DATE \\@ \"dddd, MMMM dd, yyyy HH:mm:ss\"", instructionText);
+
     } catch (Exception e) {
       e.printStackTrace();
       fail("Got unexpected " + e.getClass().getSimpleName() + ": " + e.getMessage());

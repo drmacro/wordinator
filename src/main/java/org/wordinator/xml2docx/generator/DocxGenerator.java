@@ -58,6 +58,7 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBookmark;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBorder;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDecimalNumber;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDocument1;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTFldChar;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTFtnEdn;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTHdrFtrRef;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTHyperlink;
@@ -1345,6 +1346,8 @@ public class DocxGenerator {
 					makeBookmarkStart(para, cursor);
 				} else if ("bookmarkEnd".equals(tagName)) {
 					makeBookmarkEnd(para, cursor);
+        } else if ("complexField".equals(tagName)) {
+          makeComplexField(para, cursor);
 				} else if ("fn".equals(tagName)) {
 					makeFootnote(para, cursor.getObject());
 				} else if ("hyperlink".equals(tagName)) {
@@ -1734,6 +1737,61 @@ public class DocxGenerator {
 			bookmark.setId(id);
 		}		
 	}
+	
+	/**
+	 * Construct a complex field
+	 * @param para The paragraph to add the field to
+	 * @param cursor Points to the current XML element, which should be complexField
+	 */
+	private void makeComplexField(XWPFParagraph para, XmlCursor cursor) throws DocxGenerationException {
+	  // Get the instruction text
+	  String instructionText = null;
+	  cursor.push();
+	  if (cursor.toChild(DocxConstants.QNAME_INSTRUCTIONTEXT_ELEM)) {
+	    instructionText = cursor.getTextValue();
+	  }
+	  cursor.pop();
+	  // The XWPF API has XWPFFieldRun() but no method to create one on XWPFParagraph 
+	  // so have to construct it at the CT markup level.
+	  XWPFRun r = para.createRun();
+	  CTFldChar fldChar = r.getCTR().addNewFldChar();
+	  fldChar.setFldCharType(STFldCharType.BEGIN);
+	  
+	  // Set the instruction text
+    r = para.createRun();
+    CTText text = r.getCTR().addNewInstrText();
+    if (instructionText == null) {
+      log.warn("makeComplexField(): No instruction text for complext field: " + cursor.getTextValue());
+    }
+    text.setStringValue(instructionText);
+    
+	  cursor.push();
+	  // Get the field result, if any
+    if (cursor.toChild(DocxConstants.QNAME_FIELDRESULTS_ELEM)) {
+      // Handle the runs
+      r = para.createRun();
+      fldChar = r.getCTR().addNewFldChar();
+      fldChar.setFldCharType(STFldCharType.SEPARATE);
+      if (cursor.toFirstChild()) {
+        do {
+          String tagName = cursor.getName().getLocalPart();
+          String namespace = cursor.getName().getNamespaceURI();
+          if ("run".equals(tagName)) {
+            makeRun(para, cursor.getObject());
+          } else {
+            log.warn("Unexpected element {" + namespace + "}:" + tagName + " in <p>. Ignored.");
+          }
+        } while(cursor.toNextSibling());
+      }
+      
+    }	  
+    cursor.pop();
+
+    r = para.createRun();
+    fldChar = r.getCTR().addNewFldChar();
+    fldChar.setFldCharType(STFldCharType.END);
+    
+}
 
 	/**
 	 * Construct a hyperlink
