@@ -440,6 +440,7 @@
           <ref name="page-number-ref"/>
           <ref name="run"/>
           <ref name="object"/>
+          <ref name="complexField"/>
         </choice>
       </zeroOrMore>
       <ref name="style-atts"/>
@@ -1591,9 +1592,43 @@
         </attribute>
       </optional>
     </element>    
-  </define>                      
+  </define>                   
   
+  <define name="complexField" ns="urn:ns:wordinator:simplewpml">
+    <element name="complexField">
+      <a:documentation>
+        <h2>Represents a field code</h2>
+        <p>The details of the field codes are defined by the Office Open XML specification.</p>
+      </a:documentation>           
+      <ref name="instructionText"/>
+      <optional>
+        <ref name="fieldResults"/>
+      </optional>
+    </element>
+  </define>
   
+  <define name="instructionText" ns="urn:ns:wordinator:simplewpml">
+    <element name="instructionText" >
+      <a:documentation>
+        <h2>Field Instructions</h2>
+        <p>The instruction text for the field (i.e., "REF _Ref338144563 \n \h").</p>
+      </a:documentation>           
+      <text/>
+    </element>
+  </define>
+  
+  <define name="fieldResults" ns="urn:ns:wordinator:simplewpml">
+    <element name="fieldResults" >
+      <a:documentation>
+        <h2>Field Results</h2>
+        <p>The literal results of the field (the content that follows the w:fieldCharType "separate" marker in the OOXML content).</p>
+      </a:documentation>           
+      <zeroOrMore>
+        <ref name="run"/>
+      </zeroOrMore>
+    </element>
+  </define>
+
   <define name="measurement">
     <data type="string">
       <param name="pattern">(\+|\-)?[0-9]+(\.[0-9]+)?(pt|pc|mm|cm|in|em|px)</param>
