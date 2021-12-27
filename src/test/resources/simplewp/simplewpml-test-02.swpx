@@ -2,7 +2,40 @@
 <?xml-stylesheet type="text/css" href="../../../../main/doctypes/simplewpml/css/simplewpml.css"?>
 <?xml-model href="../../../main/doctypes/simplewpml/simplewpml.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
 <document xmlns="urn:ns:wordinator:simplewpml">
-  <body>
+  <page-sequence-properties>
+    <page-number-properties format="custom" start="1" xslt-format="1."/>
+    <headers-and-footers>
+      <header>
+        <p>
+          <run>Odd Header Paragraph 1 (document-level)</run>
+        </p>
+      </header>
+      <header type="even">
+        <p>
+          <run>Even Header Paragraph 1 (document-level)</run>
+        </p>
+      </header>
+      <header type="first">
+        <p>
+          <run>First Header Paragraph 1 (document-level)</run>
+        </p>
+      </header>
+      <footer>
+        <p><run>(document-level odd/default) </run>
+          <page-number-ref format="numberInDash"/>
+        </p>
+      </footer>
+      <footer type="even">
+        <p><run>(document-level even) </run>
+          <page-number-ref format="numberInDash"/>
+        </p>
+      </footer>
+      <footer type="first">
+        <p><run>(document-level first) </run><page-number-ref format="numberInDash"/></p>
+      </footer>
+    </headers-and-footers>
+  </page-sequence-properties>
+  <body>   
     <p style="heading 1">
       <run style="Strong">Document With Sections</run>
     </p>
@@ -425,31 +458,31 @@
         <headers-and-footers>
           <header>
             <p>
-              <run>Odd Header Paragraph 1 (document-level)</run>
+              <run>Odd Header Paragraph 1 (section-level section 2)</run>
             </p>
           </header>
           <header type="even">
             <p>
-              <run>Even Header Paragraph 1 (document-level)</run>
+              <run>Even Header Paragraph 1 (section-level section 2)</run>
             </p>
           </header>
           <header type="first">
             <p>
-              <run>First Header Paragraph 1 (document-level)</run>
+              <run>First Header Paragraph 1 (section-level section 2)</run>
             </p>
           </header>
           <footer>
-            <p><run>(document-level odd/default) </run>
+            <p><run>(section-level section 2 odd/default) </run>
               <page-number-ref format="numberInDash"/>
             </p>
           </footer>
           <footer type="even">
-            <p><run>(document-level even) </run>
+            <p><run>(section-level section 2 even) </run>
               <page-number-ref format="numberInDash"/>
             </p>
           </footer>
           <footer type="first">
-            <p><run>(document-level first) </run><page-number-ref format="numberInDash"/></p>
+            <p><run>(section-level section 2 first) </run><page-number-ref format="numberInDash"/></p>
           </footer>
         </headers-and-footers>
       </page-sequence-properties>

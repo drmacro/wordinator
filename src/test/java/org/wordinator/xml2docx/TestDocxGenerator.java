@@ -161,6 +161,7 @@ public class TestDocxGenerator extends TestCase {
 			assertTrue("Did not find expected start of first section", found);
 			
 			CTSectPr docSectPr = doc.getDocument().getBody().getSectPr();
+			assertNotNull("Expected to find a docSectPr element", docSectPr);
 			assertEquals("Expected 3 headers", 3, docSectPr.getHeaderReferenceList().size());			
       assertEquals("Expected 3 footers", 3, docSectPr.getFooterReferenceList().size());
       
