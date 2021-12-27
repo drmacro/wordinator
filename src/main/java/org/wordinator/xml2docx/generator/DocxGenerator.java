@@ -422,43 +422,38 @@ public class DocxGenerator {
 		XmlCursor cursor = xml.newCursor();
 		cursor.toFirstChild(); // Put us on the root element of the document
 		cursor.push();
-		XmlObject pageSequenceProperties = null;
 		cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "body"));
-		handleBody(doc, cursor.getObject(), pageSequenceProperties);
-		
-		// Issue 51: If there are sections then the document-level page sequence properties
-		//           will have been set by the last section.
-		
-		boolean isSections = cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "section"));
+
+		handleBody(doc, cursor.getObject());
 		
 		cursor.pop();
 		
     if (cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "page-sequence-properties"))) {
-      if (!isSections) {
-        // Set up document-level headers. These will apply to the whole
-        // document if there are no sections, or to the last section if
-        // there are sections. Results in a w:sectPr as  the last child 
-        // of w:body.
-        setupPageSequence(doc, cursor.getObject());
-        pageSequenceProperties = cursor.getObject();
-      }
+      // Results in a w:sectPr as  the last child 
+      // of w:body.
+      setupPageSequence(doc, cursor.getObject());
+    } else {
+      CTDocument1 document = doc.getDocument();
+      CTBody body = (document.isSetBody() ? document.getBody() : document.addNewBody());
+      @SuppressWarnings("unused")
+      CTSectPr sectPr = (body.isSetSectPr() ? body.getSectPr() : body.addNewSectPr());
+      // At this point let Word fill in the details.
+      
     }
     cursor.pop();
 
-	}
+  }
 
   /**
 	 * Process the elements in &lt;body&gt;
 	 * @param doc Document to add paragraphs to.
-	 * @param xml Body element
-   * @param pageSequenceProperties Document-level page sequence properties. Used
-   * if there are no section-level page sequence properties.
+	 * @param xml Body or section element
    * @return Last paragraph of the body (if any)
 	 * @throws DocxGenerationException
 	 */
 	private XWPFParagraph handleBody(
 	    XWPFDocument doc, 
-	    XmlObject xml, XmlObject pageSequenceProperties) 
+	    XmlObject xml) 
 	        throws DocxGenerationException {
 	  if (log.isDebugEnabled()) {
 	    // log.debug("handleBody(): starting...");
@@ -466,8 +461,6 @@ public class DocxGenerator {
     XWPFParagraph lastPara = null;
     XmlCursor cursor = xml.newCursor();
 		if (cursor.toFirstChild()) {
-	    int sectionCount = countSections(xml.newCursor());
-		  int sectionIndex = 0; // Count sections as we go through.
 			do {
 			  lastPara = null;
 				String tagName = cursor.getName().getLocalPart();
@@ -477,8 +470,7 @@ public class DocxGenerator {
 					makeParagraph(p, cursor);
 					lastPara = p;
 				} else if ("section".equals(tagName)) {
-				  sectionIndex++;
-					handleSection(doc, cursor.getObject(), pageSequenceProperties, sectionIndex == sectionCount);
+					handleSection(doc, cursor.getObject());
 				} else if ("table".equals(tagName)) {
 					XWPFTable table = doc.createTable();
 					makeTable(table, cursor.getObject());
@@ -498,10 +490,13 @@ public class DocxGenerator {
 
 	/**
 	 * Count the number of section elements within the document body
+	 * Issue 51: Created this then decided it wasn't needed. Keeping the method in case
+	 * it's useful in the future.
 	 * @param cursor A cursor created from the body element to count the sections in.
 	 * @return The number of sections found.
 	 */
-	private int countSections(XmlCursor cursor) {
+	@SuppressWarnings("unused")
+  private int countSections(XmlCursor cursor) {
 	  int count = 0;
 	  if (cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "section"))) {
 	    count++;
@@ -664,14 +659,10 @@ public class DocxGenerator {
 	 * Handle a &lt;section&gt; element
 	 * @param doc Document we're adding to
 	 * @param xml &lt;section&gt; element
-	 * @param docPageSequenceProperties Document-level page sequence properties
-   * @param isLastSection 
 	 */
 	private void handleSection(
 	    XWPFDocument doc, 
-	    XmlObject xml, 
-	    XmlObject docPageSequenceProperties, 
-	    boolean isLastSection) 
+	    XmlObject xml) 
 	        throws DocxGenerationException {
 		XmlCursor cursor = xml.newCursor();
 				
@@ -688,48 +679,22 @@ public class DocxGenerator {
     cursor.push();
     cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "body"));
 
-    XWPFParagraph lastPara = handleSectionContent(doc, cursor.getObject(), localPageSequenceProperties);
-
-    
-    // Issue 51: Treat the last section's formatting details as the document-level
-    //           details.
-    //
-    //           It may be necessary to make this behavior switchable, as it's possible
-    //           that someone might want the document-level page layout to be different
-    //           from the layout of the last section. Note that in this case Word will
-    //           always force a new page in this case.
-    //
-    //           The alternative would be to require SWPX to only have <section> when you
-    //           really do want to have a section.
+    XWPFParagraph lastPara = handleSectionContent(doc, cursor.getObject());
 
     CTSectPr sectPr = null;
-    if (!isLastSection) {
       
-      if (log.isDebugEnabled()) {
-        // log.debug("handleSection(): Setting sectPr on last paragraph.");
-      }
-      CTPPr ppr = (lastPara.getCTP().isSetPPr() ? lastPara.getCTP().getPPr() : lastPara.getCTP().addNewPPr()); 
-      sectPr = ppr.addNewSectPr();
-      ppr.setSectPr(sectPr); 
-    } else {
-      // Put the sectPr directly on body.
-      CTDocument1 document = doc.getDocument();
-      CTBody body = (document.isSetBody() ? document.getBody() : document.addNewBody());
-      // NOTE: This will have the effect of overwriting any document-level page layout
-      //       stuff that was set previously.
-      sectPr = (body.isSetSectPr() ? body.getSectPr() : body.addNewSectPr());
+    if (log.isDebugEnabled()) {
+      // log.debug("handleSection(): Setting sectPr on last paragraph.");
     }
+    CTPPr ppr = (lastPara.getCTP().isSetPPr() ? lastPara.getCTP().getPPr() : lastPara.getCTP().addNewPPr()); 
+    sectPr = ppr.addNewSectPr();
+    ppr.setSectPr(sectPr); 
 
     if (sectionType != null) {
       CTSectType type = sectPr.addNewType();
       type.setVal(STSectionMark.Enum.forString(sectionType));
     }
 
-    // Issue 51: If there are doc-level page sequence properties, use those first:
-    if (docPageSequenceProperties != null && localPageSequenceProperties != null) {
-      setupPageSequence(doc, docPageSequenceProperties, sectPr);
-    }
-    // Now use the local page sequence properties, if any to merge them together
     if (localPageSequenceProperties != null) {
       setupPageSequence(doc, localPageSequenceProperties, sectPr);      
     }
@@ -741,18 +706,15 @@ public class DocxGenerator {
 	/**
 	 * Handle the contents of a section
 	 * 
-	 * Issue 51: Fac
 	 * @param doc
 	 * @param object
-	 * @param localPageSequenceProperties
 	 * @return The last paragraph in the section
 	 * @throws DocxGenerationException 
 	 */
 	private XWPFParagraph handleSectionContent(
 	    XWPFDocument doc, 
-	    XmlObject object,
-      XmlObject localPageSequenceProperties) throws DocxGenerationException {
-	  XWPFParagraph lastPara = handleBody(doc, object, localPageSequenceProperties);
+	    XmlObject object) throws DocxGenerationException {
+	  XWPFParagraph lastPara = handleBody(doc, object);
 	  
     // For sections, the section properties go on the last paragraph, so if the last thing
     // in the section isn't already a paragraph, create one.
@@ -914,7 +876,6 @@ public class DocxGenerator {
 	 * Set up page sequence properties for the entire document, including page geometry, numbering, and headers and footers.
 	 * @param doc Document to be constructed
 	 * @param xml page-sequence-properties element
-	 * @param sectPr Section properties to store the page sequence details on.
 	 * @throws DocxGenerationException 
 	 */
 	private void setupPageSequence(XWPFDocument doc, XmlObject xml) throws DocxGenerationException {
