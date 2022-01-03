@@ -23,7 +23,10 @@ import org.apache.poi.xwpf.usermodel.XWPFTableRow;
 import org.apache.xmlbeans.XmlCursor;
 import org.apache.xmlbeans.XmlObject;
 import org.junit.Test;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBody;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDocument1;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTFldChar;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageMar;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTText;
@@ -530,6 +533,173 @@ public class TestDocxGenerator extends TestCase {
       e.printStackTrace();
       fail("Got unexpected " + e.getClass().getSimpleName() + ": " + e.getMessage());
     }
+  }
+  
+  @Test  
+  public void testPageMarginsDocLevel() throws Exception {
+    ClassLoader classLoader = getClass().getClassLoader();
+    File inFile = new File(classLoader.getResource("simplewp/simplewpml-issue-46-01.swpx").getFile());
+    File templateFile = new File(classLoader.getResource(DOTX_TEMPLATE_PATH).getFile());
+    File outFile = new File("out/output-issue-46-01.docx");
+    File outDir = outFile.getParentFile();
+    System.out.println("Input file: " + inFile.getAbsolutePath());
+    System.out.println("Output file: " + outFile.getAbsolutePath());
+    if (!outDir.exists()) {
+      assertTrue("Failed to create directories for output file " + outFile.getAbsolutePath(), outFile.mkdirs());      
+    }
+    if (outFile.exists()) {
+      assertTrue("Failed to delete output file " + outFile.getAbsolutePath(), outFile.delete());
+    }
+    
+    XWPFDocument templateDoc = new XWPFDocument(new FileInputStream(templateFile));
+    DocxGenerator maker = new DocxGenerator(inFile, outFile, templateDoc);
+    // Generate the DOCX file:
+    
+    try {
+      XmlObject xml = XmlObject.Factory.parse(inFile);
+
+      maker.generate(xml);
+      assertTrue("DOCX file does not exist", outFile.exists());
+      FileInputStream inStream = new FileInputStream(outFile);
+      XWPFDocument doc = new XWPFDocument(inStream);
+      assertNotNull(doc);
+      CTDocument1 ctDoc = doc.getDocument();
+      CTBody body = ctDoc.getBody();
+      CTSectPr sectPr = body.getSectPr();
+      CTPageMar ctMargins = sectPr.getPgMar();
+      assertNotNull("Did not find a CTPageMar object", ctMargins);
+      //  <page-margins top="2.0cm" bottom="3.0cm" left="2.5cm" right="3.5cm" footer="1.27cm" header="1.27cm" gutter="0" />
+      XmlCursor cursor = ctMargins.newCursor();
+      String attVal = cursor.getAttributeText(DocxConstants.QNAME_OOXML_LEFT_ATT);
+      assertEquals("1418", attVal);
+      attVal = cursor.getAttributeText(DocxConstants.QNAME_OOXML_RIGHT_ATT);
+      assertEquals("1985", attVal);
+      attVal = cursor.getAttributeText(DocxConstants.QNAME_OOXML_TOP_ATT);
+      assertEquals("1134", attVal);
+      attVal = cursor.getAttributeText(DocxConstants.QNAME_OOXML_BOTTOM_ATT);
+      assertEquals("1701", attVal);
+
+    } catch (Exception e) {
+      e.printStackTrace();
+      fail("Got unexpected " + e.getClass().getSimpleName() + ": " + e.getMessage());
+    }
+
+  }
+
+  @Test  
+  public void testPageMarginsSectionLevel() throws Exception {
+    ClassLoader classLoader = getClass().getClassLoader();
+    File inFile = new File(classLoader.getResource("simplewp/simplewpml-issue-46-02.swpx").getFile());
+    File templateFile = new File(classLoader.getResource(DOTX_TEMPLATE_PATH).getFile());
+    File outFile = new File("out/output-issue-46-02.docx");
+    File outDir = outFile.getParentFile();
+    System.out.println("Input file: " + inFile.getAbsolutePath());
+    System.out.println("Output file: " + outFile.getAbsolutePath());
+    if (!outDir.exists()) {
+      assertTrue("Failed to create directories for output file " + outFile.getAbsolutePath(), outFile.mkdirs());      
+    }
+    if (outFile.exists()) {
+      assertTrue("Failed to delete output file " + outFile.getAbsolutePath(), outFile.delete());
+    }
+    
+    XWPFDocument templateDoc = new XWPFDocument(new FileInputStream(templateFile));
+    DocxGenerator maker = new DocxGenerator(inFile, outFile, templateDoc);
+    // Generate the DOCX file:
+    
+    try {
+      XmlObject xml = XmlObject.Factory.parse(inFile);
+
+      maker.generate(xml);
+      assertTrue("DOCX file does not exist", outFile.exists());
+      FileInputStream inStream = new FileInputStream(outFile);
+      XWPFDocument doc = new XWPFDocument(inStream);
+      assertNotNull(doc);
+      CTDocument1 ctDoc = doc.getDocument();
+      CTBody body = ctDoc.getBody();
+      CTSectPr sectPr = body.getSectPr();
+      CTPageMar ctMargins = sectPr.getPgMar();
+      assertNotNull("Did not find a CTPageMar object", ctMargins);
+      //  <page-margins top="2.0cm" bottom="3.0cm" left="2.5cm" right="3.5cm" footer="1.27cm" header="1.27cm" gutter="0" />
+      XmlCursor cursor = ctMargins.newCursor();
+      String attVal = cursor.getAttributeText(DocxConstants.QNAME_OOXML_LEFT_ATT);
+      assertEquals("1418", attVal);
+      attVal = cursor.getAttributeText(DocxConstants.QNAME_OOXML_RIGHT_ATT);
+      assertEquals("1985", attVal);
+      attVal = cursor.getAttributeText(DocxConstants.QNAME_OOXML_TOP_ATT);
+      assertEquals("1134", attVal);
+      attVal = cursor.getAttributeText(DocxConstants.QNAME_OOXML_BOTTOM_ATT);
+      assertEquals("1701", attVal);
+
+    } catch (Exception e) {
+      e.printStackTrace();
+      fail("Got unexpected " + e.getClass().getSimpleName() + ": " + e.getMessage());
+    }
+
+  }
+
+  @Test  
+  public void testPageLayout() throws Exception {
+    ClassLoader classLoader = getClass().getClassLoader();
+    // Using the issue-46-02.swpx because it happens to have a section with landscape pages.
+    File inFile = new File(classLoader.getResource("simplewp/simplewpml-issue-46-02.swpx").getFile());
+    File templateFile = new File(classLoader.getResource(DOTX_TEMPLATE_PATH).getFile());
+    File outFile = new File("out/output-issue-46-02.docx");
+    File outDir = outFile.getParentFile();
+    System.out.println("Input file: " + inFile.getAbsolutePath());
+    System.out.println("Output file: " + outFile.getAbsolutePath());
+    if (!outDir.exists()) {
+      assertTrue("Failed to create directories for output file " + outFile.getAbsolutePath(), outFile.mkdirs());      
+    }
+    if (outFile.exists()) {
+      assertTrue("Failed to delete output file " + outFile.getAbsolutePath(), outFile.delete());
+    }
+    
+    XWPFDocument templateDoc = new XWPFDocument(new FileInputStream(templateFile));
+    DocxGenerator maker = new DocxGenerator(inFile, outFile, templateDoc);
+    
+    try {
+      XmlObject xml = XmlObject.Factory.parse(inFile);
+
+      maker.generate(xml);
+      assertTrue("DOCX file does not exist", outFile.exists());
+      FileInputStream inStream = new FileInputStream(outFile);
+      XWPFDocument doc = new XWPFDocument(inStream);
+      Iterator<IBodyElement> iter = doc.getBodyElementsIterator();
+      XWPFParagraph p = null;
+      int sectionCounter = 0;
+      boolean foundPageLayout = false;
+      do {
+        IBodyElement e = iter.next();
+        if (e instanceof XWPFParagraph) {
+          p = (XWPFParagraph)e;
+          if (p.getCTP().isSetPPr()) {
+            CTSectPr sectPr = p.getCTP().getPPr().getSectPr();
+            if (sectPr != null) {
+              sectionCounter++;
+            }
+            if (sectionCounter == 2) {
+              // First section should be landscape pages
+              XmlCursor cursor = sectPr.newCursor();
+              if (cursor.toChild(DocxConstants.QNAME_PGSZ_ELEM)) {
+                assertEquals("landscape", cursor.getAttributeText(DocxConstants.QNAME_OOXML_ORIENT_ATT));
+                foundPageLayout = true;
+                // Width is 14in
+                assertEquals("20160", cursor.getAttributeText(DocxConstants.QNAME_OOXML_W_ATT));
+                // Height is 8.5in
+                assertEquals("12240", cursor.getAttributeText(DocxConstants.QNAME_OOXML_H_ATT));
+              }
+            }
+          }
+          
+        }
+      } while(iter.hasNext());
+      assertTrue("Did not find expected section-level page layout", foundPageLayout);
+
+    } catch (Exception e) {
+      e.printStackTrace();
+      fail("Got unexpected " + e.getClass().getSimpleName() + ": " + e.getMessage());
+    }
+
   }
 
 }

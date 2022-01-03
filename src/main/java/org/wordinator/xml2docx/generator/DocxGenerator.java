@@ -726,6 +726,21 @@ public class DocxGenerator {
 
     return lastPara;
   }
+	
+  /**
+   * Set up page sequence properties for the entire document, including page geometry, numbering, and headers and footers.
+   * @param doc Document to be constructed
+   * @param xml page-sequence-properties element
+   * @throws DocxGenerationException 
+   */
+  private void setupPageSequence(XWPFDocument doc, XmlObject xml) throws DocxGenerationException {
+    
+    CTDocument1 document = doc.getDocument();
+    CTBody body = (document.isSetBody() ? document.getBody() : document.addNewBody());
+    CTSectPr sectPr = (body.isSetSectPr() ? body.getSectPr() : body.addNewSectPr());
+    
+    setupPageSequence(doc, xml, sectPr);
+  }	
 
   /**
 	 * Set up a page sequence for a section, as opposed to for the document
@@ -871,33 +886,6 @@ public class DocxGenerator {
       }
     }
   }
-
-  /**
-	 * Set up page sequence properties for the entire document, including page geometry, numbering, and headers and footers.
-	 * @param doc Document to be constructed
-	 * @param xml page-sequence-properties element
-	 * @throws DocxGenerationException 
-	 */
-	private void setupPageSequence(XWPFDocument doc, XmlObject xml) throws DocxGenerationException {
-		XmlCursor cursor = xml.newCursor();
-		
-		CTDocument1 document = doc.getDocument();
-		CTBody body = (document.isSetBody() ? document.getBody() : document.addNewBody());
-		CTSectPr sectPr = (body.isSetSectPr() ? body.getSectPr() : body.addNewSectPr());
-		
-		setPageNumberProperties(cursor, sectPr);
-		cursor.push();
-		if (cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "headers-and-footers"))) {
-			constructHeadersAndFooters(doc, cursor.getObject());
-		}
-		cursor.pop();
-    cursor.push();
-    if (cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "page-size"))) {
-      setPageSize(cursor, sectPr);
-    }
-    cursor.pop();
-		
-	}
 
   private void setPageNumberProperties(XmlCursor cursor, CTSectPr sectPr) {
     cursor.push();
