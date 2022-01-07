@@ -97,7 +97,14 @@ public class Measurement {
 	 */
 	public static long toTwips(String measurementValue, int dotsPerInch) throws MeasurementException {
 		double points = toPoints(measurementValue, dotsPerInch);
-		return (long) points * 20;
+		double twips = points * 20.0;
+		// Word appears to always round up if there is any fractional part.
+		long result = (long) twips * 1;
+		if (result < twips) {
+		  result++;
+		}
+		return result;
+		
 	}
 
 }

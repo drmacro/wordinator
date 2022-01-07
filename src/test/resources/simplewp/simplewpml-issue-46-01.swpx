@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/css" href="../../../main/doctypes/simplewpml/css/simplewpml.css"?>
+<?xml-model href="../../../main/doctypes/simplewpml/simplewpml.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<document xmlns="urn:ns:wordinator:simplewpml">
+  <page-sequence-properties>
+    <page-margins top="2.0cm" bottom="3.0cm" left="2.5cm" right="3.5cm" footer="1.27cm" header="1.27cm" gutter="0" />
+    <headers-and-footers>
+      <header>
+        <p><run>Odd Header Paragraph 1</run></p>
+        <p>
+          <run>Page </run>
+          <complexField>
+            <instructionText>PAGE</instructionText>
+            <fieldResults>
+              <run>0</run>
+            </fieldResults>
+          </complexField>
+          <run> of </run>
+          <complexField>
+            <instructionText> NUMPAGES </instructionText>
+            <fieldResults>
+              <run>0</run>
+            </fieldResults>
+          </complexField>          
+        </p>
+      </header>
+      <header type="even">
+        <p><run>Even Header Paragraph 1</run></p>
+      </header>
+      <footer>
+        <p>
+          <run>Odd Footer: </run>
+          <page-number-ref format="numberInDash"/>
+          <run> After page-number-ref</run>
+        </p>
+      </footer>
+      <footer type="even">
+        <p><run>Even Footer</run></p>
+      </footer>
+    </headers-and-footers>
+  </page-sequence-properties>
+  <body>
+    <p style="Heading1">
+      <run style="Strong">Issue 46: Page margins: No Sections</run>
+      <bookmarkStart id="bm1" name="bm1"/>
+    </p>
+    <p>
+      <run>This document has no sections so only document-level page sequence properties.
+        Margin settings are: &lt;page-margins top="2.0cm" bottom="3.0cm" left="2.5cm" right="3.5cm"/&gt;        
+      </run>
+    </p>
+  </body>
+</document>

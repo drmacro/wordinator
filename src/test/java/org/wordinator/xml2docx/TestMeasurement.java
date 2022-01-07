@@ -125,8 +125,13 @@ public class TestMeasurement extends TestCase {
 		assertEquals("PT unit failed.", 100 * 20, Measurement.toTwips(measurePoints, dotsPerInch ));
 		assertEquals("PC unit failed.", 10 * 12 * 20, Measurement.toTwips(measurePicas, dotsPerInch ), 0.1);
 		assertEquals("IN unit failed.", 10 * 72 * 20, Measurement.toTwips(measureInches, dotsPerInch ));
-		assertEquals("MM unit failed.", 5660, Measurement.toTwips(measureMM, dotsPerInch));
-		assertEquals("CM unit failed.", 5660, Measurement.toTwips(measureCM, dotsPerInch));
+		assertEquals("MM unit failed.", 5670, Measurement.toTwips(measureMM, dotsPerInch));
+		assertEquals("CM unit failed.", 5670, Measurement.toTwips(measureCM, dotsPerInch));
+		
+		// Now try some fractional values:
+		
+		// 2.5cm = 70.8661 pts, 1418 twips (Word always rounds up).
+		assertEquals("CM unit failed.", 1418, Measurement.toTwips("2.5cm", dotsPerInch));
 		try {
 			Measurement.toTwips(measureBogus, dotsPerInch);
 			fail("Bogus measurement " + measureBogus + " did not cause exception.");

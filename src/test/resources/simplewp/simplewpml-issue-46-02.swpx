@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/css" href="../../../../main/doctypes/simplewpml/css/simplewpml.css"?>
+<?xml-model href="../../../main/doctypes/simplewpml/simplewpml.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<document xmlns="urn:ns:wordinator:simplewpml">
+  <page-sequence-properties>
+    <page-number-properties format="custom" start="1" xslt-format="1."/>
+    <page-margins top="2.0cm" bottom="3.0cm" left="2.5cm" right="3.5cm" footer="1.27cm" header="1.27cm" gutter="0pt" />
+    <headers-and-footers>
+      <header>
+        <p>
+          <run>Odd Header Paragraph 1 (document-level)</run>
+        </p>
+      </header>
+      <header type="even">
+        <p>
+          <run>Even Header Paragraph 1 (document-level)</run>
+        </p>
+      </header>
+      <header type="first">
+        <p>
+          <run>First Header Paragraph 1 (document-level)</run>
+        </p>
+      </header>
+      <footer>
+        <p><run>(document-level odd/default) </run>
+          <page-number-ref format="numberInDash"/>
+        </p>
+      </footer>
+      <footer type="even">
+        <p><run>(document-level even) </run>
+          <page-number-ref format="numberInDash"/>
+        </p>
+      </footer>
+      <footer type="first">
+        <p><run>(document-level first) </run><page-number-ref format="numberInDash"/></p>
+      </footer>
+    </headers-and-footers>
+  </page-sequence-properties>
+  <body>   
+    <section>
+      <p style="heading 1">
+        <run style="Strong">Issue 46, Page Margins: Test 02, Section-level margins</run>
+      </p>
+      <p><run>This is before the landscape section. It should reflect document-level headers and footers</run></p>
+    </section>
+    <section type="nextPage">
+      <page-sequence-properties>        
+        <page-number-properties format="lowerRoman" chapter-separator="emDash" chapter-style="1" start="99"/>
+        <page-margins left="1cm" right="2cm" top="2.5cm" bottom="2.2cm" gutter="5mm"/>
+        <headers-and-footers>
+          <header type="odd">
+            <p>
+              <run>Odd Header for landscape Section</run>
+            </p>              
+          </header>
+          <header type="even">
+            <p>
+              <run>Even Header for landscape Section</run>
+            </p>              
+          </header>
+          <footer type="odd">
+            <p><run>Odd Footer for landscape section: </run>
+              <page-number-ref format="lowerRoman"/>
+            </p>
+          </footer>
+          <footer type="even">
+            <p><run>Even Footer for landscape section: </run>
+              <page-number-ref format="lowerRoman"/>
+            </p>
+          </footer>
+        </headers-and-footers>
+        <page-size
+          code="234"
+          height="8.5in"
+          width="14in"
+          orient="landscape"          
+        />                  
+      </page-sequence-properties>
+      <body>
+        <p style="heading 1" page-break-before="true">
+          <run>Start of landscape section. Landscape with margins set to left="1cm" right="2cm" top="2.5cm" bottom="2.2cm" gutter="5mm"</run>
+        </p>
+        <p>
+          <run>This section should start on a new page. Page numbers should be lowercase Roman numerals.</run>
+        </p>
+        <p page-break-before="true"><run>Second page in the landscape section.</run></p>
+      </body>
+    </section>
+    <section type="nextPage">
+      <page-sequence-properties>
+        <page-number-properties format="custom" start="1" xslt-format="1."/>
+        <headers-and-footers>
+          <header>
+            <p>
+              <run>Odd Header Paragraph 1 (section-level section 2)</run>
+            </p>
+          </header>
+          <header type="even">
+            <p>
+              <run>Even Header Paragraph 1 (section-level section 2)</run>
+            </p>
+          </header>
+          <header type="first">
+            <p>
+              <run>First Header Paragraph 1 (section-level section 2)</run>
+            </p>
+          </header>
+          <footer>
+            <p><run>(section-level section 2 odd/default) </run>
+              <page-number-ref format="numberInDash"/>
+            </p>
+          </footer>
+          <footer type="even">
+            <p><run>(section-level section 2 even) </run>
+              <page-number-ref format="numberInDash"/>
+            </p>
+          </footer>
+          <footer type="first">
+            <p><run>(section-level section 2 first) </run><page-number-ref format="numberInDash"/></p>
+          </footer>
+        </headers-and-footers>
+      </page-sequence-properties>
+      <body>
+        <p><run>Last section of the document. Should be 8.5x11, portrait.</run></p>
+        <p page-break-before="true"><run>Second page of Last section of the document. Should be 8.5x11, portrait.</run></p>
+      </body>
+    </section>
+  </body>
+</document>
