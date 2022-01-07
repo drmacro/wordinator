@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/css" href="../../../main/doctypes/simplewpml/css/simplewpml.css"?>
+<?xml-model href="../../../main/doctypes/simplewpml/simplewpml.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<document xmlns="urn:ns:wordinator:simplewpml">
+  <page-sequence-properties>
+    <page-number-properties
+      format="custom"
+      xslt-format="1."
+      start="1"
+    />
+    <headers-and-footers>
+      <header>
+        <p><run>Odd Header Paragraph 1</run></p>
+        <p>
+          <run>Page </run>
+          <complexField>
+            <instructionText>PAGE</instructionText>
+            <fieldResults>
+              <run>0</run>
+            </fieldResults>
+          </complexField>
+          <run> of </run>
+          <complexField>
+            <instructionText> NUMPAGES </instructionText>
+            <fieldResults>
+              <run>0</run>
+            </fieldResults>
+          </complexField>          
+        </p>
+      </header>
+      <header type="even">
+        <p><run>Even Header Paragraph 1</run></p>
+      </header>
+      <footer>
+        <p>
+          <run>Odd Footer: </run>
+          <page-number-ref format="numberInDash"/>
+          <run> After page-number-ref</run>
+        </p>
+      </footer>
+      <footer type="even">
+        <p><run>Even Footer</run></p>
+      </footer>
+    </headers-and-footers>
+  </page-sequence-properties>
+  <body>
+    <p style="Heading1">
+      <run style="Strong">Issue 65: Data following hyperlink is dropped</run>
+      <bookmarkStart id="bm1" name="bm1"/>
+    </p>
+    <p style="Normal" styleId="Normal">
+      <run>First run in para before the hyperlink</run>
+      <hyperlink href="#unique_6_Connect_42_li_olb_5tg_tt">
+        <run style="Hyperlink" styleId="Hyperlink">1</run>
+      </hyperlink>
+      <run>Run after the hyperlink.</run>
+    </p>
+    <p><run>After hyperlink para</run></p>
+    <p style="List Number L1" styleId="ListNumberL1">
+      <bookmarkStart name="unique_6_Connect_42_li_olb_5tg_tt"
+        id="IDunique_6_Connect_42_li_olb_5tg_tt"/>
+      <run>Meyer JC. Laboratory Diagnosis of Syphilis. </run>
+      <run italic="true">Curr Probl Dermatol.</run>
+      <run> 1996; 24: 1-11.</run>
+      <bookmarkEnd id="IDunique_6_Connect_42_li_olb_5tg_tt"/>
+    </p>
+  </body>
+</document>
