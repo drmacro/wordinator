@@ -1789,7 +1789,9 @@ public class DocxGenerator {
 			// throw new NotImplementedException("Links to external resources not yet implemented.");
 		}
 		
+		cursor.push();
 		XWPFHyperlinkRun hyperlinkRun = makeHyperlinkRun(hyperlink, cursor, para);
+		cursor.pop();
 		para.addRun(hyperlinkRun);
 		
 	}
