@@ -288,6 +288,8 @@
     <xsl:if test="$src != ''">
       <!-- FIXME: Set style -->
       <wp:image src="{$imageUrl}">
+        <!-- HTML @width and @height should work as is as long as unit is not % -->
+        <xsl:sequence select="@width, @height"/>
 <!--          <xsl:apply-templates select="@*"/>-->
       </wp:image>        
     </xsl:if>

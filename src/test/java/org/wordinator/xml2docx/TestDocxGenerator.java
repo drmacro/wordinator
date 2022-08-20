@@ -122,12 +122,13 @@ public class TestDocxGenerator extends TestCase {
 	
   @Test
 	public void testMakeDocxWithSections() throws Exception {
+    
 		ClassLoader classLoader = getClass().getClassLoader();
 		File inFile = new File(classLoader.getResource("simplewp/simplewpml-test-02.swpx").getFile());
 		File templateFile = new File(classLoader.getResource(DOTX_TEMPLATE_PATH).getFile());
 		File outFile = new File("out/output-02.docx");
 		File outDir = outFile.getParentFile();
-		System.out.println("Input file: " + inFile.getAbsolutePath());
+		System.out.prin tln("Input file: " + inFile.getAbsolutePath());
 		System.out.println("Output file: " + outFile.getAbsolutePath());
 		if (!outDir.exists()) {
 			assertTrue("Failed to create directories for output file " + outFile.getAbsolutePath(), outFile.mkdirs());			
@@ -732,7 +733,7 @@ public class TestDocxGenerator extends TestCase {
             if (sectPr != null) {
               sectionCounter++;
             }
-            if (sectionCounter == 2) {
+            if (sectionCounter == 2 && sectPr != null) {
               // First section should be landscape pages
               XmlCursor cursor = sectPr.newCursor();
               if (cursor.toChild(DocxConstants.QNAME_PGSZ_ELEM)) {
