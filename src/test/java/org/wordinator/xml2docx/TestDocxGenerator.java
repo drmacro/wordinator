@@ -128,7 +128,7 @@ public class TestDocxGenerator extends TestCase {
 		File templateFile = new File(classLoader.getResource(DOTX_TEMPLATE_PATH).getFile());
 		File outFile = new File("out/output-02.docx");
 		File outDir = outFile.getParentFile();
-		System.out.prin tln("Input file: " + inFile.getAbsolutePath());
+		System.out.println("Input file: " + inFile.getAbsolutePath());
 		System.out.println("Output file: " + outFile.getAbsolutePath());
 		if (!outDir.exists()) {
 			assertTrue("Failed to create directories for output file " + outFile.getAbsolutePath(), outFile.mkdirs());			
