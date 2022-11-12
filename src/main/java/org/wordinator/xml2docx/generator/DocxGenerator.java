@@ -2227,9 +2227,11 @@ public class DocxGenerator {
     if (ctTblLayout == null) {
       ctTblLayout = ctTblPr.addNewTblLayout();
     }
-    ctTblLayout.setType(STTblLayoutType.FIXED);
-    if ("auto".equals(layoutValue)) {
-      ctTblLayout.setType(STTblLayoutType.AUTOFIT);
+    // #73: Make default layout be "autofit" to match behavior before
+    //      implementation of #49
+    ctTblLayout.setType(STTblLayoutType.AUTOFIT);
+    if (layoutValue != null && !"auto".equals(layoutValue)) {
+      ctTblLayout.setType(STTblLayoutType.FIXED);
     }
     
   }

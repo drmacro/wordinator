@@ -534,7 +534,7 @@ public class TestDocxGenerator extends TestCase {
       cursor.push();
       assertTrue("Expected a w:tblPr child", cursor.toChild(DocxConstants.QNAME_TBLPR_ELEM));
       assertTrue("Expected a w:tblLayout child", cursor.toChild(DocxConstants.QNAME_TBLLAYOUT_ELEM));
-      assertEquals("expected value 'fixed' for tblLayout", "fixed", cursor.getAttributeText(DocxConstants.QNAME_WTYPE_ATT));
+      assertEquals("expected value 'autofit' for tblLayout", "autofit", cursor.getAttributeText(DocxConstants.QNAME_WTYPE_ATT));
       cursor.pop();
       
       assertTrue("Expected a second table", iterator.hasNext());
