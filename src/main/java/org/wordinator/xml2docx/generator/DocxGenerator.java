@@ -25,6 +25,7 @@ import java.util.Map;
 import javax.imageio.ImageIO;
 import javax.xml.namespace.QName;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
@@ -1835,6 +1836,10 @@ public class DocxGenerator {
   private void makeImage(XWPFParagraph para, XmlCursor cursor) throws DocxGenerationException {
     cursor.push();
     
+    // FIXME: This is all a bit scripty because of the need to get both the image data and
+    //        MIME type. Not sure it's worth the effort to make it cleaner. Could define
+    //        an object to hold the image data and MIME type and file name.
+    
     String imageUrl = cursor.getAttributeText(DocxConstants.QNAME_SRC_ATT);
     if (null == imageUrl) {
       log.error("- [ERROR] No @src attribute for image.");
@@ -1849,28 +1854,40 @@ public class DocxGenerator {
       return;
     }
     String imageFilename = null;
-    String mimeType;
     InputStream inStream;
+    String mimeType = null;
     URL url;
     try {
       if (uri.isAbsolute()) {
-        url = uri.toURL();
-        URLConnection conn = null;
-        try {
-          conn = url.openConnection();
-        } catch (Exception e) {
-          log.error(e.getClass().getSimpleName() + " opening image URL: " + e.getMessage());
-          return;
+        if ("data".equals(uri.getScheme())) {
+          try {
+            inStream = getStreamForDataUrl(uri);
+            mimeType = getMimeTypeForDataUrl(uri);
+          } catch (Exception e) {
+            log.error(e.getClass().getSimpleName() + " decoding image data URL: " + e.getMessage());
+            return;
+          }
+        } else {
+          // Should be a normal URL
+          url = uri.toURL();
+          URLConnection conn = null;
+          try {
+            conn = url.openConnection();
+          } catch (Exception e) {
+            log.error(e.getClass().getSimpleName() + " opening image URL: " + e.getMessage());
+            return;
+          }
+          // If we need to get the MIME type from the server, this might do it:
+          // mimeType = conn.getContentEncoding();
+          try {
+            inStream = conn.getInputStream();
+          } catch (IOException e) {
+            log.error(e.getClass().getSimpleName() + " reading image URL: " + e.getMessage());
+            return;
+          }
+          File file = new File(url.getFile());
+          imageFilename = file.getName();
         }
-        mimeType = conn.getContentEncoding();
-        try {
-          inStream = conn.getInputStream();
-        } catch (IOException e) {
-          log.error(e.getClass().getSimpleName() + " reading image URL: " + e.getMessage());
-          return;
-        }
-        File file = new File(url.getFile());
-        imageFilename = file.getName();
       } else {
         // Must be relative file reference, read the file
         URL baseUrl = inFile.getParentFile().toURI().toURL();
@@ -1905,8 +1922,13 @@ public class DocxGenerator {
       imageFilename = "image_" + imageCounter;
     }
     
-    String imgExtension = FilenameUtils.getExtension(imageFilename).toLowerCase();
-    int format = getImageFormat(imgExtension);
+    String imgExtension = FilenameUtils.getExtension(imageFilename).toLowerCase();    
+    int format = 0;
+    if (null != imgExtension && !"".equals(imgExtension)) {
+      format = getImageFormat(imgExtension);
+    } else {
+      format = getImageFormatForMimeType(mimeType);
+    }
     int width = 200; // Default width in pixels
     int height = 200; // Default height in pixels
     
@@ -2003,6 +2025,59 @@ public class DocxGenerator {
     }
     imageCounter++;
     cursor.pop();
+  }
+
+  /**
+   * Get the Word image format code for the specified MIME type
+   * @param mimeType The MIME type to evaluate, i.e. "image/jpeg"
+   * @return The format code or zero if the MIME type is not recognized.
+   */
+  private int getImageFormatForMimeType(String mimeType) {
+    int format = 0;
+    String formatString = mimeType.split("/")[1];
+    format = getImageFormat(formatString);
+    return format;
+  }
+
+  /**
+   * Get the MIME type from a data URL.
+   * @param uri The URI that is a data URL
+   * @return The MIME type as a string, or null if there is no specified MIME type.
+   */
+  private String getMimeTypeForDataUrl(URI uri) {
+    String mimeType = null;
+    String url = uri.toString();
+    // Data URL is data:[{mimeType}][;base64],{data}
+    String[] tokens = url.substring(5).split(",");
+    String props = tokens[0];
+    if (props.contains(";")) {
+      mimeType = props.split(";")[0];
+    } else {
+      if (!"".equals(props)) {
+        mimeType = props;
+      }
+    }
+    return mimeType;
+  }
+
+  /**
+   * Get an input stream with the bytes from a data: URL
+   * @param uri The URI that is the data: URL
+   * @return Input Stream that provides access to the data bytes.
+   */
+  private InputStream getStreamForDataUrl(URI uri) throws Exception {
+     InputStream inStream = null;
+     String url = uri.toString();
+     // Data URL is data:[{mimeType}][;base64],{data}
+     String[] tokens = url.substring(5).split(",");
+     String data = tokens[1];
+     String props = tokens[0];
+     if (!props.matches(".*base64")) {
+       throw new Exception("data: URL does not specify \"base64\", cannot decode it. URL starts with: \"" + url.substring(0, 10));
+     }
+     byte[] bytes = Base64.decodeBase64(data);
+     inStream = new ByteArrayInputStream(bytes);
+     return inStream;
   }
 
   /**
