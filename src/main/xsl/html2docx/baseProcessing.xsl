@@ -276,9 +276,12 @@
     
     <xsl:variable name="base-uri" as="xs:string" select="string(base-uri(.))"/>
     
-    
+    <!-- resolve-uri() returns the input URI if it is absolute -->
     <xsl:variable name="imageUrl" as="xs:string"
-      select="relpath:newFile(relpath:getParent($base-uri), $src)"
+      select="
+      if ($src eq resolve-uri($src))
+      then $src
+      else relpath:newFile(relpath:getParent($base-uri), $src)"
     />
     <xsl:if test="$doDebug">
       <xsl:message>+ [DEBUG] img: base-uri="{$base-uri}"</xsl:message>      
