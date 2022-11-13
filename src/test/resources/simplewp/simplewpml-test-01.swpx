@@ -434,5 +434,10 @@
         </tr>
       </tbody>
     </table>  
+    <p style="Heading2"><run>More image tests</run></p>
+    <p><run>Reference to a JPEG image:</run></p>
+    <p><image src="images/picture-02.jpg" width="200px"/></p>
+    <p><run>Reference to an web image: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Google_2015_logo.svg/1200px-Google_2015_logo.svg.png":</run></p>
+    <p><image src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Google_2015_logo.svg/1200px-Google_2015_logo.svg.png" width="200px"/></p>    
   </body>
 </document>
