@@ -3,6 +3,8 @@ package org.wordinator.xml2docx;
 import java.io.File;
 import java.io.FileInputStream;
 import java.math.BigInteger;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -13,7 +15,6 @@ import org.apache.poi.xwpf.usermodel.XWPFAbstractNum;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFFooter;
 import org.apache.poi.xwpf.usermodel.XWPFHeader;
-import org.apache.poi.xwpf.usermodel.XWPFHyperlink;
 import org.apache.poi.xwpf.usermodel.XWPFHyperlinkRun;
 import org.apache.poi.xwpf.usermodel.XWPFNum;
 import org.apache.poi.xwpf.usermodel.XWPFNumbering;
@@ -757,5 +758,18 @@ public class TestDocxGenerator extends TestCase {
     }
 
   }
+  
+  public void testImageFromUrl() throws Exception {
+    String href = "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Google_2015_logo.svg/1200px-Google_2015_logo.svg.png";
+//    URL url = new URL(href);
+//    URLConnection conn = null;
+//    conn = url.openConnection();
+//    
+//    String mimeType = conn.getContentEncoding();
+    String mimeType = null;
+    System.out.println("mimeType=\"" + mimeType + "\"");    
+    assertNotNull(mimeType, "Expected a MIME type");
+  }
 
 }
+
