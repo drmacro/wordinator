@@ -118,8 +118,10 @@ public final class DocxConstants {
 	// Elements:
 	public static final QName QNAME_COLS_ELEM = new QName(SIMPLE_WP_NS, "cols");
 	public static final QName QNAME_COL_ELEM = new QName(SIMPLE_WP_NS, "col");
+  public static final QName QNAME_FIELDRESULTS_ELEM = new QName(SIMPLE_WP_NS, "fieldResults");
   public static final QName QNAME_FOOTNOTEREF_ELEM = new QName(OO_WPML_NS, "footnoteRef");
   public static final QName QNAME_FOOTNOTEREFEREMCE_ELEM = new QName(OO_WPML_NS, "footnoteReference");
+  public static final QName QNAME_INSTRUCTIONTEXT_ELEM = new QName(SIMPLE_WP_NS, "instructionText");
   public static final QName QNAME_P_ELEM = new QName(SIMPLE_WP_NS, "p");
   public static final QName QNAME_W_P_ELEM = new QName(OO_WPML_NS, "p");
   public static final QName QNAME_R_ELEM = new QName(OO_WPML_NS, "r");
@@ -135,8 +137,16 @@ public final class DocxConstants {
   public static final String PROPERTY_PAGEBREAK = "pagebreak";
   public static final QName QNAME_TCPR_ELEM = new QName(OO_WPML_NS, "tcPr");
   public static final QName QNAME_TCBORDERS_ELEM = new QName(OO_WPML_NS, "tcBorders");
+  public static final QName QNAME_PGSZ_ELEM = new QName(OO_WPML_NS, "pgSz");
   public static final QName QNAME_TOP_ELEM = new QName(OO_WPML_NS, "top");
   public static final QName QNAME_VAL_ATT = new QName(OO_WPML_NS, "val");
+  public static final QName QNAME_OOXML_LEFT_ATT = new QName(OO_WPML_NS, "left");
+  public static final QName QNAME_OOXML_RIGHT_ATT = new QName(OO_WPML_NS, "right");
+  public static final QName QNAME_OOXML_TOP_ATT = new QName(OO_WPML_NS, "top");
+  public static final QName QNAME_OOXML_BOTTOM_ATT = new QName(OO_WPML_NS, "bottom");
+  public static final QName QNAME_OOXML_ORIENT_ATT = new QName(OO_WPML_NS, "orient");
+  public static final QName QNAME_OOXML_H_ATT = new QName(OO_WPML_NS, "h");
+  public static final QName QNAME_OOXML_W_ATT = new QName(OO_WPML_NS, "w");
   public static final QName QNAME_LEFT_ELEM = new QName(OO_WPML_NS, "left");
   public static final QName QNAME_RIGHT_ELEM = new QName(OO_WPML_NS, "right");
   public static final QName QNAME_BOTTOM_ELEM = new QName(OO_WPML_NS, "bottom");
