@@ -1,3 +1,5 @@
+# Hidden files
+.*
 # Compiled class file
 *.class
 
@@ -25,7 +27,11 @@ hs_err_pid*
 .settings/org.eclipse.m2e.core.prefs
 .classpath
 .project
+build.number
 *.versionsBackup
 *.xpr
 sample-data/page-breaks
 log4j.properties
+target/
+out/
+dist/
