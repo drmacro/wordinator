@@ -26,6 +26,9 @@ If you need to go from Word documents back to XML, you may find the DITA for Pub
 
 ## Release Notes
 
+* 1.1.2
+  * Reworked release package to put dependency jars in lib/ dir and use non-all-dependencies jar to avoid issue with log4j multi-version jar not working right.
+
 * 1.1.1
 
   * Issue 72: Support web and data: URLs for images
