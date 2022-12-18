@@ -127,6 +127,7 @@ public final class DocxConstants {
   public static final QName QNAME_R_ELEM = new QName(OO_WPML_NS, "r");
   public static final QName QNAME_ROW_ELEM = new QName(SIMPLE_WP_NS, "row");
   public static final QName QNAME_T_ELEM = new QName(OO_WPML_NS, "t"); // w:t -- text element
+	public static final QName QNAME_TABLE_ELEM = new QName(SIMPLE_WP_NS, "table");
 	public static final QName QNAME_THEAD_ELEM = new QName(SIMPLE_WP_NS, "thead");
 	public static final QName QNAME_TBODY_ELEM = new QName(SIMPLE_WP_NS, "tbody");
 	public static final QName QNAME_TR_ELEM = new QName(SIMPLE_WP_NS, "tr");
@@ -151,6 +152,7 @@ public final class DocxConstants {
   public static final QName QNAME_RIGHT_ELEM = new QName(OO_WPML_NS, "right");
   public static final QName QNAME_BOTTOM_ELEM = new QName(OO_WPML_NS, "bottom");
   public static final QName QNAME_TBLPR_ELEM = new QName(OO_WPML_NS, "tblPr");
+  public static final QName QNAME_TBLBORDERS_ELEM = new QName(OO_WPML_NS, "tblBorders");
   public static final QName QNAME_TBLLAYOUT_ELEM = new QName(OO_WPML_NS, "tblLayout");
   public static final QName QNAME_WTYPE_ATT = new QName(OO_WPML_NS, "type");
   

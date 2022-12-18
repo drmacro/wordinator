@@ -475,13 +475,13 @@ public class DocxGenerator {
         String namespace = cursor.getName().getNamespaceURI();
         if ("p".equals(tagName)) {
           XWPFParagraph p = doc.createParagraph();
-          makeParagraph(p, cursor);
+          makeParagraph(doc, p, cursor);
           lastPara = p;
         } else if ("section".equals(tagName)) {
           handleSection(doc, cursor.getObject());
         } else if ("table".equals(tagName)) {
           XWPFTable table = doc.createTable();
-          makeTable(table, cursor.getObject());
+          makeTable(doc, table, cursor.getObject());
         } else if ("object".equals(tagName)) {
           // FIXME: This is currently unimplemented.
           makeObject(doc, cursor);
@@ -574,7 +574,7 @@ public class DocxGenerator {
     XWPFParagraph para = doc.createParagraph();
     cursor.push();
     if (cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "p"))) {
-      this.makeParagraph(para, cursor);
+      this.makeParagraph(doc, para, cursor);
     }
     cursor.pop();
     
@@ -950,19 +950,6 @@ public class DocxGenerator {
    * section must also create the appropriate header references.
    * @param doc Document to add headers and footers to.
    * @param xml headers-and-footers element
-   * @throws DocxGenerationException 
-   */
-  private void constructHeadersAndFooters(XWPFDocument doc, XmlObject xml) throws DocxGenerationException {
-    constructHeadersAndFooters(doc, xml, null);
-  }
-
-  /**
-   * Construct headers and footers on the document. If there are
-   * no sections, this also sets the headers and footers for the
-   * document (which acts as a single section), otherwise, each
-   * section must also create the appropriate header references.
-   * @param doc Document to add headers and footers to.
-   * @param xml headers-and-footers element
    * @param sectPr Section properties to add header and footer references to. May be null
    * @throws DocxGenerationException 
    */
@@ -1006,10 +993,10 @@ public class DocxGenerator {
           if (isDocument) {
             // Make document-level header
             XWPFHeader header = doc.createHeader(type);
-            makeHeaderFooter(header, cursor.getObject());
+            makeHeaderFooter(doc, header, cursor.getObject());
           } else {
             XWPFHeader header = sectionHfPolicy.createHeader(getSTHFTypeForXWPFHFType(type));
-            makeHeaderFooter(header, cursor.getObject());
+            makeHeaderFooter(doc, header, cursor.getObject());
             refs = sectPr.getHeaderReferenceList();
             CTHdrFtrRef ref = getHeadeFooterRefForType(sectPr, refs, type);
             ref.setId(doc.getRelationId(header.getPart()));
@@ -1035,10 +1022,10 @@ public class DocxGenerator {
           if (isDocument) {
             // Document-level footer
             XWPFFooter footer = doc.createFooter(type);
-            makeHeaderFooter(footer, cursor.getObject());
+            makeHeaderFooter(doc, footer, cursor.getObject());
           } else {
             XWPFFooter footer = sectionHfPolicy.createFooter(getSTHFTypeForXWPFHFType(type));
-            makeHeaderFooter(footer, cursor.getObject());
+            makeHeaderFooter(doc, footer, cursor.getObject());
             refs = sectPr.getFooterReferenceList();
             CTHdrFtrRef ref = getHeadeFooterRefForType(sectPr, refs, type);
             ref.setId(doc.getRelationId(footer.getPart()));
@@ -1154,11 +1141,12 @@ public class DocxGenerator {
 
   /**
    * Construct the content of a page header or footer
+ * @param doc 
    * @param headerFooter {@link XPWFHeader} or {@link XWPFFooter} to add content to
    * @param xml The &lt;header&gt; or &lt;footer&gt; element to process
    * @throws DocxGenerationException 
    */
-  private void makeHeaderFooter(XWPFHeaderFooter headerFooter, XmlObject xml) throws DocxGenerationException {
+  private void makeHeaderFooter(XWPFDocument doc, XWPFHeaderFooter headerFooter, XmlObject xml) throws DocxGenerationException {
     XmlCursor cursor = xml.newCursor();
     
     if (cursor.toFirstChild()) {
@@ -1167,10 +1155,10 @@ public class DocxGenerator {
         String namespace = cursor.getName().getNamespaceURI();
         if ("p".equals(tagName)) {
           XWPFParagraph p = headerFooter.createParagraph();
-          makeParagraph(p, cursor);
+          makeParagraph(doc, p, cursor);
         } else if ("table".equals(tagName)) {
           XWPFTable table = headerFooter.createTable(0, 0);
-          makeTable(table, cursor.getObject());
+          makeTable(doc, table, cursor.getObject());
         } else {
           // There are other body-level things that could go in a footnote but 
           // we aren't worrying about them for now.
@@ -1199,13 +1187,14 @@ public class DocxGenerator {
 
   /**
    * Construct a Word paragraph
+ * @param doc 
    * @param para The Word paragraph to construct
    * @param cursor Cursor pointing at the <p> element the paragraph will reflect.
    * @return Paragraph (should be same object as passed in).
    * @throws Exception 
    */
-  private XWPFParagraph makeParagraph(XWPFParagraph p, XmlCursor cursor) throws DocxGenerationException {
-    return makeParagraph(p, cursor, null);
+  private XWPFParagraph makeParagraph(XWPFDocument doc, XWPFParagraph p, XmlCursor cursor) throws DocxGenerationException {
+    return makeParagraph(doc, p, cursor, null);
   }
 
   /**
@@ -1217,6 +1206,7 @@ public class DocxGenerator {
    * @throws Exception 
    */
   private XWPFParagraph makeParagraph(
+	  XWPFDocument doc, 
       XWPFParagraph para, 
       XmlCursor cursor, 
       Map<String, String> additionalProperties) 
@@ -1306,7 +1296,7 @@ public class DocxGenerator {
         } else if ("complexField".equals(tagName)) {
           makeComplexField(para, cursor);
         } else if ("fn".equals(tagName)) {
-          makeFootnote(para, cursor.getObject());
+          makeFootnote(doc, para, cursor.getObject());
         } else if ("hyperlink".equals(tagName)) {
           makeHyperlink(para, cursor);
         } else if ("image".equals(tagName)) {
@@ -1532,11 +1522,12 @@ public class DocxGenerator {
 
   /**
    * Construct a footnote
+   * @param doc 
    * @param para the paragraph containing the footnote.
    * @param cursor Pointing at the &lt;fn> element
    * @throws DocxGenerationException 
    */
-  private void makeFootnote(XWPFParagraph para, XmlObject xml) throws DocxGenerationException {
+  private void makeFootnote(XWPFDocument doc, XWPFParagraph para, XmlObject xml) throws DocxGenerationException {
     
     XmlCursor cursor = xml.newCursor();
     
@@ -1559,10 +1550,10 @@ public class DocxGenerator {
         String namespace = cursor.getName().getNamespaceURI();
         if ("p".equals(tagName)) {
           XWPFParagraph p = note.createParagraph();
-          makeParagraph(p, cursor);
+          makeParagraph(doc, p, cursor);
         } else if ("table".equals(tagName)) {
           XWPFTable table = note.createTable();
-          makeTable(table, cursor.getObject());
+          makeTable(doc, table, cursor.getObject());
         } else {
           // There are other body-level things that could go in a footnote but 
           // we aren't worrying about them for now.
@@ -2165,11 +2156,24 @@ public class DocxGenerator {
 
   /**
    * Construct a table.
+   * @param doc 
    * @param table Table object to construct
    * @param xml The &lt;table&gt; element
    * @throws DocxGenerationException 
    */
-  private void makeTable(XWPFTable table, XmlObject xml) throws DocxGenerationException {
+  private void makeTable(XWPFDocument doc, XWPFTable table, XmlObject xml) throws DocxGenerationException {
+	  makeTable(doc, table, xml, false);
+  }
+
+  /**
+   * Construct a table.
+ * @param doc 
+   * @param table Table object to construct
+   * @param xml The &lt;table&gt; element
+ * @param isNested If true, table is a nested table
+   * @throws DocxGenerationException 
+   */
+  private void makeTable(XWPFDocument doc, XWPFTable table, XmlObject xml, boolean isNested) throws DocxGenerationException {
     
     // If the column widths are absolute measurements they can be set on the grid,
     // but if they are proportional, then they have to be set on at least the first
@@ -2282,7 +2286,7 @@ public class DocxGenerator {
         RowSpanManager rowSpanManager = new RowSpanManager();
         do {
           // Process the rows
-          XWPFTableRow row = makeTableRow(table, cursor.getObject(), colDefs, rowSpanManager, defaults);
+          XWPFTableRow row = makeTableRow(doc, table, cursor.getObject(), colDefs, rowSpanManager, defaults);
           row.setRepeatHeader(true);
         } while(cursor.toNextSibling());
       }
@@ -2291,18 +2295,25 @@ public class DocxGenerator {
     // Body rows:
     
     cursor = xml.newCursor();
+    // POI sometimes adds an initial first row. If so, remove it after we 
+    // add the rows we actually want.
+    // For some reason, the first row of a nested table gets deleted.
+    // This is a hack assuming the behavior is within POI.
+    boolean removeFirstRow = !isNested && table.getRows().size() > 0;
     if (cursor.toChild(DocxConstants.QNAME_TBODY_ELEM)) {
       if (cursor.toFirstChild()) {
         RowSpanManager rowSpanManager = new RowSpanManager();
         do {
           // Process the rows
-          XWPFTableRow row = makeTableRow(table, cursor.getObject(), colDefs, rowSpanManager, defaults);
+          XWPFTableRow row = makeTableRow(doc, table, cursor.getObject(), colDefs, rowSpanManager, defaults);
           // Adjust row as needed.
           row.getCtRow(); // For setting low-level properties.
         } while(cursor.toNextSibling());
       }
     }
-    table.removeRow(0); // Remove the first row that's always added automatically (FIXME: This may not be needed any more)
+    if (removeFirstRow) {
+    	table.removeRow(0); // 
+    }
   }
 
   private void setTableIndents(XWPFTable table, XmlCursor cursor) {
@@ -2654,6 +2665,7 @@ public class DocxGenerator {
 
   /**
    * Construct a table row
+   * @param doc XWPF document 
    * @param table The table to add the row to
    * @param xml The <row> element to add to the table
    * @param colDefs Column definitions
@@ -2663,6 +2675,7 @@ public class DocxGenerator {
    * @throws DocxGenerationException 
    */
   private XWPFTableRow makeTableRow(
+      XWPFDocument doc, 
       XWPFTable table, 
       XmlObject xml, 
       TableColumnDefinitions colDefs, 
@@ -2683,6 +2696,9 @@ public class DocxGenerator {
       // FIXME: At some point the POI API will remove the automatic creation
       // of the first cell in a row.
       XWPFTableCell cell = cellCtr == 0 ? row.getCell(0) : row.addNewTableCell();
+      if (null == cell) {
+    	  cell = row.addNewTableCell();
+      }
       
       CTTcPr ctTcPr = cell.getCTTc().addNewTcPr();
       String align = cursor.getAttributeText(DocxConstants.QNAME_ALIGN_ATT);
@@ -2776,7 +2792,7 @@ public class DocxGenerator {
           // set up the width correctly when Word lays out the table
           // regardless of what the nominal column width is. This is because
           // Word infers the table grid from the columns and cells automatically.
-          // However, it appears this doesn't always work as expected.          
+          // However, it appears this doesn't always work as expected.          1
           ctTcPr.setGridSpan(spanNumber);
         } catch (NumberFormatException e) {
           log.warn("Non-numeric value for @colspan: \"" + colspan + "\". Ignored.");
@@ -2819,26 +2835,44 @@ public class DocxGenerator {
           ctTcPr.setVMerge(CTVMerge.Factory.newInstance());
         }
       } else {
-        if (cursor.toChild(DocxConstants.QNAME_P_ELEM)) {
-          do {
-            XWPFParagraph p = cell.addParagraph();
-            makeParagraph(p, cursor);
-            if (null != align) {
-              if ("JUSTIFY".equalsIgnoreCase(align)) {
-                // Issue 18: "BOTH" is the better match to "JUSTIFY"
-                align = "BOTH"; // Slight mistmatch between markup and model
-              }
-              if ("CHAR".equalsIgnoreCase(align)) {
-                // I'm not sure this is the best mapping but it seemed close enough
-                align = "NUM_TAB"; // Slight mistmatch between markup and model
-              }
-              ParagraphAlignment alignment = ParagraphAlignment.valueOf(align.toUpperCase());
-              p.setAlignment(alignment);
-            }
-          } while(cursor.toNextSibling());
-          // Cells always have at least one paragraph.
-          cell.removeParagraph(0);
-        }
+	    if (cursor.toFirstChild()) {
+	        do {
+	          String tagName = cursor.getName().getLocalPart();
+	          String namespace = cursor.getName().getNamespaceURI();
+	          if ("p".equals(tagName)) {
+	              XWPFParagraph p = cell.addParagraph();
+	              makeParagraph(doc, p, cursor);
+	              if (null != align) {
+	                if ("JUSTIFY".equalsIgnoreCase(align)) {
+	                  // Issue 18: "BOTH" is the better match to "JUSTIFY"
+	                  align = "BOTH"; // Slight mistmatch between markup and model
+	                }
+	                if ("CHAR".equalsIgnoreCase(align)) {
+	                  // I'm not sure this is the best mapping but it seemed close enough
+	                  align = "NUM_TAB"; // Slight mistmatch between markup and model
+	                }
+	                ParagraphAlignment alignment = ParagraphAlignment.valueOf(align.toUpperCase());
+	                p.setAlignment(alignment);
+	              }
+	  	        // Cells always have at least one paragraph, so remove the 
+	  	        // the automatically added initial paragraph.
+	  	        cell.removeParagraph(0);
+	          } else if ("table".equals(tagName)) {
+	        	  XmlCursor cellCursor = cell.getParagraphArray(0).getCTP().newCursor();
+	        	  XWPFTable nestedTable =cell.insertNewTbl(cellCursor);
+	        	  // XWPFTable nestedTable = doc.createTable();
+	        	  boolean isNested = true;
+	        	  this.makeTable(doc, nestedTable, cursor.getObject(), isNested);
+	        	  // The insertTable() method works but the resulting DOCX does not put the table 
+	        	  // in the cell
+	        	  // cell.insertTable(0, nestedTable);
+	        	  // NOTE: Nested tables require a trailing paragraph to keep Word happy. I do not
+	        	  //       see this requirement in the OO XML specification.
+	          } else {
+	            log.warn("Unexpected element {" + namespace + "}:" + tagName + " in <p>. Ignored.");
+	          }
+	        } while(cursor.toNextSibling());
+	      }
       }
       cursor.pop();
       cellCtr += spanCount;

@@ -462,9 +462,9 @@ public class TestDocxGenerator extends TestCase {
   @Test
   public void testTableGeneration() throws Exception {
     ClassLoader classLoader = getClass().getClassLoader();
-    File inFile = new File(classLoader.getResource("simplewp/simplewpml-issue-30.swpx").getFile());
+    File inFile = new File(classLoader.getResource("simplewp/simplewpml-issue-30-table-border-color.swpx").getFile());
     File templateFile = new File(classLoader.getResource(DOTX_TEMPLATE_PATH).getFile());
-    File outFile = new File("out/output-issue-30.docx");
+    File outFile = new File("out/output-issue-30-table-border-color.docx");
     File outDir = outFile.getParentFile();
     System.out.println("Input file: " + inFile.getAbsolutePath());
     System.out.println("Output file: " + outFile.getAbsolutePath());
@@ -591,7 +591,65 @@ public class TestDocxGenerator extends TestCase {
       fail("Got unexpected " + e.getClass().getSimpleName() + ": " + e.getMessage());
     }
   }
-  
+
+  @Test
+  public void testNestedTableGeneration() throws Exception {
+    ClassLoader classLoader = getClass().getClassLoader();
+    File inFile = new File(classLoader.getResource("simplewp/simplewpml-issue-80-nested-tables.swpx").getFile());
+    File templateFile = new File(classLoader.getResource(DOTX_TEMPLATE_PATH).getFile());
+    File outFile = new File("out/output-issue-80-nested-tables.docx");
+    File outDir = outFile.getParentFile();
+    System.out.println("Input file: " + inFile.getAbsolutePath());
+    System.out.println("Output file: " + outFile.getAbsolutePath());
+    if (!outDir.exists()) {
+      assertTrue("Failed to create directories for output file " + outFile.getAbsolutePath(), outFile.mkdirs());      
+    }
+    if (outFile.exists()) {
+      assertTrue("Failed to delete output file " + outFile.getAbsolutePath(), outFile.delete());
+    }
+    
+    XWPFDocument templateDoc = new XWPFDocument(new FileInputStream(templateFile));
+    
+    DocxGenerator maker = new DocxGenerator(inFile, outFile, templateDoc);
+    try {
+      XmlObject xml = XmlObject.Factory.parse(inFile);
+
+      maker.generate(xml);
+      assertTrue("DOCX file does not exist", outFile.exists());
+      FileInputStream inStream = new FileInputStream(outFile);
+      XWPFDocument doc = new XWPFDocument(inStream);
+      assertNotNull(doc);
+      Iterator<XWPFTable> iterator = doc.getTablesIterator();
+      
+      XWPFTable table;
+      table = iterator.next();
+      assertNotNull("Did not find any tables", table);
+
+      /* Issue 80: Should be a table in the first cell of row 2 */
+      
+      XWPFTableRow row = table.getRow(1); // First row
+      XWPFTableCell cell = row.getCell(0); // First cell
+      XmlCursor cursor = cell.getCTTc().newCursor();
+      List<IBodyElement> bodyElems = cell.getBodyElements();
+      assertTrue("Expected bodyElems, found" + bodyElems.size(), bodyElems.size() > 0);
+      IBodyElement cand = bodyElems.get(0);
+      assertTrue("Expected a table, found " + cand.getClass().getSimpleName(), cand instanceof XWPFTable);
+      XWPFTable nestedTable = (XWPFTable)cand;
+      assertEquals("Expected 2 rows, found " + nestedTable.getRows().size(), 2, nestedTable.getRows().size());
+      // Look for expected border settings
+      cursor = nestedTable.getCTTbl().newCursor();
+      cursor.push();
+      assertTrue("Expected a w:tblPr child", cursor.toChild(DocxConstants.QNAME_TBLPR_ELEM));
+      assertTrue("Expected a w:tblBorders child", cursor.toChild(DocxConstants.QNAME_TBLBORDERS_ELEM));
+      assertTrue("Expected a w:top child of w:tblBorders", cursor.toChild(DocxConstants.QNAME_TOP_ELEM));      
+      cursor.pop();
+
+    } catch (Exception e) {
+      e.printStackTrace();
+      fail("Got unexpected " + e.getClass().getSimpleName() + ": " + e.getMessage());
+    }
+  }
+
   @Test  
   public void testPageMarginsDocLevel() throws Exception {
     ClassLoader classLoader = getClass().getClassLoader();

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/css" href="../../../main/doctypes/simplewpml/css/simplewpml.css"?>
+<?xml-model href="../../../main/doctypes/simplewpml/simplewpml.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<document xmlns="urn:ns:wordinator:simplewpml">
+  <page-sequence-properties>
+    <page-number-properties
+      format="custom"
+      xslt-format="1."
+      start="1"
+    />
+    <headers-and-footers>
+      <header>
+        <p><run>Odd Header Paragraph 1</run></p>
+        <p>
+          <run>Page </run>
+          <complexField>
+            <instructionText>PAGE</instructionText>
+            <fieldResults>
+              <run>0</run>
+            </fieldResults>
+          </complexField>
+          <run> of </run>
+          <complexField>
+            <instructionText> NUMPAGES </instructionText>
+            <fieldResults>
+              <run>0</run>
+            </fieldResults>
+          </complexField>          
+        </p>
+      </header>
+      <header type="even">
+        <p><run>Even Header Paragraph 1</run></p>
+      </header>
+      <footer>
+        <p>
+          <run>Odd Footer: </run>
+          <page-number-ref format="numberInDash"/>
+          <run> After page-number-ref</run>
+        </p>
+      </footer>
+      <footer type="even">
+        <p><run>Even Footer</run></p>
+      </footer>
+    </headers-and-footers>
+  </page-sequence-properties>
+  <body>
+    <p style="Heading1">
+      <run style="Strong">Issue 80: Nested tables</run>
+      <bookmarkStart id="bm1" name="bm1"/>
+    </p>
+    <p><run>Table with nested table in a cell:</run></p>
+    <table frame="all" colsep="1" rowsep="1">
+      <cols>
+        <col colwidth="50%"/>
+        <col colwidth="50%"/>
+      </cols>
+      <thead>
+        <tr>
+          <td><p><run>Nested Table</run></p></td>
+          <td><p><run>Normal cell</run></p></td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <table colsep="1" rowsep="1" frame="all">
+              <cols>
+                <col colwidth="50%"/>
+                <col colwidth="50%"/>
+              </cols>
+              <tbody>
+                <tr>
+                  <td shade="A0A0A0"><p><run>R1C1 nested table</run></p></td>
+                  <td><p><run>R1C2 nested table</run></p></td>
+                </tr>
+                <tr>
+                  <td shade="00FF99"><p><run>R2C1 nested table</run></p></td>
+                  <td><p><run>R2C2 nested table</run></p></td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+          <td><p><run>Normal cell</run></p></td>
+        </tr>
+      </tbody>
+    </table>
+  </body>
+</document>

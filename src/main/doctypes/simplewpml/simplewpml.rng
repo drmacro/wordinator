@@ -1260,7 +1260,10 @@
             <ref name="fn"/>
             <ref name="hyperlink"/>
             <ref name="p"/>
-            <ref name="object"/>          
+            <ref name="object"/>
+            <ref name="table">
+              <a:documentation>Since 1.1.2</a:documentation>
+            </ref>
           </choice>
         </zeroOrMore>
         <ref name="vspan"/>
