@@ -358,7 +358,7 @@ Maven dependency:
 <dependency>
   <groupId>org.wordinator</groupId>
   <artifactId>wordinator</artifactId>
-  <version>1.0.5</version>
+  <version>1.1.2</version>
 </dependency>
 ```
 
