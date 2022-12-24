@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/css" href="../../../main/doctypes/simplewpml/css/simplewpml.css"?>
+<?xml-model href="../../../main/doctypes/simplewpml/simplewpml.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<document xmlns="urn:ns:wordinator:simplewpml">
+  <page-sequence-properties>
+    <page-number-properties
+      format="custom"
+      xslt-format="1."
+      start="1"
+    />
+    <headers-and-footers>
+      <header>
+        <p><run>Odd Header Paragraph 1</run></p>
+        <p>
+          <run>Page </run>
+          <complexField>
+            <instructionText>PAGE</instructionText>
+            <fieldResults>
+              <run>0</run>
+            </fieldResults>
+          </complexField>
+          <run> of </run>
+          <complexField>
+            <instructionText> NUMPAGES </instructionText>
+            <fieldResults>
+              <run>0</run>
+            </fieldResults>
+          </complexField>          
+        </p>
+      </header>
+      <header type="even">
+        <p><run>Even Header Paragraph 1</run></p>
+      </header>
+      <footer>
+        <p>
+          <run>Odd Footer: </run>
+          <page-number-ref format="numberInDash"/>
+          <run> After page-number-ref</run>
+        </p>
+      </footer>
+      <footer type="even">
+        <p><run>Even Footer</run></p>
+      </footer>
+    </headers-and-footers>
+  </page-sequence-properties>
+  <body>
+    <p style="Title">
+      <run style="Strong">Issue 85: ToC Generation</run>
+      <bookmarkStart id="bm1" name="bm1"/>
+    </p>
+    <p style="TOCHeading">
+      <run>Contents</run>
+    </p>
+    <toc arg-d="-" arg-o="1-9"/>          
+    <p style="Heading1" page-break-before="true">
+      <run>Top-level Title 1</run>
+      <bookmarkStart id="h1_1" name="h1_1"/><bookmarkEnd id="h1_1"/>
+    </p>
+    <p style="Normal" styleId="Normal">
+      <run>Paragraph after top-level title.</run>
+      <run><break type="page"/></run>
+    </p>
+    <p style="Heading2">
+      <run>Second-level title 1</run>
+      <bookmarkStart id="h2_1" name="h2_1"/><bookmarkEnd id="h2_1"/>
+    </p>
+    <p style="Normal" styleId="Normal">
+      <run>Paragraph after second-level title 1.</run>
+    </p>
+    <p style="Heading2">
+      <run>Second-level title 2</run>
+      <bookmarkStart id="h2_2" name="h2_2"/><bookmarkEnd id="h2_2"/>
+    </p>
+    <p style="Normal" styleId="Normal">
+      <run>Paragraph after second-level title 2.</run>
+    </p>
+  </body>
+</document>

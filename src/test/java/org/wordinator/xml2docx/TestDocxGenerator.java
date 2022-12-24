@@ -758,7 +758,48 @@ public class TestDocxGenerator extends TestCase {
     }
 
   }
- 
+
+  @Test
+  public void testTocGeneration() throws Exception {
+    ClassLoader classLoader = getClass().getClassLoader();
+    File inFile = new File(classLoader.getResource("simplewp/simplewpml-issue-85-toc.swpx").getFile());
+    File templateFile = new File(classLoader.getResource(DOTX_TEMPLATE_PATH).getFile());
+    File outFile = new File("out/simplewpml-issue-85-toc.docx");
+    File outDir = outFile.getParentFile();
+    System.out.println("Input file: " + inFile.getAbsolutePath());
+    System.out.println("Output file: " + outFile.getAbsolutePath());
+    if (!outDir.exists()) {
+      assertTrue("Failed to create directories for output file " + outFile.getAbsolutePath(), outFile.mkdirs());      
+    }
+    if (outFile.exists()) {
+      assertTrue("Failed to delete output file " + outFile.getAbsolutePath(), outFile.delete());
+    }
+    
+    XWPFDocument templateDoc = new XWPFDocument(new FileInputStream(templateFile));
+    
+    DocxGenerator maker = new DocxGenerator(inFile, outFile, templateDoc);
+    // Generate the DOCX file:
+    
+    try {
+      XmlObject xml = XmlObject.Factory.parse(inFile);
+
+      maker.generate(xml);
+      assertTrue("DOCX file does not exist", outFile.exists());
+      FileInputStream inStream = new FileInputStream(outFile);
+      XWPFDocument doc = new XWPFDocument(inStream);
+      assertNotNull(doc);
+      Iterator<XWPFParagraph> iterator = doc.getParagraphsIterator();
+      XWPFParagraph p = iterator.next();
+      assertNotNull(p);
+      // Put remaining tests here.
+      
+    } catch (Exception e) {
+      e.printStackTrace();
+      fail("Got unexpected " + e.getClass().getSimpleName() + ": " + e.getMessage());
+    }
+    
+  }
+
   public void testImageFromUrl() throws Exception {
     String href = "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Google_2015_logo.svg/1200px-Google_2015_logo.svg.png";
 //    URL url = new URL(href);
