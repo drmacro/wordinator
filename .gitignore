@@ -29,3 +29,7 @@ hs_err_pid*
 *.xpr
 sample-data/page-breaks
 log4j.properties
+out/
+dist/
+target/
+build.number

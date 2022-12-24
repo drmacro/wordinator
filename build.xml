@@ -49,6 +49,18 @@
         <include name="LICENSE"/>
       </fileset>
     </copy>
+    <!-- Copy maven dependencies to output dir -->
+    <exec executable="mvn">
+      <arg line="dependency:copy-dependencies"/>
+      <arg line="-DoutputDirectory=${package.dir}/lib"/>
+    </exec>
+    <!-- Copy wordinator standalong jar to lib dir -->
+    <copy todir="${package.dir}/lib">
+      <fileset dir="${target.dir}">
+        <include name="wordinator-*.jar"/>
+        <exclude name="wordinator-*-*.jar"/>
+      </fileset>
+    </copy>
   </target>
   
   <target name="package-release" depends="dist" description="Create a release package">
