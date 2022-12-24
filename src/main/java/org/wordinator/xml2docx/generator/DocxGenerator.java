@@ -875,7 +875,7 @@ public class DocxGenerator {
       pageSize.setOrient(STPageOrientation.Enum.forString(orientValue));
     }
     String widthVal = cursor.getAttributeText(DocxConstants.QNAME_WIDTH_ATT);
-    if (null != widthVal) {
+    if (null != widthVal && !"".equals(widthVal.trim())) {
       try {
         long width = Measurement.toTwips(widthVal, getDotsPerInch());
         pageSize.setW(BigInteger.valueOf(width));
@@ -885,7 +885,7 @@ public class DocxGenerator {
     }
 
     String heightVal = cursor.getAttributeText(DocxConstants.QNAME_HEIGHT_ATT);
-    if (null != heightVal) {
+    if (null != heightVal && !"".equals(heightVal.trim())) {
       try {
         long height = Measurement.toTwips(heightVal, getDotsPerInch());
         pageSize.setH(BigInteger.valueOf(height));
@@ -1956,7 +1956,8 @@ public class DocxGenerator {
     boolean goodWidth = false;
     boolean goodHeight = false;
 
-    if (null != widthVal) {
+    // Issue 82: Handle empty width and height attributes (width="", height="")
+    if (null != widthVal && !"".equals(widthVal.trim())) {
       try {
         width = (int) Measurement.toPixels(widthVal, getDotsPerInch());
         goodWidth = true;
@@ -1969,7 +1970,7 @@ public class DocxGenerator {
       width = intrinsicWidth > 0 ? intrinsicWidth : width;      
     }
 
-    if (null != heightVal) {
+    if (null != heightVal && !"".equals(heightVal.trim())) {
       try {
         height = (int) Measurement.toPixels(heightVal, getDotsPerInch());
         goodHeight = true;
@@ -2179,7 +2180,7 @@ public class DocxGenerator {
     XmlCursor cursor = xml.newCursor();
     
     String widthValue = cursor.getAttributeText(DocxConstants.QNAME_WIDTH_ATT);
-    if (null != widthValue) {
+    if (null != widthValue && !"".equals(widthValue.trim())) {
         table.setWidth(getMeasurementValue(widthValue));
     }
     
@@ -2696,7 +2697,7 @@ public class DocxGenerator {
       
       try {
         String widthValue = cursor.getAttributeText(DocxConstants.QNAME_WIDTH_ATT);
-        if (null != widthValue) {
+        if (null != widthValue && !"".equals(widthValue.trim())) {
           cell.setWidth(TableColumnDefinition.interpretWidthSpecification(widthValue, getDotsPerInch()));
         } else {
           String width = null;
