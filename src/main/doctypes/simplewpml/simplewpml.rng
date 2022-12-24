@@ -825,7 +825,8 @@
   <define name="bookmarkStart">
     <element name="bookmarkStart" ns="urn:ns:wordinator:simplewpml">
       <a:documentation>
-        <p>Marks the start of a bookmark. Bookmarks may be atomic or may be start/end pairs.</p>
+        <p>Marks the start of a bookmark. Every bookmarkStart must be paired with a bookmarkEnd, even if there 
+          is no bookmark content.</p>
         <p>The @id value is used to pair the bookmark start with any bookmark end. Bookmark IDs must be unique
         across all bookmarks within the document.</p>
       </a:documentation>
@@ -1560,8 +1561,15 @@
       <a:documentation>
         <p>An entry in a table of contents. </p>
         <p>The toc entry level is determined by the hierarchy of tocentry elements.</p>
+        <p>The entry should contain a paragraph with just the text of the of the paragraph the 
+        ToC entry links to. The remaining ToC entry details are generated.</p>
         <p>If the paragraph is omitted the ToC entry will not have any text when opened in Word. Will need to
         update the field.</p>
+        <p>Note that for the purposes of having Word generate a ToC there is no point in generating the 
+        individual ToC entries unless they would be different from what Word would generate AND you
+        are careful to select "Only update page numbers" when having Word update the ToC. Otherwise,
+        the easiest thing to do is not have any entries, just an empty ToC field and let Word
+        populate it on open (when the "Update automatic links on open" Word setting is true).</p>
         <p>See 17.16.5.63 TC</p>
       </a:documentation>
       <optional>

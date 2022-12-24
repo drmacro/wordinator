@@ -585,7 +585,7 @@ public class DocxGenerator {
       makeParagraphStyle(doc, tocStyleId, tocStyleId);
     }
     para.setStyle(tocStyleId);
-
+    
     if (cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "tocentry"))) {
       cursor.push();
       do {
@@ -606,7 +606,11 @@ public class DocxGenerator {
    * @param para The paragraph that will contain the field.
    */
   private void makeTocStartField(XmlCursor cursor, XWPFParagraph para) {
-    para.createRun().getCTR().addNewFldChar().setFldCharType(STFldCharType.BEGIN);    
+    // Issue 85: Set w:dirty="true" on the field to trigger ToC update on open
+    //           when the Word Update automatic links on open setting is active.
+    CTFldChar field = para.createRun().getCTR().addNewFldChar();
+    field.setFldCharType(STFldCharType.BEGIN);
+    field.setDirty(STOnOff.TRUE);
     CTText ctText = para.createRun().getCTR().addNewInstrText();
     ctText.setSpace(Space.PRESERVE);
     String tocOptions = "";
