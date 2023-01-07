@@ -70,17 +70,34 @@
               </cols>
               <tbody>
                 <tr>
-                  <td shade="A0A0A0"><p><run>R1C1 nested table</run></p></td>
-                  <td><p><run>R1C2 nested table</run></p></td>
+                  <td rowsep="1" colsep="1" shade="A0A0A0"><p><run>R1C1 nested table</run></p></td>
+                  <td rowsep="1" colsep="1"><p><run>R1C2 nested table</run></p></td>
                 </tr>
                 <tr>
-                  <td shade="00FF99"><p><run>R2C1 nested table</run></p></td>
-                  <td><p><run>R2C2 nested table</run></p></td>
+                  <td rowsep="1" colsep="1" shade="00FF99"><p><run>R2C1 nested table</run></p></td>
+                  <td rowsep="1" colsep="1"><p><run>R2C2 nested table</run></p></td>
                 </tr>
               </tbody>
             </table>
           </td>
           <td><p><run>Normal cell</run></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <p><run>The same table as the nested one but as a top-level table.</run></p>
+    <table colsep="1" rowsep="1" frame="all">
+      <cols>
+        <col colwidth="50%"/>
+        <col colwidth="50%"/>
+      </cols>
+      <tbody>
+        <tr>
+          <td shade="A0A0A0" rowsep="1" colsep="1"><p><run>R1C1 nested table</run></p></td>
+          <td rowsep="1" colsep="1"><p><run>R1C2 nested table</run></p></td>
+        </tr>
+        <tr>
+          <td rowsep="1" colsep="1" shade="00FF99"><p><run>R2C1 nested table</run></p></td>
+          <td rowsep="1" colsep="1"><p><run>R2C2 nested table</run></p></td>
         </tr>
       </tbody>
     </table>
