@@ -543,7 +543,9 @@ public class DocxGenerator {
 
     if (cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "tocentry"))) {
       int tocLevel = 1;
-      handleTocEntry(doc, cursor, tocLevel);
+      do {
+    	  handleTocEntry(doc, cursor, tocLevel);
+      } while (cursor.toNextSibling());
     }
     cursor.pop();
     para = doc.createParagraph();
