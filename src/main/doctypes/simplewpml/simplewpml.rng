@@ -3,6 +3,7 @@
   xmlns="http://relaxng.org/ns/structure/1.0"
   xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"
   xmlns:wp="urn:ns:wordinator:simplewpml"
+  xmlns:sch="http://purl.oclc.org/dsdl/schematron"
   datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
   <a:documentation>
     <h1>Simple Word Processing Markup Language</h1>
@@ -827,14 +828,23 @@
       <a:documentation>
         <p>Marks the start of a bookmark. Every bookmarkStart must be paired with a bookmarkEnd, even if there 
           is no bookmark content.</p>
-        <p>The @id value is used to pair the bookmark start with any bookmark end. Bookmark IDs must be unique
+        <p>The @id value is used to pair the bookmark start with the bookmark end. Bookmark IDs must be unique
         across all bookmarks within the document.</p>
       </a:documentation>
       <zeroOrMore>
         <text/>
       </zeroOrMore>
       <ref name="id.att"/>
-      <ref name="name.att"/>
+      <optional>
+        <ref name="name.att">
+          <a:documentation>
+            <p>If @name is omitted, the @id value is used as the @name value.</p>
+          </a:documentation>
+        </ref>  
+      </optional>
+      <sch:pattern>
+        <!-- FIXME: Put a check for matching bookmarkEnd element -->
+      </sch:pattern>
     </element>
   </define>
     
@@ -1446,16 +1456,70 @@
   <define name="toc">
     <element name="toc" ns="urn:ns:wordinator:simplewpml">
       <a:documentation>
-        <p>Represents a table of contents field. Results in a Word table of contents field.</p>
+        <p>Represents a table of contents field. By default, results in a Word table of contents field.</p>
+        <p>Note that only Word can update the ToC with correct page numbers. Wordinator has no way of knowing
+        what the page number of a given bookmark reference might be. This means that even if you generate a ToC
+        field or ToC entries as individual field tuples, the page numbers will not be populated until Word updates
+        the fields, which has to be commanded by the Word user, either at document open time (if the Word "Update automatic
+        links at Open" General preference is enabled or by manually doing "Update field" on the ToC. The ToC fields
+        are generated with the "dirty" flag set to true so that they will trigger automatic update on open when 
+        the Word user has enabled the option. It is also possible to use a Word script to trigger the updating
+        following generation if you need to publish Word documents with all fields and references updated.</p>
+        <p>When using automatic ToC generation there is no point in also generating &lt;topicentry&gt; elements
+          because they will be replaced when the ToC field is updated. &lt;topicentry&gt; elements are only
+        needed for manual ToC construction where a ToC field is not generated.</p>
+        <p>If you need to construct a manual table of contents where the selection of entries and their specific
+        text cannot be generated automatically using Word's ToC generation field, you can set the @generation
+        attribute "manual" and then provide the set of &lt;topicentry&gt; elements that make up the ToC you want.
+        Each ToC entry will be a tuple of reference fields, one for the heading text, one for the page number, and
+        optionally, one for the paragraph number. See &lt;topicentry&gt; for details.</p>
+        <p>To get a ToC properly generated you must specify at least one option, usually @arg-o, which specifies
+        the depth of heading to include, i.e., <code>&lt;toc arg-o="1-4"&gt;</code> for a 4-level ToC.</p>
+        <p>If you need to include paragraphs with styles other than or instead of the built-in Heading* styles,
+          use the @arg-t attribute, where the value is a sequence of style name/level number pairs:
+          <pre>arg-t="Heading 1,1,Heading 2,2,Appendix 1,1,Appendix 2,2,Unnumbered Heading,1"</pre> 
+        </p>
         <p>See 17.16.5.68 TOC in ECMA-376-1:2016
           Office Open XML File Formats — Fundamentals
-          and Markup Language Reference</p>
+          and Markup Language Reference for details about the different field codes available for ToC fields.</p>
         <p>Supported options to the TOC field code are represented by "arg-*" attributes,
         where "*" is the option code (i.e., option \c is attribute @arg-c).</p>
+        <p></p>
       </a:documentation>
       <zeroOrMore>
         <ref name="tocentry"/>
       </zeroOrMore>
+      <optional>
+        <attribute name="generation" a:defaultValue="auto">
+          <a:documentation>
+            <p>Indicates whether the ToC generation is automatic (ToC field in Word) or
+            manual (individual paragraphs for each ToC entry).</p>
+            <p>When generation is "auto" the result is a ToC field. You may include &lt;tocentry&gt; elements if
+            you need to provide a pre-update view of the ToC but it is not necessary as Word will replace any
+            existing ToC entries when the field is updated.</p>
+            <p>When generation is "manual" you must provide &lt;tocentry&gt; elements for all the ToC entries
+            you want. Each entry will be generated as a paragraph with a tuple of reference fields for the
+            the paragraph number, paragraph text, and paragraph page number, as controlled by the @toc-entry-parts 
+            attribute.</p>
+          </a:documentation>
+          <choice>
+            <value>auto</value>
+            <value>manual</value>
+          </choice>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="toc-entry-parts" a:defaultValue="num-text-page">
+          <choice>
+            <value>num-text-page</value>
+            <value>text-page</value>
+            <value>num-page</value>
+            <value>num</value>
+            <value>page</value>
+            <value>text</value>
+          </choice>
+        </attribute>
+      </optional>
       <optional>
         <attribute name="arg-d">
           <a:documentation>
@@ -1580,7 +1644,7 @@
       </zeroOrMore>
       <attribute name="bookmarkRef">
         <a:documentation>
-          <p>Specifies the @id the bookmark that is the target of the ToC entry.</p>
+          <p>Specifies the @name (which defaults to the @id value if @name is not specified) of the bookmark that is the target of the ToC entry.</p>
         </a:documentation>
         <data type="Name"/>
       </attribute>
