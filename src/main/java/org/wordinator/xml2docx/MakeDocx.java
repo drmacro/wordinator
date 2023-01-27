@@ -162,7 +162,13 @@ public class MakeDocx
     	
     	File outDir = outFile; // Normal case: specify output directory
     	if (outFile.getName().endsWith(".docx")) {
-    		outDir = outFile.getParentFile();
+          // if outFile is just a filename .getParentFile() will return null
+          // need to resolve it to an absolute path to work around it
+          if (!outFile.isAbsolute()) {
+            outFile = new File(outFile.getAbsolutePath());
+          }
+          
+          outDir = outFile.getParentFile();
     	}
     	
     	if (!outDir.exists()) {
