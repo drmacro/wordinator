@@ -71,7 +71,7 @@ public class MakeDocx
 			
 	public static final String XSLT_PARAM_CHUNKLEVEL = "chunklevel";
 
-	public static void main( String[] args ) throws ParseException
+	public static void main( String[] args ) throws Exception
     {
 	    boolean GOOD_OPTIONS = false;
 	    Options options = null;
@@ -86,10 +86,7 @@ public class MakeDocx
     	  handleCommandLine(options, args, log);
     	} catch (ParseException e) {
     	  GOOD_OPTIONS = false;
-    	} catch (Exception e) {
-    	  log.error(e.getClass().getSimpleName() + ": " + e.getMessage());
-    	  System.exit(1);
-      }
+    	}
 
     	if (!GOOD_OPTIONS) {
         HelpFormatter formatter = new HelpFormatter();
