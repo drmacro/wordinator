@@ -71,7 +71,7 @@ public class MakeDocx
 			
 	public static final String XSLT_PARAM_CHUNKLEVEL = "chunklevel";
 
-	public static void main( String[] args ) throws ParseException
+	public static void main( String[] args ) throws Exception
     {
 	    boolean GOOD_OPTIONS = false;
 	    Options options = null;
@@ -86,11 +86,8 @@ public class MakeDocx
     	  handleCommandLine(options, args, log);
     	} catch (ParseException e) {
     	  GOOD_OPTIONS = false;
-    	} catch (Exception e) {
-    	  log.error(e.getClass().getSimpleName() + ": " + e.getMessage());
-    	  System.exit(1);
-      }
-
+        }
+        
     	if (!GOOD_OPTIONS) {
         HelpFormatter formatter = new HelpFormatter();
         formatter.printHelp( "wordinator", options, true );    	  
@@ -162,7 +159,13 @@ public class MakeDocx
     	
     	File outDir = outFile; // Normal case: specify output directory
     	if (outFile.getName().endsWith(".docx")) {
-    		outDir = outFile.getParentFile();
+          // if outFile is just a filename .getParentFile() will return null
+          // need to resolve it to an absolute path to work around it
+          if (!outFile.isAbsolute()) {
+            outFile = new File(outFile.getAbsolutePath());
+          }
+          
+          outDir = outFile.getParentFile();
     	}
     	
     	if (!outDir.exists()) {

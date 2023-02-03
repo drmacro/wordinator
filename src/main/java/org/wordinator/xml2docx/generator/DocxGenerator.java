@@ -109,6 +109,7 @@ import org.wordinator.xml2docx.xwpf.model.XWPFHeaderFooterPolicy;
  * Generates DOCX files from Simple Word Processing Markup Language XML.
  */
 public class DocxGenerator {
+  private static String NS_MATHML = "http://www.w3.org/1998/Math/MathML";
   
   int imageCounter = 0; // Used to keep track of count of images created.
   
@@ -1319,6 +1320,8 @@ public class DocxGenerator {
           makeObject(para, cursor);
         } else if ("page-number-ref".equals(tagName)) {
           makePageNumberRef(para, cursor);
+        } else if ("math".equals(tagName) && NS_MATHML.equals(namespace)) {
+          MathMLConverter.convertMath(para, cursor.getObject());
         } else {
           log.warn("Unexpected element {" + namespace + "}:" + tagName + " in <p>. Ignored.");
         }
@@ -1357,6 +1360,10 @@ public class DocxGenerator {
    */
   private XWPFRun makeRun(XWPFParagraph para, XmlObject xml) throws DocxGenerationException {
     XmlCursor cursor = xml.newCursor();
+    
+    // if this run contains mathml then any whitespace here should *not*
+    // go into the converted document
+    boolean containsMathML = containsMathML(cursor);
     
     // String tagname = cursor.getName().getLocalPart(); // For debugging
     
@@ -1400,7 +1407,11 @@ public class DocxGenerator {
     while (TokenType.END != cursor.currentTokenType()) {
       // TokenType tokenType = cursor.currentTokenType(); // For debugging
       if (cursor.isText()) {
-        run.setText(cursor.getTextValue());
+        // if this run contains mathml then any whitespace here should *not*
+        // go into the converted document
+        if (!containsMathML) {
+          run.setText(cursor.getTextValue());
+        }
         cursor.toNextToken();
       } else if (cursor.isAttr()) {
         // Ignore attributes in this context.
@@ -1414,6 +1425,13 @@ public class DocxGenerator {
           makeSymbol(run, cursor);
         } else if ("tab".equals(name)) {
           makeTab(run, cursor);
+        } else if ("math".equals(name) && NS_MATHML.equals(namespace)) {
+          MathMLConverter.convertMath(para, cursor.getObject());
+
+          // converter doesn't move cursor, so we have to do it here
+          cursor.toEndToken(); // now we're at </mml:math>
+          cursor.toNextToken();
+          cursor.toEndToken(); // now we're at </w:run>
         } else {
           log.error("makeRun(); Unexpected element {" + namespace + "}:" + name + ". Skipping.");
           cursor.toEndToken(); // Skip this element.
@@ -1436,6 +1454,27 @@ public class DocxGenerator {
     
     cursor.pop();
     return run;
+  }
+
+  /**
+   * True iff the parent element of wherever we are now contains MathML.
+   */
+  private boolean containsMathML(XmlCursor cursor) {
+    cursor.push();
+
+    try {
+      while (cursor.currentTokenType() != TokenType.END) {
+        if (cursor.currentTokenType() == TokenType.START &&
+            cursor.getName().getLocalPart().equals("math") &&
+            cursor.getName().getNamespaceURI().equals(NS_MATHML)) {
+          return true;
+        }
+        cursor.toNextToken();
+      }
+      return false;
+    } finally {
+      cursor.pop();
+    }
   }
   
   private void handleFormattingAttributes(XWPFRun run, XmlObject xml) {

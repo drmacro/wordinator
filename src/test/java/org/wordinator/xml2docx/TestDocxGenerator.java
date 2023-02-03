@@ -43,7 +43,7 @@ import junit.framework.TestCase;
 public class TestDocxGenerator extends TestCase {
 	
 	
-	private static final String DOTX_TEMPLATE_PATH = "docx/Test_Template.dotx";
+	public static final String DOTX_TEMPLATE_PATH = "docx/Test_Template.dotx";
 
 	@Test
 	public void testMakeDocx() throws Exception {

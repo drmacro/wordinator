@@ -11,7 +11,8 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
 	TestDocxGenerator.class,
 	TestMeasurement.class,
-	TestUseCatalogs.class
+        TestUseCatalogs.class,
+	TestMathML.class
 })
 
 public final class AllTests {

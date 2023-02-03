@@ -111,6 +111,7 @@ The Wordinator supports generation of documents with the following Word features
 * Bookmarks
 * Hyperlinks
 * Multiple sections with section-specific running heads and feet, page geomentry
+* Formulas (NOTE: using this [requires user action](mathml.md))
 
 ## Getting Started
 

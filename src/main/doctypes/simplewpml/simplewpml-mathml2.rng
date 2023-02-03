@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar xmlns="http://relaxng.org/ns/structure/1.0">
+  <include href="simplewpml-base.rng">
+    <define name="math">
+      <externalRef href="mathml/mathml2/mathml2.rng"/>
+    </define>
+  </include>
+</grammar>
