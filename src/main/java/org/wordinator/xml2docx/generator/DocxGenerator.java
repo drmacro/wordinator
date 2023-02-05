@@ -59,6 +59,8 @@ import org.apache.xmlbeans.XmlCursor.TokenType;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.impl.xb.xmlschema.SpaceAttribute.Space;
+import org.openxmlformats.schemas.officeDocument.x2006.sharedTypes.STOnOff1;
+import org.openxmlformats.schemas.officeDocument.x2006.sharedTypes.STVerticalAlignRun;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBody;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBookmark;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBorder;
@@ -95,13 +97,11 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.STFldCharType;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STHdrFtr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STMerge;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STNumberFormat;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.STOnOff;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STPageOrientation;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STSectionMark;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STShd;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STStyleType;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STTblLayoutType;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.STVerticalAlignRun;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.impl.STOnOffImpl;
 import org.wordinator.xml2docx.xwpf.model.XWPFHeaderFooterPolicy;
 
@@ -611,7 +611,7 @@ public class DocxGenerator {
     //           when the Word Update automatic links on open setting is active.
     CTFldChar field = para.createRun().getCTR().addNewFldChar();
     field.setFldCharType(STFldCharType.BEGIN);
-    field.setDirty(STOnOff.TRUE);
+    field.setDirty(STOnOff1.ON);
     CTText ctText = para.createRun().getCTR().addNewInstrText();
     ctText.setSpace(Space.PRESERVE);
     String tocOptions = "";
@@ -1000,7 +1000,7 @@ public class DocxGenerator {
               localSectPr = doc.getDocument().getBody().getSectPr();              
             }
             CTOnOff titlePg = (localSectPr.isSetTitlePg() ? localSectPr.getTitlePg() : localSectPr.addNewTitlePg());
-            titlePg.setVal(STOnOff.TRUE);
+            titlePg.setVal(STOnOff1.ON);
           }
           if (type == HeaderFooterType.DEFAULT) {
             haveOddHeader = true;
@@ -1035,7 +1035,7 @@ public class DocxGenerator {
               localSectPr = doc.getDocument().getBody().getSectPr();              
             }
             CTOnOff titlePg = (localSectPr.isSetTitlePg() ? localSectPr.getTitlePg() : localSectPr.addNewTitlePg());
-            titlePg.setVal(STOnOff.TRUE);
+            titlePg.setVal(STOnOff1.ON);
           }
           if (isDocument) {
             // Document-level footer
@@ -1514,8 +1514,8 @@ public class DocxGenerator {
               run.setItalic(value);
           } else if ("outline".equals(attName)) {
               CTOnOff onOff = CTOnOff.Factory.newInstance();
-              onOff.setVal(STOnOff.Enum.forString(attValue));
-              run.getCTR().getRPr().setOutline(onOff);
+              onOff.setVal(STOnOff1.Enum.forString(attValue));
+              run.getCTR().getRPr().setOutlineArray(new CTOnOff[] { onOff });
           } else if ("position".equals(attName)) {
             int val = Integer.parseInt(attValue);
               run.setTextPosition(val);
