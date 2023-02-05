@@ -376,7 +376,7 @@ public class DocxGenerator {
 
   }
 
-  public static final Logger log = LogManager.getLogger();
+  public static final Logger log = LogManager.getLogger(DocxGenerator.class);
 
   private File outFile;
   private int dotsPerInch = 72; /* DPI */
