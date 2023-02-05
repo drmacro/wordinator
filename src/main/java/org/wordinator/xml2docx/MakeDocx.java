@@ -86,7 +86,7 @@ public class MakeDocx
     	  handleCommandLine(options, args, log);
     	} catch (ParseException e) {
     	  GOOD_OPTIONS = false;
-        }
+      }
         
     	if (!GOOD_OPTIONS) {
         HelpFormatter formatter = new HelpFormatter();

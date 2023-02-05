@@ -6,7 +6,7 @@ Generate high-quality Microsoft Word DOCX files using a simplified XML format (s
 
 Simple Word Processing XML (SWPX) makes it relatively easy to transform structured content into DOCX (or other similar word processing formats).
 
-The Wordinator uses the Apache POI library [https://poi.apache.org/] to generate DOCX files from SWPX XML. It uses Saxon [http://saxonica.com/] for XSLT transformations when using the built-in XSLT support.
+The Wordinator uses [the Apache POI library](https://poi.apache.org/) to generate DOCX files from SWPX XML. It uses [Saxon](http://saxonica.com/) for XSLT transformations when using the built-in XSLT support.
 
 This approach provides a two-stage X-to-DOCX conversion process, where the first stage is a transform from whatever your input is into one or more SWPX documents and the second stage generates DOCX files from the SWPX files. You can think of the SWPX XML as a very abstract API to the DOCX format.
 
@@ -22,7 +22,7 @@ The main challenges are managing white space within text runs and mapping source
 
 You can use your own XSLT transform to generate SWPX files from any XML (or JSON source for that matter). You may find it easier to generate HTML and then use that as input to the Wordinator.
 
-If you need to go from Word documents back to XML, you may find the DITA for Publishers Word-to-DITA framework useful ([https://github.com/dita4publishers/org.dita4publishers.word2dita]). This packaged as a DITA Open Toolkit plugin but is really a general-purpose XML-to-DOCX framework. It does not depend on the DITA Open Toolkit in any way. While it is designed to generate DITA XML it can be adapted to produce any XML format, either directly or through a DITA-to-X transform applied
+If you need to go from Word documents back to XML, you may find [the DITA for Publishers Word-to-DITA framework](https://github.com/dita4publishers/org.dita4publishers.word2dita) useful. This packaged as a DITA Open Toolkit plugin but is really a general-purpose XML-to-DOCX framework. It does not depend on the DITA Open Toolkit in any way. While it is designed to generate DITA XML it can be adapted to produce any XML format, either directly or through a DITA-to-X transform applied
 
 ## Release Notes
 
@@ -110,7 +110,7 @@ The Wordinator supports generation of documents with the following Word features
 * Running heads and feet
 * Bookmarks
 * Hyperlinks
-* Multiple sections with section-specific running heads and feet, page geomentry
+* Multiple sections with section-specific running heads and feet, page geometry
 * Formulas (NOTE: using this [requires user action](mathml.md))
 
 ## Getting Started
@@ -341,7 +341,7 @@ To get to the style organizer:
 
 ## Support, New Feature Development, and Contributing
 
-The Wordinator project is supported primarily by paying clients who fund development of the features they need. Initial development was funded by Municode [http://municode.com].
+The Wordinator project is supported primarily by paying clients who fund development of the features they need. Initial development was funded by [Municode](http://municode.com).
 
 Please use this project's issue tracker to report bugs or request new features. 
 
