@@ -8,9 +8,8 @@ import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.xmlbeans.XmlObject;
 import org.junit.Test;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTP;
 import org.openxmlformats.schemas.officeDocument.x2006.math.CTOMath;
-import org.wordinator.xml2docx.generator.DocxConstants;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTP;
 import org.wordinator.xml2docx.generator.DocxGenerator;
 
 import junit.framework.TestCase;
