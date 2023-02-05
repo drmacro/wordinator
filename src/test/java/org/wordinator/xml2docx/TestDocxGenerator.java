@@ -3,8 +3,6 @@ package org.wordinator.xml2docx;
 import java.io.File;
 import java.io.FileInputStream;
 import java.math.BigInteger;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -714,13 +712,14 @@ public class TestDocxGenerator extends TestCase {
     XWPFDocument templateDoc = new XWPFDocument(new FileInputStream(templateFile));
     DocxGenerator maker = new DocxGenerator(inFile, outFile, templateDoc);
     
+    XWPFDocument doc = null;
     try {
       XmlObject xml = XmlObject.Factory.parse(inFile);
 
       maker.generate(xml);
       assertTrue("DOCX file does not exist", outFile.exists());
       FileInputStream inStream = new FileInputStream(outFile);
-      XWPFDocument doc = new XWPFDocument(inStream);
+      doc = new XWPFDocument(inStream);
       Iterator<IBodyElement> iter = doc.getBodyElementsIterator();
       XWPFParagraph p = null;
       int sectionCounter = 0;
@@ -755,6 +754,10 @@ public class TestDocxGenerator extends TestCase {
     } catch (Exception e) {
       e.printStackTrace();
       fail("Got unexpected " + e.getClass().getSimpleName() + ": " + e.getMessage());
+    } finally {
+      if (doc != null) {
+        doc.close();
+      }
     }
 
   }
@@ -801,15 +804,15 @@ public class TestDocxGenerator extends TestCase {
   }
 
   public void testImageFromUrl() throws Exception {
-    String href = "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Google_2015_logo.svg/1200px-Google_2015_logo.svg.png";
+//    String href = "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Google_2015_logo.svg/1200px-Google_2015_logo.svg.png";
 //    URL url = new URL(href);
 //    URLConnection conn = null;
 //    conn = url.openConnection();
 //    
 //    String mimeType = conn.getContentEncoding();
-    String mimeType = null;
-    System.out.println("mimeType=\"" + mimeType + "\"");    
-    assertNotNull(mimeType, "Expected a MIME type");
+//    String mimeType = null;
+//    System.out.println("mimeType=\"" + mimeType + "\"");    
+//    assertNotNull(mimeType, "Expected a MIME type");
   }
  
 
