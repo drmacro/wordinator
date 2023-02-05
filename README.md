@@ -1,6 +1,6 @@
 # The Wordinator
 
-Version 1.1.3
+Version 1.2.0
 
 Generate high-quality Microsoft Word DOCX files using a simplified XML format (simple word processing XML).
 
@@ -14,7 +14,7 @@ The Wordinator Java code can run an XSLT to generate the SWPX dynamically from a
 
 The Wordinator is designed for batch or on-demand generation of DOCX files.
 
-The Wordinator requires Java 8 or newer (because POI 4 requires it).
+The Wordinator requires Java 9 or newer (because POI 5 requires it).
 
 The Wordinator provides a generic HTML5-to-DOCX transform that can easily be adapted to your specific HTML or other XML format. 
 
@@ -22,12 +22,15 @@ The main challenges are managing white space within text runs and mapping source
 
 You can use your own XSLT transform to generate SWPX files from any XML (or JSON source for that matter). You may find it easier to generate HTML and then use that as input to the Wordinator.
 
-If you need to go from Word documents back to XML, you may find [the DITA for Publishers Word-to-DITA framework](https://github.com/dita4publishers/org.dita4publishers.word2dita) useful. This packaged as a DITA Open Toolkit plugin but is really a general-purpose XML-to-DOCX framework. It does not depend on the DITA Open Toolkit in any way. While it is designed to generate DITA XML it can be adapted to produce any XML format, either directly or through a DITA-to-X transform applied
+If you need to go from Word documents back to XML, you may find [the DITA for Publishers Word-to-DITA framework](https://github.com/dita4publishers/org.dita4publishers.word2dita) useful. This is packaged as a DITA Open Toolkit plugin but is really a general-purpose XML-to-DOCX framework. It does not depend on the DITA Open Toolkit in any way. While it is designed to generate DITA XML it can be adapted to produce any XML format, either directly or through a DITA-to-X transform applied
 
 ## Release Notes
 
-* 1.1.3
+* 1.2.0
 
+  * Upgrade to POI 5. Addresses security issues with POI4 and makes newer POI features available for future.
+  * Support generation of MathML equations in Word. Thanks to Lars Marius Garshol for contributing this enhancment. This adds the MathML 2 and 3 RNG grammars for use with the SWPX grammar. For validation, use the simplewpml-mathml3.rng or -mathml2.rng files as the top-level grammar. Requires that you get the MATHML2OOML.XSL from a Microsoft Office distribution if you want to use XSLT to convert MathML into OOXML.
+  * Various test case refinements
   * Issue 82: Handle specified-but-empty @height and @width attribute
 
 * 1.1.2
@@ -260,6 +263,26 @@ When all the values are percentages the resulting Word is generated with percent
 As a rule, it is best to use percentages for table column widths.
 
 If you have tables with a mix of percentage and absolute values for column widths and you have cells that span columns where the widths involved are mixed, Wordinator issues a warning message. The resulting table will likely not be correct.
+
+### Vertical (Row) Spans in Tables
+
+Wordinator supports vertical (row) spanning but requires that every cell in the vertical span be accounted for using `<vspan/>` markers in the `<td>` elements. 
+
+Thus, if a cell in row 1 specifies rowspan of 3, the next two rows must have `<td><vspan/></td>` elements in that column.
+
+Likewise, if the cells are also horizontally spanned, each placeholder cell must specify the same `colspan` value as the first cell that specifies `rowspan`.
+
+### Using MathML
+
+If your SimpleWPML document includes MathML markup (see the simplewpml-mathml3.rng grammar), then Wordinator will attempt to use the XSLT transform `MML2OMML.XSL` to transform the MathML into OOML markup before adding it to the DOCX.
+
+The `MML2OMML.xsl` transform is not open-source and so cannot be included in the release package. However, you should be able to find it in any Microsoft Office distribution, i.e.:
+
+```
+/Applications/Microsoft Office 2011/Microsoft Word.app/Contents/Resources/mathml2omml.xsl
+```
+
+To make the transform available to Wordinator, name it "MML2OMML.XSL" and put it in a directory on the Java class path.
 
 ### Customizing the HTML-to-SWPX Transforms
 
