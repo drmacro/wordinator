@@ -67,7 +67,7 @@ public class MakeDocx
 
   public static final String OPTION_CHAR_INPUTPATH = "i";
 
-  public static final Logger log = LogManager.getLogger(MakeDocx.class.getSimpleName());
+  private static final Logger log = LogManager.getLogger(MakeDocx.class);
 
 	public static final String XSLT_PARAM_CHUNKLEVEL = "chunklevel";
 
@@ -83,7 +83,7 @@ public class MakeDocx
 	    }
 
     	try {
-    	  handleCommandLine(options, args, log);
+    	  handleCommandLine(options, args);
     	} catch (ParseException e) {
     	  GOOD_OPTIONS = false;
       }
@@ -100,13 +100,11 @@ public class MakeDocx
 	 * to set additional XSLT parameters.
 	 * @param options Command-line options
 	 * @param args Command-line arguments
-	 * @param log Logger to log messages to.
 	 * @throws ParseException Thrown if there is problem parsing the input
 	 */
 	public static void handleCommandLine(
 			Options options,
-			String[] args,
-			Logger log) throws Exception {
+			String[] args) throws Exception {
     	CommandLineParser parser = new DefaultParser();
     	CommandLine cmd = parser.parse( options, args);
 
@@ -199,12 +197,12 @@ public class MakeDocx
     	try {
     		if (inFile.isDirectory()) {
     			// Assume directory contains *.swpx files
-    			handleDirectory(inFile, outDir, templateDoc, log);
+    			handleDirectory(inFile, outDir, templateDoc);
     		} else {
     			if (inFile.getName().endsWith(".swpx")) {
-	    			handleSingleSwpxDoc(inFile, outFile, templateDoc, log);
+	    			handleSingleSwpxDoc(inFile, outFile, templateDoc);
 	    		} else {
-	    			transformXml(inFile, outDir, templateDoc, transformFile, catalog, xsltParameters, log);
+	    			transformXml(inFile, outDir, templateDoc, transformFile, catalog, xsltParameters);
 	    		}
     		}
     	} catch (Exception e) {
@@ -227,7 +225,6 @@ public class MakeDocx
 	 * @param transformFile The file containing the XSLT transform for generating SWPX documents
 	 * @param catalog List of catalog files (as for Saxon -catalog option). Maybe null.
 	 * @param xsltParameters Map of parameter names to values to be passed to the XSLT transform.
-	 * @param log Log to write messages to.
 	 * @throws Exception Any kind of error
 	 */
 	public static void transformXml(
@@ -236,8 +233,7 @@ public class MakeDocx
 			XWPFDocument templateDoc,
 			File transformFile,
 			String catalog,
-			Map<String, String> xsltParameters,
-			Logger log) throws Exception {
+			Map<String, String> xsltParameters) throws Exception {
 		// Apply transform to book file to generate Simple WP XML documents
 
 		if (transformFile == null) {
@@ -249,7 +245,7 @@ public class MakeDocx
 		errorListener.setLogger(saxonLogger);
 
 		Processor processor = new Processor(false);
-		DocxGeneratingOutputUriResolver outputResolver = new DocxGeneratingOutputUriResolver(outDir, templateDoc, log);
+		DocxGeneratingOutputUriResolver outputResolver = new DocxGeneratingOutputUriResolver(outDir, templateDoc);
 		// Saxon 9.9+ version:
 		processor.setConfigurationProperty(Feature.OUTPUT_URI_RESOLVER, outputResolver);
     // processor.setConfigurationProperty(FeatureKeys.OUTPUT_URI_RESOLVER, outputResolver);
@@ -310,9 +306,8 @@ public class MakeDocx
 	 * @param inFile Single SWPX file
 	 * @param outFile If this is a directory, result filename is constructed from input filename.
 	 * @param templateDoc Template DOCX document used when constructing new document
-	 * @param log Log to put messages to.
 	 */
-	public static void handleSingleSwpxDoc(File inFile, File outFile, XWPFDocument templateDoc, Logger log) {
+	public static void handleSingleSwpxDoc(File inFile, File outFile, XWPFDocument templateDoc) {
 
 		File effectiveOutFile = outFile;
 		if (outFile.isDirectory()) {
@@ -346,14 +341,13 @@ public class MakeDocx
 	 * @param inDir Directory to look for *.swpx files in
 	 * @param outDir Directory to write *.docx files to
 	 * @param templateDoc Template DOCX document used when constructing new document
-	 * @param log Log to write messages to.
 	 */
-	public static void handleDirectory(File inDir, File outDir, XWPFDocument templateDoc, Logger log) {
+	public static void handleDirectory(File inDir, File outDir, XWPFDocument templateDoc) {
 
 		FilenameFilter filter = new SuffixFileFilter(".swpx");
 		File[] files = inDir.listFiles(filter);
 		for (File inFile : files) {
-			handleSingleSwpxDoc(inFile, outDir, templateDoc, log);
+			handleSingleSwpxDoc(inFile, outDir, templateDoc);
 		}
 
 	}

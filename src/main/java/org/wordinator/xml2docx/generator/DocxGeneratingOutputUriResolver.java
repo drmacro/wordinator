@@ -24,7 +24,7 @@ import net.sf.saxon.lib.OutputURIResolver;
  */
 public class DocxGeneratingOutputUriResolver implements OutputURIResolver {
 
-	public static Logger log = LogManager.getLogger();
+	private static Logger log = LogManager.getLogger(DocxGeneratingOutputUriResolver.class);
 
 	private File outDir;
 	private XmlSaxHandler saxHandler;
@@ -39,17 +39,14 @@ public class DocxGeneratingOutputUriResolver implements OutputURIResolver {
 	 *
 	 * @param outDir Directory to put new DOCX files into.
 	 * @param templateDoc The DOTX template to use in constructing new DOCX files.
-	 * @param log Log to write messages to
 	 */
-	public DocxGeneratingOutputUriResolver(File outDir, XWPFDocument templateDoc, Logger log) {
+	public DocxGeneratingOutputUriResolver(File outDir, XWPFDocument templateDoc) {
 		this.outDir = outDir;
 		this.templateDoc = templateDoc;
-		DocxGeneratingOutputUriResolver.log = log;
-
 	}
 
 	public OutputURIResolver newInstance() {
-		return new DocxGeneratingOutputUriResolver(outDir, templateDoc, log);
+		return new DocxGeneratingOutputUriResolver(outDir, templateDoc);
 	}
 
 	public Result resolve(String href, String base) throws TransformerException {
