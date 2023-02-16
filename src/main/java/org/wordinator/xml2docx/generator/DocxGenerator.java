@@ -2863,8 +2863,13 @@ public class DocxGenerator {
           ctTcPr.setVMerge(CTVMerge.Factory.newInstance());
         }
       } else {
-        if (cursor.toChild(DocxConstants.QNAME_P_ELEM)) {
-          do {
+        // Cells always have at least one paragraph.
+        cell.removeParagraph(0);
+
+        // convert the contents of the cell
+        boolean hasMore = cursor.toFirstChild();
+        while (hasMore) {
+          if (cursor.getName().equals(DocxConstants.QNAME_P_ELEM)) {
             XWPFParagraph p = cell.addParagraph();
             makeParagraph(p, cursor);
             if (null != align) {
@@ -2879,9 +2884,27 @@ public class DocxGenerator {
               ParagraphAlignment alignment = ParagraphAlignment.valueOf(align.toUpperCase());
               p.setAlignment(alignment);
             }
-          } while(cursor.toNextSibling());
-          // Cells always have at least one paragraph.
-          cell.removeParagraph(0);
+          } else if (cursor.getName().equals(DocxConstants.QNAME_TABLE_ELEM)) {
+            // record how many tables were in the cell previously
+            int preTables = cell.getCTTc().getTblList().size();
+
+            CTTbl ctTbl = cell.getCTTc().addNewTbl();
+            ctTbl = cell.getCTTc().addNewTbl();
+            CTTblPr tblPr = ctTbl.addNewTblPr();
+
+            XWPFTable nestedTable = new XWPFTable(ctTbl, cell);
+            makeTable(nestedTable, cursor.getObject());
+
+            // for some reason this inserts two tables, where the
+            // first one is empty. we need to remove that one.
+            // luckily, the number of tables we used to have equals
+            // the index of the first new table
+            cell.getCTTc().removeTbl(preTables);
+          } else {
+            log.warn("Table cell contains unknown element {} -- skipping", cursor.getName());
+          }
+
+          hasMore = cursor.toNextSibling();
         }
       }
       cursor.pop();

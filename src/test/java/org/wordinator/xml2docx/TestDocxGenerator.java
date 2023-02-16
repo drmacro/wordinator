@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.poi.xwpf.model.XWPFHeaderFooterPolicy;
+import org.apache.poi.xwpf.usermodel.BodyElementType;
 import org.apache.poi.xwpf.usermodel.IBodyElement;
 import org.apache.poi.xwpf.usermodel.IRunElement;
 import org.apache.poi.xwpf.usermodel.XWPFAbstractNum;
@@ -39,8 +40,8 @@ import org.wordinator.xml2docx.generator.DocxGenerator;
 import junit.framework.TestCase;
 
 public class TestDocxGenerator extends TestCase {
-	
-	
+
+
 	public static final String DOTX_TEMPLATE_PATH = "docx/Test_Template.dotx";
 
 	@Test
@@ -53,16 +54,16 @@ public class TestDocxGenerator extends TestCase {
 		System.out.println("Input file: " + inFile.getAbsolutePath());
 		System.out.println("Output file: " + outFile.getAbsolutePath());
 		if (!outDir.exists()) {
-			assertTrue("Failed to create directories for output file " + outFile.getAbsolutePath(), outFile.mkdirs());			
+			assertTrue("Failed to create directories for output file " + outFile.getAbsolutePath(), outFile.mkdirs());
 		}
 		if (outFile.exists()) {
 			assertTrue("Failed to delete output file " + outFile.getAbsolutePath(), outFile.delete());
 		}
-		
+
 		XWPFDocument templateDoc = new XWPFDocument(new FileInputStream(templateFile));
 		DocxGenerator maker = new DocxGenerator(inFile, outFile, templateDoc);
 		// Generate the DOCX file:
-		
+
 		try {
 			XmlObject xml = XmlObject.Factory.parse(inFile);
 
@@ -110,18 +111,18 @@ public class TestDocxGenerator extends TestCase {
           foundToc = true;
         }
 			}
-			
+
 			assertTrue("Did not find expected table of contents paragraphs", foundToc);
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail("Got unexpected " + e.getClass().getSimpleName() + ": " + e.getMessage());
 		}
-		
+
 	}
-	
+
   @Test
 	public void testMakeDocxWithSections() throws Exception {
-    
+
 		ClassLoader classLoader = getClass().getClassLoader();
 		File inFile = new File(classLoader.getResource("simplewp/simplewpml-test-02.swpx").getFile());
 		File templateFile = new File(classLoader.getResource(DOTX_TEMPLATE_PATH).getFile());
@@ -130,17 +131,17 @@ public class TestDocxGenerator extends TestCase {
 		System.out.println("Input file: " + inFile.getAbsolutePath());
 		System.out.println("Output file: " + outFile.getAbsolutePath());
 		if (!outDir.exists()) {
-			assertTrue("Failed to create directories for output file " + outFile.getAbsolutePath(), outFile.mkdirs());			
+			assertTrue("Failed to create directories for output file " + outFile.getAbsolutePath(), outFile.mkdirs());
 		}
 		if (outFile.exists()) {
 			assertTrue("Failed to delete output file " + outFile.getAbsolutePath(), outFile.delete());
 		}
-		
+
 		XWPFDocument templateDoc = new XWPFDocument(new FileInputStream(templateFile));
-		
+
 		DocxGenerator maker = new DocxGenerator(inFile, outFile, templateDoc);
 		// Generate the DOCX file:
-		
+
 		try {
 			XmlObject xml = XmlObject.Factory.parse(inFile);
 
@@ -154,7 +155,7 @@ public class TestDocxGenerator extends TestCase {
 			assertNotNull("Expected a paragraph", p);
 			assertEquals("Document With Sections", p.getText());
 			System.out.println("Paragraph text='" + p.getText() + "'");
-			
+
 			boolean found = false;
 			for (XWPFParagraph para : doc.getParagraphs()) {
 				String text = para.getParagraphText();
@@ -165,12 +166,12 @@ public class TestDocxGenerator extends TestCase {
 				}
 			}
 			assertTrue("Did not find expected start of first section", found);
-			
+
 			CTSectPr docSectPr = doc.getDocument().getBody().getSectPr();
 			assertNotNull("Expected to find a docSectPr element", docSectPr);
-			assertEquals("Expected 3 headers", 3, docSectPr.getHeaderReferenceList().size());			
+			assertEquals("Expected 3 headers", 3, docSectPr.getHeaderReferenceList().size());
       assertEquals("Expected 3 footers", 3, docSectPr.getFooterReferenceList().size());
-      
+
       // Document-level headers and footers:
       XWPFHeaderFooterPolicy hfPolicy = doc.getHeaderFooterPolicy();
 
@@ -195,9 +196,9 @@ public class TestDocxGenerator extends TestCase {
       footer = hfPolicy.getFirstPageFooter();
       bodyElems = header.getBodyElements();
       assertEquals("Expected 1 paragraph", 1, bodyElems.size());
-      
+
       // Section headers and footers:
-      
+
       boolean foundHeadersOrFooters = false;
       Iterator<IBodyElement> iter = doc.getBodyElementsIterator();
       do {
@@ -207,13 +208,13 @@ public class TestDocxGenerator extends TestCase {
           if (p.getCTP().isSetPPr()) {
             CTSectPr sectPr = p.getCTP().getPPr().getSectPr();
             if (sectPr != null) {
-              assertTrue("Expected no more than 3 headers for paragraph, found " + sectPr.getHeaderReferenceList().size(), 
+              assertTrue("Expected no more than 3 headers for paragraph, found " + sectPr.getHeaderReferenceList().size(),
                   sectPr.getHeaderReferenceList().size() <= 3);
-              assertTrue("Expected no more than 3 footers for paragraph, found " + sectPr.getFooterReferenceList().size(), 
+              assertTrue("Expected no more than 3 footers for paragraph, found " + sectPr.getFooterReferenceList().size(),
                   sectPr.getFooterReferenceList().size() <= 3);
-              foundHeadersOrFooters = foundHeadersOrFooters || 
-                  sectPr.getHeaderReferenceList().size() > 0  || 
-                  sectPr.getFooterReferenceList().size() > 0; 
+              foundHeadersOrFooters = foundHeadersOrFooters ||
+                  sectPr.getHeaderReferenceList().size() > 0  ||
+                  sectPr.getFooterReferenceList().size() > 0;
             }
           }
         }
@@ -224,7 +225,7 @@ public class TestDocxGenerator extends TestCase {
 			e.printStackTrace();
 			fail("Got unexpected " + e.getClass().getSimpleName() + ": " + e.getMessage());
 		}
-		
+
 	}
 
   @Test
@@ -237,17 +238,17 @@ public class TestDocxGenerator extends TestCase {
     System.out.println("Input file: " + inFile.getAbsolutePath());
     System.out.println("Output file: " + outFile.getAbsolutePath());
     if (!outDir.exists()) {
-      assertTrue("Failed to create directories for output file " + outFile.getAbsolutePath(), outFile.mkdirs());      
+      assertTrue("Failed to create directories for output file " + outFile.getAbsolutePath(), outFile.mkdirs());
     }
     if (outFile.exists()) {
       assertTrue("Failed to delete output file " + outFile.getAbsolutePath(), outFile.delete());
     }
-    
+
     XWPFDocument templateDoc = new XWPFDocument(new FileInputStream(templateFile));
-    
+
     DocxGenerator maker = new DocxGenerator(inFile, outFile, templateDoc);
     // Generate the DOCX file:
-    
+
     try {
       XmlObject xml = XmlObject.Factory.parse(inFile);
 
@@ -267,17 +268,17 @@ public class TestDocxGenerator extends TestCase {
       XWPFAbstractNum abstractNumber;
       abstractNumber = numbering.getAbstractNum(BigInteger.valueOf(9));
       assertNotNull("No abstract number '9'", abstractNumber);
-      
+
       XWPFNum num;
       num = numbering.getNum(BigInteger.valueOf(9));
       assertNotNull("No num '9'", num);
-      
-      
+
+
     } catch (Exception e) {
       e.printStackTrace();
       fail("Got unexpected " + e.getClass().getSimpleName() + ": " + e.getMessage());
     }
-    
+
   }
 
   @Test
@@ -290,17 +291,17 @@ public class TestDocxGenerator extends TestCase {
     System.out.println("Input file: " + inFile.getAbsolutePath());
     System.out.println("Output file: " + outFile.getAbsolutePath());
     if (!outDir.exists()) {
-      assertTrue("Failed to create directories for output file " + outFile.getAbsolutePath(), outFile.mkdirs());      
+      assertTrue("Failed to create directories for output file " + outFile.getAbsolutePath(), outFile.mkdirs());
     }
     if (outFile.exists()) {
       assertTrue("Failed to delete output file " + outFile.getAbsolutePath(), outFile.delete());
     }
-    
+
     XWPFDocument templateDoc = new XWPFDocument(new FileInputStream(templateFile));
-    
+
     DocxGenerator maker = new DocxGenerator(inFile, outFile, templateDoc);
     // Generate the DOCX file:
-    
+
     try {
       XmlObject xml = XmlObject.Factory.parse(inFile);
       maker.generate(xml);
@@ -350,7 +351,7 @@ public class TestDocxGenerator extends TestCase {
       e.printStackTrace();
       fail("Got unexpected " + e.getClass().getSimpleName() + ": " + e.getMessage());
     }
-    
+
   }
 
   @Test
@@ -363,17 +364,17 @@ public class TestDocxGenerator extends TestCase {
     System.out.println("Input file: " + inFile.getAbsolutePath());
     System.out.println("Output file: " + outFile.getAbsolutePath());
     if (!outDir.exists()) {
-      assertTrue("Failed to create directories for output file " + outFile.getAbsolutePath(), outFile.mkdirs());      
+      assertTrue("Failed to create directories for output file " + outFile.getAbsolutePath(), outFile.mkdirs());
     }
     if (outFile.exists()) {
       assertTrue("Failed to delete output file " + outFile.getAbsolutePath(), outFile.delete());
     }
-    
+
     XWPFDocument templateDoc = new XWPFDocument(new FileInputStream(templateFile));
-    
+
     DocxGenerator maker = new DocxGenerator(inFile, outFile, templateDoc);
     // Generate the DOCX file:
-    
+
     try {
       XmlObject xml = XmlObject.Factory.parse(inFile);
 
@@ -397,12 +398,12 @@ public class TestDocxGenerator extends TestCase {
       p = iterator.next();
       fnText = p.getFootnoteText();
       assertEquals(" [3: FN-2This is a custom footnote. It specifies a literal callout of \"FN-2\" and a reference callout of \"Ref-2\".] ", p.getFootnoteText());
-      
+
     } catch (Exception e) {
       e.printStackTrace();
       fail("Got unexpected " + e.getClass().getSimpleName() + ": " + e.getMessage());
     }
-    
+
   }
 
   @Test
@@ -415,17 +416,17 @@ public class TestDocxGenerator extends TestCase {
     System.out.println("Input file: " + inFile.getAbsolutePath());
     System.out.println("Output file: " + outFile.getAbsolutePath());
     if (!outDir.exists()) {
-      assertTrue("Failed to create directories for output file " + outFile.getAbsolutePath(), outFile.mkdirs());      
+      assertTrue("Failed to create directories for output file " + outFile.getAbsolutePath(), outFile.mkdirs());
     }
     if (outFile.exists()) {
       assertTrue("Failed to delete output file " + outFile.getAbsolutePath(), outFile.delete());
     }
-    
+
     XWPFDocument templateDoc = new XWPFDocument(new FileInputStream(templateFile));
-    
+
     DocxGenerator maker = new DocxGenerator(inFile, outFile, templateDoc);
     // Generate the DOCX file:
-    
+
     try {
       XmlObject xml = XmlObject.Factory.parse(inFile);
 
@@ -449,12 +450,12 @@ public class TestDocxGenerator extends TestCase {
       assertTrue("Expected fun following the hyperlink", runIterator.hasNext());
       run = runIterator.next(); // Should be the hyperlink
       assertEquals("Run after the hyperlink.", ((XWPFRun)run).getText(0));
-      
+
     } catch (Exception e) {
       e.printStackTrace();
       fail("Got unexpected " + e.getClass().getSimpleName() + ": " + e.getMessage());
     }
-    
+
   }
 
   @Test
@@ -467,14 +468,14 @@ public class TestDocxGenerator extends TestCase {
     System.out.println("Input file: " + inFile.getAbsolutePath());
     System.out.println("Output file: " + outFile.getAbsolutePath());
     if (!outDir.exists()) {
-      assertTrue("Failed to create directories for output file " + outFile.getAbsolutePath(), outFile.mkdirs());      
+      assertTrue("Failed to create directories for output file " + outFile.getAbsolutePath(), outFile.mkdirs());
     }
     if (outFile.exists()) {
       assertTrue("Failed to delete output file " + outFile.getAbsolutePath(), outFile.delete());
     }
-    
+
     XWPFDocument templateDoc = new XWPFDocument(new FileInputStream(templateFile));
-    
+
     DocxGenerator maker = new DocxGenerator(inFile, outFile, templateDoc);
     try {
       XmlObject xml = XmlObject.Factory.parse(inFile);
@@ -485,13 +486,13 @@ public class TestDocxGenerator extends TestCase {
       XWPFDocument doc = new XWPFDocument(inStream);
       assertNotNull(doc);
       Iterator<XWPFTable> iterator = doc.getTablesIterator();
-      
+
       XWPFTable table;
       table = iterator.next();
       assertNotNull("Did not find any tables", table);
 
       // Look for table details here.
-      
+
       // System.out.println("Table rows:");
       /*
         <w:tc>
@@ -527,7 +528,7 @@ public class TestDocxGenerator extends TestCase {
            assertNull("Did not expect a color attribute", cursor.getAttributeText(DocxConstants.QNAME_COLOR_ATT));
         }
       }
-      
+
       // Issue 49: Should have fixed table layout
       XmlCursor cursor = table.getCTTbl().newCursor();
       cursor.push();
@@ -535,7 +536,7 @@ public class TestDocxGenerator extends TestCase {
       assertTrue("Expected a w:tblLayout child", cursor.toChild(DocxConstants.QNAME_TBLLAYOUT_ELEM));
       assertEquals("expected value 'autofit' for tblLayout", "autofit", cursor.getAttributeText(DocxConstants.QNAME_WTYPE_ATT));
       cursor.pop();
-      
+
       assertTrue("Expected a second table", iterator.hasNext());
       table = iterator.next();
 
@@ -589,8 +590,8 @@ public class TestDocxGenerator extends TestCase {
       fail("Got unexpected " + e.getClass().getSimpleName() + ": " + e.getMessage());
     }
   }
-  
-  @Test  
+
+  @Test
   public void testPageMarginsDocLevel() throws Exception {
     ClassLoader classLoader = getClass().getClassLoader();
     File inFile = new File(classLoader.getResource("simplewp/simplewpml-issue-46-01.swpx").getFile());
@@ -600,16 +601,16 @@ public class TestDocxGenerator extends TestCase {
     System.out.println("Input file: " + inFile.getAbsolutePath());
     System.out.println("Output file: " + outFile.getAbsolutePath());
     if (!outDir.exists()) {
-      assertTrue("Failed to create directories for output file " + outFile.getAbsolutePath(), outFile.mkdirs());      
+      assertTrue("Failed to create directories for output file " + outFile.getAbsolutePath(), outFile.mkdirs());
     }
     if (outFile.exists()) {
       assertTrue("Failed to delete output file " + outFile.getAbsolutePath(), outFile.delete());
     }
-    
+
     XWPFDocument templateDoc = new XWPFDocument(new FileInputStream(templateFile));
     DocxGenerator maker = new DocxGenerator(inFile, outFile, templateDoc);
     // Generate the DOCX file:
-    
+
     try {
       XmlObject xml = XmlObject.Factory.parse(inFile);
 
@@ -641,7 +642,7 @@ public class TestDocxGenerator extends TestCase {
 
   }
 
-  @Test  
+  @Test
   public void testPageMarginsSectionLevel() throws Exception {
     ClassLoader classLoader = getClass().getClassLoader();
     File inFile = new File(classLoader.getResource("simplewp/simplewpml-issue-46-02.swpx").getFile());
@@ -651,16 +652,16 @@ public class TestDocxGenerator extends TestCase {
     System.out.println("Input file: " + inFile.getAbsolutePath());
     System.out.println("Output file: " + outFile.getAbsolutePath());
     if (!outDir.exists()) {
-      assertTrue("Failed to create directories for output file " + outFile.getAbsolutePath(), outFile.mkdirs());      
+      assertTrue("Failed to create directories for output file " + outFile.getAbsolutePath(), outFile.mkdirs());
     }
     if (outFile.exists()) {
       assertTrue("Failed to delete output file " + outFile.getAbsolutePath(), outFile.delete());
     }
-    
+
     XWPFDocument templateDoc = new XWPFDocument(new FileInputStream(templateFile));
     DocxGenerator maker = new DocxGenerator(inFile, outFile, templateDoc);
     // Generate the DOCX file:
-    
+
     try {
       XmlObject xml = XmlObject.Factory.parse(inFile);
 
@@ -692,7 +693,7 @@ public class TestDocxGenerator extends TestCase {
 
   }
 
-  @Test  
+  @Test
   public void testPageLayout() throws Exception {
     ClassLoader classLoader = getClass().getClassLoader();
     // Using the issue-46-02.swpx because it happens to have a section with landscape pages.
@@ -703,15 +704,15 @@ public class TestDocxGenerator extends TestCase {
     System.out.println("Input file: " + inFile.getAbsolutePath());
     System.out.println("Output file: " + outFile.getAbsolutePath());
     if (!outDir.exists()) {
-      assertTrue("Failed to create directories for output file " + outFile.getAbsolutePath(), outFile.mkdirs());      
+      assertTrue("Failed to create directories for output file " + outFile.getAbsolutePath(), outFile.mkdirs());
     }
     if (outFile.exists()) {
       assertTrue("Failed to delete output file " + outFile.getAbsolutePath(), outFile.delete());
     }
-    
+
     XWPFDocument templateDoc = new XWPFDocument(new FileInputStream(templateFile));
     DocxGenerator maker = new DocxGenerator(inFile, outFile, templateDoc);
-    
+
     XWPFDocument doc = null;
     try {
       XmlObject xml = XmlObject.Factory.parse(inFile);
@@ -746,7 +747,7 @@ public class TestDocxGenerator extends TestCase {
               }
             }
           }
-          
+
         }
       } while(iter.hasNext());
       assertTrue("Did not find expected section-level page layout", foundPageLayout);
@@ -772,17 +773,17 @@ public class TestDocxGenerator extends TestCase {
     System.out.println("Input file: " + inFile.getAbsolutePath());
     System.out.println("Output file: " + outFile.getAbsolutePath());
     if (!outDir.exists()) {
-      assertTrue("Failed to create directories for output file " + outFile.getAbsolutePath(), outFile.mkdirs());      
+      assertTrue("Failed to create directories for output file " + outFile.getAbsolutePath(), outFile.mkdirs());
     }
     if (outFile.exists()) {
       assertTrue("Failed to delete output file " + outFile.getAbsolutePath(), outFile.delete());
     }
-    
+
     XWPFDocument templateDoc = new XWPFDocument(new FileInputStream(templateFile));
-    
+
     DocxGenerator maker = new DocxGenerator(inFile, outFile, templateDoc);
     // Generate the DOCX file:
-    
+
     try {
       XmlObject xml = XmlObject.Factory.parse(inFile);
 
@@ -795,12 +796,12 @@ public class TestDocxGenerator extends TestCase {
       XWPFParagraph p = iterator.next();
       assertNotNull(p);
       // Put remaining tests here.
-      
+
     } catch (Exception e) {
       e.printStackTrace();
       fail("Got unexpected " + e.getClass().getSimpleName() + ": " + e.getMessage());
     }
-    
+
   }
 
   public void testImageFromUrl() throws Exception {
@@ -808,13 +809,72 @@ public class TestDocxGenerator extends TestCase {
 //    URL url = new URL(href);
 //    URLConnection conn = null;
 //    conn = url.openConnection();
-//    
+//
 //    String mimeType = conn.getContentEncoding();
 //    String mimeType = null;
-//    System.out.println("mimeType=\"" + mimeType + "\"");    
+//    System.out.println("mimeType=\"" + mimeType + "\"");
 //    assertNotNull(mimeType, "Expected a MIME type");
   }
- 
+
+  @Test
+  public void testNestedTable() throws Exception {
+    XWPFDocument doc = convert("simplewp/simplewpml-table-nested-01.swpx", "out/table-nested-01.docx");
+
+    // first para of text
+    List<IBodyElement> contents = doc.getBodyElements();
+    assertEquals(2, contents.size());
+
+    Iterator<IBodyElement> it = contents.iterator();
+    IBodyElement elem = it.next();
+    assertEquals(BodyElementType.PARAGRAPH, elem.getElementType());
+
+    XWPFParagraph p = (XWPFParagraph) elem;
+    assertEquals("Nested table, just to show it works.", p.getText());
+
+    elem = it.next();
+    assertEquals(BodyElementType.TABLE, elem.getElementType());
+
+    XWPFTable t = (XWPFTable) elem;
+    assertEquals(4, t.getNumberOfRows());
+
+    XWPFTableRow row = t.getRow(1);
+    assertEquals(3, row.getTableCells().size());
+
+    XWPFTableCell cell = row.getCell(0);
+    contents = cell.getBodyElements();
+    assertEquals(1, contents.size());
+
+    it = contents.iterator();
+    elem = it.next();
+    assertEquals(BodyElementType.TABLE, elem.getElementType());
+    t = (XWPFTable) elem;
+    assertEquals(2, t.getNumberOfRows());
+  }
+
+  private XWPFDocument convert(String infile, String outfile) throws Exception {
+    ClassLoader classLoader = getClass().getClassLoader();
+    File inFile = new File(classLoader.getResource(infile).getFile());
+
+    File outFile = new File(outfile);
+    File outDir = outFile.getParentFile();
+    if (!outDir.exists()) {
+      assertTrue("Failed to create directories for output file " + outFile.getAbsolutePath(), outFile.mkdirs());
+    }
+    if (outFile.exists()) {
+      assertTrue("Failed to delete output file " + outFile.getAbsolutePath(), outFile.delete());
+    }
+
+
+    File templateFile = new File(classLoader.getResource(TestDocxGenerator.DOTX_TEMPLATE_PATH).getFile());
+    XWPFDocument templateDoc = new XWPFDocument(new FileInputStream(templateFile));
+    DocxGenerator maker = new DocxGenerator(inFile, outFile, templateDoc);
+    XmlObject xml = XmlObject.Factory.parse(inFile);
+    maker.generate(xml); // FIXME: why do we need to pass inFile one more time?
+
+    FileInputStream inStream = new FileInputStream(outFile);
+    XWPFDocument doc = new XWPFDocument(inStream);
+    assertNotNull(doc);
+    return doc;
+  }
 
 }
-
