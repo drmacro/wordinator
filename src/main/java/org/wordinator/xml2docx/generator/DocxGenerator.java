@@ -1430,10 +1430,17 @@ public class DocxGenerator {
 
           // converter doesn't move cursor, so we have to do it here
           cursor.toEndToken(); // now we're at </mml:math>
-          cursor.toNextToken();
-          cursor.toEndToken(); // now we're at </w:run>
+          // when we end, we should be on the last token before </wp:run>, but
+          // there could be whitespace in between
+          XmlCursor.TokenType tt = null;
+          while (tt != XmlCursor.TokenType.END) {
+            tt = cursor.toNextToken();
+          }
+          // now we are at </wp:run>, but we need to go one step back
+          cursor.toPrevToken();
         } else {
           log.error("makeRun(); Unexpected element {" + namespace + "}:" + name + ". Skipping.");
+          log.debug("  Element contents: " + cursor.getTextValue());
           cursor.toEndToken(); // Skip this element.
         }
         cursor.toNextToken();
