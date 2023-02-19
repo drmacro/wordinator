@@ -842,7 +842,7 @@ public class TestDocxGenerator extends TestCase {
 
     XWPFTableCell cell = row.getCell(0);
     contents = cell.getBodyElements();
-    assertEquals(1, contents.size());
+    assertEquals(2, contents.size());
 
     it = contents.iterator();
     elem = it.next();

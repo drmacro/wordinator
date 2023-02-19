@@ -2875,8 +2875,13 @@ public class DocxGenerator {
 
         // convert the contents of the cell
         boolean hasMore = cursor.toFirstChild();
+        // If we insert a table, need to add a trailing
+        // empty paragraph if there is no other paragraph
+        // in the cell.
+        boolean addTrailingPara = false;
         while (hasMore) {
           if (cursor.getName().equals(DocxConstants.QNAME_P_ELEM)) {
+            addTrailingPara = false;
             XWPFParagraph p = cell.addParagraph();
             makeParagraph(p, cursor);
             if (null != align) {
@@ -2893,25 +2898,23 @@ public class DocxGenerator {
             }
           } else if (cursor.getName().equals(DocxConstants.QNAME_TABLE_ELEM)) {
             // record how many tables were in the cell previously
-            int preTables = cell.getCTTc().getTblList().size();
+            addTrailingPara = true;
 
             CTTbl ctTbl = cell.getCTTc().addNewTbl();
-            ctTbl = cell.getCTTc().addNewTbl();
-            CTTblPr tblPr = ctTbl.addNewTblPr();
 
             XWPFTable nestedTable = new XWPFTable(ctTbl, cell);
             makeTable(nestedTable, cursor.getObject());
 
-            // for some reason this inserts two tables, where the
-            // first one is empty. we need to remove that one.
-            // luckily, the number of tables we used to have equals
-            // the index of the first new table
-            cell.getCTTc().removeTbl(preTables);
           } else {
             log.warn("Table cell contains unknown element {} -- skipping", cursor.getName());
           }
 
           hasMore = cursor.toNextSibling();
+        }
+        // Add a trailing paragraph if we've added a table. It doesn't
+        // seem to matter if there is a paragraph before the table.
+        if (addTrailingPara) {
+          cell.addParagraph();
         }
       }
       cursor.pop();
