@@ -37,30 +37,40 @@ public class TestMathML extends TestCase {
     // stylesheet is not part of the Wordinator
   }
 
+  @Test
+  public void testEndingStep() throws Exception {
+    XWPFDocument doc = convert("simplewp/simplewpml-mathml-02.xml", "out/testMathML.docx");
+
+    // first para of text
+    Iterator<XWPFParagraph> iterator = doc.getParagraphsIterator();
+    XWPFParagraph p = iterator.next();
+    assertNotNull("Expected a paragraph", p);
+    assertEquals("And it is possible for inline equations  to be in the middle of paragraphs.", p.getText());
+  }
+
   private XWPFDocument convert(String infile, String outfile) throws Exception {
     ClassLoader classLoader = getClass().getClassLoader();
     File inFile = new File(classLoader.getResource(infile).getFile());
-    
+
     File outFile = new File(outfile);
     File outDir = outFile.getParentFile();
     if (!outDir.exists()) {
-      assertTrue("Failed to create directories for output file " + outFile.getAbsolutePath(), outFile.mkdirs());			
+      assertTrue("Failed to create directories for output file " + outFile.getAbsolutePath(), outFile.mkdirs());
     }
     if (outFile.exists()) {
       assertTrue("Failed to delete output file " + outFile.getAbsolutePath(), outFile.delete());
     }
-    
-		
+
+
     File templateFile = new File(classLoader.getResource(TestDocxGenerator.DOTX_TEMPLATE_PATH).getFile());
     XWPFDocument templateDoc = new XWPFDocument(new FileInputStream(templateFile));
     DocxGenerator maker = new DocxGenerator(inFile, outFile, templateDoc);
     XmlObject xml = XmlObject.Factory.parse(inFile);
     maker.generate(xml); // FIXME: why do we need to pass inFile one more time?
-    
+
     FileInputStream inStream = new FileInputStream(outFile);
     XWPFDocument doc = new XWPFDocument(inStream);
     assertNotNull(doc);
     return doc;
   }
 }
-
