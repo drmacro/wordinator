@@ -1052,6 +1052,8 @@
     <element name="table" ns="urn:ns:wordinator:simplewpml">
       <a:documentation>
         <p>Represents tabular data, i.e., rows and columns.</p>
+        <p><b>NOTE:</b> Row spanning requires that all cells in the vertically-spanned columns be
+          present in the markup. See td element for details.</p>
       </a:documentation>
       <optional>
         <ref name="cols"/>
@@ -1250,8 +1252,8 @@
       <a:documentation>
         <p>A cell within a table row. Cells can consist of just runs and run content or multiple paragraphs or objects.</p>
         <p>NOTE: For vertical spans, all the cells spanned must be present in the row and must have the same @colspan value.
-          The first cell in the vertical span specifies @rowspan with a value greater than 1. The subsequent cells may be
-          empty or may include the &lt;vspan&gt; marker.
+          The first cell in the vertical span specifies @rowspan with a value greater than 1. The subsequent cells
+          must include the &lt;vspan&gt; marker.
         </p>
       </a:documentation>
       <choice>
