@@ -44,15 +44,15 @@ import net.sf.saxon.trans.XmlCatalogResolver;
 
 /**
  * Command-line application to generate DOCX files from
- * 	
+ *
  * <p>You can use this directly as the main file run from the command line
  * or as a helper class to build your own command-line handler or integrated
  * DOCX generator.
  *
  */
-public class MakeDocx 
+public class MakeDocx
 {
-	
+
 	private static final String APACHE_RESOLVER_CLASS = "org.apache.xml.resolver.CatalogManager";
 
   public static final String OPTION_CHAR_CHUNKLEVEL = "c";
@@ -68,7 +68,7 @@ public class MakeDocx
   public static final String OPTION_CHAR_INPUTPATH = "i";
 
   public static final Logger log = LogManager.getLogger(MakeDocx.class.getSimpleName());
-			
+
 	public static final String XSLT_PARAM_CHUNKLEVEL = "chunklevel";
 
 	public static void main( String[] args ) throws Exception
@@ -79,18 +79,18 @@ public class MakeDocx
 	      options = buildOptions();
 	      GOOD_OPTIONS = true;
 	    } catch (Exception e) {
-	      // 
+	      //
 	    }
-    	
+
     	try {
     	  handleCommandLine(options, args, log);
     	} catch (ParseException e) {
     	  GOOD_OPTIONS = false;
       }
-        
+
     	if (!GOOD_OPTIONS) {
         HelpFormatter formatter = new HelpFormatter();
-        formatter.printHelp( "wordinator", options, true );    	  
+        formatter.printHelp( "wordinator", options, true );
     	}
     }
 
@@ -109,7 +109,7 @@ public class MakeDocx
 			Logger log) throws Exception {
     	CommandLineParser parser = new DefaultParser();
     	CommandLine cmd = parser.parse( options, args);
-    	
+
     	Map<String, String> xsltParameters = new HashMap<String, String>();
 		  String inDocPath = cmd.getOptionValue(OPTION_CHAR_INPUTPATH).trim();
     	String docxPath = cmd.getOptionValue(OPTION_CHAR_OUTPUTPATH).trim();
@@ -126,37 +126,37 @@ public class MakeDocx
     	if (chunkLevel != null) {
     	  chunkLevel = chunkLevel.trim();
     	}
-    	
+
     	chunkLevel = chunkLevel == null ? "root" : chunkLevel;
-    	
+
     	log.info("Input document or directory='" + inDocPath + "'");
     	log.info("Output directory           ='" + docxPath + "'");
     	log.info("DOTX template              ='" + templatePath + "'");
     	log.info("XSLT template              =" + (transformPath == null ? "Not specified" : "'" + transformPath + "'"));
       log.info("Catalog                    =" + (catalog == null ? "Not specified" : "'" + catalog + "'"));
     	log.info("Chunk level                ='" + chunkLevel + "'");
-    	
+
     	// Check that the input file exists.
     	// For now, always overwriting the DOCX file without confirmation.
-    	
+
     	File inFile = new File(inDocPath);
     	if (!inFile.exists()) {
-    		throw new RuntimeException("Input file '" + inFile.getAbsolutePath() + "' not found. Cannot continue."); 
+    		throw new RuntimeException("Input file '" + inFile.getAbsolutePath() + "' not found. Cannot continue.");
     	}
     	File templateFile = new File(templatePath);
     	if (!templateFile.exists()) {
-    	  throw new RuntimeException("Template file '" + templateFile.getAbsolutePath() + "' not found. Cannot continue."); 
+    	  throw new RuntimeException("Template file '" + templateFile.getAbsolutePath() + "' not found. Cannot continue.");
     	}
-    	
+
 		XWPFDocument templateDoc = null;
 		try {
 			templateDoc = new XWPFDocument(new FileInputStream(templateFile));
 		} catch (Exception e) {
 		  throw new RuntimeException(e.getClass().getSimpleName() +  " loading template DOCX file \"" + templateFile.getAbsolutePath() + "\"");
 		}
-    	
+
     	File outFile = new File(docxPath);
-    	
+
     	File outDir = outFile; // Normal case: specify output directory
     	if (outFile.getName().endsWith(".docx")) {
           // if outFile is just a filename .getParentFile() will return null
@@ -164,10 +164,10 @@ public class MakeDocx
           if (!outFile.isAbsolute()) {
             outFile = new File(outFile.getAbsolutePath());
           }
-          
+
           outDir = outFile.getParentFile();
     	}
-    	
+
     	if (!outDir.exists()) {
     		log.info("Making output directory '" + outDir.getAbsolutePath() + "'...");
     		if (!outDir.mkdirs()) {
@@ -179,7 +179,7 @@ public class MakeDocx
     		  throw new RuntimeException("Failed to create output directory '" + outDir.getAbsolutePath() + "'. Cannot continue");
     		}
     	}
-    	
+
     	File transformFile = null;
     	if (null != transformPath) {
     		transformFile = new File(transformPath);
@@ -189,18 +189,18 @@ public class MakeDocx
             } catch (IOException e) {
               // Don't care about this should it ever happen.
             }
-        	  throw new RuntimeException("XSLT transform file '" + transformFile.getAbsolutePath() + "' not found. Cannot continue."); 
+        	  throw new RuntimeException("XSLT transform file '" + transformFile.getAbsolutePath() + "' not found. Cannot continue.");
         	}
         	if (!xsltParameters.containsKey(XSLT_PARAM_CHUNKLEVEL)) {
         		xsltParameters.put(XSLT_PARAM_CHUNKLEVEL, chunkLevel);
         	}
     	}
-    	
+
     	try {
     		if (inFile.isDirectory()) {
-    			// Assume directory contains *.swpx files 
+    			// Assume directory contains *.swpx files
     			handleDirectory(inFile, outDir, templateDoc, log);
-    		} else { 
+    		} else {
     			if (inFile.getName().endsWith(".swpx")) {
 	    			handleSingleSwpxDoc(inFile, outFile, templateDoc, log);
 	    		} else {
@@ -216,7 +216,7 @@ public class MakeDocx
 				// Don't care about this should it ever happen.
 			}
 		}
-    	
+
 	}
 
 	/**
@@ -231,29 +231,29 @@ public class MakeDocx
 	 * @throws Exception Any kind of error
 	 */
 	public static void transformXml(
-			File docFile, 
-			File outDir, 
-			XWPFDocument templateDoc, 
-			File transformFile, 
-			String catalog, 
-			Map<String, String> xsltParameters, 
+			File docFile,
+			File outDir,
+			XWPFDocument templateDoc,
+			File transformFile,
+			String catalog,
+			Map<String, String> xsltParameters,
 			Logger log) throws Exception {
 		// Apply transform to book file to generate Simple WP XML documents
-		
+
 		if (transformFile == null) {
 			throw new RuntimeException("-x (transform) parameter not specified. If the input is a _Book.xml file, you must specify the -x parameter");
 		}
-		
+
 		StandardErrorListener errorListener = new StandardErrorListener();
 		net.sf.saxon.lib.Logger saxonLogger = new Log4jSaxonLogger(log);
-		errorListener.setLogger(saxonLogger);		
-		
+		errorListener.setLogger(saxonLogger);
+
 		Processor processor = new Processor(false);
 		DocxGeneratingOutputUriResolver outputResolver = new DocxGeneratingOutputUriResolver(outDir, templateDoc, log);
 		// Saxon 9.9+ version:
 		processor.setConfigurationProperty(Feature.OUTPUT_URI_RESOLVER, outputResolver);
     // processor.setConfigurationProperty(FeatureKeys.OUTPUT_URI_RESOLVER, outputResolver);
-		
+
     if (catalog != null) {
       // Adapted from Saxon CommandLineOptions.java:
       try {
@@ -266,22 +266,22 @@ public class MakeDocx
           throw new XPathException("Failed to load Apache catalog resolver library", err);
       }
     }
-    
 
-		
-		
-		// FIXME: Set up proper logger. See 
+
+
+
+		// FIXME: Set up proper logger. See
 		// https://www.saxonica.com/html/documentation/using-xsl/embedding/s9api-transformation.html
 		XsltCompiler compiler = processor.newXsltCompiler();
-		
+
 		InputStream inStream = new FileInputStream(transformFile);
-		Source xformSource = new StreamSource(inStream); 
+		Source xformSource = new StreamSource(inStream);
 		xformSource.setSystemId(transformFile.toURI().toURL().toExternalForm());
 		XsltExecutable executable = compiler.compile(xformSource);
-		
+
 		Xslt30Transformer transformer = executable.load30();
 		transformer.setErrorListener(errorListener);
-		
+
 		MessageListener2 messageListener = new LoggingMessageListener(log);
 		transformer.setMessageListener(messageListener);
 
@@ -289,17 +289,17 @@ public class MakeDocx
 		// Assuming that parameters are not namespaced. If they are we'll
 		// have to deal with that additional complexity. s
 		for (String name : xsltParameters.keySet()) {
-			parameters.put(new QName("", name), XdmValue.makeValue(xsltParameters.get(name)));			
+			parameters.put(new QName("", name), XdmValue.makeValue(xsltParameters.get(name)));
 		}
 		transformer.setStylesheetParameters(parameters);
-		
+
 		Source docSource = new StreamSource(docFile);
-		
+
 		XdmNode sourceDoc = processor.newDocumentBuilder().build(docSource);
 		transformer.setGlobalContextItem(sourceDoc);
 
 		log.info("Applying transform to source document " + docFile.getAbsolutePath() + "...");
-	
+
 		@SuppressWarnings("unused")
 		XdmValue result = transformer.applyTemplates(docSource);
 		log.info("Transform applied.");
@@ -308,12 +308,12 @@ public class MakeDocx
 	/**
 	 * Process a SWPX file to a DOCX file.
 	 * @param inFile Single SWPX file
-	 * @param outFile If this is a directory, result filename is constructed from input filename. 
+	 * @param outFile If this is a directory, result filename is constructed from input filename.
 	 * @param templateDoc Template DOCX document used when constructing new document
 	 * @param log Log to put messages to.
 	 */
 	public static void handleSingleSwpxDoc(File inFile, File outFile, XWPFDocument templateDoc, Logger log) {
-		
+
 		File effectiveOutFile = outFile;
 		if (outFile.isDirectory()) {
 			String outName = FilenameUtils.getBaseName(inFile.getAbsolutePath()) + ".docx";
@@ -336,20 +336,20 @@ public class MakeDocx
 		} catch (Throwable e) {
 			log.error("Unexpected " + e.getClass().getSimpleName() + ": " + e.getMessage());
 			e.printStackTrace();
-		}		
+		}
 	}
 
 	/**
 	 * Process all *.swpx files in the input directory, putting the results in the output directory.
 	 * <p>NOTE: This method is primarily for testing purposes. During production the SWPX docs are
-	 * generated dynamically from the _Book.xml file.</p> 
+	 * generated dynamically from the _Book.xml file.</p>
 	 * @param inDir Directory to look for *.swpx files in
 	 * @param outDir Directory to write *.docx files to
 	 * @param templateDoc Template DOCX document used when constructing new document
 	 * @param log Log to write messages to.
 	 */
 	public static void handleDirectory(File inDir, File outDir, XWPFDocument templateDoc, Logger log) {
-		
+
 		FilenameFilter filter = new SuffixFileFilter(".swpx");
 		File[] files = inDir.listFiles(filter);
 		for (File inFile : files) {
@@ -403,7 +403,7 @@ public class MakeDocx
         .hasArg(true)
         .desc("Semicolon-separated list of XML catalog file names, as for the Saxon -catalog option.")
         .build();
-    			
+
     	options.addOption(input);
     	options.addOption(output);
     	options.addOption(template);
