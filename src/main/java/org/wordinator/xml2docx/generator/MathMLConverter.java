@@ -32,15 +32,15 @@ import net.sf.saxon.s9api.XsltTransformer;
 import org.openxmlformats.schemas.officeDocument.x2006.math.CTOMath;
 import org.openxmlformats.schemas.officeDocument.x2006.math.CTOMathPara;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTP;
-  
+
 public class MathMLConverter {
   private static XsltExecutable stylesheet;
-  private static final Logger log = LogManager.getLogger(MathMLConverter.class.getSimpleName());
+  private static final Logger log = LogManager.getLogger(MathMLConverter.class);
 
   public static void convertMath(XWPFParagraph para, XmlObject indoc) throws DocxGenerationException {
     try {
       CTOMathPara ctOMathPara = CTOMathPara.Factory.parse(convertToOOML(indoc));
-    
+
       CTP ctp = para.getCTP();
       ctp.setOMathArray(ctOMathPara.getOMathArray());
     } catch (XmlException e) {
@@ -49,7 +49,7 @@ public class MathMLConverter {
       throw new DocxGenerationException("Could not parse CTOMathPara, bad OOXML from MathML conversion", e);
     }
   }
-  
+
   private static Node convertToOOML(XmlObject indoc) throws DocxGenerationException {
     XsltTransformer transformer = getStylesheet().load();
 
@@ -69,7 +69,7 @@ public class MathMLConverter {
     }
     Document doc = dBuilder.newDocument();
     DOMDestination dest = new DOMDestination(doc);
-    
+
     Source source = transformToSource(indoc);
 
     transformer.setSource(source);
@@ -84,7 +84,7 @@ public class MathMLConverter {
 
     return doc;
   }
-  
+
   /**
    * Will load and compile the stylesheet on first call, but
    * subsequently will return the already loaded stylesheet.
