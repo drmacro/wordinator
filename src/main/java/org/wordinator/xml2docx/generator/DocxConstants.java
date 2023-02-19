@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.wordinator.xml2docx.generator;
 
@@ -15,11 +15,11 @@ import javax.xml.namespace.QName;
  */
 @SuppressWarnings("unused")
 public final class DocxConstants {
-	
+
   // Namespace names:
 	public static final String OO_WPML_NS = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
 	public static final String SIMPLE_WP_NS = "urn:ns:wordinator:simplewpml";
-	
+
 	// Attributes:
 	public static final QName QNAME_ALIGN_ATT = new QName("", "align");
   public static final QName QNAME_ARG_D_ATT = new QName("", "arg-d");
@@ -49,7 +49,7 @@ public final class DocxConstants {
 	public static final QName QNAME_BOTTOM_ATT = new QName("", "bottom");
 	public static final QName QNAME_CALCULATEDWIDTH_ATT = new QName("", "calculatedWidth");
   public static final QName QNAME_CALLOUT_ATT = new QName("", "callout");
-	public static final QName QNAME_CAPS_ATT = new QName("", "caps");	
+	public static final QName QNAME_CAPS_ATT = new QName("", "caps");
   public static final QName QNAME_CHAPTER_SEPARATOR_ATT = new QName("", "chapter-separator");
   public static final QName QNAME_CHAPTER_STYLE_ATT = new QName("", "chapter-style");
   public static final QName QNAME_CODE_ATT = new QName(SIMPLE_WP_NS, "code");
@@ -113,7 +113,7 @@ public final class DocxConstants {
 	public static final QName QNAME_VANISH_ATT = new QName("", "vanish");
 	public static final QName QNAME_VERTICAL_ALIGNMENT_ATT = new QName("", "vertical-alignment");
 	public static final QName QNAME_WIDTH_ATT = new QName("", "width");
-	public static final QName QNAME_XSLT_FORMAT_ATT = new QName("", "xslt-format");	 
+	public static final QName QNAME_XSLT_FORMAT_ATT = new QName("", "xslt-format");
 
 	// Elements:
 	public static final QName QNAME_COLS_ELEM = new QName(SIMPLE_WP_NS, "cols");
@@ -127,6 +127,7 @@ public final class DocxConstants {
   public static final QName QNAME_R_ELEM = new QName(OO_WPML_NS, "r");
   public static final QName QNAME_ROW_ELEM = new QName(SIMPLE_WP_NS, "row");
   public static final QName QNAME_T_ELEM = new QName(OO_WPML_NS, "t"); // w:t -- text element
+  public static final QName QNAME_TABLE_ELEM = new QName(SIMPLE_WP_NS, "table"); // w:table -- table element
 	public static final QName QNAME_THEAD_ELEM = new QName(SIMPLE_WP_NS, "thead");
 	public static final QName QNAME_TBODY_ELEM = new QName(SIMPLE_WP_NS, "tbody");
 	public static final QName QNAME_TR_ELEM = new QName(SIMPLE_WP_NS, "tr");
@@ -153,6 +154,6 @@ public final class DocxConstants {
   public static final QName QNAME_TBLPR_ELEM = new QName(OO_WPML_NS, "tblPr");
   public static final QName QNAME_TBLLAYOUT_ELEM = new QName(OO_WPML_NS, "tblLayout");
   public static final QName QNAME_WTYPE_ATT = new QName(OO_WPML_NS, "type");
-  
-  
+
+
 }

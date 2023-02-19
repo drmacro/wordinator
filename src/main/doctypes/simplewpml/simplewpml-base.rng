@@ -1264,6 +1264,7 @@
             <ref name="fn"/>
             <ref name="hyperlink"/>
             <ref name="p"/>
+            <ref name="table"/>
             <ref name="object"/>          
           </choice>
         </zeroOrMore>
