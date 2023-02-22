@@ -41,56 +41,55 @@ import junit.framework.TestCase;
 
 public class TestDocxGenerator extends TestCase {
 
+  public static final String DOTX_TEMPLATE_PATH = "docx/Test_Template.dotx";
 
-	public static final String DOTX_TEMPLATE_PATH = "docx/Test_Template.dotx";
+  @Test
+  public void testMakeDocx() throws Exception {
+    ClassLoader classLoader = getClass().getClassLoader();
+    File inFile = new File(classLoader.getResource("simplewp/simplewpml-test-01.swpx").getFile());
+    File templateFile = new File(classLoader.getResource(DOTX_TEMPLATE_PATH).getFile());
+    File outFile = new File("out/testMakeDocx.docx");
+    File outDir = outFile.getParentFile();
+    System.out.println("Input file: " + inFile.getAbsolutePath());
+    System.out.println("Output file: " + outFile.getAbsolutePath());
+    if (!outDir.exists()) {
+      assertTrue("Failed to create directories for output file " + outFile.getAbsolutePath(), outFile.mkdirs());
+    }
+    if (outFile.exists()) {
+      assertTrue("Failed to delete output file " + outFile.getAbsolutePath(), outFile.delete());
+    }
 
-	@Test
-	public void testMakeDocx() throws Exception {
-		ClassLoader classLoader = getClass().getClassLoader();
-		File inFile = new File(classLoader.getResource("simplewp/simplewpml-test-01.swpx").getFile());
-		File templateFile = new File(classLoader.getResource(DOTX_TEMPLATE_PATH).getFile());
-		File outFile = new File("out/testMakeDocx.docx");
-		File outDir = outFile.getParentFile();
-		System.out.println("Input file: " + inFile.getAbsolutePath());
-		System.out.println("Output file: " + outFile.getAbsolutePath());
-		if (!outDir.exists()) {
-			assertTrue("Failed to create directories for output file " + outFile.getAbsolutePath(), outFile.mkdirs());
-		}
-		if (outFile.exists()) {
-			assertTrue("Failed to delete output file " + outFile.getAbsolutePath(), outFile.delete());
-		}
+    XWPFDocument templateDoc = new XWPFDocument(new FileInputStream(templateFile));
+    DocxGenerator maker = new DocxGenerator(inFile, outFile, templateDoc);
+    // Generate the DOCX file:
 
-		XWPFDocument templateDoc = new XWPFDocument(new FileInputStream(templateFile));
-		DocxGenerator maker = new DocxGenerator(inFile, outFile, templateDoc);
-		// Generate the DOCX file:
+    try {
+      XmlObject xml = XmlObject.Factory.parse(inFile);
 
-		try {
-			XmlObject xml = XmlObject.Factory.parse(inFile);
-
-			maker.generate(xml);
-			assertTrue("DOCX file does not exist", outFile.exists());
-			FileInputStream inStream = new FileInputStream(outFile);
-			XWPFDocument doc = new XWPFDocument(inStream);
-			assertNotNull(doc);
-			Iterator<XWPFParagraph> iterator = doc.getParagraphsIterator();
-			XWPFParagraph p = iterator.next();
-			assertNotNull("Expected a paragraph", p);
-			assertEquals("Heading 1 Text", p.getText());
-			System.out.println("Paragraph text='" + p.getText() + "'");
-			boolean foundToc = false;
-			while (iterator.hasNext()) {
-			  p = iterator.next();
-			  // Issue 42: Get style ID
-			  String styleId = p.getStyle();
-			  // Issue 16: Verify scaling of intrinsic dimensions:
-			  if (p.getText().startsWith("[Image 1]")) {
-			    XWPFRun run = p.getRuns().get(1); // Second run should contain the picture
-			    assertNotNull("Extected a second run", run);
-			    XWPFPicture picture = run.getEmbeddedPictures().get(0);
-			    assertNotNull("Expected a picture", picture);
-			    assertEquals("Expected width of 100", picture.getWidth(), 100.0);
+      maker.generate(xml);
+      assertTrue("DOCX file does not exist", outFile.exists());
+      FileInputStream inStream = new FileInputStream(outFile);
+      XWPFDocument doc = new XWPFDocument(inStream);
+      assertNotNull(doc);
+      Iterator<XWPFParagraph> iterator = doc.getParagraphsIterator();
+      XWPFParagraph p = iterator.next();
+      assertNotNull("Expected a paragraph", p);
+      assertEquals("Heading 1 Text", p.getText());
+      System.out.println("Paragraph text='" + p.getText() + "'");
+      boolean foundToc = false;
+      while (iterator.hasNext()) {
+        p = iterator.next();
+        // Issue 42: Get style ID
+        String styleId = p.getStyle();
+        // Issue 16: Verify scaling of intrinsic dimensions:
+        if (p.getText().startsWith("[Image 1]")) {
+          XWPFRun run = p.getRuns().get(1); // Second run should contain the picture
+          assertNotNull("Extected a second run", run);
+          XWPFPicture picture = run.getEmbeddedPictures().get(0);
+          assertNotNull("Expected a picture", picture);
+          assertEquals("Expected width of 100", picture.getWidth(), 100.0);
           assertEquals("Expected height (depth) of 50", picture.getDepth(), 50.0);
-			  }
+        }
         if (p.getText().startsWith("[Image 2]")) {
           XWPFRun run = p.getRuns().get(1); // Second run should contain the picture
           assertNotNull("Extected a second run", run);
@@ -110,66 +109,66 @@ public class TestDocxGenerator extends TestCase {
         if ("TOC1".equals(styleId)) {
           foundToc = true;
         }
-			}
+      }
 
-			assertTrue("Did not find expected table of contents paragraphs", foundToc);
-		} catch (Exception e) {
-			e.printStackTrace();
-			fail("Got unexpected " + e.getClass().getSimpleName() + ": " + e.getMessage());
-		}
+      assertTrue("Did not find expected table of contents paragraphs", foundToc);
+    } catch (Exception e) {
+      e.printStackTrace();
+      fail("Got unexpected " + e.getClass().getSimpleName() + ": " + e.getMessage());
+    }
 
-	}
+  }
 
   @Test
-	public void testMakeDocxWithSections() throws Exception {
+  public void testMakeDocxWithSections() throws Exception {
 
-		ClassLoader classLoader = getClass().getClassLoader();
-		File inFile = new File(classLoader.getResource("simplewp/simplewpml-test-02.swpx").getFile());
-		File templateFile = new File(classLoader.getResource(DOTX_TEMPLATE_PATH).getFile());
-		File outFile = new File("out/output-02.docx");
-		File outDir = outFile.getParentFile();
-		System.out.println("Input file: " + inFile.getAbsolutePath());
-		System.out.println("Output file: " + outFile.getAbsolutePath());
-		if (!outDir.exists()) {
-			assertTrue("Failed to create directories for output file " + outFile.getAbsolutePath(), outFile.mkdirs());
-		}
-		if (outFile.exists()) {
-			assertTrue("Failed to delete output file " + outFile.getAbsolutePath(), outFile.delete());
-		}
+    ClassLoader classLoader = getClass().getClassLoader();
+    File inFile = new File(classLoader.getResource("simplewp/simplewpml-test-02.swpx").getFile());
+    File templateFile = new File(classLoader.getResource(DOTX_TEMPLATE_PATH).getFile());
+    File outFile = new File("out/output-02.docx");
+    File outDir = outFile.getParentFile();
+    System.out.println("Input file: " + inFile.getAbsolutePath());
+    System.out.println("Output file: " + outFile.getAbsolutePath());
+    if (!outDir.exists()) {
+      assertTrue("Failed to create directories for output file " + outFile.getAbsolutePath(), outFile.mkdirs());
+    }
+    if (outFile.exists()) {
+      assertTrue("Failed to delete output file " + outFile.getAbsolutePath(), outFile.delete());
+    }
 
-		XWPFDocument templateDoc = new XWPFDocument(new FileInputStream(templateFile));
+    XWPFDocument templateDoc = new XWPFDocument(new FileInputStream(templateFile));
 
-		DocxGenerator maker = new DocxGenerator(inFile, outFile, templateDoc);
-		// Generate the DOCX file:
+    DocxGenerator maker = new DocxGenerator(inFile, outFile, templateDoc);
+    // Generate the DOCX file:
 
-		try {
-			XmlObject xml = XmlObject.Factory.parse(inFile);
+    try {
+      XmlObject xml = XmlObject.Factory.parse(inFile);
 
-			maker.generate(xml);
-			assertTrue("DOCX file does not exist", outFile.exists());
-			FileInputStream inStream = new FileInputStream(outFile);
-			XWPFDocument doc = new XWPFDocument(inStream);
-			assertNotNull(doc);
-			Iterator<XWPFParagraph> iterator = doc.getParagraphsIterator();
-			XWPFParagraph p = iterator.next();
-			assertNotNull("Expected a paragraph", p);
-			assertEquals("Document With Sections", p.getText());
-			System.out.println("Paragraph text='" + p.getText() + "'");
+      maker.generate(xml);
+      assertTrue("DOCX file does not exist", outFile.exists());
+      FileInputStream inStream = new FileInputStream(outFile);
+      XWPFDocument doc = new XWPFDocument(inStream);
+      assertNotNull(doc);
+      Iterator<XWPFParagraph> iterator = doc.getParagraphsIterator();
+      XWPFParagraph p = iterator.next();
+      assertNotNull("Expected a paragraph", p);
+      assertEquals("Document With Sections", p.getText());
+      System.out.println("Paragraph text='" + p.getText() + "'");
 
-			boolean found = false;
-			for (XWPFParagraph para : doc.getParagraphs()) {
-				String text = para.getParagraphText();
-				// System.out.printn("+ [DEBUG] text=\"" + text + "\"");
-				if ("Document With Sections".equals(text)) {
-					found = true;
-					break;
-				}
-			}
-			assertTrue("Did not find expected start of first section", found);
+      boolean found = false;
+      for (XWPFParagraph para : doc.getParagraphs()) {
+        String text = para.getParagraphText();
+        // System.out.printn("+ [DEBUG] text=\"" + text + "\"");
+        if ("Document With Sections".equals(text)) {
+          found = true;
+          break;
+        }
+      }
+      assertTrue("Did not find expected start of first section", found);
 
-			CTSectPr docSectPr = doc.getDocument().getBody().getSectPr();
-			assertNotNull("Expected to find a docSectPr element", docSectPr);
-			assertEquals("Expected 3 headers", 3, docSectPr.getHeaderReferenceList().size());
+      CTSectPr docSectPr = doc.getDocument().getBody().getSectPr();
+      assertNotNull("Expected to find a docSectPr element", docSectPr);
+      assertEquals("Expected 3 headers", 3, docSectPr.getHeaderReferenceList().size());
       assertEquals("Expected 3 footers", 3, docSectPr.getFooterReferenceList().size());
 
       // Document-level headers and footers:
@@ -209,24 +208,24 @@ public class TestDocxGenerator extends TestCase {
             CTSectPr sectPr = p.getCTP().getPPr().getSectPr();
             if (sectPr != null) {
               assertTrue("Expected no more than 3 headers for paragraph, found " + sectPr.getHeaderReferenceList().size(),
-                  sectPr.getHeaderReferenceList().size() <= 3);
+                         sectPr.getHeaderReferenceList().size() <= 3);
               assertTrue("Expected no more than 3 footers for paragraph, found " + sectPr.getFooterReferenceList().size(),
-                  sectPr.getFooterReferenceList().size() <= 3);
+                         sectPr.getFooterReferenceList().size() <= 3);
               foundHeadersOrFooters = foundHeadersOrFooters ||
-                  sectPr.getHeaderReferenceList().size() > 0  ||
-                  sectPr.getFooterReferenceList().size() > 0;
+                sectPr.getHeaderReferenceList().size() > 0  ||
+                sectPr.getFooterReferenceList().size() > 0;
             }
           }
         }
       } while(iter.hasNext());
       assertTrue("No section headers or footers", foundHeadersOrFooters);
 
-		} catch (Exception e) {
-			e.printStackTrace();
-			fail("Got unexpected " + e.getClass().getSimpleName() + ": " + e.getMessage());
-		}
+    } catch (Exception e) {
+      e.printStackTrace();
+      fail("Got unexpected " + e.getClass().getSimpleName() + ": " + e.getMessage());
+    }
 
-	}
+  }
 
   @Test
   public void testCopyNumberingDefinitions() throws Exception {
@@ -323,24 +322,24 @@ public class TestDocxGenerator extends TestCase {
       boolean foundSeparator = false;
       String instructionText = null;
       for (XWPFRun run : runs) {
-         // Check for field here
-         CTR r = run.getCTR();
-         List<CTFldChar> fldChars = r.getFldCharList();
-         if (fldChars != null && fldChars.size() > 0) {
-           if (fldChars.get(0).getFldCharType() == STFldCharType.BEGIN) {
-             foundStart = true;
-           }
-           if (fldChars.get(0).getFldCharType() == STFldCharType.END) {
-             foundEnd = true;
-           }
-           if (fldChars.get(0).getFldCharType() == STFldCharType.SEPARATE) {
-             foundSeparator = true;
-           }
-         }
-         List<CTText> instructions = r.getInstrTextList();
-         if (instructions != null && instructions.size() > 0) {
-           instructionText = instructions.get(0).getStringValue();
-         }
+        // Check for field here
+        CTR r = run.getCTR();
+        List<CTFldChar> fldChars = r.getFldCharList();
+        if (fldChars != null && fldChars.size() > 0) {
+          if (fldChars.get(0).getFldCharType() == STFldCharType.BEGIN) {
+            foundStart = true;
+          }
+          if (fldChars.get(0).getFldCharType() == STFldCharType.END) {
+            foundEnd = true;
+          }
+          if (fldChars.get(0).getFldCharType() == STFldCharType.SEPARATE) {
+            foundSeparator = true;
+          }
+        }
+        List<CTText> instructions = r.getInstrTextList();
+        if (instructions != null && instructions.size() > 0) {
+          instructionText = instructions.get(0).getStringValue();
+        }
       }
       foundField = foundStart && foundEnd;
       assertTrue("Did not find expected field", foundField);
@@ -496,36 +495,36 @@ public class TestDocxGenerator extends TestCase {
       // System.out.println("Table rows:");
       /*
         <w:tc>
-          <w:tcPr>
-            <w:tcW w:w="2880" w:type="dxa"/>
-            <w:tcBorders>
-              <w:top w:val="single"/>
-              <w:left w:val="single"/>
-              <w:bottom w:val="single"/>
-              <w:right w:val="single"/>
-            </w:tcBorders>
-          </w:tcPr>
-       */
+        <w:tcPr>
+        <w:tcW w:w="2880" w:type="dxa"/>
+        <w:tcBorders>
+        <w:top w:val="single"/>
+        <w:left w:val="single"/>
+        <w:bottom w:val="single"/>
+        <w:right w:val="single"/>
+        </w:tcBorders>
+        </w:tcPr>
+      */
       // int n = 0;
       // First table should have all single borders
       for (XWPFTableRow row : table.getRows()) {
         // System.out.println("Row " + ++n);
         for (XWPFTableCell cell : row.getTableCells()) {
-           XmlCursor cursor = cell.getCTTc().newCursor();
-           assertTrue("No tcPr element", cursor.toChild(DocxConstants.QNAME_TCPR_ELEM));
-           assertTrue("No tcBorders element", cursor.toChild(DocxConstants.QNAME_TCBORDERS_ELEM));
-           assertTrue("No top element", cursor.toChild(DocxConstants.QNAME_TOP_ELEM));
-           assertEquals("single", cursor.getAttributeText(DocxConstants.QNAME_VAL_ATT));
-           assertNull("Did not expect a color attribute", cursor.getAttributeText(DocxConstants.QNAME_COLOR_ATT));
-           cursor.toNextSibling(); // Left
-           assertEquals("single", cursor.getAttributeText(DocxConstants.QNAME_VAL_ATT));
-           assertNull("Did not expect a color attribute", cursor.getAttributeText(DocxConstants.QNAME_COLOR_ATT));
-           cursor.toNextSibling(); // Bottom
-           assertEquals("single", cursor.getAttributeText(DocxConstants.QNAME_VAL_ATT));
-           assertNull("Did not expect a color attribute", cursor.getAttributeText(DocxConstants.QNAME_COLOR_ATT));
-           cursor.toNextSibling(); // Right
-           assertEquals("single", cursor.getAttributeText(DocxConstants.QNAME_VAL_ATT));
-           assertNull("Did not expect a color attribute", cursor.getAttributeText(DocxConstants.QNAME_COLOR_ATT));
+          XmlCursor cursor = cell.getCTTc().newCursor();
+          assertTrue("No tcPr element", cursor.toChild(DocxConstants.QNAME_TCPR_ELEM));
+          assertTrue("No tcBorders element", cursor.toChild(DocxConstants.QNAME_TCBORDERS_ELEM));
+          assertTrue("No top element", cursor.toChild(DocxConstants.QNAME_TOP_ELEM));
+          assertEquals("single", cursor.getAttributeText(DocxConstants.QNAME_VAL_ATT));
+          assertNull("Did not expect a color attribute", cursor.getAttributeText(DocxConstants.QNAME_COLOR_ATT));
+          cursor.toNextSibling(); // Left
+          assertEquals("single", cursor.getAttributeText(DocxConstants.QNAME_VAL_ATT));
+          assertNull("Did not expect a color attribute", cursor.getAttributeText(DocxConstants.QNAME_COLOR_ATT));
+          cursor.toNextSibling(); // Bottom
+          assertEquals("single", cursor.getAttributeText(DocxConstants.QNAME_VAL_ATT));
+          assertNull("Did not expect a color attribute", cursor.getAttributeText(DocxConstants.QNAME_COLOR_ATT));
+          cursor.toNextSibling(); // Right
+          assertEquals("single", cursor.getAttributeText(DocxConstants.QNAME_VAL_ATT));
+          assertNull("Did not expect a color attribute", cursor.getAttributeText(DocxConstants.QNAME_COLOR_ATT));
         }
       }
 
@@ -543,17 +542,17 @@ public class TestDocxGenerator extends TestCase {
       for (XWPFTableRow row : table.getRows()) {
         // System.out.println("Row " + ++n);
         for (XWPFTableCell cell : row.getTableCells()) {
-           cursor = cell.getCTTc().newCursor();
-           assertTrue("No tcPr element", cursor.toChild(DocxConstants.QNAME_TCPR_ELEM));
-           assertTrue("No tcBorders element", cursor.toChild(DocxConstants.QNAME_TCBORDERS_ELEM));
-           assertTrue("No top element", cursor.toChild(DocxConstants.QNAME_TOP_ELEM));
-           assertNotNull("Expected a color attribute", cursor.getAttributeText(DocxConstants.QNAME_COLOR_ATT));
-           cursor.toNextSibling(); // Left
-           assertNotNull("Expected a color attribute", cursor.getAttributeText(DocxConstants.QNAME_COLOR_ATT));
-           cursor.toNextSibling(); // Bottom
-           assertNotNull("Expected a color attribute", cursor.getAttributeText(DocxConstants.QNAME_COLOR_ATT));
-           cursor.toNextSibling(); // Right
-           assertNotNull("Expected a color attribute", cursor.getAttributeText(DocxConstants.QNAME_COLOR_ATT));
+          cursor = cell.getCTTc().newCursor();
+          assertTrue("No tcPr element", cursor.toChild(DocxConstants.QNAME_TCPR_ELEM));
+          assertTrue("No tcBorders element", cursor.toChild(DocxConstants.QNAME_TCBORDERS_ELEM));
+          assertTrue("No top element", cursor.toChild(DocxConstants.QNAME_TOP_ELEM));
+          assertNotNull("Expected a color attribute", cursor.getAttributeText(DocxConstants.QNAME_COLOR_ATT));
+          cursor.toNextSibling(); // Left
+          assertNotNull("Expected a color attribute", cursor.getAttributeText(DocxConstants.QNAME_COLOR_ATT));
+          cursor.toNextSibling(); // Bottom
+          assertNotNull("Expected a color attribute", cursor.getAttributeText(DocxConstants.QNAME_COLOR_ATT));
+          cursor.toNextSibling(); // Right
+          assertNotNull("Expected a color attribute", cursor.getAttributeText(DocxConstants.QNAME_COLOR_ATT));
         }
       }
 
@@ -805,15 +804,15 @@ public class TestDocxGenerator extends TestCase {
   }
 
   public void testImageFromUrl() throws Exception {
-//    String href = "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Google_2015_logo.svg/1200px-Google_2015_logo.svg.png";
-//    URL url = new URL(href);
-//    URLConnection conn = null;
-//    conn = url.openConnection();
-//
-//    String mimeType = conn.getContentEncoding();
-//    String mimeType = null;
-//    System.out.println("mimeType=\"" + mimeType + "\"");
-//    assertNotNull(mimeType, "Expected a MIME type");
+    //    String href = "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Google_2015_logo.svg/1200px-Google_2015_logo.svg.png";
+    //    URL url = new URL(href);
+    //    URLConnection conn = null;
+    //    conn = url.openConnection();
+    //
+    //    String mimeType = conn.getContentEncoding();
+    //    String mimeType = null;
+    //    System.out.println("mimeType=\"" + mimeType + "\"");
+    //    assertNotNull(mimeType, "Expected a MIME type");
   }
 
   @Test
