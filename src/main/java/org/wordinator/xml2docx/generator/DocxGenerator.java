@@ -2870,11 +2870,14 @@ public class DocxGenerator {
           ctTcPr.setVMerge(CTVMerge.Factory.newInstance());
         }
       } else {
-        // Cells always have at least one paragraph.
-        cell.removeParagraph(0);
-
         // convert the contents of the cell
         boolean hasMore = cursor.toFirstChild();
+        if (hasMore) {
+          // Apache POI puts in an empty paragraph, and if we're going to add
+          // content we remove it. But if there is no content it needs to stay
+          cell.removeParagraph(0);
+        }
+
         while (hasMore) {
           if (cursor.getName().equals(DocxConstants.QNAME_P_ELEM)) {
             XWPFParagraph p = cell.addParagraph();
