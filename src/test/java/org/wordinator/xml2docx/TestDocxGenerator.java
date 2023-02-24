@@ -500,6 +500,21 @@ public class TestDocxGenerator extends TestCase {
     assertEquals(2, t.getNumberOfRows());
   }
 
+  @Test
+  public void testNestedTableWidth() throws Exception {
+    XWPFDocument doc = convert("simplewp/simplewpml-table-nested-02.swpx", "out/table-nested-02.docx");
+
+    // the bug was that this used to crash (issue #114), so we only do
+    // a minimal check on the output. if the conversion does not crash
+    // that's already a win
+    List<IBodyElement> contents = doc.getBodyElements();
+    assertEquals(1, contents.size());
+
+    Iterator<IBodyElement> it = contents.iterator();
+    IBodyElement elem = it.next();
+    assertEquals(BodyElementType.TABLE, elem.getElementType());
+  }
+
   // ===== INTERNAL UTILITIES
 
   private XWPFDocument convert(String infile, String outfile) throws Exception {
