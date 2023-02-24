@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wp:document xmlns:wp="urn:ns:wordinator:simplewpml">
+  <wp:body>
+    <wp:table>
+      <wp:tbody>
+        <wp:tr>
+          <wp:td>
+            <wp:table width="100%">
+
+            </wp:table>
+          </wp:td>
+        </wp:tr>
+      </wp:tbody>
+    </wp:table>
+  </wp:body>
+</wp:document>

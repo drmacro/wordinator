@@ -2898,6 +2898,7 @@ public class DocxGenerator {
             CTTbl ctTbl = cell.getCTTc().addNewTbl();
             ctTbl = cell.getCTTc().addNewTbl();
             CTTblPr tblPr = ctTbl.addNewTblPr();
+            tblPr.addNewTblW();
 
             XWPFTable nestedTable = new XWPFTable(ctTbl, cell);
             makeTable(nestedTable, cursor.getObject());
