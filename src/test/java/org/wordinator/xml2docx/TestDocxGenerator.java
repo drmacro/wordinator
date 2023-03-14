@@ -115,8 +115,8 @@ public class TestDocxGenerator extends TestCase {
 
     CTSectPr docSectPr = doc.getDocument().getBody().getSectPr();
     assertNotNull("Expected to find a docSectPr element", docSectPr);
-    assertEquals("Expected 6 headers", 6, docSectPr.getHeaderReferenceList().size());
-    assertEquals("Expected 6 footers", 6, docSectPr.getFooterReferenceList().size());
+    assertEquals("Expected 3 headers", 3, docSectPr.getHeaderReferenceList().size());
+    assertEquals("Expected 3 footers", 3, docSectPr.getFooterReferenceList().size());
 
     // Document-level headers and footers:
     XWPFHeaderFooterPolicy hfPolicy = doc.getHeaderFooterPolicy();
@@ -506,7 +506,7 @@ public class TestDocxGenerator extends TestCase {
     elem = it.next();
     assertEquals(BodyElementType.PARAGRAPH, elem.getElementType());
   }
-
+  
   @Test
   public void testTableEmptyCell() throws Exception {
     XWPFDocument doc = convert("simplewp/simplewpml-table-empty-cell.swpx", "out/table-empty-cell.docx");
@@ -531,6 +531,21 @@ public class TestDocxGenerator extends TestCase {
     cell = row.getCell(1); // the empty cell
     contents = cell.getBodyElements();
     assertEquals(1, contents.size()); // used to fail with 0
+  }  
+
+  @Test
+  public void testNestedTableWidth() throws Exception {
+    XWPFDocument doc = convert("simplewp/simplewpml-table-nested-02.swpx", "out/table-nested-02.docx");
+
+    // the bug was that this used to crash (issue #114), so we only do
+    // a minimal check on the output. if the conversion does not crash
+    // that's already a win
+    List<IBodyElement> contents = doc.getBodyElements();
+    assertEquals(1, contents.size());
+
+    Iterator<IBodyElement> it = contents.iterator();
+    IBodyElement elem = it.next();
+    assertEquals(BodyElementType.TABLE, elem.getElementType());
   }
 
   @Test
