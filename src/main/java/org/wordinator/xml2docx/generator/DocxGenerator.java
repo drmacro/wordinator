@@ -1383,10 +1383,10 @@ public class DocxGenerator {
         } else {
            log.warn("Character style name \"" + styleName + "\" not found in the document.");
            if (this.isFirstCharacterStyleWarning) {
-                // FIXME: The POI 4.x API doesn't provide a way to get the list of styles
-                //        or the list of style names that I can find short of parsing the
-                //        underlying document part XML, so no way to report the
-                //        style names at this time.
+             // FIXME: The POI 4.x API doesn't provide a way to get the list of styles
+             //        or the list of style names that I can find short of parsing the
+             //        underlying document part XML, so no way to report the
+             //        style names at this time.
            }
            this.isFirstCharacterStyleWarning = false;
         }
@@ -2231,7 +2231,7 @@ public class DocxGenerator {
 
     String widthValue = cursor.getAttributeText(DocxConstants.QNAME_WIDTH_ATT);
     if (null != widthValue && !"".equals(widthValue.trim())) {
-        table.setWidth(getMeasurementValue(widthValue));
+      table.setWidth(getMeasurementValue(widthValue));
     }
 
     setTableIndents(table, cursor);
@@ -2906,6 +2906,7 @@ public class DocxGenerator {
             CTTbl ctTbl = cell.getCTTc().addNewTbl();
             ctTbl = cell.getCTTc().addNewTbl();
             CTTblPr tblPr = ctTbl.addNewTblPr();
+            tblPr.addNewTblW();
 
             XWPFTable nestedTable = new XWPFTable(ctTbl, cell);
             makeTable(nestedTable, cursor.getObject());
