@@ -36,8 +36,11 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBody;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDecimalNumber;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDocument1;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTFldChar;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTInd;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTNumLvl;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTNumPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageMar;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPPrGeneral;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTbl;
@@ -48,6 +51,7 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.STFldCharType;
 import org.wordinator.xml2docx.generator.DocxConstants;
 import org.wordinator.xml2docx.generator.DocxGenerator;
 import org.wordinator.xml2docx.generator.MeasurementException;
+import org.wordinator.xml2docx.generator.TableColumnDefinition;
 import org.wordinator.xml2docx.generator.TableColumnDefinitions;
 
 import junit.framework.TestCase;
@@ -578,30 +582,6 @@ public class TestDocxGenerator extends TestCase {
   }
 
   @Test
-  public void testAddTableGridWithColumnsIfNeeded__should_create_table_grid_auto_width() {
-    // GIVEN
-    XWPFTable table = Mockito.mock(XWPFTable.class);
-    CTTbl ctTbl = Mockito.mock(CTTbl.class);
-    CTTblGrid ctTblGrid = Mockito.mock(CTTblGrid.class);
-    CTTblGridCol col1 = Mockito.mock(CTTblGridCol.class);
-    CTTblGridCol col2 = Mockito.mock(CTTblGridCol.class);
-    Mockito.when(table.getCTTbl()).thenReturn(ctTbl);
-    Mockito.when(ctTbl.addNewTblGrid()).thenReturn(ctTblGrid);
-    Mockito.when(ctTblGrid.addNewGridCol()).thenReturn(col1, col2);
-
-    TableColumnDefinitions colDefs = new TableColumnDefinitions();
-    colDefs.newColumnDef().setWidthAuto();
-    colDefs.newColumnDef().setWidthAuto();
-
-    // WHEN
-    DocxGenerator.addTableGridWithColumnsIfNeeded(table, colDefs);
-
-    // THEN
-    Mockito.verify(col1).setW(BigInteger.valueOf(2500));
-    Mockito.verify(col2).setW(BigInteger.valueOf(2500));
-  }
-
-  @Test
   public void testAddTableGridWithColumnsIfNeeded__should_create_table_grid_width_in_ints() throws MeasurementException {
     // GIVEN
     XWPFTable table = Mockito.mock(XWPFTable.class);
@@ -644,7 +624,7 @@ public class TestDocxGenerator extends TestCase {
   }
 
   @Test
-  public void testSetColumnsWidthInPercentagesIfAllHaveAutoWidth__should_set_33_percentages_width() {
+  public void testSetColumnsWidthInPercentages__should_set_33_percentages_width() {
     // GIVEN
     TableColumnDefinitions colDefs = new TableColumnDefinitions();
     colDefs.newColumnDef().setWidthAuto();
@@ -652,39 +632,39 @@ public class TestDocxGenerator extends TestCase {
     colDefs.newColumnDef().setWidthAuto();
 
     // WHEN
-    DocxGenerator.setColumnsWidthInPercentagesIfAllHaveAutoWidth(colDefs);
+    DocxGenerator.setColumnsWidthInPercentages(colDefs, 100);
 
     // THEN
-    Assert.assertEquals("33%", colDefs.get(0).getWidth());
-    Assert.assertEquals("33%", colDefs.get(1).getWidth());
-    Assert.assertEquals("33%", colDefs.get(2).getWidth());
+    Assert.assertEquals("33.3333%", colDefs.get(0).getWidth());
+    Assert.assertEquals("33.3333%", colDefs.get(1).getWidth());
+    Assert.assertEquals("33.3333%", colDefs.get(2).getWidth());
   }
 
   @Test
-  public void testSetColumnsWidthInPercentagesIfAllHaveAutoWidth__should_not_change_width_empty_definitions() {
+  public void testSetColumnsWidthInPercentages__should_not_change_width_empty_definitions() {
     // GIVEN
     TableColumnDefinitions colDefs = new TableColumnDefinitions();
 
     // WHEN
-    DocxGenerator.setColumnsWidthInPercentagesIfAllHaveAutoWidth(colDefs);
+    DocxGenerator.setColumnsWidthInPercentages(colDefs, 0);
 
     // THEN
     Assert.assertTrue(colDefs.getColumnDefinitions().isEmpty());
   }
 
   @Test
-  public void testSetColumnsWidthInPercentagesIfAllHaveAutoWidth__should_not_change_width_not_all_definitions_are_auto() throws MeasurementException {
+  public void testSetColumnsWidthInPercentages__should_change_auto_width_by_percentages() throws MeasurementException {
     // GIVEN
     TableColumnDefinitions colDefs = new TableColumnDefinitions();
     colDefs.newColumnDef().setWidth("30%", DOTS_PER_INCH);
     colDefs.newColumnDef().setWidthAuto();
 
     // WHEN
-    DocxGenerator.setColumnsWidthInPercentagesIfAllHaveAutoWidth(colDefs);
+    DocxGenerator.setColumnsWidthInPercentages(colDefs, 100);
 
     // THEN
     Assert.assertEquals("30%", colDefs.get(0).getWidth());
-    Assert.assertEquals("auto", colDefs.get(1).getWidth());
+    Assert.assertEquals("70.0%", colDefs.get(1).getWidth());
   }
 
   @Test
@@ -736,6 +716,88 @@ public class TestDocxGenerator extends TestCase {
     Mockito.verify(doc.getNumbering()).addNum(numId);
     Mockito.verify(numLvl).setIlvl(BigInteger.ZERO);
     Mockito.verify(startOverride).setVal(BigInteger.ONE);
+  }
+
+  @Test
+  public void testConvertColumnWidthToPx__should_convert_if_percentages() throws MeasurementException {
+    // GIVEN
+    TableColumnDefinition columnDefinition = new TableColumnDefinition(Mockito.mock(TableColumnDefinitions.class));
+    columnDefinition.setWidth("31.7498%", DOTS_PER_INCH);
+
+    // WHEN
+    int result = DocxGenerator.convertColumnWidthToPx(columnDefinition, 123);
+
+    // THEN
+    Assert.assertEquals(39, result);
+  }
+
+  @Test
+  public void testConvertColumnWidthToPx__should_return_as_is_if_not_percentages() throws MeasurementException {
+    // GIVEN
+    TableColumnDefinition columnDefinition = new TableColumnDefinition(Mockito.mock(TableColumnDefinitions.class));
+    columnDefinition.setWidth("31", DOTS_PER_INCH);
+
+    // WHEN
+    int result = DocxGenerator.convertColumnWidthToPx(columnDefinition, 123);
+
+    // THEN
+    Assert.assertEquals(31, result);
+  }
+
+  @Test
+  public void testAdjustMaxWidthIfIndentationExists__should_adjust_width_if_style_with_num_section_exists() {
+    // GIVEN
+    XWPFParagraph paragraph = Mockito.mock(XWPFParagraph.class, Answers.RETURNS_DEEP_STUBS);
+    XWPFStyle style = Mockito.mock(XWPFStyle.class, Answers.RETURNS_DEEP_STUBS);
+    CTPPrGeneral pPr = Mockito.mock(CTPPrGeneral.class);
+    CTNumPr numPr = Mockito.mock(CTNumPr.class);
+    CTDecimalNumber numId = Mockito.mock(CTDecimalNumber.class);
+    Mockito.when(style.getCTStyle().getPPr()).thenReturn(pPr);
+    Mockito.when(pPr.getNumPr()).thenReturn(numPr);
+    Mockito.when(numPr.getNumId()).thenReturn(numId);
+    Mockito.when(numId.getVal()).thenReturn(BigInteger.valueOf(11));
+    Mockito.when(paragraph.getStyle()).thenReturn("SomeStyle123");
+    Mockito.when(paragraph.getDocument().getStyles().getStyle("SomeStyle123")).thenReturn(style);
+    Mockito.when(paragraph.getDocument().getNumbering().getNum(BigInteger.valueOf(11)).getCTNum().getAbstractNumId().getVal()).thenReturn(BigInteger.valueOf(82));
+    Mockito.when(paragraph.getDocument().getNumbering().getAbstractNum(BigInteger.valueOf(82)).getCTAbstractNum().getLvlArray(0).getPPr().getInd().getLeft()).thenReturn(BigInteger.valueOf(360));
+
+    // WHEN
+    int result = DocxGenerator.adjustMaxWidthIfIndentationExists(paragraph, 500);
+
+    // THEN
+    Assert.assertEquals(482, result);
+  }
+
+  @Test
+  public void testAdjustMaxWidthIfIndentationExists__should_adjust_width_if_style_with_ind_section_exists() {
+    // GIVEN
+    XWPFParagraph paragraph = Mockito.mock(XWPFParagraph.class, Answers.RETURNS_DEEP_STUBS);
+    XWPFStyle style = Mockito.mock(XWPFStyle.class, Answers.RETURNS_DEEP_STUBS);
+    CTPPrGeneral pPr = Mockito.mock(CTPPrGeneral.class);
+    CTInd ind = Mockito.mock(CTInd.class);
+    Mockito.when(style.getCTStyle().getPPr()).thenReturn(pPr);
+    Mockito.when(paragraph.getStyle()).thenReturn("SomeStyle123");
+    Mockito.when(paragraph.getDocument().getStyles().getStyle("SomeStyle123")).thenReturn(style);
+    Mockito.when(pPr.getInd()).thenReturn(ind);
+    Mockito.when(ind.getLeft()).thenReturn(BigInteger.valueOf(720));
+
+    // WHEN
+    int result = DocxGenerator.adjustMaxWidthIfIndentationExists(paragraph, 500);
+
+    // THEN
+    Assert.assertEquals(464, result);
+  }
+
+  @Test
+  public void testAdjustMaxWidthIfIndentationExists__should_not_adjust_width_if_no_style() {
+    // GIVEN
+    XWPFParagraph paragraph = Mockito.mock(XWPFParagraph.class, Answers.RETURNS_DEEP_STUBS);
+
+    // WHEN
+    int result = DocxGenerator.adjustMaxWidthIfIndentationExists(paragraph, 500);
+
+    // THEN
+    Assert.assertEquals(500, result);
   }
 
   // ===== INTERNAL UTILITIES
