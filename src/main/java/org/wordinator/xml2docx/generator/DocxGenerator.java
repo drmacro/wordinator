@@ -76,6 +76,7 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTFtnEdn;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTHdrFtrRef;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTHyperlink;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTMarkupRange;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTNumLvl;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTNumPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTOnOff;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPPr;
@@ -3044,7 +3045,7 @@ public class DocxGenerator {
         decNumId.setVal(bgiNumId);
         ctNumPr.setNumId(decNumId);
       }
-      doc.getNumbering().addNum(bgiNumId);
+      linkListNumIdToStyleAbstractIdAndRestartListLevels(doc, paras, bgiNumId);
 
       i++;
     }
@@ -3256,6 +3257,59 @@ public class DocxGenerator {
         }
       }
     }
+  }
+
+  /**
+   * <p>
+   * Link list numId to style abstractNumId and restart list items ordering from 1
+   * </p>
+   * <p>
+   * Assume all paras have the same style
+   * </p>
+   *
+   * @param doc   XWPF document
+   * @param paras list items
+   * @param numId list numId
+   */
+  public static void linkListNumIdToStyleAbstractIdAndRestartListLevels(XWPFDocument doc, List<XWPFParagraph> paras, BigInteger numId) {
+    String styleId = paras.get(0).getStyle();
+    XWPFStyle style = doc.getStyles().getStyle(styleId);
+    if (style != null) {
+      linkNumIdToStyleAbstractId(style, doc, numId);
+    } else {
+      doc.getNumbering().addNum(numId);
+    }
+    addLevelOverrideFromOneToNumId(doc, numId);
+  }
+
+  /**
+   * <p>
+   * Link numId to style abstractNumId
+   * </p>
+   *
+   * @param style XWPF style
+   * @param doc   XWPF document
+   * @param numId list numId
+   */
+  private static void linkNumIdToStyleAbstractId(XWPFStyle style, XWPFDocument doc, BigInteger numId) {
+    BigInteger styleNumId = style.getCTStyle().getPPr().getNumPr().getNumId().getVal();
+    BigInteger abstractNumId = doc.getNumbering().getNum(styleNumId).getCTNum().getAbstractNumId().getVal();
+    doc.getNumbering().addNum(abstractNumId, numId);
+  }
+
+  /**
+   * <p>
+   * Add level override from 1 to numId
+   * </p>
+   *
+   * @param doc   XWPF document
+   * @param numId list numId
+   */
+  private static void addLevelOverrideFromOneToNumId(XWPFDocument doc, BigInteger numId) {
+    CTNumLvl numLvl = doc.getNumbering().getNum(numId).getCTNum().addNewLvlOverride();
+    numLvl.setIlvl(BigInteger.ZERO);
+    CTDecimalNumber startOverride = numLvl.addNewStartOverride();
+    startOverride.setVal(BigInteger.ONE);
   }
 
 }

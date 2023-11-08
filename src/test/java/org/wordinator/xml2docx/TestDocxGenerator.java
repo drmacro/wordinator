@@ -3,6 +3,7 @@ package org.wordinator.xml2docx;
 import java.io.File;
 import java.io.FileInputStream;
 import java.math.BigInteger;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -21,6 +22,7 @@ import org.apache.poi.xwpf.usermodel.XWPFNumbering;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFPicture;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
+import org.apache.poi.xwpf.usermodel.XWPFStyle;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
 import org.apache.poi.xwpf.usermodel.XWPFTableCell;
 import org.apache.poi.xwpf.usermodel.XWPFTableRow;
@@ -28,10 +30,13 @@ import org.apache.xmlbeans.XmlCursor;
 import org.apache.xmlbeans.XmlObject;
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.Answers;
 import org.mockito.Mockito;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBody;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDecimalNumber;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDocument1;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTFldChar;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTNumLvl;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageMar;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectPr;
@@ -680,6 +685,57 @@ public class TestDocxGenerator extends TestCase {
     // THEN
     Assert.assertEquals("30%", colDefs.get(0).getWidth());
     Assert.assertEquals("auto", colDefs.get(1).getWidth());
+  }
+
+  @Test
+  public void testLinkListNumIdToStyleAbstractIdAndRestartListLevels__should_set_abstract_num_id_and_restart_list_ordering() {
+    // GIVEN
+    XWPFDocument doc = Mockito.mock(XWPFDocument.class, Answers.RETURNS_DEEP_STUBS);
+    XWPFParagraph paragraph = Mockito.mock(XWPFParagraph.class);
+    XWPFStyle style = Mockito.mock(XWPFStyle.class, Answers.RETURNS_DEEP_STUBS);
+    CTNumLvl numLvl = Mockito.mock(CTNumLvl.class);
+    CTDecimalNumber startOverride = Mockito.mock(CTDecimalNumber.class);
+    BigInteger numId = BigInteger.valueOf(27);
+    BigInteger styleNumId = BigInteger.valueOf(89);
+    BigInteger styleAbstractNumId = BigInteger.valueOf(12);
+    Mockito.when(paragraph.getStyle()).thenReturn("FancyStyle123");
+    Mockito.when(doc.getStyles().getStyle("FancyStyle123")).thenReturn(style);
+    Mockito.when(doc.getNumbering().getNum(styleNumId).getCTNum().getAbstractNumId().getVal()).thenReturn(styleAbstractNumId);
+    Mockito.when(style.getCTStyle().getPPr().getNumPr().getNumId().getVal()).thenReturn(styleNumId);
+    Mockito.when(doc.getNumbering().getNum(numId).getCTNum().addNewLvlOverride()).thenReturn(numLvl);
+    Mockito.when(numLvl.addNewStartOverride()).thenReturn(startOverride);
+    List<XWPFParagraph> paras = Collections.singletonList(paragraph);
+
+    // WHEN
+    DocxGenerator.linkListNumIdToStyleAbstractIdAndRestartListLevels(doc, paras, numId);
+
+    // THEN
+    Mockito.verify(doc.getNumbering()).addNum(styleAbstractNumId, numId);
+    Mockito.verify(numLvl).setIlvl(BigInteger.ZERO);
+    Mockito.verify(startOverride).setVal(BigInteger.ONE);
+  }
+
+  @Test
+  public void testLinkListNumIdToStyleAbstractIdAndRestartListLevels__should_not_set_abstract_num_id_but_restart_list_ordering_if_style_does_not_exist() {
+    // GIVEN
+    XWPFDocument doc = Mockito.mock(XWPFDocument.class, Answers.RETURNS_DEEP_STUBS);
+    XWPFParagraph paragraph = Mockito.mock(XWPFParagraph.class);
+    CTNumLvl numLvl = Mockito.mock(CTNumLvl.class);
+    CTDecimalNumber startOverride = Mockito.mock(CTDecimalNumber.class);
+    BigInteger numId = BigInteger.valueOf(27);
+    Mockito.when(paragraph.getStyle()).thenReturn("FancyStyle123");
+    Mockito.when(doc.getStyles().getStyle("FancyStyle123")).thenReturn(null);
+    Mockito.when(doc.getNumbering().getNum(numId).getCTNum().addNewLvlOverride()).thenReturn(numLvl);
+    Mockito.when(numLvl.addNewStartOverride()).thenReturn(startOverride);
+    List<XWPFParagraph> paras = Collections.singletonList(paragraph);
+
+    // WHEN
+    DocxGenerator.linkListNumIdToStyleAbstractIdAndRestartListLevels(doc, paras, numId);
+
+    // THEN
+    Mockito.verify(doc.getNumbering()).addNum(numId);
+    Mockito.verify(numLvl).setIlvl(BigInteger.ZERO);
+    Mockito.verify(startOverride).setVal(BigInteger.ONE);
   }
 
   // ===== INTERNAL UTILITIES
