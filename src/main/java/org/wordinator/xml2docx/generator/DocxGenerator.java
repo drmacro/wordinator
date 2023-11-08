@@ -18,9 +18,12 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.imageio.ImageIO;
 import javax.xml.namespace.QName;
@@ -72,6 +75,7 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTFtnEdn;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTHdrFtrRef;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTHyperlink;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTMarkupRange;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTNumPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTOnOff;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageMar;
@@ -391,6 +395,8 @@ public class DocxGenerator {
   private boolean isFirstParagraphStyleWarning = true;
   private boolean isFirstCharacterStyleWarning = true;
   private boolean isFirstTableStyleWarning = true;
+  private int maxNum;
+  private Map<String, List<XWPFParagraph>> numParas = new LinkedHashMap<>();
 
   /**
    *
@@ -417,8 +423,8 @@ public class DocxGenerator {
     setupNumbering(doc, this.templateDoc);
     setupStyles(doc, this.templateDoc);
     constructDoc(doc, xml);
-
-    FileOutputStream out = new FileOutputStream(outFile);
+    setNumbering(doc);
+    FileOutputStream out = new FileOutputStream(this.outFile);
         doc.write(out);
     doc.close();
   }
@@ -1231,6 +1237,7 @@ public class DocxGenerator {
     cursor.push();
     String styleName = cursor.getAttributeText(DocxConstants.QNAME_STYLE_ATT);
     String styleId = cursor.getAttributeText(DocxConstants.QNAME_STYLEID_ATT);
+    String numId = cursor.getAttributeText(DocxConstants.QNAME_NUMID_ATT);
 
     if (null != styleName && null == styleId) {
       // Look up the style by name:
@@ -1329,6 +1336,13 @@ public class DocxGenerator {
       } while(cursor.toNextSibling());
     }
     cursor.pop();
+
+    if (numId != null && !numId.isEmpty()) {
+      // Store Numbering paragraph
+      List<XWPFParagraph> paras = this.numParas.computeIfAbsent(numId, k -> new ArrayList<>());
+      paras.add(para);
+    }
+
     return para;
   }
 
@@ -3009,6 +3023,26 @@ public class DocxGenerator {
 
   }
 
+  private void setNumbering(XWPFDocument doc) {
+    int i = 1;
+
+    for (List<XWPFParagraph> paras : this.numParas.values()) {
+
+      int newNum = this.maxNum + i;
+      BigInteger bgiNumId = BigInteger.valueOf(newNum);
+      for (XWPFParagraph numPara : paras) {
+        CTPPr ctpPr = numPara.getCTPPr();
+        CTNumPr ctNumPr = ctpPr.addNewNumPr();
+        CTDecimalNumber decNumId = CTDecimalNumber.Factory.newInstance();
+        decNumId.setVal(bgiNumId);
+        ctNumPr.setNumId(decNumId);
+      }
+      doc.getNumbering().addNum(bgiNumId);
+
+      i++;
+    }
+  }
+
   private void setupNumbering(XWPFDocument doc, XWPFDocument templateDoc) throws DocxGenerationException {
     // Load the template's numbering definitions to the new document
 
@@ -3044,6 +3078,10 @@ public class DocxGenerator {
         }
       } while (num != null);
 
+
+      // Calculate max numbering number
+      Optional<XWPFNum> maxXwpfNum = numbering.getNums().stream().max(Comparator.comparing(o -> o.getCTNum().getNumId()));
+      this.maxNum = maxXwpfNum.map(xwpfNum -> xwpfNum.getCTNum().getNumId().intValue()).orElse(0);
 
     } catch (Exception e) {
       new DocxGenerationException(e.getClass().getSimpleName() + " Copying numbering definitions from template doc: " + e.getMessage(), e);
