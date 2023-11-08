@@ -3,6 +3,7 @@ package org.wordinator.xml2docx;
 import java.io.File;
 import java.io.FileInputStream;
 import java.math.BigInteger;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -10,6 +11,7 @@ import org.apache.poi.xwpf.model.XWPFHeaderFooterPolicy;
 import org.apache.poi.xwpf.usermodel.BodyElementType;
 import org.apache.poi.xwpf.usermodel.IBodyElement;
 import org.apache.poi.xwpf.usermodel.IRunElement;
+import org.apache.poi.xwpf.usermodel.TableWidthType;
 import org.apache.poi.xwpf.usermodel.XWPFAbstractNum;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFFooter;
@@ -20,28 +22,40 @@ import org.apache.poi.xwpf.usermodel.XWPFNumbering;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFPicture;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
+import org.apache.poi.xwpf.usermodel.XWPFStyle;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
 import org.apache.poi.xwpf.usermodel.XWPFTableCell;
 import org.apache.poi.xwpf.usermodel.XWPFTableRow;
 import org.apache.xmlbeans.XmlCursor;
 import org.apache.xmlbeans.XmlObject;
+import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.Answers;
+import org.mockito.Mockito;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBody;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDecimalNumber;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDocument1;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTFldChar;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTNumLvl;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageMar;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectPr;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTbl;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblGrid;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblGridCol;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTText;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STFldCharType;
 import org.wordinator.xml2docx.generator.DocxConstants;
 import org.wordinator.xml2docx.generator.DocxGenerator;
+import org.wordinator.xml2docx.generator.MeasurementException;
+import org.wordinator.xml2docx.generator.TableColumnDefinitions;
 
 import junit.framework.TestCase;
 
 public class TestDocxGenerator extends TestCase {
 
   public static final String DOTX_TEMPLATE_PATH = "docx/Test_Template.dotx";
+  private static final int DOTS_PER_INCH = 72;
 
   @Test
   public void testMakeDocx() throws Exception {
@@ -513,6 +527,215 @@ public class TestDocxGenerator extends TestCase {
     Iterator<IBodyElement> it = contents.iterator();
     IBodyElement elem = it.next();
     assertEquals(BodyElementType.TABLE, elem.getElementType());
+  }
+
+  @Test
+  public void testAddTableGridWithColumnsIfNeeded__should_create_table_grid_width_in_percentages() throws MeasurementException {
+    // GIVEN
+    XWPFTable table = Mockito.mock(XWPFTable.class);
+    CTTbl ctTbl = Mockito.mock(CTTbl.class);
+    CTTblGrid ctTblGrid = Mockito.mock(CTTblGrid.class);
+    CTTblGridCol col1 = Mockito.mock(CTTblGridCol.class);
+    CTTblGridCol col2 = Mockito.mock(CTTblGridCol.class);
+    Mockito.when(table.getCTTbl()).thenReturn(ctTbl);
+    Mockito.when(ctTbl.addNewTblGrid()).thenReturn(ctTblGrid);
+    Mockito.when(ctTblGrid.addNewGridCol()).thenReturn(col1, col2);
+
+    TableColumnDefinitions colDefs = new TableColumnDefinitions();
+    colDefs.newColumnDef().setWidth("30%", DOTS_PER_INCH);
+    colDefs.newColumnDef().setWidth("70%", DOTS_PER_INCH);
+
+    // WHEN
+    DocxGenerator.addTableGridWithColumnsIfNeeded(table, colDefs);
+
+    // THEN
+    Mockito.verify(col1).setW(BigInteger.valueOf(1500));
+    Mockito.verify(col2).setW(BigInteger.valueOf(3500));
+  }
+
+  @Test
+  public void testAddTableGridWithColumnsIfNeeded__should_create_table_grid_mixed_width() throws MeasurementException {
+    // GIVEN
+    XWPFTable table = Mockito.mock(XWPFTable.class);
+    CTTbl ctTbl = Mockito.mock(CTTbl.class);
+    CTTblGrid ctTblGrid = Mockito.mock(CTTblGrid.class);
+    CTTblGridCol col1 = Mockito.mock(CTTblGridCol.class);
+    CTTblGridCol col2 = Mockito.mock(CTTblGridCol.class);
+    Mockito.when(table.getCTTbl()).thenReturn(ctTbl);
+    Mockito.when(ctTbl.addNewTblGrid()).thenReturn(ctTblGrid);
+    Mockito.when(ctTblGrid.addNewGridCol()).thenReturn(col1, col2);
+
+    TableColumnDefinitions colDefs = new TableColumnDefinitions();
+    colDefs.newColumnDef().setWidth("30%", DOTS_PER_INCH);
+    colDefs.newColumnDef().setWidthAuto();
+
+    // WHEN
+    DocxGenerator.addTableGridWithColumnsIfNeeded(table, colDefs);
+
+    // THEN
+    Mockito.verify(col1).setW(BigInteger.valueOf(1500));
+    Mockito.verify(col2).setW(BigInteger.ZERO);
+  }
+
+  @Test
+  public void testAddTableGridWithColumnsIfNeeded__should_create_table_grid_auto_width() {
+    // GIVEN
+    XWPFTable table = Mockito.mock(XWPFTable.class);
+    CTTbl ctTbl = Mockito.mock(CTTbl.class);
+    CTTblGrid ctTblGrid = Mockito.mock(CTTblGrid.class);
+    CTTblGridCol col1 = Mockito.mock(CTTblGridCol.class);
+    CTTblGridCol col2 = Mockito.mock(CTTblGridCol.class);
+    Mockito.when(table.getCTTbl()).thenReturn(ctTbl);
+    Mockito.when(ctTbl.addNewTblGrid()).thenReturn(ctTblGrid);
+    Mockito.when(ctTblGrid.addNewGridCol()).thenReturn(col1, col2);
+
+    TableColumnDefinitions colDefs = new TableColumnDefinitions();
+    colDefs.newColumnDef().setWidthAuto();
+    colDefs.newColumnDef().setWidthAuto();
+
+    // WHEN
+    DocxGenerator.addTableGridWithColumnsIfNeeded(table, colDefs);
+
+    // THEN
+    Mockito.verify(col1).setW(BigInteger.valueOf(2500));
+    Mockito.verify(col2).setW(BigInteger.valueOf(2500));
+  }
+
+  @Test
+  public void testAddTableGridWithColumnsIfNeeded__should_create_table_grid_width_in_ints() throws MeasurementException {
+    // GIVEN
+    XWPFTable table = Mockito.mock(XWPFTable.class);
+    CTTbl ctTbl = Mockito.mock(CTTbl.class);
+    CTTblGrid ctTblGrid = Mockito.mock(CTTblGrid.class);
+    CTTblGridCol col1 = Mockito.mock(CTTblGridCol.class);
+    CTTblGridCol col2 = Mockito.mock(CTTblGridCol.class);
+    Mockito.when(table.getCTTbl()).thenReturn(ctTbl);
+    Mockito.when(ctTbl.addNewTblGrid()).thenReturn(ctTblGrid);
+    Mockito.when(ctTblGrid.addNewGridCol()).thenReturn(col1, col2);
+
+    TableColumnDefinitions colDefs = new TableColumnDefinitions();
+    colDefs.newColumnDef().setWidth("30", DOTS_PER_INCH);
+    colDefs.newColumnDef().setWidth("70", DOTS_PER_INCH);
+
+    // WHEN
+    DocxGenerator.addTableGridWithColumnsIfNeeded(table, colDefs);
+
+    // THEN
+    Mockito.verify(col1).setW(BigInteger.valueOf(30));
+    Mockito.verify(col2).setW(BigInteger.valueOf(70));
+  }
+
+  @Test
+  public void testSetDefaultTableWidthIfNeeded__should_set_100_percentages_width_for_auto_width_type() {
+    XWPFTable table = Mockito.mock(XWPFTable.class);
+    Mockito.when(table.getWidthType()).thenReturn(TableWidthType.AUTO);
+    Mockito.when(table.getWidth()).thenReturn(0);
+    DocxGenerator.setDefaultTableWidthIfNeeded(table);
+    Mockito.verify(table).setWidth("100%");
+  }
+
+  @Test
+  public void testSetDefaultTableWidthIfNeeded__should_set_100_percentages_width_and_pct_type_for_nil_width_type() {
+    XWPFTable table = Mockito.mock(XWPFTable.class);
+    Mockito.when(table.getWidthType()).thenReturn(TableWidthType.NIL);
+    DocxGenerator.setDefaultTableWidthIfNeeded(table);
+    Mockito.verify(table).setWidthType(TableWidthType.PCT);
+    Mockito.verify(table).setWidth("100%");
+  }
+
+  @Test
+  public void testSetColumnsWidthInPercentagesIfAllHaveAutoWidth__should_set_33_percentages_width() {
+    // GIVEN
+    TableColumnDefinitions colDefs = new TableColumnDefinitions();
+    colDefs.newColumnDef().setWidthAuto();
+    colDefs.newColumnDef().setWidthAuto();
+    colDefs.newColumnDef().setWidthAuto();
+
+    // WHEN
+    DocxGenerator.setColumnsWidthInPercentagesIfAllHaveAutoWidth(colDefs);
+
+    // THEN
+    Assert.assertEquals("33%", colDefs.get(0).getWidth());
+    Assert.assertEquals("33%", colDefs.get(1).getWidth());
+    Assert.assertEquals("33%", colDefs.get(2).getWidth());
+  }
+
+  @Test
+  public void testSetColumnsWidthInPercentagesIfAllHaveAutoWidth__should_not_change_width_empty_definitions() {
+    // GIVEN
+    TableColumnDefinitions colDefs = new TableColumnDefinitions();
+
+    // WHEN
+    DocxGenerator.setColumnsWidthInPercentagesIfAllHaveAutoWidth(colDefs);
+
+    // THEN
+    Assert.assertTrue(colDefs.getColumnDefinitions().isEmpty());
+  }
+
+  @Test
+  public void testSetColumnsWidthInPercentagesIfAllHaveAutoWidth__should_not_change_width_not_all_definitions_are_auto() throws MeasurementException {
+    // GIVEN
+    TableColumnDefinitions colDefs = new TableColumnDefinitions();
+    colDefs.newColumnDef().setWidth("30%", DOTS_PER_INCH);
+    colDefs.newColumnDef().setWidthAuto();
+
+    // WHEN
+    DocxGenerator.setColumnsWidthInPercentagesIfAllHaveAutoWidth(colDefs);
+
+    // THEN
+    Assert.assertEquals("30%", colDefs.get(0).getWidth());
+    Assert.assertEquals("auto", colDefs.get(1).getWidth());
+  }
+
+  @Test
+  public void testLinkListNumIdToStyleAbstractIdAndRestartListLevels__should_set_abstract_num_id_and_restart_list_ordering() {
+    // GIVEN
+    XWPFDocument doc = Mockito.mock(XWPFDocument.class, Answers.RETURNS_DEEP_STUBS);
+    XWPFParagraph paragraph = Mockito.mock(XWPFParagraph.class);
+    XWPFStyle style = Mockito.mock(XWPFStyle.class, Answers.RETURNS_DEEP_STUBS);
+    CTNumLvl numLvl = Mockito.mock(CTNumLvl.class);
+    CTDecimalNumber startOverride = Mockito.mock(CTDecimalNumber.class);
+    BigInteger numId = BigInteger.valueOf(27);
+    BigInteger styleNumId = BigInteger.valueOf(89);
+    BigInteger styleAbstractNumId = BigInteger.valueOf(12);
+    Mockito.when(paragraph.getStyle()).thenReturn("FancyStyle123");
+    Mockito.when(doc.getStyles().getStyle("FancyStyle123")).thenReturn(style);
+    Mockito.when(doc.getNumbering().getNum(styleNumId).getCTNum().getAbstractNumId().getVal()).thenReturn(styleAbstractNumId);
+    Mockito.when(style.getCTStyle().getPPr().getNumPr().getNumId().getVal()).thenReturn(styleNumId);
+    Mockito.when(doc.getNumbering().getNum(numId).getCTNum().addNewLvlOverride()).thenReturn(numLvl);
+    Mockito.when(numLvl.addNewStartOverride()).thenReturn(startOverride);
+    List<XWPFParagraph> paras = Collections.singletonList(paragraph);
+
+    // WHEN
+    DocxGenerator.linkListNumIdToStyleAbstractIdAndRestartListLevels(doc, paras, numId);
+
+    // THEN
+    Mockito.verify(doc.getNumbering()).addNum(styleAbstractNumId, numId);
+    Mockito.verify(numLvl).setIlvl(BigInteger.ZERO);
+    Mockito.verify(startOverride).setVal(BigInteger.ONE);
+  }
+
+  @Test
+  public void testLinkListNumIdToStyleAbstractIdAndRestartListLevels__should_not_set_abstract_num_id_but_restart_list_ordering_if_style_does_not_exist() {
+    // GIVEN
+    XWPFDocument doc = Mockito.mock(XWPFDocument.class, Answers.RETURNS_DEEP_STUBS);
+    XWPFParagraph paragraph = Mockito.mock(XWPFParagraph.class);
+    CTNumLvl numLvl = Mockito.mock(CTNumLvl.class);
+    CTDecimalNumber startOverride = Mockito.mock(CTDecimalNumber.class);
+    BigInteger numId = BigInteger.valueOf(27);
+    Mockito.when(paragraph.getStyle()).thenReturn("FancyStyle123");
+    Mockito.when(doc.getStyles().getStyle("FancyStyle123")).thenReturn(null);
+    Mockito.when(doc.getNumbering().getNum(numId).getCTNum().addNewLvlOverride()).thenReturn(numLvl);
+    Mockito.when(numLvl.addNewStartOverride()).thenReturn(startOverride);
+    List<XWPFParagraph> paras = Collections.singletonList(paragraph);
+
+    // WHEN
+    DocxGenerator.linkListNumIdToStyleAbstractIdAndRestartListLevels(doc, paras, numId);
+
+    // THEN
+    Mockito.verify(doc.getNumbering()).addNum(numId);
+    Mockito.verify(numLvl).setIlvl(BigInteger.ZERO);
+    Mockito.verify(startOverride).setVal(BigInteger.ONE);
   }
 
   // ===== INTERNAL UTILITIES
