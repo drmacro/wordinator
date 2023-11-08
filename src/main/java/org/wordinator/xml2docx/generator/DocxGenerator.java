@@ -3185,6 +3185,7 @@ public class DocxGenerator {
    * @param colDefs table column definitions
    */
   public static void addTableGridWithColumnsIfNeeded(XWPFTable table, TableColumnDefinitions colDefs) {
+    setColumnsWidthInPercentagesIfAllHaveAutoWidth(colDefs);
     CTTblGrid tblGrid = table.getCTTbl().getTblGrid();
     if (tblGrid == null) {
       tblGrid = table.getCTTbl().addNewTblGrid();
@@ -3221,6 +3222,39 @@ public class DocxGenerator {
     } else if (table.getWidthType() == TableWidthType.NIL) {
       table.setWidthType(TableWidthType.PCT);
       table.setWidth(DEFAULT_TABLE_WIDTH);
+    }
+  }
+
+  /**
+   * <p>
+   * Set columns width in percentages depending on columns count, if all columns have auto width
+   * </p>
+   *
+   * @param colDefs table column definitions
+   */
+  public static void setColumnsWidthInPercentagesIfAllHaveAutoWidth(TableColumnDefinitions colDefs) {
+    if (colDefs.getColumnDefinitions().isEmpty()) {
+      return;
+    }
+    boolean autoWidth = true;
+    for (TableColumnDefinition colDef : colDefs.getColumnDefinitions()) {
+      String specifiedWidth = colDef.getSpecifiedWidth();
+      if (!"auto".equalsIgnoreCase(specifiedWidth)) {
+        autoWidth = false;
+        break;
+      }
+    }
+    if (autoWidth) {
+      final int columnsCount = colDefs.getColumnDefinitions().size();
+      final int columnWidth = 100 / columnsCount;
+      final int dotsPerInch = 72;
+      for (TableColumnDefinition colDef : colDefs.getColumnDefinitions()) {
+        try {
+          colDef.setWidth(columnWidth + "%", dotsPerInch);
+        } catch (MeasurementException e) {
+          throw new RuntimeException("Error setting column width: " + columnWidth, e);
+        }
+      }
     }
   }
 
