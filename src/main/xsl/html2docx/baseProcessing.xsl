@@ -141,10 +141,8 @@
   
   <xsl:template match="xhtml:a[@href] | a[@href]">
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
-    
-    <xsl:variable name="targetId" as="xs:string?" select="tokenize(@href, '#')[last()]"/>
-    
-    <wp:hyperlink href="#{$targetId}">
+    <xsl:variable name="targetId" as="xs:string?" select="@href"/>
+    <wp:hyperlink href="{$targetId}">
       <xsl:apply-templates>
         <xsl:with-param name="doDebug" as="xs:boolean" tunnel="yes" select="$doDebug"/>
       </xsl:apply-templates>
