@@ -46,6 +46,7 @@ import org.apache.poi.xwpf.usermodel.XWPFHyperlinkRun;
 import org.apache.poi.xwpf.usermodel.XWPFNum;
 import org.apache.poi.xwpf.usermodel.XWPFNumbering;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.apache.poi.xwpf.usermodel.XWPFRelation;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.apache.poi.xwpf.usermodel.XWPFStyle;
 import org.apache.poi.xwpf.usermodel.XWPFStyles;
@@ -2154,23 +2155,39 @@ public class DocxGenerator {
 
     // Set the appropriate target:
 
+    XWPFHyperlinkRun hyperlinkRun;
+
     if (href.startsWith("#")) {
       // Just a fragment ID, must be to a bookmark
       String bookmarkName = href.substring(1);
       hyperlink.setAnchor(bookmarkName);
+      cursor.push();
+      hyperlinkRun = makeHyperlinkRun(hyperlink, cursor, para);
+      cursor.pop();
     } else {
-      // Create a relationship that targets the href and use the
-      // relationship's ID on the hyperlink
-      // It's not yet clear from the POI API how to create a new relationship for
-      // use by an external hyperlink.
-      // throw new NotImplementedException("Links to external resources not yet implemented.");
+      // Add the link as External relationship
+      String id = para.getDocument().getPackagePart().addExternalRelationship(href, XWPFRelation.HYPERLINK.getRelation()).getId();
+
+      // Append the link and bind it to the relationship
+      hyperlink.setId(id);
+
+      // Create the linked text
+      String linkedText = cursor.getTextValue();
+      CTText ctText = CTText.Factory.newInstance();
+      ctText.setStringValue(linkedText);
+      CTR ctr = CTR.Factory.newInstance();
+      ctr.setTArray(new CTText[]{ctText});
+
+      // Create the formatting
+      CTRPr rpr = ctr.addNewRPr();
+      rpr.addNewRStyle().setVal("Hyperlink");
+
+      // Insert the linked text into the link
+      hyperlink.setRArray(new CTR[]{ctr});
+
+      hyperlinkRun = new XWPFHyperlinkRun(hyperlink, CTR.Factory.newInstance(), para);
     }
-
-    cursor.push();
-    XWPFHyperlinkRun hyperlinkRun = makeHyperlinkRun(hyperlink, cursor, para);
-    cursor.pop();
     para.addRun(hyperlinkRun);
-
   }
 
   /**
