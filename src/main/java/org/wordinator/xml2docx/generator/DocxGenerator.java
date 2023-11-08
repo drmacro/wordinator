@@ -38,6 +38,7 @@ import org.apache.poi.util.Units;
 import org.apache.poi.wp.usermodel.HeaderFooterType;
 import org.apache.poi.xwpf.usermodel.BreakType;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
+import org.apache.poi.xwpf.usermodel.TableWidthType;
 import org.apache.poi.xwpf.usermodel.UnderlinePatterns;
 import org.apache.poi.xwpf.usermodel.XWPFAbstractFootnoteEndnote;
 import org.apache.poi.xwpf.usermodel.XWPFAbstractNum;
@@ -89,6 +90,8 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTShd;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSimpleField;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTStyle;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTbl;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblGrid;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblGridCol;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblLayoutType;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblWidth;
@@ -382,6 +385,7 @@ public class DocxGenerator {
   }
 
   private static final Logger log = LogManager.getLogger(DocxGenerator.class);
+  private static final String DEFAULT_TABLE_WIDTH = "100%";
 
   private File outFile;
   private int dotsPerInch = 72; /* DPI */
@@ -2354,6 +2358,9 @@ public class DocxGenerator {
       } while (cursor.toNextSibling());
     }
 
+    setDefaultTableWidthIfNeeded(table);
+    addTableGridWithColumnsIfNeeded(table, colDefs);
+
     // populate the rows and cells.
     cursor = xml.newCursor();
 
@@ -3169,5 +3176,52 @@ public class DocxGenerator {
     return format;
   }
 
+  /**
+   * <p>
+   * Add table grid (w:tblGrid) and grid columns (w:gridCol) based on table column definitions.
+   * </p>
+   *
+   * @param table   XWPF table
+   * @param colDefs table column definitions
+   */
+  public static void addTableGridWithColumnsIfNeeded(XWPFTable table, TableColumnDefinitions colDefs) {
+    CTTblGrid tblGrid = table.getCTTbl().getTblGrid();
+    if (tblGrid == null) {
+      tblGrid = table.getCTTbl().addNewTblGrid();
+      for (TableColumnDefinition colDef : colDefs.getColumnDefinitions()) {
+        String specifiedWidth = colDef.getSpecifiedWidth();
+        CTTblGridCol gridCol = tblGrid.addNewGridCol();
+        BigInteger gridColWidth;
+        // logic below has been copied from XWPFTable.setWidthValue
+        if (specifiedWidth.matches(XWPFTable.REGEX_PERCENTAGE)) {
+          String numberPart = specifiedWidth.substring(0, specifiedWidth.length() - 1);
+          double percentage = Double.parseDouble(numberPart) * 50;
+          long intValue = Math.round(percentage);
+          gridColWidth = BigInteger.valueOf(intValue);
+        } else if (specifiedWidth.matches("auto")) {
+          gridColWidth = BigInteger.ZERO;
+        } else {
+          gridColWidth = new BigInteger(specifiedWidth);
+        }
+        gridCol.setW(gridColWidth);
+      }
+    }
+  }
+
+  /**
+   * <p>
+   * Set table width to 100% and change width type if needed for correct displaying in the both MS Word and LibreOffice
+   * </p>
+   *
+   * @param table XWPF table
+   */
+  public static void setDefaultTableWidthIfNeeded(XWPFTable table) {
+    if (table.getWidthType() == TableWidthType.AUTO && table.getWidth() == 0) {
+      table.setWidth(DEFAULT_TABLE_WIDTH);
+    } else if (table.getWidthType() == TableWidthType.NIL) {
+      table.setWidthType(TableWidthType.PCT);
+      table.setWidth(DEFAULT_TABLE_WIDTH);
+    }
+  }
 
 }
