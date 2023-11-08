@@ -18,9 +18,12 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.imageio.ImageIO;
 import javax.xml.namespace.QName;
@@ -35,6 +38,7 @@ import org.apache.poi.util.Units;
 import org.apache.poi.wp.usermodel.HeaderFooterType;
 import org.apache.poi.xwpf.usermodel.BreakType;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
+import org.apache.poi.xwpf.usermodel.TableWidthType;
 import org.apache.poi.xwpf.usermodel.UnderlinePatterns;
 import org.apache.poi.xwpf.usermodel.XWPFAbstractFootnoteEndnote;
 import org.apache.poi.xwpf.usermodel.XWPFAbstractNum;
@@ -46,6 +50,7 @@ import org.apache.poi.xwpf.usermodel.XWPFHyperlinkRun;
 import org.apache.poi.xwpf.usermodel.XWPFNum;
 import org.apache.poi.xwpf.usermodel.XWPFNumbering;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.apache.poi.xwpf.usermodel.XWPFRelation;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.apache.poi.xwpf.usermodel.XWPFStyle;
 import org.apache.poi.xwpf.usermodel.XWPFStyles;
@@ -71,6 +76,7 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTFtnEdn;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTHdrFtrRef;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTHyperlink;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTMarkupRange;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTNumPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTOnOff;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageMar;
@@ -84,6 +90,8 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTShd;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSimpleField;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTStyle;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTbl;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblGrid;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblGridCol;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblLayoutType;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblWidth;
@@ -377,6 +385,7 @@ public class DocxGenerator {
   }
 
   private static final Logger log = LogManager.getLogger(DocxGenerator.class);
+  private static final String DEFAULT_TABLE_WIDTH = "100%";
 
   private File outFile;
   private int dotsPerInch = 72; /* DPI */
@@ -390,6 +399,8 @@ public class DocxGenerator {
   private boolean isFirstParagraphStyleWarning = true;
   private boolean isFirstCharacterStyleWarning = true;
   private boolean isFirstTableStyleWarning = true;
+  private int maxNum;
+  private Map<String, List<XWPFParagraph>> numParas = new LinkedHashMap<>();
 
   /**
    *
@@ -416,8 +427,8 @@ public class DocxGenerator {
     setupNumbering(doc, this.templateDoc);
     setupStyles(doc, this.templateDoc);
     constructDoc(doc, xml);
-
-    FileOutputStream out = new FileOutputStream(outFile);
+    setNumbering(doc);
+    FileOutputStream out = new FileOutputStream(this.outFile);
         doc.write(out);
     doc.close();
   }
@@ -1230,6 +1241,7 @@ public class DocxGenerator {
     cursor.push();
     String styleName = cursor.getAttributeText(DocxConstants.QNAME_STYLE_ATT);
     String styleId = cursor.getAttributeText(DocxConstants.QNAME_STYLEID_ATT);
+    String numId = cursor.getAttributeText(DocxConstants.QNAME_NUMID_ATT);
 
     if (null != styleName && null == styleId) {
       // Look up the style by name:
@@ -1328,6 +1340,13 @@ public class DocxGenerator {
       } while(cursor.toNextSibling());
     }
     cursor.pop();
+
+    if (numId != null && !numId.isEmpty()) {
+      // Store Numbering paragraph
+      List<XWPFParagraph> paras = this.numParas.computeIfAbsent(numId, k -> new ArrayList<>());
+      paras.add(para);
+    }
+
     return para;
   }
 
@@ -2154,23 +2173,39 @@ public class DocxGenerator {
 
     // Set the appropriate target:
 
+    XWPFHyperlinkRun hyperlinkRun;
+
     if (href.startsWith("#")) {
       // Just a fragment ID, must be to a bookmark
       String bookmarkName = href.substring(1);
       hyperlink.setAnchor(bookmarkName);
+      cursor.push();
+      hyperlinkRun = makeHyperlinkRun(hyperlink, cursor, para);
+      cursor.pop();
     } else {
-      // Create a relationship that targets the href and use the
-      // relationship's ID on the hyperlink
-      // It's not yet clear from the POI API how to create a new relationship for
-      // use by an external hyperlink.
-      // throw new NotImplementedException("Links to external resources not yet implemented.");
+      // Add the link as External relationship
+      String id = para.getDocument().getPackagePart().addExternalRelationship(href, XWPFRelation.HYPERLINK.getRelation()).getId();
+
+      // Append the link and bind it to the relationship
+      hyperlink.setId(id);
+
+      // Create the linked text
+      String linkedText = cursor.getTextValue();
+      CTText ctText = CTText.Factory.newInstance();
+      ctText.setStringValue(linkedText);
+      CTR ctr = CTR.Factory.newInstance();
+      ctr.setTArray(new CTText[]{ctText});
+
+      // Create the formatting
+      CTRPr rpr = ctr.addNewRPr();
+      rpr.addNewRStyle().setVal("Hyperlink");
+
+      // Insert the linked text into the link
+      hyperlink.setRArray(new CTR[]{ctr});
+
+      hyperlinkRun = new XWPFHyperlinkRun(hyperlink, CTR.Factory.newInstance(), para);
     }
-
-    cursor.push();
-    XWPFHyperlinkRun hyperlinkRun = makeHyperlinkRun(hyperlink, cursor, para);
-    cursor.pop();
     para.addRun(hyperlinkRun);
-
   }
 
   /**
@@ -2322,6 +2357,9 @@ public class DocxGenerator {
         }
       } while (cursor.toNextSibling());
     }
+
+    setDefaultTableWidthIfNeeded(table);
+    addTableGridWithColumnsIfNeeded(table, colDefs);
 
     // populate the rows and cells.
     cursor = xml.newCursor();
@@ -2992,6 +3030,26 @@ public class DocxGenerator {
 
   }
 
+  private void setNumbering(XWPFDocument doc) {
+    int i = 1;
+
+    for (List<XWPFParagraph> paras : this.numParas.values()) {
+
+      int newNum = this.maxNum + i;
+      BigInteger bgiNumId = BigInteger.valueOf(newNum);
+      for (XWPFParagraph numPara : paras) {
+        CTPPr ctpPr = numPara.getCTPPr();
+        CTNumPr ctNumPr = ctpPr.addNewNumPr();
+        CTDecimalNumber decNumId = CTDecimalNumber.Factory.newInstance();
+        decNumId.setVal(bgiNumId);
+        ctNumPr.setNumId(decNumId);
+      }
+      doc.getNumbering().addNum(bgiNumId);
+
+      i++;
+    }
+  }
+
   private void setupNumbering(XWPFDocument doc, XWPFDocument templateDoc) throws DocxGenerationException {
     // Load the template's numbering definitions to the new document
 
@@ -3027,6 +3085,10 @@ public class DocxGenerator {
         }
       } while (num != null);
 
+
+      // Calculate max numbering number
+      Optional<XWPFNum> maxXwpfNum = numbering.getNums().stream().max(Comparator.comparing(o -> o.getCTNum().getNumId()));
+      this.maxNum = maxXwpfNum.map(xwpfNum -> xwpfNum.getCTNum().getNumId().intValue()).orElse(0);
 
     } catch (Exception e) {
       new DocxGenerationException(e.getClass().getSimpleName() + " Copying numbering definitions from template doc: " + e.getMessage(), e);
@@ -3114,5 +3176,86 @@ public class DocxGenerator {
     return format;
   }
 
+  /**
+   * <p>
+   * Add table grid (w:tblGrid) and grid columns (w:gridCol) based on table column definitions.
+   * </p>
+   *
+   * @param table   XWPF table
+   * @param colDefs table column definitions
+   */
+  public static void addTableGridWithColumnsIfNeeded(XWPFTable table, TableColumnDefinitions colDefs) {
+    setColumnsWidthInPercentagesIfAllHaveAutoWidth(colDefs);
+    CTTblGrid tblGrid = table.getCTTbl().getTblGrid();
+    if (tblGrid == null) {
+      tblGrid = table.getCTTbl().addNewTblGrid();
+      for (TableColumnDefinition colDef : colDefs.getColumnDefinitions()) {
+        String specifiedWidth = colDef.getSpecifiedWidth();
+        CTTblGridCol gridCol = tblGrid.addNewGridCol();
+        BigInteger gridColWidth;
+        // logic below has been copied from XWPFTable.setWidthValue
+        if (specifiedWidth.matches(XWPFTable.REGEX_PERCENTAGE)) {
+          String numberPart = specifiedWidth.substring(0, specifiedWidth.length() - 1);
+          double percentage = Double.parseDouble(numberPart) * 50;
+          long intValue = Math.round(percentage);
+          gridColWidth = BigInteger.valueOf(intValue);
+        } else if (specifiedWidth.matches("auto")) {
+          gridColWidth = BigInteger.ZERO;
+        } else {
+          gridColWidth = new BigInteger(specifiedWidth);
+        }
+        gridCol.setW(gridColWidth);
+      }
+    }
+  }
+
+  /**
+   * <p>
+   * Set table width to 100% and change width type if needed for correct displaying in the both MS Word and LibreOffice
+   * </p>
+   *
+   * @param table XWPF table
+   */
+  public static void setDefaultTableWidthIfNeeded(XWPFTable table) {
+    if (table.getWidthType() == TableWidthType.AUTO && table.getWidth() == 0) {
+      table.setWidth(DEFAULT_TABLE_WIDTH);
+    } else if (table.getWidthType() == TableWidthType.NIL) {
+      table.setWidthType(TableWidthType.PCT);
+      table.setWidth(DEFAULT_TABLE_WIDTH);
+    }
+  }
+
+  /**
+   * <p>
+   * Set columns width in percentages depending on columns count, if all columns have auto width
+   * </p>
+   *
+   * @param colDefs table column definitions
+   */
+  public static void setColumnsWidthInPercentagesIfAllHaveAutoWidth(TableColumnDefinitions colDefs) {
+    if (colDefs.getColumnDefinitions().isEmpty()) {
+      return;
+    }
+    boolean autoWidth = true;
+    for (TableColumnDefinition colDef : colDefs.getColumnDefinitions()) {
+      String specifiedWidth = colDef.getSpecifiedWidth();
+      if (!"auto".equalsIgnoreCase(specifiedWidth)) {
+        autoWidth = false;
+        break;
+      }
+    }
+    if (autoWidth) {
+      final int columnsCount = colDefs.getColumnDefinitions().size();
+      final int columnWidth = 100 / columnsCount;
+      final int dotsPerInch = 72;
+      for (TableColumnDefinition colDef : colDefs.getColumnDefinitions()) {
+        try {
+          colDef.setWidth(columnWidth + "%", dotsPerInch);
+        } catch (MeasurementException e) {
+          throw new RuntimeException("Error setting column width: " + columnWidth, e);
+        }
+      }
+    }
+  }
 
 }
