@@ -643,6 +643,12 @@ public class DocxGenerator {
       tocOptions += " \\o \"" + attValue + "\"";
     }
 
+    // Style names to select
+    attValue = cursor.getAttributeText(DocxConstants.QNAME_ARG_T_ATT);
+    if (null != attValue) {
+      tocOptions += " \\t \"" + attValue + "\"";
+    }
+
     // Omit page numbers in web view
     attValue = cursor.getAttributeText(DocxConstants.QNAME_ARG_Z_ATT);
     if ("false".equalsIgnoreCase(attValue)) {
