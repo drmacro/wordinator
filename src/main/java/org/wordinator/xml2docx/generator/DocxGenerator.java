@@ -739,14 +739,12 @@ public class DocxGenerator {
     // Hides tab leader and page numbers in web page view (§17.18.102).
     // Default is "true" per the SWPX grammar
     attValue = cursor.getAttributeText(DocxConstants.QNAME_ARG_Z_ATT);
-    log.info("arg-z value: \"" + attValue + "\"");
     if ("false".equalsIgnoreCase(attValue)) {
       // Omit \z option
     } else {
       tocOptions += " \\z";
     }
 
-    log.info("TOC Options: " + tocOptions);
     ctText.setStringValue("TOC " + tocOptions);
     
   }
