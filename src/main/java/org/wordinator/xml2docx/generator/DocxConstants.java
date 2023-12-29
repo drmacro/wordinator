@@ -22,9 +22,14 @@ public final class DocxConstants {
 
 	// Attributes:
 	public static final QName QNAME_ALIGN_ATT = new QName("", "align");
+  public static final QName QNAME_ARG_A_ATT = new QName("", "arg-a");
+  public static final QName QNAME_ARG_B_ATT = new QName("", "arg-b");
+  public static final QName QNAME_ARG_C_ATT = new QName("", "arg-c");
   public static final QName QNAME_ARG_D_ATT = new QName("", "arg-d");
   public static final QName QNAME_ARG_F_ATT = new QName("", "arg-f");
   public static final QName QNAME_ARG_H_ATT = new QName("", "arg-h");
+  public static final QName QNAME_ARG_L_ATT = new QName("", "arg-l");
+  public static final QName QNAME_ARG_N_ATT = new QName("", "arg-n");
   public static final QName QNAME_ARG_O_ATT = new QName("", "arg-o");
   public static final QName QNAME_ARG_P_ATT = new QName("", "arg-p");
   public static final QName QNAME_ARG_S_ATT = new QName("", "arg-s");

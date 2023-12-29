@@ -617,6 +617,26 @@ public class DocxGenerator {
     String tocOptions = "";
     String attValue = null;
 
+    // Includes captioned items, but omits caption labels and numbers.
+    attValue = cursor.getAttributeText(DocxConstants.QNAME_ARG_A_ATT);
+    if (null != attValue) {
+      tocOptions += " \\a \"" + attValue + "\"";
+    } // No default
+
+    // Includes entries only from the portion of the document marked by
+    // the named bookmark
+    attValue = cursor.getAttributeText(DocxConstants.QNAME_ARG_B_ATT);
+    if (null != attValue) {
+      tocOptions += " \\b \"" + attValue + "\"";
+    } // No default
+
+    // Includes figures, tables, charts, and other items that are numbered
+    // by a SEQ field
+    attValue = cursor.getAttributeText(DocxConstants.QNAME_ARG_C_ATT);
+    if (null != attValue) {
+      tocOptions += " \\c \"" + attValue + "\"";
+    } // No default
+
     // Sequence separator character
     attValue = cursor.getAttributeText(DocxConstants.QNAME_ARG_D_ATT);
     if (null != attValue) {
@@ -630,6 +650,7 @@ public class DocxGenerator {
     }
 
     // Use hyperlinks
+    // Default is "true" per the SWPX grammar
     attValue = cursor.getAttributeText(DocxConstants.QNAME_ARG_H_ATT);
     if ("false".equalsIgnoreCase(attValue)) {
       // Omit \h option
@@ -637,10 +658,46 @@ public class DocxGenerator {
       tocOptions += " \\h";
     }
 
+    // Levels to include
+    attValue = cursor.getAttributeText(DocxConstants.QNAME_ARG_L_ATT);
+    if (null != attValue) {     
+      tocOptions += " \\l \"" + attValue + "\"";
+    }
+
+    // Turn off page numbers
+    attValue = cursor.getAttributeText(DocxConstants.QNAME_ARG_N_ATT);
+    if (null != attValue) {     
+      tocOptions += " \\n";
+      if ("none".equalsIgnoreCase(attValue)) {
+        // No additional parameter
+      } else {
+        // Value is a range: 2-4
+        tocOptions += " \"" + attValue + "\"";
+      }
+    }
+
     // Heading levels to include
     attValue = cursor.getAttributeText(DocxConstants.QNAME_ARG_O_ATT);
     if (null != attValue) {
-      tocOptions += " \\o \"" + attValue + "\"";
+      if ("all".equalsIgnoreCase(attValue)) {
+        // No additional parameter
+        tocOptions += " \\o";
+      } else {
+        tocOptions += " \\o \"" + attValue + "\"";
+      }
+    }
+
+    // Entry and page number separator
+    attValue = cursor.getAttributeText(DocxConstants.QNAME_ARG_P_ATT);
+    if (null != attValue) {
+      tocOptions += " \\p \"" + attValue + "\"";
+    }
+
+    // For entries numbered with a SEQ field (§17.16.5.56), adds a prefix
+    // to the page number.
+    attValue = cursor.getAttributeText(DocxConstants.QNAME_ARG_S_ATT);
+    if (null != attValue) {
+      tocOptions += " \\s \"" + attValue + "\"";
     }
 
     // Style names to select
@@ -649,17 +706,49 @@ public class DocxGenerator {
       tocOptions += " \\t \"" + attValue + "\"";
     }
 
-    // Omit page numbers in web view
+    // Uses the applied paragraph outline level.
+    attValue = cursor.getAttributeText(DocxConstants.QNAME_ARG_U_ATT);
+    if (null != attValue) {
+      if ("false".equalsIgnoreCase(attValue)) {
+        // Omit \\u option
+      } else {
+        tocOptions += " \\u";
+      }
+    }
+    
+    // Preserves tab entries within table entries.
+    attValue = cursor.getAttributeText(DocxConstants.QNAME_ARG_W_ATT);
+    if (null != attValue) {
+      if ("false".equalsIgnoreCase(attValue)) {
+        // Omit \w option
+      } else {
+        tocOptions += " \\w";
+      }
+    }
+    
+    // Preserves newline characters within table entries.
+    attValue = cursor.getAttributeText(DocxConstants.QNAME_ARG_X_ATT);
+    if (null != attValue) {
+      if ("false".equalsIgnoreCase(attValue)) {
+        // Omit \x option
+      } else {
+        tocOptions += " \\x";
+      }
+    }
+    
+    // Hides tab leader and page numbers in web page view (§17.18.102).
+    // Default is "true" per the SWPX grammar
     attValue = cursor.getAttributeText(DocxConstants.QNAME_ARG_Z_ATT);
+    log.info("arg-z value: \"" + attValue + "\"");
     if ("false".equalsIgnoreCase(attValue)) {
-      // Omit \h option
+      // Omit \z option
     } else {
       tocOptions += " \\z";
     }
 
-    // FIXME: Do the rest of the edge case options: p, s, u, w, x
-
+    log.info("TOC Options: " + tocOptions);
     ctText.setStringValue("TOC " + tocOptions);
+    
   }
 
   private void makeParagraphStyle(XWPFDocument doc, String styleId, String string) {
@@ -702,9 +791,9 @@ public class DocxGenerator {
 
     CTSectPr sectPr = null;
 
-    if (log.isDebugEnabled()) {
-      // log.debug("handleSection(): Setting sectPr on last paragraph.");
-    }
+//    if (log.isDebugEnabled()) {
+//      log.debug("handleSection(): Setting sectPr on last paragraph.");
+//    }
     CTPPr ppr = (lastPara.getCTP().isSetPPr() ? lastPara.getCTP().getPPr() : lastPara.getCTP().addNewPPr());
     sectPr = ppr.addNewSectPr();
     ppr.setSectPr(sectPr);
