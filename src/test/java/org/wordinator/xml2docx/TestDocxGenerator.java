@@ -30,10 +30,14 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBody;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDocument1;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTFldChar;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageMar;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageNumber;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageSz;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTText;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STFldCharType;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.STNumberFormat;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.STPageOrientation;
 import org.wordinator.xml2docx.generator.DocxConstants;
 import org.wordinator.xml2docx.generator.DocxGenerator;
 
@@ -491,14 +495,43 @@ public class TestDocxGenerator extends TestCase {
 
     XWPFTableCell cell = row.getCell(0);
     contents = cell.getBodyElements();
-    assertEquals(1, contents.size());
+    assertEquals(2, contents.size());
 
     it = contents.iterator();
     elem = it.next();
     assertEquals(BodyElementType.TABLE, elem.getElementType());
     t = (XWPFTable) elem;
     assertEquals(2, t.getNumberOfRows());
+
+    elem = it.next();
+    assertEquals(BodyElementType.PARAGRAPH, elem.getElementType());
   }
+  
+  @Test
+  public void testTableEmptyCell() throws Exception {
+    XWPFDocument doc = convert("simplewp/simplewpml-table-empty-cell.swpx", "out/table-empty-cell.docx");
+
+    List<IBodyElement> contents = doc.getBodyElements();
+    assertEquals(1, contents.size());
+
+    Iterator<IBodyElement> it = contents.iterator();
+    IBodyElement elem = it.next();
+    assertEquals(BodyElementType.TABLE, elem.getElementType());
+
+    XWPFTable t = (XWPFTable) elem;
+    assertEquals(1, t.getNumberOfRows());
+
+    XWPFTableRow row = t.getRow(0);
+    assertEquals(2, row.getTableCells().size());
+
+    XWPFTableCell cell = row.getCell(0);
+    contents = cell.getBodyElements();
+    assertEquals(1, contents.size());
+
+    cell = row.getCell(1); // the empty cell
+    contents = cell.getBodyElements();
+    assertEquals(1, contents.size()); // used to fail with 0
+  }  
 
   @Test
   public void testNestedTableWidth() throws Exception {
@@ -513,6 +546,77 @@ public class TestDocxGenerator extends TestCase {
     Iterator<IBodyElement> it = contents.iterator();
     IBodyElement elem = it.next();
     assertEquals(BodyElementType.TABLE, elem.getElementType());
+  }
+
+  @Test
+  public void testNestedTableParaBeforeTable() throws Exception {
+    XWPFDocument doc = convert("simplewp/simplewpml-table-nested-03.swpx", "out/table-nested-01.docx");
+
+    List<IBodyElement> contents = doc.getBodyElements();
+    assertEquals(1, contents.size());
+
+    Iterator<IBodyElement> it = contents.iterator();
+    IBodyElement elem = it.next();
+    assertEquals(BodyElementType.TABLE, elem.getElementType());
+
+    XWPFTable t = (XWPFTable) elem;
+    assertEquals(1, t.getNumberOfRows());
+
+    XWPFTableRow row = t.getRow(0);
+    assertEquals(1, row.getTableCells().size());
+
+    XWPFTableCell cell = row.getCell(0);
+    contents = cell.getBodyElements();
+    assertEquals(3, contents.size());
+
+    it = contents.iterator();
+    elem = it.next();
+
+    assertEquals(BodyElementType.PARAGRAPH, elem.getElementType());
+    assertEquals("NOTE", ((XWPFParagraph) elem).getText());
+
+    elem = it.next();
+    assertEquals(BodyElementType.TABLE, elem.getElementType());
+    t = (XWPFTable) elem;
+    assertEquals(1, t.getNumberOfRows());
+
+    elem = it.next();
+    assertEquals(BodyElementType.PARAGRAPH, elem.getElementType());
+  }
+
+  @Test
+  public void testMultiSectionPageProps() throws Exception {
+    // verifies the solution to issues #68 and #117
+    XWPFDocument doc = convert("simplewp/simplewpml-multisection-01.swpx", "out/multisection-01.docx");
+
+    List<IBodyElement> contents = doc.getBodyElements();
+    assertEquals(2, contents.size());
+
+    Iterator<IBodyElement> it = contents.iterator();
+
+    IBodyElement elem = it.next();
+    assertEquals(BodyElementType.PARAGRAPH, elem.getElementType());
+    XWPFParagraph p = (XWPFParagraph) elem;
+    assertEquals("This is the first page numbered in Roman lower-case", p.getText());
+    assertTrue("first para lacks section properties", p.getCTPPr().isSetSectPr());
+
+    elem = it.next();
+    assertEquals(BodyElementType.PARAGRAPH, elem.getElementType());
+    p = (XWPFParagraph) elem;
+    assertEquals("This is the first page numbered in decimal", p.getText());
+    assertFalse("second para has section properties", p.getCTPPr().isSetSectPr());
+
+    CTSectPr sectPr = doc.getDocument().getBody().getSectPr();
+    CTPageNumber pgNum = sectPr.getPgNumType();
+    assertEquals(BigInteger.valueOf(1), pgNum.getStart());
+    assertEquals(STNumberFormat.Enum.forString("decimal"), pgNum.getFmt());
+
+    // FIXME: check header & footer (a bit tricky)
+
+    CTPageSz pageSz = sectPr.getPgSz();
+    assertEquals(STPageOrientation.Enum.forString("portrait"), pageSz.getOrient());
+    assertEquals(BigInteger.valueOf(11906), pageSz.getW());
+    assertEquals(BigInteger.valueOf(16838), pageSz.getH());
   }
 
   // ===== INTERNAL UTILITIES

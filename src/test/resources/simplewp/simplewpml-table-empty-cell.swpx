@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wp:document xmlns:wp="urn:ns:wordinator:simplewpml">
+  <wp:body>
+    <wp:table layout="auto" width="100%">
+      <wp:cols>
+        <wp:col colwidth="55%"/>
+        <wp:col colwidth="45%"/>
+      </wp:cols>
+      <wp:tbody>
+        <wp:tr>
+          <wp:td>
+            <wp:p>
+              <wp:run>A</wp:run>
+            </wp:p>
+          </wp:td>
+          <wp:td>
+            <!-- problem is here: empty cell leads to issues -->
+          </wp:td>
+        </wp:tr>
+      </wp:tbody>
+    </wp:table>
+  </wp:body>
+</wp:document>

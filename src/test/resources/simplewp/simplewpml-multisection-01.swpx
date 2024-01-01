@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wp:document xmlns:wp="urn:ns:wordinator:simplewpml">
+  <wp:body>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="lowerRoman"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal">
+              <wp:page-number-ref/>
+            </wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>This is the first page numbered in Roman lower-case</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="decimal"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal">
+              <wp:page-number-ref/>
+            </wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>This is the first page numbered in decimal</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+  </wp:body>
+</wp:document>
