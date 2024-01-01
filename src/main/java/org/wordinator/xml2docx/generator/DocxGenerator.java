@@ -2870,13 +2870,19 @@ public class DocxGenerator {
           ctTcPr.setVMerge(CTVMerge.Factory.newInstance());
         }
       } else {
-        // Cells always have at least one paragraph.
+        // Apache POI puts in an empty paragraph at the start, but we
+        // don't want it
         cell.removeParagraph(0);
+
+        // the cell has to *end* with a paragraph, so if the last one wasn't
+        // a paragraph we need to add one at the end
+        boolean lastIsParagraph = false;
 
         // convert the contents of the cell
         boolean hasMore = cursor.toFirstChild();
         while (hasMore) {
           if (cursor.getName().equals(DocxConstants.QNAME_P_ELEM)) {
+            lastIsParagraph = true;
             XWPFParagraph p = cell.addParagraph();
             makeParagraph(p, cursor);
             if (null != align) {
@@ -2892,6 +2898,8 @@ public class DocxGenerator {
               p.setAlignment(alignment);
             }
           } else if (cursor.getName().equals(DocxConstants.QNAME_TABLE_ELEM)) {
+            lastIsParagraph = false;
+
             // record how many tables were in the cell previously
             int preTables = cell.getCTTc().getTblList().size();
 
@@ -2913,6 +2921,10 @@ public class DocxGenerator {
           }
 
           hasMore = cursor.toNextSibling();
+        }
+
+        if (!lastIsParagraph) {
+          cell.addParagraph();
         }
       }
       cursor.pop();
