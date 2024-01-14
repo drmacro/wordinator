@@ -1461,6 +1461,34 @@
         <ref name="tocentry"/>
       </zeroOrMore>
       <optional>
+        <attribute name="arg-a">
+          <a:documentation>
+            <p>Includes captioned items, but omits caption labels and numbers.
+              The identifier designated by text in this switch's field-argument
+              corresponds to the caption label.</p>
+          </a:documentation>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="arg-b">
+          <a:documentation>
+            <p>Includes entries only from the portion of the document marked by
+              the bookmark named by the attribute value.</p>
+          </a:documentation>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="arg-c">
+          <a:documentation>
+            <p>Includes figures, tables, charts, and other items that are numbered
+              by a SEQ field (§17.16.5.56). The sequence identifier designated by
+              text in this switch's field-argument, which corresponds to the
+              caption label, shall match the identifier in the corresponding SEQ
+              field.</p>
+          </a:documentation>
+        </attribute>
+      </optional>
+      <optional>
         <attribute name="arg-d">
           <a:documentation>
             <p>Specifies the separator between sequence and page numbers.</p>
@@ -1483,6 +1511,31 @@
         </attribute>
       </optional>
       <optional>
+        <attribute name="arg-l">
+          <a:documentation>
+            <p>Includes TC fields that assign entries to one of the levels specified
+              by text in this switch's field-argument as a range having the form
+              startLevel-endLevel, where startLevel and endLevel are integers,
+              and startLevel has a value equal-to or less-than endLevel. TC fields
+              that assign entries to lower levels are skipped.</p>
+          </a:documentation>
+          <data type="string">
+            <param name="pattern">[0-9]+\-[0-9]+</param>
+          </data>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="arg-n">
+          <a:documentation>
+            <p>If value is "none", turns off page numbering. If value is a range as for @arg-l, it 
+            specifies the levels to omit page numbers from (i.e., arg-n="2-4").</p>
+          </a:documentation>
+          <data type="string">
+            <param name="pattern">none|([0-9]+\-[0-9]+)</param>
+          </data>
+        </attribute>
+      </optional>
+      <optional>
         <attribute name="arg-o">
           <a:documentation>
             <p>Uses paragraphs formatted with all or the specified range of builtin
@@ -1493,7 +1546,7 @@
             <p>If the value "all" is specified, then all heading styles are included.</p>
           </a:documentation>
           <data type="string">
-            <param name="pattern">'all'|([0-9]+\-[0-9]+)</param>
+            <param name="pattern">all|([0-9]+\-[0-9]+)</param>
           </data>
         </attribute>
       </optional>
@@ -1512,6 +1565,7 @@
               as a set of comma-separated doublets, with each doublet
               being a comma-separated set of style name and table of content
               level, i.e.: "Heading 1,1,Heading 2,2,Appendix 1,1,Appendix 2,2,Unnumbered Heading,1"</p>
+            <p>Can be combined with @arg-o.</p>
           </a:documentation>          
         </attribute>
       </optional>
