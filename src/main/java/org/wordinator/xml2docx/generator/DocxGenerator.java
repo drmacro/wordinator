@@ -30,6 +30,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.poi.openxml4j.opc.PackagePart;
 import org.apache.poi.ss.formula.eval.NotImplementedException;
 import org.apache.poi.util.Units;
 import org.apache.poi.wp.usermodel.HeaderFooterType;
@@ -47,6 +48,7 @@ import org.apache.poi.xwpf.usermodel.XWPFNum;
 import org.apache.poi.xwpf.usermodel.XWPFNumbering;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
+import org.apache.poi.xwpf.usermodel.XWPFSettings;
 import org.apache.poi.xwpf.usermodel.XWPFStyle;
 import org.apache.poi.xwpf.usermodel.XWPFStyles;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
@@ -443,12 +445,16 @@ public class DocxGenerator {
       setupPageSequence(doc, cursor.getObject());
     } else {
       CTDocument1 document = doc.getDocument();
+      
       CTBody body = (document.isSetBody() ? document.getBody() : document.addNewBody());
       @SuppressWarnings("unused")
       CTSectPr sectPr = (body.isSetSectPr() ? body.getSectPr() : body.addNewSectPr());
       // At this point let Word fill in the details.
-
+            
     }
+    
+    // Turn on update of fields on open, for example, to populate generated ToCs.
+    doc.enforceUpdateFields();
     cursor.pop();
 
   }
