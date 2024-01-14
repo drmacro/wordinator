@@ -43,6 +43,7 @@ import org.apache.poi.xwpf.usermodel.XWPFFooter;
 import org.apache.poi.xwpf.usermodel.XWPFHeader;
 import org.apache.poi.xwpf.usermodel.XWPFHeaderFooter;
 import org.apache.poi.xwpf.usermodel.XWPFHyperlinkRun;
+import org.apache.poi.xwpf.usermodel.XWPFHyperlink;
 import org.apache.poi.xwpf.usermodel.XWPFNum;
 import org.apache.poi.xwpf.usermodel.XWPFNumbering;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
@@ -2244,23 +2245,19 @@ public class DocxGenerator {
     // while everything else is a URI to an external resource.
 
     CTHyperlink hyperlink = para.getCTP().addNewHyperlink();
-
+    XWPFHyperlinkRun hyperlinkRun = makeHyperlinkRun(hyperlink, cursor, para);
     // Set the appropriate target:
 
     if (href.startsWith("#")) {
       // Just a fragment ID, must be to a bookmark
       String bookmarkName = href.substring(1);
       hyperlink.setAnchor(bookmarkName);
+      cursor.push();
+      
     } else {
-      // Create a relationship that targets the href and use the
-      // relationship's ID on the hyperlink
-      // It's not yet clear from the POI API how to create a new relationship for
-      // use by an external hyperlink.
-      // throw new NotImplementedException("Links to external resources not yet implemented.");
+      
     }
 
-    cursor.push();
-    XWPFHyperlinkRun hyperlinkRun = makeHyperlinkRun(hyperlink, cursor, para);
     cursor.pop();
     para.addRun(hyperlinkRun);
 
