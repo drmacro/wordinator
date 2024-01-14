@@ -2963,49 +2963,54 @@ public class DocxGenerator {
           ctTcPr.setVMerge(CTVMerge.Factory.newInstance());
         }
       } else {
-        // Cells always have at least one paragraph.
-        cell.removeParagraph(0);
-
         // convert the contents of the cell
         boolean hasMore = cursor.toFirstChild();
-        while (hasMore) {
-          if (cursor.getName().equals(DocxConstants.QNAME_P_ELEM)) {
-            XWPFParagraph p = cell.addParagraph();
-            makeParagraph(p, cursor);
-            if (null != align) {
-              if ("JUSTIFY".equalsIgnoreCase(align)) {
-                // Issue 18: "BOTH" is the better match to "JUSTIFY"
-                align = "BOTH"; // Slight mistmatch between markup and model
+        // Issue 134: If <td> is empty, hasMore will be false.
+        if (!hasMore) {
+          // Leave the empty paragraph, which is required by Word.
+        } else {
+          // Cells always have at least one paragraph.
+          cell.removeParagraph(0);
+
+          while (hasMore) {
+            if (cursor.getName().equals(DocxConstants.QNAME_P_ELEM)) {
+              XWPFParagraph p = cell.addParagraph();
+              makeParagraph(p, cursor);
+              if (null != align) {
+                if ("JUSTIFY".equalsIgnoreCase(align)) {
+                  // Issue 18: "BOTH" is the better match to "JUSTIFY"
+                  align = "BOTH"; // Slight mistmatch between markup and model
+                }
+                if ("CHAR".equalsIgnoreCase(align)) {
+                  // I'm not sure this is the best mapping but it seemed close enough
+                  align = "NUM_TAB"; // Slight mistmatch between markup and model
+                }
+                ParagraphAlignment alignment = ParagraphAlignment.valueOf(align.toUpperCase());
+                p.setAlignment(alignment);
               }
-              if ("CHAR".equalsIgnoreCase(align)) {
-                // I'm not sure this is the best mapping but it seemed close enough
-                align = "NUM_TAB"; // Slight mistmatch between markup and model
-              }
-              ParagraphAlignment alignment = ParagraphAlignment.valueOf(align.toUpperCase());
-              p.setAlignment(alignment);
+            } else if (cursor.getName().equals(DocxConstants.QNAME_TABLE_ELEM)) {
+              // record how many tables were in the cell previously
+              int preTables = cell.getCTTc().getTblList().size();
+  
+              CTTbl ctTbl = cell.getCTTc().addNewTbl();
+              ctTbl = cell.getCTTc().addNewTbl();
+              CTTblPr tblPr = ctTbl.addNewTblPr();
+              tblPr.addNewTblW();
+  
+              XWPFTable nestedTable = new XWPFTable(ctTbl, cell);
+              makeTable(nestedTable, cursor.getObject());
+  
+              // for some reason this inserts two tables, where the
+              // first one is empty. we need to remove that one.
+              // luckily, the number of tables we used to have equals
+              // the index of the first new table
+              cell.getCTTc().removeTbl(preTables);
+            } else {
+              log.warn("Table cell contains unknown element {} -- skipping", cursor.getName());
             }
-          } else if (cursor.getName().equals(DocxConstants.QNAME_TABLE_ELEM)) {
-            // record how many tables were in the cell previously
-            int preTables = cell.getCTTc().getTblList().size();
-
-            CTTbl ctTbl = cell.getCTTc().addNewTbl();
-            ctTbl = cell.getCTTc().addNewTbl();
-            CTTblPr tblPr = ctTbl.addNewTblPr();
-            tblPr.addNewTblW();
-
-            XWPFTable nestedTable = new XWPFTable(ctTbl, cell);
-            makeTable(nestedTable, cursor.getObject());
-
-            // for some reason this inserts two tables, where the
-            // first one is empty. we need to remove that one.
-            // luckily, the number of tables we used to have equals
-            // the index of the first new table
-            cell.getCTTc().removeTbl(preTables);
-          } else {
-            log.warn("Table cell contains unknown element {} -- skipping", cursor.getName());
+  
+            hasMore = cursor.toNextSibling();
           }
-
-          hasMore = cursor.toNextSibling();
         }
       }
       cursor.pop();
