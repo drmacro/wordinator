@@ -65,6 +65,6 @@
       <bookmarkEnd id="IDunique_6_Connect_42_li_olb_5tg_tt"/>
     </p>
     <p><run>External hyperlink: </run><hyperlink href="https://github.com/drmacro/wordinator"><run>Wordinator</run>
-      <run>After hyperlink para with external hyperlink</run></hyperlink></p>
+    </hyperlink><run>After hyperlink para with external hyperlink</run></p>
  </body>
 </document>

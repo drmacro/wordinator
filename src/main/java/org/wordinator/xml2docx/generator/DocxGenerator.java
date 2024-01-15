@@ -2248,21 +2248,25 @@ public class DocxGenerator {
     // an anchor, otherwise we create an external hyperlink to a URI.
 
     CTHyperlink hyperlink = para.getCTP().addNewHyperlink();
-    XWPFHyperlinkRun hyperlinkRun = makeHyperlinkRun(hyperlink, cursor, para);      
+
+    // Set the appropriate target:
+
     if (href.startsWith("#")) {
-      // Just a fragment ID, must be to a bookmark
+      // Just a fragment ID, must be to a bookmark, set @anchor attribute.
       String bookmarkName = href.substring(1);
       hyperlink.setAnchor(bookmarkName);
     } else {
       // Create an external hyperlink. This creates the necessary relationship.
       // Not using the createHyperlinkRun() of paragraph because it doesn't handle the
-      // runs within the <hyperlink>. The 
+      // runs within the <hyperlink> as we need. Set the @rId attribute.
       String rId = para.getDocument().getPackagePart().addExternalRelationship(href, XWPFRelation.HYPERLINK.getRelation()).getId();
-      hyperlinkRun.setHyperlinkId(rId);
+      hyperlink.setId(rId);
     }
+
+    cursor.push();
+    XWPFHyperlinkRun hyperlinkRun = makeHyperlinkRun(hyperlink, cursor, para);
+    cursor.pop();
     para.addRun(hyperlinkRun);
-
-
   }
 
   /**
