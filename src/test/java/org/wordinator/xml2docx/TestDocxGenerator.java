@@ -251,7 +251,7 @@ public class TestDocxGenerator extends TestCase {
     XWPFParagraph p = iterator.next();
     assertNotNull("Expected a paragraph", p);
     assertEquals("Issue 65: Data following hyperlink is dropped", p.getText());
-    // Normal footnote with generated ref
+    // Hyperlink to a bookmark (internal link):
     p = iterator.next();
     Iterator<IRunElement> runIterator = p.getIRuns().iterator();
     assertTrue("Expected runs", runIterator.hasNext());
@@ -259,9 +259,26 @@ public class TestDocxGenerator extends TestCase {
     assertEquals("First run in para before the hyperlink", ((XWPFRun)run).getText(0));
     run = runIterator.next(); // Should be the hyperlink
     assertTrue("Expected a XWPFHyperlinkRun", run instanceof XWPFHyperlinkRun);
-    assertTrue("Expected fun following the hyperlink", runIterator.hasNext());
-    run = runIterator.next(); // Should be the hyperlink
+    assertTrue("Expected run following the hyperlink", runIterator.hasNext());
+    run = runIterator.next(); 
     assertEquals("Run after the hyperlink.", ((XWPFRun)run).getText(0));
+    // Now look for external link:
+    p = iterator.next();
+    assertNotNull("Expected another paragraph after internal hyperlink", p);
+    p = iterator.next();
+    assertNotNull("Expected another paragraph after internal hyperlink", p);
+    p = iterator.next(); // Should be paragraph with hyperlink
+    assertNotNull("Expected another paragraph after internal hyperlink", p);
+    runIterator = p.getIRuns().iterator();
+    assertTrue("Expected runs", runIterator.hasNext());
+    run = runIterator.next();
+    assertTrue("First run in para before the hyperlink", ((XWPFRun)run).getText(0).startsWith("External hyperlink:"));
+    run = runIterator.next(); // Should be the hyperlink
+    assertTrue("Expected a XWPFHyperlinkRun", run instanceof XWPFHyperlinkRun);
+    XWPFHyperlinkRun linkRun = (XWPFHyperlinkRun)run;
+    String rId = linkRun.getHyperlinkId();
+    assertNotNull("Expected and rId", rId);
+    
   }
 
   @Test
