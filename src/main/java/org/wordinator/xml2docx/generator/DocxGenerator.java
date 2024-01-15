@@ -43,10 +43,10 @@ import org.apache.poi.xwpf.usermodel.XWPFFooter;
 import org.apache.poi.xwpf.usermodel.XWPFHeader;
 import org.apache.poi.xwpf.usermodel.XWPFHeaderFooter;
 import org.apache.poi.xwpf.usermodel.XWPFHyperlinkRun;
-import org.apache.poi.xwpf.usermodel.XWPFHyperlink;
 import org.apache.poi.xwpf.usermodel.XWPFNum;
 import org.apache.poi.xwpf.usermodel.XWPFNumbering;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.apache.poi.xwpf.usermodel.XWPFRelation;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.apache.poi.xwpf.usermodel.XWPFStyle;
 import org.apache.poi.xwpf.usermodel.XWPFStyles;
@@ -1757,7 +1757,7 @@ public class DocxGenerator {
         }
       }
 
-      noteCursor.dispose();
+      noteCursor.close();
 
     }
 
@@ -2244,22 +2244,24 @@ public class DocxGenerator {
     // Convention in simple WP XML is fragment identifiers are to bookmark IDs,
     // while everything else is a URI to an external resource.
 
-    CTHyperlink hyperlink = para.getCTP().addNewHyperlink();
-    XWPFHyperlinkRun hyperlinkRun = makeHyperlinkRun(hyperlink, cursor, para);
-    // Set the appropriate target:
+    // If the hyperlink is to a bookmark (just a fragment ID) then we we create a hyperlink with
+    // an anchor, otherwise we create an external hyperlink to a URI.
 
+    CTHyperlink hyperlink = para.getCTP().addNewHyperlink();
+    XWPFHyperlinkRun hyperlinkRun = makeHyperlinkRun(hyperlink, cursor, para);      
     if (href.startsWith("#")) {
       // Just a fragment ID, must be to a bookmark
       String bookmarkName = href.substring(1);
       hyperlink.setAnchor(bookmarkName);
-      cursor.push();
-      
     } else {
-      
+      // Create an external hyperlink. This creates the necessary relationship.
+      // Not using the createHyperlinkRun() of paragraph because it doesn't handle the
+      // runs within the <hyperlink>. The 
+      String rId = para.getDocument().getPackagePart().addExternalRelationship(href, XWPFRelation.HYPERLINK.getRelation()).getId();
+      hyperlinkRun.setHyperlinkId(rId);
     }
-
-    cursor.pop();
     para.addRun(hyperlinkRun);
+
 
   }
 

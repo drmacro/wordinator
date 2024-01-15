@@ -259,7 +259,7 @@ public class TestDocxGenerator extends TestCase {
     assertEquals("First run in para before the hyperlink", ((XWPFRun)run).getText(0));
     run = runIterator.next(); // Should be the hyperlink
     assertTrue("Expected a XWPFHyperlinkRun", run instanceof XWPFHyperlinkRun);
-    assertTrue("Expected fun following the hyperlink", runIterator.hasNext());
+    assertTrue("Expected run following the hyperlink", runIterator.hasNext());
     run = runIterator.next(); // Should be the hyperlink
     assertEquals("Run after the hyperlink.", ((XWPFRun)run).getText(0));
   }
