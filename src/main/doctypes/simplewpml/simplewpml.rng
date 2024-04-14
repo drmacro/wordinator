@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <grammar xmlns="http://relaxng.org/ns/structure/1.0">
+  <!-- simplewpml-mathml3.rng includes simplewpml-base.rng and also the MathML3 RNG -->
   <include href="simplewpml-mathml3.rng"/>
 </grammar>
