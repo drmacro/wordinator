@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.Locale;
 
 import org.apache.poi.ooxml.POIXMLProperties;
 import org.apache.poi.ooxml.POIXMLProperties.CoreProperties;
+import org.apache.poi.ooxml.POIXMLProperties.CustomProperties;
 import org.apache.poi.ooxml.POIXMLProperties.ExtendedProperties;
 import org.apache.poi.xwpf.model.XWPFHeaderFooterPolicy;
 import org.apache.poi.xwpf.usermodel.BodyElementType;
@@ -32,6 +34,8 @@ import org.apache.poi.xwpf.usermodel.XWPFTableRow;
 import org.apache.xmlbeans.XmlCursor;
 import org.apache.xmlbeans.XmlObject;
 import org.junit.Test;
+import org.openxmlformats.schemas.officeDocument.x2006.customProperties.CTProperties;
+import org.openxmlformats.schemas.officeDocument.x2006.customProperties.CTProperty;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBody;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDocument1;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTFldChar;
@@ -556,8 +560,38 @@ public class TestDocxGenerator extends TestCase {
     assertNotNull("Expected a value for 'version' property", value);
     assertEquals("Expected \"" + expected + "\", got \"" + value + "\"", expected, value);
     
+    // Test extended properties:
+    
     ExtendedProperties extendedProperties = properties.getExtendedProperties();
     assertNotNull("Expected an ExtendedProperties object", extendedProperties);
+
+    // Test custom properties:
+    
+    CustomProperties customProperties = properties.getCustomProperties();
+    assertNotNull("Expected a CustomProperties object", customProperties);
+    
+    // There doesn't seem to be a method to directly query the set of defined
+    // properties.
+    CTProperty[] props = customProperties.getUnderlyingProperties().getPropertyArray();
+    assertEquals("Expected 2 properties, got " + props.length, props.length, 2);
+    
+    for (int i = 0; i < props.length; i++) {
+		CTProperty prop = props[i];
+		assertNotNull("Expected a CTProperty object for property", prop);
+    }
+    
+    String propName = "prop-1";
+    value = props[0].getLpwstr();
+    expected = "value 01";
+    assertEquals("Expected \"" + expected + "\", got \"" + value + "\"", expected, value);
+    
+    propName = "prop 2";
+    CTProperty prop = customProperties.getProperty(propName);
+    assertNotNull("Expected a CTProperty object for property '" + propName + "'", prop);
+    value = prop.getLpwstr();
+    expected = "value 02";
+    assertEquals("Expected \"" + expected + "\", got \"" + value + "\"", expected, value);
+    
   }
 
   public void testImageFromUrl() throws Exception {

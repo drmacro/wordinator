@@ -123,22 +123,26 @@ public final class DocxConstants {
 	// Elements:
 	public static final QName QNAME_COLS_ELEM = new QName(SIMPLE_WP_NS, "cols");
 	public static final QName QNAME_COL_ELEM = new QName(SIMPLE_WP_NS, "col");
-  public static final QName QNAME_FIELDRESULTS_ELEM = new QName(SIMPLE_WP_NS, "fieldResults");
-  public static final QName QNAME_FOOTNOTEREF_ELEM = new QName(OO_WPML_NS, "footnoteRef");
-  public static final QName QNAME_FOOTNOTEREFEREMCE_ELEM = new QName(OO_WPML_NS, "footnoteReference");
-  public static final QName QNAME_INSTRUCTIONTEXT_ELEM = new QName(SIMPLE_WP_NS, "instructionText");
-  public static final QName QNAME_P_ELEM = new QName(SIMPLE_WP_NS, "p");
-  public static final QName QNAME_W_P_ELEM = new QName(OO_WPML_NS, "p");
-  public static final QName QNAME_R_ELEM = new QName(OO_WPML_NS, "r");
-  public static final QName QNAME_ROW_ELEM = new QName(SIMPLE_WP_NS, "row");
-  public static final QName QNAME_T_ELEM = new QName(OO_WPML_NS, "t"); // w:t -- text element
-  public static final QName QNAME_TABLE_ELEM = new QName(SIMPLE_WP_NS, "table"); // w:table -- table element
+	public static final QName QNAME_CORE_PROPERTIES_ELEM = new QName(SIMPLE_WP_NS, "core-properties");
+	public static final QName QNAME_CUSTOM_PROPERTIES_ELEM = new QName(SIMPLE_WP_NS, "custom-properties");
+	public static final QName QNAME_DOCUMENT_PROPERTIES_ELEM = new QName(SIMPLE_WP_NS, "document-properties");
+	public static final QName QNAME_EXTENDED_PROPERTIES_ELEM = new QName(SIMPLE_WP_NS, "extended-properties");
+	public static final QName QNAME_FIELDRESULTS_ELEM = new QName(SIMPLE_WP_NS, "fieldResults");
+	public static final QName QNAME_FOOTNOTEREF_ELEM = new QName(OO_WPML_NS, "footnoteRef");
+	public static final QName QNAME_FOOTNOTEREFEREMCE_ELEM = new QName(OO_WPML_NS, "footnoteReference");
+	public static final QName QNAME_INSTRUCTIONTEXT_ELEM = new QName(SIMPLE_WP_NS, "instructionText");
+	public static final QName QNAME_P_ELEM = new QName(SIMPLE_WP_NS, "p");
+	public static final QName QNAME_W_P_ELEM = new QName(OO_WPML_NS, "p");
+	public static final QName QNAME_R_ELEM = new QName(OO_WPML_NS, "r");
+	public static final QName QNAME_ROW_ELEM = new QName(SIMPLE_WP_NS, "row");
+	public static final QName QNAME_T_ELEM = new QName(OO_WPML_NS, "t"); // w:t -- text element
+	public static final QName QNAME_TABLE_ELEM = new QName(SIMPLE_WP_NS, "table"); // w:table -- table element
 	public static final QName QNAME_THEAD_ELEM = new QName(SIMPLE_WP_NS, "thead");
 	public static final QName QNAME_TBODY_ELEM = new QName(SIMPLE_WP_NS, "tbody");
 	public static final QName QNAME_TR_ELEM = new QName(SIMPLE_WP_NS, "tr");
 	public static final QName QNAME_TD_ELEM = new QName(SIMPLE_WP_NS, "td");
 	public static final QName QNAME_VSPAN_ELEM = new QName(SIMPLE_WP_NS, "vspan");
-
+	
 	public static final String PROPERTY_VALUE_CONTINUOUS = "continuous";
   public static final String PROPERTY_PAGEBREAK = "pagebreak";
   public static final QName QNAME_TCPR_ELEM = new QName(OO_WPML_NS, "tcPr");

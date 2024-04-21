@@ -37,6 +37,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.poi.ooxml.POIXMLProperties;
 import org.apache.poi.ooxml.POIXMLProperties.CoreProperties;
 import org.apache.poi.ooxml.POIXMLProperties.ExtendedProperties;
+import org.apache.poi.ooxml.POIXMLProperties.CustomProperties;
 import org.apache.poi.ss.formula.eval.NotImplementedException;
 import org.apache.poi.util.Units;
 import org.apache.poi.wp.usermodel.HeaderFooterType;
@@ -478,22 +479,20 @@ public class DocxGenerator {
 		  XmlObject xml) {
 	  XmlCursor cursor = xml.newCursor();
 	  cursor.push();
-	  if (cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "core-properties"))) {
+	  if (cursor.toChild(DocxConstants.QNAME_CORE_PROPERTIES_ELEM)) {
 		  handleCoreProperties(doc, cursor.getObject());
 	  }
 	  cursor.pop();
-	  if (cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "extended-properties"))) {
+	  cursor.push();
+	  if (cursor.toChild(DocxConstants.QNAME_EXTENDED_PROPERTIES_ELEM)) {
 		  handleExtendedProperties(doc, cursor.getObject());
+	  }
+	  cursor.pop();
+	  if (cursor.toChild(DocxConstants.QNAME_CUSTOM_PROPERTIES_ELEM)) {
+		  handleCustomProperties(doc, cursor.getObject());
 	  }
 	  
   }
-
-private void handleExtendedProperties(XWPFDocument doc, XmlObject object) {
-	POIXMLProperties properties = doc.getProperties();
-	ExtendedProperties extendedProperties = properties.getExtendedProperties();
-	// Handle the extended properties.
-	
-}
 
 /**
  * Set core properties from the <core-properties> element.
@@ -560,10 +559,36 @@ private void handleCoreProperties(XWPFDocument doc, XmlObject xml) {
 				log.warn("handleCoreProperties(): Unexpected element '" + tagName + "' in <core-properties>. Ignored.");
 			}
 		} while (cursor.toNextSibling());
-	}
+	}	
+}
 
+private void handleExtendedProperties(XWPFDocument doc, XmlObject xml) {
+	POIXMLProperties properties = doc.getProperties();
+	ExtendedProperties extendedProperties = properties.getExtendedProperties();
+	// Handle the extended properties.
+	
 	
 }
+
+private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
+	POIXMLProperties properties = doc.getProperties();
+	CustomProperties customProperties = properties.getCustomProperties();
+	
+	XmlCursor cursor = xml.newCursor();	
+	if (cursor.toFirstChild()) {
+		do {
+			String tagName = cursor.getName().getLocalPart();
+			String value = cursor.getTextValue();
+			String propName = cursor.getAttributeText(DocxConstants.QNAME_NAME_ATT);
+			if (propName == null || "".equals(propName)) {
+				log.warn("handleCustomProperties(): No value for required @name attribute on <" + tagName + "> element with value '" + value + "'");
+				continue;				
+			}
+			customProperties.addProperty(propName, value);
+		} while (cursor.toNextSibling());
+	}
+}
+
 
 /**
    * Process the elements in &lt;body&gt;

@@ -59,6 +59,9 @@
       <optional>
         <ref name="extended-properties"/>
       </optional>
+      <optional>
+        <ref name="custom-properties"/>
+      </optional>
     </element>
   </define>
   
@@ -131,6 +134,25 @@
           <optional><element name="AppVersion"><text/></element></optional>
           <optional><element name="DocSecurity"><text/></element></optional>
         </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  
+  <define name="custom-properties">
+    <element name="custom-properties" ns="urn:ns:wordinator:simplewpml">
+      <a:documentation>
+        <p>Custom properties</p>
+        <p>Custom properties are arbitrary name-value pairs.</p>
+      </a:documentation>  
+      <zeroOrMore>
+        <element name="property"  ns="urn:ns:wordinator:simplewpml">
+          <attribute name="name">
+            <a:documentation>
+              <p>The name of the property. May contain spaces.</p>
+            </a:documentation>
+          </attribute>
+          <text></text>
+        </element>
       </zeroOrMore>
     </element>
   </define>

@@ -20,9 +20,14 @@
       <version>1</version>
     </core-properties> 
     <extended-properties>
+      <Manager>Ima In Charge</Manager>
       <Application>Wordinator</Application>
       <Company>Planet-Sized Brains</Company>
     </extended-properties>
+    <custom-properties>
+      <property name="prop-1">value 01</property>
+      <property name="prop 2">value 02</property>
+    </custom-properties>
   </document-properties>
   <page-sequence-properties>
     <page-number-properties
@@ -55,7 +60,7 @@
       <run style="Strong">Issue 140 Test of document properties</run>
     </p>
     <p style="normal">
-      <run>This document sets all the core and extended properties.</run>
+      <run>This document sets all the core and some extended properties.</run>
     </p>
   </body>
 </document>
