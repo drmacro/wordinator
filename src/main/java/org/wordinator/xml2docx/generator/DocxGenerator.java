@@ -562,12 +562,129 @@ private void handleCoreProperties(XWPFDocument doc, XmlObject xml) {
 	}	
 }
 
+/**
+ * Handle the <extended-properties> element.
+ * @param doc XWPF document to set the properties on
+ * @param xml <extended-properties> element.
+ */
 private void handleExtendedProperties(XWPFDocument doc, XmlObject xml) {
 	POIXMLProperties properties = doc.getProperties();
 	ExtendedProperties extendedProperties = properties.getExtendedProperties();
-	// Handle the extended properties.
+	XmlCursor cursor = xml.newCursor();	
 	
-	
+	if (cursor.toFirstChild()) {
+		do {
+			String tagName = cursor.getName().getLocalPart();
+			String value = cursor.getTextValue();
+			if ("Application".equals(tagName)) {
+				extendedProperties.setApplication(value);
+			} else if ("AppVersion".equals(tagName)) {
+				extendedProperties.setAppVersion(value);
+			} else if ("Characters".equals(tagName)) {
+				try {
+					int intValue = Integer.parseInt(value);
+					extendedProperties.setCharacters(intValue);
+				} catch (Exception e) {
+					log.warn("handleExtendedProperties(): " + e.getClass().getSimpleName() + " parsing <" + tagName + "> value '" + value + "'");
+				}
+			} else if ("CharactersWithSpaces".equals(tagName)) {
+				try {
+					int intValue = Integer.parseInt(value);
+					extendedProperties.setCharactersWithSpaces(intValue);
+				} catch (Exception e) {
+					log.warn("handleExtendedProperties(): " + e.getClass().getSimpleName() + " parsing <" + tagName + "> value '" + value + "'");
+				}
+			} else if ("Company".equals(tagName)) {
+				extendedProperties.setCompany(value);
+			} else if ("DigSig".equals(tagName)) {
+				log.warn("handleExtendedProperties(): No set method for '" + tagName + "' extended property.");
+			} else if ("DocSecurity".equals(tagName)) {
+				log.warn("handleExtendedProperties(): No set method for '" + tagName + "' extended property.");
+			} else if ("HeadingPairs".equals(tagName)) {
+				log.warn("handleExtendedProperties(): No set method for '" + tagName + "' extended property.");
+			} else if ("HiddenSlides".equals(tagName)) {
+				try {
+					int intValue = Integer.parseInt(value);
+					extendedProperties.setHiddenSlides(intValue);
+				} catch (Exception e) {
+					log.warn("handleExtendedProperties(): " + e.getClass().getSimpleName() + " parsing <" + tagName + "> value '" + value + "'");
+				}
+			} else if ("HLinks".equals(tagName)) {
+				log.warn("handleExtendedProperties(): No set method for '" + tagName + "' extended property.");
+			} else if ("HyperlinkBase".equals(tagName)) {
+				extendedProperties.setHyperlinkBase(value);
+			} else if ("HyperlinksChanged".equals(tagName)) {
+				log.warn("handleExtendedProperties(): No set method for '" + tagName + "' extended property.");
+			} else if ("Lines".equals(tagName)) {
+				try {
+					int intValue = Integer.parseInt(value);
+					extendedProperties.setLines(intValue);
+				} catch (Exception e) {
+					log.warn("handleExtendedProperties(): " + e.getClass().getSimpleName() + " parsing <" + tagName + "> value '" + value + "'");
+				}
+			} else if ("LinksUpToDate".equals(tagName)) {
+				log.warn("handleExtendedProperties(): No set method for '" + tagName + "' extended property.");
+			} else if ("Manager".equals(tagName)) {
+				extendedProperties.setManager(value);
+			} else if ("MMClips".equals(tagName)) {
+				try {
+					int intValue = Integer.parseInt(value);
+					extendedProperties.setMMClips(intValue);
+				} catch (Exception e) {
+					log.warn("handleExtendedProperties(): " + e.getClass().getSimpleName() + " parsing <" + tagName + "> value '" + value + "'");
+				}
+			} else if ("Notes".equals(tagName)) {
+				try {
+					int intValue = Integer.parseInt(value);
+					extendedProperties.setNotes(intValue);
+				} catch (Exception e) {
+					log.warn("handleExtendedProperties(): " + e.getClass().getSimpleName() + " parsing <" + tagName + "> value '" + value + "'");
+				}
+			} else if ("Paragraphs".equals(tagName)) {
+				try {
+					int intValue = Integer.parseInt(value);
+					extendedProperties.setParagraphs(intValue);
+				} catch (Exception e) {
+					log.warn("handleExtendedProperties(): " + e.getClass().getSimpleName() + " parsing <" + tagName + "> value '" + value + "'");
+				}
+			} else if ("PresentationFormat".equals(tagName)) {
+				extendedProperties.setPresentationFormat(value);
+			} else if ("ScaleCrop".equals(tagName)) {
+				log.warn("handleExtendedProperties(): No set method for '" + tagName + "' extended property.");
+			} else if ("SharedDoc".equals(tagName)) {
+				log.warn("handleExtendedProperties(): No set method for '" + tagName + "' extended property.");
+			} else if ("Slides".equals(tagName)) {
+				try {
+					int intValue = Integer.parseInt(value);
+					extendedProperties.setParagraphs(intValue);
+				} catch (Exception e) {
+					log.warn("handleExtendedProperties(): " + e.getClass().getSimpleName() + " parsing <" + tagName + "> value '" + value + "'");
+				}
+			} else if ("Template".equals(tagName)) {
+				extendedProperties.setTemplate(value);
+			} else if ("TitlesOfParts".equals(tagName)) {
+				log.warn("handleExtendedProperties(): No set method for '" + tagName + "' extended property.");
+			} else if ("TotalTime".equals(tagName)) {
+				try {
+					int intValue = Integer.parseInt(value);
+					extendedProperties.setTotalTime(intValue);
+				} catch (Exception e) {
+					log.warn("handleExtendedProperties(): " + e.getClass().getSimpleName() + " parsing <" + tagName + "> value '" + value + "'");
+				}
+			} else if ("contentStatus".equals(tagName)) {
+				extendedProperties.setApplication(value);
+			} else if ("contentStatus".equals(tagName)) {
+				extendedProperties.setApplication(value);
+			} else if ("Words".equals(tagName)) {
+				try {
+					int intValue = Integer.parseInt(value);
+					extendedProperties.setWords(intValue);
+				} catch (Exception e) {
+					log.warn("handleExtendedProperties(): " + e.getClass().getSimpleName() + " parsing <" + tagName + "> value '" + value + "'");
+				}
+			}
+		} while (cursor.toNextSibling());
+	}	
 }
 
 private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {

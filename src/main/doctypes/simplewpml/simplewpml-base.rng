@@ -106,33 +106,32 @@
       <zeroOrMore>
         <choice>
           <!-- Custom properties: -->
-          <optional><element name="Template"><text/><text/></element></optional>
-          <optional><element name="Manager"><text/></element></optional>
-          <optional><element name="Company"><text/></element></optional>
-          <optional><element name="Pages"><text/></element></optional>
-          <optional><element name="Words"><text/></element></optional>
-          <optional><element name="Characters"><text/></element></optional>
-          <optional><element name="PresentationFormat"><text/></element></optional>
-          <optional><element name="Lines"><text/></element></optional>
-          <optional><element name="Paragraphs"><text/></element></optional>
-          <optional><element name="Slides"><text/></element></optional>
-          <optional><element name="Notes"><text/></element></optional>
-          <optional><element name="TotalTime"><text/></element></optional>
-          <optional><element name="HiddenSlides"><text/></element></optional>
-          <optional><element name="MMClips"><text/></element></optional>
-          <optional><element name="ScaleCrop"><text/></element></optional>
-          <optional><element name="HeadingPairs"><text/></element></optional>
-          <optional><element name="TitlesOfParts"><text/></element></optional>
-          <optional><element name="LinksUpToDate"><text/></element></optional>
-          <optional><element name="CharactersWithSpaces"><text/></element></optional>
-          <optional><element name="SharedDoc"><text/></element></optional>
-          <optional><element name="HyperlinkBase"><text/></element></optional>
-          <optional><element name="HLinks"><text/></element></optional>
-          <optional><element name="HyperlinksChanged"><text/></element></optional>
-          <optional><element name="DigSig"><text/></element></optional>
           <optional><element name="Application"><text/></element></optional>
           <optional><element name="AppVersion"><text/></element></optional>
+          <optional><element name="Characters"><text/></element></optional>
+          <optional><element name="CharactersWithSpaces"><text/></element></optional>
+          <optional><element name="Company"><text/></element></optional>
+          <optional><element name="DigSig"><text/></element></optional>
           <optional><element name="DocSecurity"><text/></element></optional>
+          <optional><element name="HeadingPairs"><text/></element></optional>
+          <optional><element name="HiddenSlides"><text/></element></optional>
+          <optional><element name="HLinks"><text/></element></optional>
+          <optional><element name="HyperlinkBase"><text/></element></optional>
+          <optional><element name="HyperlinksChanged"><text/></element></optional>
+          <optional><element name="Lines"><text/></element></optional>
+          <optional><element name="LinksUpToDate"><text/></element></optional>
+          <optional><element name="Manager"><text/></element></optional>
+          <optional><element name="MMClips"><text/></element></optional>
+          <optional><element name="Notes"><text/></element></optional>
+          <optional><element name="Paragraphs"><text/></element></optional>
+          <optional><element name="PresentationFormat"><text/></element></optional>
+          <optional><element name="ScaleCrop"><text/></element></optional>
+          <optional><element name="SharedDoc"><text/></element></optional>
+          <optional><element name="Slides"><text/></element></optional>
+          <optional><element name="Template"><text/><text/></element></optional>
+          <optional><element name="TitlesOfParts"><text/></element></optional>
+          <optional><element name="TotalTime"><text/></element></optional>
+          <optional><element name="Words"><text/></element></optional>
         </choice>
       </zeroOrMore>
     </element>

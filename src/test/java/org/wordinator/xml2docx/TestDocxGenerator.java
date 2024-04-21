@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -34,7 +33,6 @@ import org.apache.poi.xwpf.usermodel.XWPFTableRow;
 import org.apache.xmlbeans.XmlCursor;
 import org.apache.xmlbeans.XmlObject;
 import org.junit.Test;
-import org.openxmlformats.schemas.officeDocument.x2006.customProperties.CTProperties;
 import org.openxmlformats.schemas.officeDocument.x2006.customProperties.CTProperty;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBody;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDocument1;
@@ -565,6 +563,21 @@ public class TestDocxGenerator extends TestCase {
     ExtendedProperties extendedProperties = properties.getExtendedProperties();
     assertNotNull("Expected an ExtendedProperties object", extendedProperties);
 
+    value = extendedProperties.getApplication();
+    expected = "Wordinator";
+    assertNotNull("Expected a value for 'Application' property", value);
+    assertEquals("Expected \"" + expected + "\", got \"" + value + "\"", expected, value);
+    
+    value = extendedProperties.getCompany();
+    expected = "Planet-Sized Brains";
+    assertNotNull("Expected a value for 'Company' property", value);
+    assertEquals("Expected \"" + expected + "\", got \"" + value + "\"", expected, value);
+    
+    value = extendedProperties.getManager();
+    expected = "Ima In Charge";
+    assertNotNull("Expected a value for 'Manager' property", value);
+    assertEquals("Expected \"" + expected + "\", got \"" + value + "\"", expected, value);
+    
     // Test custom properties:
     
     CustomProperties customProperties = properties.getCustomProperties();
