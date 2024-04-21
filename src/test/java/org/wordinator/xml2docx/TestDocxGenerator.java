@@ -3,9 +3,15 @@ package org.wordinator.xml2docx;
 import java.io.File;
 import java.io.FileInputStream;
 import java.math.BigInteger;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
+import org.apache.poi.ooxml.POIXMLProperties;
+import org.apache.poi.ooxml.POIXMLProperties.CoreProperties;
+import org.apache.poi.ooxml.POIXMLProperties.ExtendedProperties;
 import org.apache.poi.xwpf.model.XWPFHeaderFooterPolicy;
 import org.apache.poi.xwpf.usermodel.BodyElementType;
 import org.apache.poi.xwpf.usermodel.IBodyElement;
@@ -42,6 +48,8 @@ import junit.framework.TestCase;
 public class TestDocxGenerator extends TestCase {
 
   public static final String DOTX_TEMPLATE_PATH = "docx/Test_Template.dotx";
+  
+  static final SimpleDateFormat isoDateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX", Locale.ENGLISH);
 
   @Test
   public void testMakeDocx() throws Exception {
@@ -468,6 +476,88 @@ public class TestDocxGenerator extends TestCase {
     XWPFParagraph p = iterator.next();
     assertNotNull(p);
     // Put remaining tests here.
+  }
+
+  @Test
+  public void testDocumentPropertiesGeneration() throws Exception {
+    XWPFDocument doc = convert("simplewp/simplewpml-issue-140-document-properties.swpx", "out/simplewpml-issue-140-document-properties.docx");
+    POIXMLProperties properties = doc.getProperties();
+    assertNotNull("Expected a POIXMLProperties object", properties);
+    CoreProperties coreProperties = properties.getCoreProperties();
+    assertNotNull("Expected a CoreProperties object", coreProperties);
+
+    String value = null;
+    String expected = null;
+    
+    value = coreProperties.getCategory();
+    expected = "test doc";
+    assertNotNull("Expected a value for 'category' property", value);
+    assertEquals("Expected \"" + expected + "\", got \"" + value + "\"", expected, value);
+    
+    value = coreProperties.getContentStatus();
+    expected = "draft";
+    assertNotNull("Expected a value for 'contentStatus' property", value);
+    assertEquals("Expected \"" + expected + "\", got \"" + value + "\"", expected, value);
+    
+    Date dateValue = coreProperties.getCreated();
+    Date expectedDate = isoDateFormatter.parse("2024-04-20T10:11:12Z");
+    assertNotNull("Expected a value for 'created' property", dateValue);
+    assertEquals("Expected \"" + expectedDate + "\", got \"" + dateValue + "\"", expectedDate, dateValue);
+    
+    value = coreProperties.getCreator();
+    expected = "Tester McTesterson";
+    assertNotNull("Expected a value for 'creator' property", value);
+    assertEquals("Expected \"" + expected + "\", got \"" + value + "\"", expected, value);
+    
+    value = coreProperties.getDescription();
+    expected = "A test of document properties";
+    assertNotNull("Expected a value for 'description' property", value);
+    assertEquals("Expected \"" + expected + "\", got \"" + value + "\"", expected, value);
+    
+    value = coreProperties.getIdentifier();
+    expected = "issue-140-test";
+    assertNotNull("Expected a value for 'identifier' property", value);
+    assertEquals("Expected \"" + expected + "\", got \"" + value + "\"", expected, value);
+    
+    value = coreProperties.getKeywords();
+    expected = "docprops testing";
+    assertNotNull("Expected a value for 'keywords' property", value);
+    assertEquals("Expected \"" + expected + "\", got \"" + value + "\"", expected, value);
+    
+    // NOTE: There is no getLanguage() method on CoreProperties
+    
+    value = coreProperties.getLastModifiedByUser();
+    expected = "Tester Jr.";
+    assertNotNull("Expected a value for 'lastModifiedBy' property", value);
+    assertEquals("Expected \"" + expected + "\", got \"" + value + "\"", expected, value);
+    
+    dateValue = coreProperties.getLastPrinted();
+    expectedDate = isoDateFormatter.parse("2024-04-21T10:11:12Z");
+    assertNotNull("Expected a value for 'lastPrinted' property", dateValue);
+    assertEquals("Expected \"" + expectedDate + "\", got \"" + dateValue + "\"", expectedDate, dateValue);
+    
+    dateValue = coreProperties.getModified();
+    expectedDate = isoDateFormatter.parse("2024-04-21T10:10:12Z");
+    assertNotNull("Expected a value for 'modified' property", dateValue);
+    assertEquals("Expected \"" + expectedDate + "\", got \"" + dateValue + "\"", expectedDate, dateValue);
+    
+    value = coreProperties.getRevision();
+    expected = "2";
+    assertNotNull("Expected a value for 'revision' property", value);
+    assertEquals("Expected \"" + expected + "\", got \"" + value + "\"", expected, value);
+    
+    value = coreProperties.getTitle();
+    expected = "Issue 140 Test of document properties";
+    assertNotNull("Expected a value for 'title' property", value);
+    assertEquals("Expected \"" + expected + "\", got \"" + value + "\"", expected, value);
+    
+    value = coreProperties.getVersion();
+    expected = "1";
+    assertNotNull("Expected a value for 'version' property", value);
+    assertEquals("Expected \"" + expected + "\", got \"" + value + "\"", expected, value);
+    
+    ExtendedProperties extendedProperties = properties.getExtendedProperties();
+    assertNotNull("Expected an ExtendedProperties object", extendedProperties);
   }
 
   public void testImageFromUrl() throws Exception {

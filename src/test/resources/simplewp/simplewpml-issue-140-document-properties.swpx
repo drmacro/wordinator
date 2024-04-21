@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/css" href="../../../main/doctypes/simplewpml/css/simplewpml.css"?>
+<?xml-model href="../../../main/doctypes/simplewpml/simplewpml.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<document xmlns="urn:ns:wordinator:simplewpml">
+  <document-properties>
+    <core-properties>
+      <category>test doc</category>
+      <contentStatus>draft</contentStatus>
+      <created>2024-04-20T10:11:12Z</created>
+      <creator>Tester McTesterson</creator>
+      <description>A test of document properties</description>
+      <identifier>issue-140-test</identifier>
+      <keywords>docprops testing</keywords>
+      <language>en-US</language>
+      <lastModifiedBy>Tester Jr.</lastModifiedBy>
+      <lastPrinted>2024-04-21T10:11:12Z</lastPrinted>
+      <modified>2024-04-21T10:10:12Z</modified>
+      <revision>2</revision>
+      <title>Issue 140 Test of document properties</title>
+      <version>1</version>
+    </core-properties> 
+    <extended-properties>
+      <Application>Wordinator</Application>
+      <Company>Planet-Sized Brains</Company>
+    </extended-properties>
+  </document-properties>
+  <page-sequence-properties>
+    <page-number-properties
+      format="custom"
+      xslt-format="1."
+      start="1"
+    />
+    <headers-and-footers>
+      <header>
+        <p><run>Odd Header Paragraph 1</run></p>
+        <p><run>Odd Header Paragraph 2</run></p>
+      </header>
+      <header type="even">
+        <p><run>Even Header Paragraph 1</run></p>
+      </header>
+      <footer>
+        <p>
+          <run>Odd Footer: </run>
+          <page-number-ref format="numberInDash"/>
+          <run> After page-number-ref</run>
+        </p>
+      </footer>
+      <footer type="even">
+        <p><run>Even Footer</run></p>
+      </footer>
+    </headers-and-footers>
+  </page-sequence-properties>
+  <body>
+    <p style="Heading1">
+      <run style="Strong">Issue 140 Test of document properties</run>
+    </p>
+    <p style="normal">
+      <run>This document sets all the core and extended properties.</run>
+    </p>
+  </body>
+</document>

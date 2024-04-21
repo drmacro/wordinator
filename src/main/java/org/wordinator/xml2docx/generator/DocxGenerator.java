@@ -17,10 +17,14 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.imageio.ImageIO;
 import javax.xml.namespace.QName;
@@ -30,6 +34,9 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.poi.ooxml.POIXMLProperties;
+import org.apache.poi.ooxml.POIXMLProperties.CoreProperties;
+import org.apache.poi.ooxml.POIXMLProperties.ExtendedProperties;
 import org.apache.poi.ss.formula.eval.NotImplementedException;
 import org.apache.poi.util.Units;
 import org.apache.poi.wp.usermodel.HeaderFooterType;
@@ -113,6 +120,9 @@ public class DocxGenerator {
   private static String NS_MATHML = "http://www.w3.org/1998/Math/MathML";
 
   int imageCounter = 0; // Used to keep track of count of images created.
+  
+  private static SimpleDateFormat isoDateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX", Locale.ENGLISH);
+  
 
   /**
    * Holds a set of table border styles
@@ -432,6 +442,10 @@ public class DocxGenerator {
     XmlCursor cursor = xml.newCursor();
     cursor.toFirstChild(); // Put us on the root element of the document
     cursor.push();
+    if (cursor.toChild(DocxConstants.SIMPLE_WP_NS, "document-properties")) {
+    	handleDocumentProperties(doc, cursor.getObject());
+    }
+    cursor.pop();
     cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "body"));
 
     handleBody(doc, cursor.getObject());
@@ -455,6 +469,103 @@ public class DocxGenerator {
   }
 
   /**
+   * Set document properties.
+   * @param doc Document to add properties to.
+   * @param xml <document-properties> element
+   */
+  private void handleDocumentProperties(
+		  XWPFDocument doc, 
+		  XmlObject xml) {
+	  XmlCursor cursor = xml.newCursor();
+	  cursor.push();
+	  if (cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "core-properties"))) {
+		  handleCoreProperties(doc, cursor.getObject());
+	  }
+	  cursor.pop();
+	  if (cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "extended-properties"))) {
+		  handleExtendedProperties(doc, cursor.getObject());
+	  }
+	  
+  }
+
+private void handleExtendedProperties(XWPFDocument doc, XmlObject object) {
+	POIXMLProperties properties = doc.getProperties();
+	ExtendedProperties extendedProperties = properties.getExtendedProperties();
+	// Handle the extended properties.
+	
+}
+
+/**
+ * Set core properties from the <core-properties> element.
+ * @param doc XWPF document to set the properties on
+ * @param xml <core-properties> element.
+ */
+private void handleCoreProperties(XWPFDocument doc, XmlObject xml) {
+	// DateTime properties have ISO times like:
+	// 2022-12-18T18:05:00Z
+	POIXMLProperties properties = doc.getProperties();
+	CoreProperties coreProperties = properties.getCoreProperties();
+	XmlCursor cursor = xml.newCursor();	
+	if (cursor.toFirstChild()) {
+		do {
+			String tagName = cursor.getName().getLocalPart();
+			String value = cursor.getTextValue();
+			if ("category".equals(tagName)) {
+				coreProperties.setCategory(value);
+			} else if ("contentStatus".equals(tagName)) {
+				coreProperties.setContentStatus(value);
+			} else if ("created".equals(tagName)) {
+				try {					
+					Date date = isoDateFormatter.parse(value);
+					Optional<Date> opional = Optional.of(date);
+					coreProperties.setCreated(opional);
+				} catch (Exception e) {
+					log.warn("handleCoreProperties(): " + e.getClass().getSimpleName() + " parsing <created> value '" + value + "'");
+				}
+			} else if ("creator".equals(tagName)) {
+				coreProperties.setCreator(value);
+			} else if ("description".equals(tagName)) {
+				coreProperties.setDescription(value);
+			} else if ("identifier".equals(tagName)) {
+				coreProperties.setIdentifier(value);
+			} else if ("keywords".equals(tagName)) {
+				coreProperties.setKeywords(value);
+			} else if ("language".equals(tagName)) {
+				// There doesn't see to be a setLanguage() method on CoreProperties
+			} else if ("lastModifiedBy".equals(tagName)) {
+				coreProperties.setLastModifiedByUser(value);
+			} else if ("lastPrinted".equals(tagName)) {
+				try {					
+					Date date = isoDateFormatter.parse(value);
+					Optional<Date> opional = Optional.of(date);
+					coreProperties.setLastPrinted(opional);
+				} catch (Exception e) {
+					log.warn("handleCoreProperties(): " + e.getClass().getSimpleName() + " parsing <lastPrinted> value '" + value + "'");
+				}				
+			} else if ("modified".equals(tagName)) {
+				try {					
+					Date date = isoDateFormatter.parse(value);
+					Optional<Date> opional = Optional.of(date);
+					coreProperties.setModified(opional);
+				} catch (Exception e) {
+					log.warn("handleCoreProperties(): " + e.getClass().getSimpleName() + " parsing <modified> value '" + value + "'");
+				}				
+			} else if ("revision".equals(tagName)) {
+				coreProperties.setRevision(value);
+			} else if ("title".equals(tagName)) {
+				coreProperties.setTitle(value);
+			} else if ("version".equals(tagName)) {
+				coreProperties.setVersion(value);
+			} else {
+				log.warn("handleCoreProperties(): Unexpected element '" + tagName + "' in <core-properties>. Ignored.");
+			}
+		} while (cursor.toNextSibling());
+	}
+
+	
+}
+
+/**
    * Process the elements in &lt;body&gt;
    * @param doc Document to add paragraphs to.
    * @param xml Body or section element
