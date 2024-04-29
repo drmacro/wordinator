@@ -81,9 +81,7 @@ of the style hierarchy (i.e. that previous setting remains unchanged). If this s
 hierarchy, then this property shall not be applied.</run>
 </p>
 <p>
-<run>As shown above, the second paragraph and third paragraph are being rendered on two separate pages.
-However, a producer can specify that the second paragraph should not be displayed without any part of the
-third by setting the keepNext element as follows: More words to make another line.</run>
+<run>The following paragraph specifies keeplines="true", which should cause it to move to page 2.</run>
 </p>
 <p keeplines="true">
   <run>Paragraph with keeplines set on it. It should be forced to page 2. We hold these truths to be self-evident, that all men are

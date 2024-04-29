@@ -1648,6 +1648,17 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
       para.setPageBreak(breakValue);
     }
 
+    // Issue 143: keepLines property.
+    String keepLines = cursor.getAttributeText(DocxConstants.QNAME_KEEPLINES_ATT);
+    if (keepLines != null) {
+      boolean keepValue = Boolean.valueOf(keepLines);
+      // If the paragraph does not already have a ctPPr then
+      // we need to add one.
+	  CTPPr ppr = (para.getCTP().isSetPPr() ? para.getCTP().getPPr() : para.getCTP().addNewPPr());
+      CTOnOff onOff = ppr.addNewKeepLines();
+      onOff.setVal(keepValue ? "on" : "off");
+    }
+
     // Issue 143: keepNext property.
     String keepNext = cursor.getAttributeText(DocxConstants.QNAME_KEEPNEXT_ATT);
     if (keepNext != null) {
