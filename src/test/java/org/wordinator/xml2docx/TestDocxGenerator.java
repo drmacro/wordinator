@@ -684,7 +684,22 @@ public class TestDocxGenerator extends TestCase {
     CTOnOff onOff = p.getCTPPr().getKeepNext();
     assertNotNull("Expected a value for keepNext", onOff);
     String value = (String)onOff.getVal();
-    assertEquals("Expected false", value, "on");
+    assertEquals("Expected on", value, "on");
+  }
+
+  @Test
+  public void testKeepLines() throws Exception {
+    XWPFDocument doc = convert("simplewp/simplewpml-issue-143-keeplines.swpx", "out/output-issue-143-keeplines.docx");
+
+    List<IBodyElement> contents = doc.getBodyElements();
+    int i = contents.size() - 2; // 2nd to last paragraph should have keepLines
+    XWPFParagraph p = (XWPFParagraph)contents.get(i);
+    
+    // Check that the keepNext property is set.
+    CTOnOff onOff = p.getCTPPr().getKeepLines();
+    assertNotNull("Expected a value for keepLines", onOff);
+    String value = (String)onOff.getVal();
+    assertEquals("Expected on", value, "on");
   }
 
   // ===== INTERNAL UTILITIES

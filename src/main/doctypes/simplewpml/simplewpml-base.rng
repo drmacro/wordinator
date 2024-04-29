@@ -585,6 +585,15 @@
         </attribute>
       </optional>
       <optional>
+        <attribute name="keeplines">
+          <a:documentation>
+            <p>Keep the lines of the paragraph together on one page if possible.</p>
+            <p>17.3.1.14 keepLines (Keep All Lines On One Page)</p>
+          </a:documentation>
+          <ref name="true-false-value"/>
+        </attribute>
+      </optional>
+      <optional>
         <attribute name="keepnext">
           <a:documentation>
             <p>Keep the paragraph with the next paragraph if possible.</p>
