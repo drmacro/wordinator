@@ -86,6 +86,7 @@ public final class DocxConstants {
   public static final QName QNAME_INSIDEINDENT_ATT = new QName("", "insideindent");
   public static final QName QNAME_INSTR_ATT = new QName(OO_WPML_NS, "instr");
 	public static final QName QNAME_ITALIC_ATT = new QName("", "italic");
+	public static final QName QNAME_KEEPNEXT_ATT = new QName("", "keepnext");
   public static final QName QNAME_LAYOUT_ATT = new QName("", "layout");
 	public static final QName QNAME_LEFT_ATT = new QName("", "left");
   public static final QName QNAME_LEFTINDENT_ATT = new QName("", "leftindent");

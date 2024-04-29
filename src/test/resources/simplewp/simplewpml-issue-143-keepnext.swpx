@@ -83,7 +83,7 @@ hierarchy, then this property shall not be applied.</run>
 <p>
 <run>As shown above, the second paragraph and third paragraph are being rendered on two separate pages.
 However, a producer can specify that the second paragraph should not be displayed without any part of the
-third by setting the keepNext element as follows:</run>
+third by setting the keepNext element as follows: More words to make another line.</run>
 </p>
 <p keepnext="true">
 <run>Paragraph with keepNext set on it. It should be on page 2 followed by the next paragraph.</run>

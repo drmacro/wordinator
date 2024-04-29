@@ -37,11 +37,14 @@ import org.openxmlformats.schemas.officeDocument.x2006.customProperties.CTProper
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBody;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDocument1;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTFldChar;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTOnOff;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageMar;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTText;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STFldCharType;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.STOnOff;
+// import org.openxmlformats.schemas.wordprocessingml.x2006.main.STOnOff;
 import org.wordinator.xml2docx.generator.DocxConstants;
 import org.wordinator.xml2docx.generator.DocxGenerator;
 
@@ -674,7 +677,14 @@ public class TestDocxGenerator extends TestCase {
     XWPFDocument doc = convert("simplewp/simplewpml-issue-143-keepnext.swpx", "out/output-issue-143-keepnext.docx");
 
     List<IBodyElement> contents = doc.getBodyElements();
+    int i = contents.size() - 2; // 2nd to last paragraph should have keepNext
+    XWPFParagraph p = (XWPFParagraph)contents.get(i);
+    
     // Check that the keepNext property is set.
+    CTOnOff onOff = p.getCTPPr().getKeepNext();
+    assertNotNull("Expected a value for keepNext", onOff);
+    String value = (String)onOff.getVal();
+    assertEquals("Expected false", value, "on");
   }
 
   // ===== INTERNAL UTILITIES
