@@ -447,6 +447,7 @@ public class DocxGenerator {
     	handleDocumentProperties(doc, cursor.getObject());
     }
     cursor.pop();
+    cursor.push();
     cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "body"));
 
     handleBody(doc, cursor.getObject());
