@@ -585,6 +585,15 @@
         </attribute>
       </optional>
       <optional>
+        <attribute name="keepnext">
+          <a:documentation>
+            <p>Keep the paragraph with the next paragraph if possible.</p>
+            <p>See 17.3.1.15 keepNext (Keep Paragraph With Next Paragraph).</p>
+          </a:documentation>
+          <ref name="true-false-value"/>
+        </attribute>
+      </optional>
+      <optional>
         <attribute name="outline-level">
           <a:documentation>
             <p>The outline level of the paragraph. Normally used for lists or headings.</p>

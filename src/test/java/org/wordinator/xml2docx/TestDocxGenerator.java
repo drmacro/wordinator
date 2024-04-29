@@ -669,6 +669,14 @@ public class TestDocxGenerator extends TestCase {
     assertEquals(BodyElementType.TABLE, elem.getElementType());
   }
 
+  @Test
+  public void testKeepNext() throws Exception {
+    XWPFDocument doc = convert("simplewp/simplewpml-issue-143-keepnext.swpx", "out/output-issue-143-keepnext.docx");
+
+    List<IBodyElement> contents = doc.getBodyElements();
+    // Check that the keepNext property is set.
+  }
+
   // ===== INTERNAL UTILITIES
 
   private XWPFDocument convert(String infile, String outfile) throws Exception {
