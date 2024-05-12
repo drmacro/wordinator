@@ -88,6 +88,7 @@
           <optional><element name="lastPrinted"><text/></element></optional>
           <optional><element name="modified"><text/></element></optional>
           <optional><element name="revision"><text/></element></optional>
+          <optional><element name="subject"><text/></element></optional>
           <optional><element name="title"><text/></element></optional>
           <optional><element name="version"><text/></element></optional>
     

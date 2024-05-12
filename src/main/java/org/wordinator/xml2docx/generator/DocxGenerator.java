@@ -552,6 +552,8 @@ private void handleCoreProperties(XWPFDocument doc, XmlObject xml) {
 				}				
 			} else if ("revision".equals(tagName)) {
 				coreProperties.setRevision(value);
+			} else if ("subject".equals(tagName)) {
+				coreProperties.setSubjectProperty(value);
 			} else if ("title".equals(tagName)) {
 				coreProperties.setTitle(value);
 			} else if ("version".equals(tagName)) {

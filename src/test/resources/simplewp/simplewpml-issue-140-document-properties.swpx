@@ -16,6 +16,7 @@
       <lastPrinted>2024-04-21T10:11:12Z</lastPrinted>
       <modified>2024-04-21T10:10:12Z</modified>
       <revision>2</revision>
+      <subject>subject value</subject>
       <title>Issue 140 Test of document properties</title>
       <version>1</version>
     </core-properties> 

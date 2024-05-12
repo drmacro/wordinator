@@ -551,6 +551,11 @@ public class TestDocxGenerator extends TestCase {
     assertNotNull("Expected a value for 'revision' property", value);
     assertEquals("Expected \"" + expected + "\", got \"" + value + "\"", expected, value);
     
+    value = coreProperties.getSubject();
+    expected = "subject value";
+    assertNotNull("Expected a value for 'subject' property", value);
+    assertEquals("Expected \"" + expected + "\", got \"" + value + "\"", expected, value);
+    
     value = coreProperties.getTitle();
     expected = "Issue 140 Test of document properties";
     assertNotNull("Expected a value for 'title' property", value);
