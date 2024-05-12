@@ -108,31 +108,47 @@
         <choice>
           <!-- Custom properties: -->
           <optional><element name="Application"><text/></element></optional>
-          <optional><element name="AppVersion"><text/></element></optional>
-          <optional><element name="Characters"><text/></element></optional>
-          <optional><element name="CharactersWithSpaces"><text/></element></optional>
+          <optional><element name="AppVersion"><data type="decimal"><param name="pattern">\d\d\.\d\d\d\d</param></data></element></optional>
+          <optional><element name="Characters"><data type="int"/></element></optional>
+          <optional><element name="CharactersWithSpaces"><data type="int"/></element></optional>
           <optional><element name="Company"><text/></element></optional>
-          <optional><element name="DigSig"><text/></element></optional>
-          <optional><element name="DocSecurity"><text/></element></optional>
-          <optional><element name="HeadingPairs"><text/></element></optional>
-          <optional><element name="HiddenSlides"><text/></element></optional>
-          <optional><element name="HLinks"><text/></element></optional>
+          <!-- DigSig requires a representation that is beyond the scope of the doc property feature. It
+               documented as being for legacy purposes anyway. -->
+<!--          <optional><element name="DigSig"><text/></element></optional>-->
+          <!-- DocSecurity is not supported by POI API -->
+<!--          <optional><element name="DocSecurity"><data type="NMTOKEN"><param name="pattern">(1|2|4|8)</param></data></element></optional>-->
+          <!-- Heading pairs requires a complex definition. Summit a feature request if you 
+               really need this property.
+            -->
+<!--          <optional><element name="HeadingPairs"><text/></element></optional>-->
+          <optional><element name="HiddenSlides"><data type="int"/></element></optional>
+          <!-- Hlinks requires a complex definition. -->
+<!--          <optional><element name="HLinks"><text/></element></optional>-->
           <optional><element name="HyperlinkBase"><text/></element></optional>
-          <optional><element name="HyperlinksChanged"><text/></element></optional>
-          <optional><element name="Lines"><text/></element></optional>
-          <optional><element name="LinksUpToDate"><text/></element></optional>
+          <!-- HyperlinksChanged is not supported by POI API -->
+          <!--<optional><element name="HyperlinksChanged"><data type="boolean"/></element></optional>-->
+          <optional><element name="Lines"><data type="int"/></element></optional>
+          <!-- LinksUpToDate is not supported by POI API -->
+<!--          <optional><element name="LinksUpToDate"><data type="boolean"/></element></optional>-->
           <optional><element name="Manager"><text/></element></optional>
-          <optional><element name="MMClips"><text/></element></optional>
-          <optional><element name="Notes"><text/></element></optional>
-          <optional><element name="Paragraphs"><text/></element></optional>
+          <optional><element name="MMClips"><data type="int"/></element></optional>
+          <optional><element name="Notes"><data type="int"/></element></optional>
+          <!-- POI ignores explicitly-set Pages and Word reflects the actual page count -->
+          <!--<optional><element name="Pages"><data type="int"/></element></optional>-->
+          <!-- POI ignores explicitly-set Paragraphs and Word reflects the actual body paragraph count -->
+<!--          <optional><element name="Paragraphs"><data type="int"/></element></optional>-->
           <optional><element name="PresentationFormat"><text/></element></optional>
-          <optional><element name="ScaleCrop"><text/></element></optional>
-          <optional><element name="SharedDoc"><text/></element></optional>
-          <optional><element name="Slides"><text/></element></optional>
+          <!-- ScaleCrop is not supported by POI API -->
+<!--          <optional><element name="ScaleCrop"><data type="boolean"/></element></optional>-->
+          <!-- SharedDoc is not supported by POI API -->
+<!--          <optional><element name="SharedDoc"><data type="boolean"/></element></optional>-->
+          <!-- Slides is not supported by POI API -->
+          <!--<optional><element name="Slides"><data type="int"/></element></optional>-->
           <optional><element name="Template"><text/><text/></element></optional>
-          <optional><element name="TitlesOfParts"><text/></element></optional>
-          <optional><element name="TotalTime"><text/></element></optional>
-          <optional><element name="Words"><text/></element></optional>
+          <!-- TitlesOfParts requires a complex definition. -->
+<!--          <optional><element name="TitlesOfParts"><text/></element></optional>-->
+          <optional><element name="TotalTime"><data type="int"/></element></optional>
+          <optional><element name="Words"><data type="int"/></element></optional>
         </choice>
       </zeroOrMore>
     </element>

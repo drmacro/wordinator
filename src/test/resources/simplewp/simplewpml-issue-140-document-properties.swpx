@@ -21,9 +21,21 @@
       <version>1</version>
     </core-properties> 
     <extended-properties>
-      <Manager>Ima In Charge</Manager>
       <Application>Wordinator</Application>
+      <AppVersion>11.2345</AppVersion>
+      <Characters>345</Characters>
+      <CharactersWithSpaces>1234</CharactersWithSpaces>
       <Company>Planet-Sized Brains</Company>
+      <HiddenSlides>0</HiddenSlides>
+      <HyperlinkBase>https://url-base-value</HyperlinkBase>
+      <Lines>156</Lines>
+      <Manager>Ima In Charge</Manager>
+      <MMClips>1</MMClips>
+      <Notes>4</Notes>
+      <PresentationFormat>PDF</PresentationFormat>
+      <Template>the-template-name</Template>
+      <TotalTime>78</TotalTime>
+      <Words>567</Words>
     </extended-properties>
     <custom-properties>
       <property name="prop-1">value 01</property>

@@ -488,6 +488,9 @@ public class TestDocxGenerator extends TestCase {
     XWPFDocument doc = convert("simplewp/simplewpml-issue-140-document-properties.swpx", "out/simplewpml-issue-140-document-properties.docx");
     POIXMLProperties properties = doc.getProperties();
     assertNotNull("Expected a POIXMLProperties object", properties);
+    
+    // Core properties:
+    
     CoreProperties coreProperties = properties.getCoreProperties();
     assertNotNull("Expected a CoreProperties object", coreProperties);
 
@@ -576,14 +579,64 @@ public class TestDocxGenerator extends TestCase {
     assertNotNull("Expected a value for 'Application' property", value);
     assertEquals("Expected \"" + expected + "\", got \"" + value + "\"", expected, value);
     
+    value = extendedProperties.getAppVersion();
+    expected = "11.2345";
+    assertNotNull("Expected a value for 'AppVersion' property", value);
+    assertEquals("Expected \"" + expected + "\", got \"" + value + "\"", expected, value);
+    
+    int intValue = extendedProperties.getCharacters();
+    int intExpected = 345;
+    assertNotNull("Expected a value for 'Characters' property", intValue);
+    assertEquals("Expected \"" + intExpected + "\", got \"" + intValue + "\"", intExpected, intValue);
+        
+    intValue = extendedProperties.getCharactersWithSpaces();
+    intExpected = 1234;
+    assertNotNull("Expected a value for 'CharactersWithSpaces' property", intValue);
+    assertEquals("Expected \"" + intExpected + "\", got \"" + intValue + "\"", intExpected, intValue);
+        
     value = extendedProperties.getCompany();
     expected = "Planet-Sized Brains";
     assertNotNull("Expected a value for 'Company' property", value);
     assertEquals("Expected \"" + expected + "\", got \"" + value + "\"", expected, value);
     
+    intValue = extendedProperties.getHiddenSlides();
+    intExpected = 0;
+    assertNotNull("Expected a value for 'HiddeSlides' property", intValue);
+    assertEquals("Expected \"" + intExpected + "\", got \"" + intValue + "\"", intExpected, intValue);
+            
+    value = extendedProperties.getHyperlinkBase();
+    expected = "https://url-base-value";
+    assertNotNull("Expected a value for 'HyperlinkBase' property", value);
+    assertEquals("Expected \"" + expected + "\", got \"" + value + "\"", expected, value);
+    
+    intValue = extendedProperties.getLines();
+    intExpected = 156;
+    assertNotNull("Expected a value for 'Lines' property", intValue);
+    assertEquals("Expected \"" + intExpected + "\", got \"" + intValue + "\"", intExpected, intValue);
+                        
     value = extendedProperties.getManager();
     expected = "Ima In Charge";
     assertNotNull("Expected a value for 'Manager' property", value);
+    assertEquals("Expected \"" + expected + "\", got \"" + value + "\"", expected, value);
+    
+    intValue = extendedProperties.getMMClips();
+    intExpected = 1;
+    assertNotNull("Expected a value for 'MMClips' property", intValue);
+    assertEquals("Expected \"" + intExpected + "\", got \"" + intValue + "\"", intExpected, intValue);
+            
+    intValue = extendedProperties.getNotes();
+    intExpected = 4;
+    assertNotNull("Expected a value for 'Notes' property", intValue);
+    assertEquals("Expected \"" + intExpected + "\", got \"" + intValue + "\"", intExpected, intValue);
+            
+    value = extendedProperties.getPresentationFormat();
+    expected = "PDF";
+    assertNotNull("Expected a value for 'PresentationFormat' property", value);
+    assertEquals("Expected \"" + expected + "\", got \"" + value + "\"", expected, value);
+    
+    value = extendedProperties.getTemplate();
+    expected = "the-template-name";
+    assertNotNull("Expected a value for 'Template' property", value);
     assertEquals("Expected \"" + expected + "\", got \"" + value + "\"", expected, value);
     
     // Test custom properties:
