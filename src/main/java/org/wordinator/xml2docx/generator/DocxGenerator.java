@@ -926,7 +926,16 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
     //           when the Word Update automatic links on open setting is active.
     CTFldChar field = para.createRun().getCTR().addNewFldChar();
     field.setFldCharType(STFldCharType.BEGIN);
-    field.setDirty(STOnOff1.ON);
+    
+    // If there are any tocentry children (which are the only allowed
+    // children, then do not turn on the dirty flag, otherwise do
+    // turn it on.
+    cursor.push();    
+    if (!cursor.toFirstChild()) {
+    	field.setDirty(STOnOff1.ON);
+    }
+    cursor.pop();
+    
     CTText ctText = para.createRun().getCTR().addNewInstrText();
     ctText.setSpace(Space.PRESERVE);
     String tocOptions = "";
