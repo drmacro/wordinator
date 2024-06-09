@@ -75,6 +75,7 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBody;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBookmark;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBorder;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTCompat;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTCompatSetting;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDecimalNumber;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDocument1;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTFldChar;
@@ -451,7 +452,7 @@ public class DocxGenerator {
     cursor.pop();
     cursor.push();
     cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "body"));
-
+    setDocSettings(doc, xml);
     handleBody(doc, cursor.getObject());
 
     cursor.pop();
@@ -462,7 +463,6 @@ public class DocxGenerator {
       setupPageSequence(doc, cursor.getObject());
     } else {
       CTDocument1 document = doc.getDocument();
-      setDocSettings(doc, xml);
       CTBody body = (document.isSetBody() ? document.getBody() : document.addNewBody());
       @SuppressWarnings("unused")
       CTSectPr sectPr = (body.isSetSectPr() ? body.getSectPr() : body.addNewSectPr());
@@ -479,12 +479,17 @@ public class DocxGenerator {
    * @param xml Simple ML doc
    */
   private void setDocSettings(XWPFDocument doc, XmlObject xml) {
+	  // Issue #133: Turn off compatibility mode.
       XWPFSettings settings = doc.getSettings();
       CTSettings ctSettings = settings.getCTSettings();
       CTCompat compat = ctSettings.addNewCompat();
       // This may be all we need to do.
-      
-	
+      CTCompatSetting compatSetting = compat.addNewCompatSetting();
+      // Name, URI, and value come from inspecting working Word docs.
+      // I do not know where these values are documented.
+      compatSetting.setName("compatibilityMode");
+      compatSetting.setUri("http://schemas.microsoft.com/office/word");
+      compatSetting.setVal("15");
   }
 
 /**
