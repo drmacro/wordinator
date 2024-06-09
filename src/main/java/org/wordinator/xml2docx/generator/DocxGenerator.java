@@ -799,6 +799,7 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
    * Generate a table of contents field.
    * @param doc Document we're adding to
    * @param xml &lt;toc&gt; element
+   * @throws DocxGenerationException 
    */
   private void makeTableOfContents(
       XWPFDocument doc,
@@ -838,9 +839,11 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
    * @param doc Document to add the ToC entry to
    * @param cursor Cursor pointing at <tocentry> element
    * @param tocLevel The current ToC level. 1 (one) = highest level
+   * @throws DocxGenerationException 
    * @throws Exception
    */
-  private void handleTocEntry(XWPFDocument doc, XmlCursor cursor, int tocLevel) throws DocxGenerationException {
+  private void handleTocEntry(XWPFDocument doc, XmlCursor cursor, int tocLevel) 
+		  throws DocxGenerationException {
 
     // The tocentry element can contain a <p> that provides the text of the toc entry
     // It can also contain nested <tocentry> elements.
@@ -856,9 +859,40 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
     XWPFParagraph para = doc.createParagraph();
     cursor.push();
     if (cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "p"))) {
-      this.makeParagraph(para, cursor);
-    }
+       this.makeParagraph(para, cursor);
+    }    
     cursor.pop();
+    String bookmarkName = cursor.getAttributeText(DocxConstants.QNAME_BOOKMARKREF_ATT);
+    if (null != bookmarkName) {
+    	// Add a tab before the page number reference:
+    	String xml = "<run xmlns=\"urn:ns:wordinator:simplewpml\"><tab/></run>";
+    	XmlObject xmlObject;
+		try {
+			xmlObject = XmlObject.Factory.parse(xml);
+		} catch (XmlException e) {
+			throw new DocxGenerationException(e.getClass().getSimpleName() + ": " + e.getMessage());
+		}
+    	XmlCursor cur = xmlObject.newCursor();
+    	cur.toStartDoc();
+    	cur.toFirstChild();
+    	makeRun(para, cur.getObject());
+    	// Now add a page number reference:
+    	xml = "<complexField xmlns=\"urn:ns:wordinator:simplewpml\">\n"
+    			+ "                <instructionText>PAGEREF " + bookmarkName + " \\h</instructionText>\n"
+    			+ "                <fieldResults>\n"
+    			+ "                  <run>99</run>\n"
+    			+ "                </fieldResults>\n"
+    			+ "              </complexField>";
+		try {
+			xmlObject = XmlObject.Factory.parse(xml);
+		} catch (XmlException e) {
+			throw new DocxGenerationException(e.getClass().getSimpleName() + ": " + e.getMessage());
+		}
+    	cur = xmlObject.newCursor();
+    	cur.toStartDoc();
+    	cur.toFirstChild();
+    	makeComplexField(para, cur);
+    }
 
     // Set to TOC style
     String tocStyleId = "TOC" + tocLevel;
@@ -1840,9 +1874,8 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
           cursor.toEndToken(); // Skip this element.
         }
         cursor.toNextToken();
-      } else if (cursor.isComment() || cursor.isProcinst()) {
+      } else if (cursor.isComment() || cursor.isProcinst() || cursor.isNamespace()) {
         // Silently ignore
-        // FIXME: Not sure if we need to do more to skip a comment or processing instruction.
         cursor.toNextToken();
       } else {
         // What else could there be?
@@ -2123,7 +2156,7 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
     if (null == nameValue || "".equals(nameValue.trim())) {
     	nameValue = idValue;
     }
-    bookmark.setName(nameValue);
+    bookmark.setName(idValue);
     BigInteger id = nextId();
     bookmark.setId(id);
     this.bookmarkIdToIdMap.put(cursor.getAttributeText(DocxConstants.QNAME_ID_ATT), id);
@@ -2541,6 +2574,10 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
   private void makeHyperlink(XWPFParagraph para, XmlCursor cursor) throws DocxGenerationException {
 
     String href = cursor.getAttributeText(DocxConstants.QNAME_HREF_ATT);
+    
+    if (null == href) {
+    	throw new DocxGenerationException("<hyperlink> element does not have an @href attribute: " + cursor.xmlText());
+    }
 
     // Hyperlink's anchor (@w:anchor) points to the name (not ID) of a bookmark.
     //

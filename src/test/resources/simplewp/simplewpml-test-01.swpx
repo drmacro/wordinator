@@ -30,18 +30,19 @@
   </page-sequence-properties>
   <body>
     <p style="Heading1">
+      <bookmarkStart id="h1" name="h1"/>
       <run style="Strong">Heading 1 Text</run>
-      <bookmarkStart id="bm1" name="bm1"/>
+      <bookmarkEnd id="h1"/>
     </p>
     <p style="Heading2">
       <run style="Strong">Table of Contents</run>
     </p>
     <!-- ToC -->
     <toc arg-d="-" arg-x="true">
-      <tocentry bookmarkRef="bm1">
+      <tocentry bookmarkRef="h1">
         <p><run>Toc entry 1</run></p>
-        <tocentry bookmarkRef="bm2"><p><run>Toc entry 2</run></p></tocentry>
-        <tocentry bookmarkRef="bm3"><p><run>Toc entry 3</run></p></tocentry>
+        <tocentry bookmarkRef="h2"><p><run>Toc entry 2</run></p></tocentry>
+        <tocentry bookmarkRef="h3"><p><run>Toc entry 3</run></p></tocentry>
       </tocentry>
     </toc>
     <p>
@@ -86,13 +87,18 @@
           </tbody>
         </table>
       </fn>
-      <bookmarkStart id="bm1" name="h1">Heading 1</bookmarkStart>
-      <run> This is before a bookmark start for bookmark "bm1". </run>
-      <bookmarkStart id="bm1" name="Bookmark bm1 name value"/>
-      <run>Before the bookmark end.</run><bookmarkEnd id="bm1"/><run> This is after the bookmark end.</run>
+      <bookmarkStart id="bm1" name="bm1"/>
+      <run> This is before a bookmark start for bookmark "bm1". </run>      
+      <run>Before the bookmark end.</run>
+      <bookmarkEnd id="bm1"/>
+      <run> This is after the bookmark end.</run>
     </p>
     <p><run>An end note reference.</run><fn type="endnote"><p><run>This is an end note.</run></p></fn></p>
-    <p style="Heading2"><run>This is a Heading 2</run></p>
+    <p style="Heading2">
+      <bookmarkStart id="h2" name="h2"/>
+      <run>This is a Heading 2</run>
+      <bookmarkEnd id="h2"/>
+    </p>      
     <!-- Issue 82: Ignore empty @width and @height attributes. Failure symptom is index out of range runtime failure. -->
     <p><run style="style1">An image reference, no width or height: </run><image src="images/picture-01.gif" width="" height=""/></p>
     <p><run>A page break:<break type="page"/>After the page break.</run></p>
@@ -121,7 +127,11 @@
     </table>
     <p><run>A normal paragraph with a lot of content:</run></p>
     <p><run>Call me Ishmael. Some years ago—never mind how long precisely—having little or no money in my purse, and nothing particular to interest me on shore, I thought I would sail about a little and see the watery part of the world. It is a way I have of driving off the spleen and regulating the circulation. Whenever I find myself growing grim about the mouth; whenever it is a damp, drizzly November in my soul; whenever I find myself involuntarily pausing before coffin warehouses, and bringing up the rear of every funeral I meet; and especially whenever my hypos get such an upper hand of me, that it requires a strong moral principle to prevent me from deliberately stepping into the street, and methodically knocking people’s hats off—then, I account it high time to get to sea as soon as I can. This is my substitute for pistol and ball. With a philosophical flourish Cato throws himself upon his sword; I quietly take to the ship. There is nothing surprising in this. If they but knew it, almost all men in their degree, some time or other, cherish very nearly the same feelings towards the ocean with me.</run></p>
-    <p style="Heading3"><run>A Heading 3</run></p>
+    <p style="Heading3">
+      <bookmarkStart id="h3" name="h3"/>
+      <run>A Heading 3</run>
+      <bookmarkEnd id="h3"/>
+    </p>
     <p><run style="style1">[Image 1]An image reference, width: 100, height: 50: </run>
       <image
         width="100"
@@ -435,7 +445,7 @@
         </tr>
       </tbody>
     </table>  
-    <p style="Heading2"><run>More image tests</run></p>
+    <p style="Heading2" ><bookmarkStart id="bm2" name="bm2"/><run>More image tests</run><bookmarkEnd id="bm2"/></p>
     <p><run>Reference to a JPEG image: </run><image src="images/picture-02.jpg" width="200px"/></p>
     <p><run>Reference to an web image: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Google_2015_logo.svg/1200px-Google_2015_logo.svg.png": </run>
       <image src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Google_2015_logo.svg/1200px-Google_2015_logo.svg.png" width="200px"/></p>
