@@ -56,6 +56,7 @@ import org.apache.poi.xwpf.usermodel.XWPFNumbering;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRelation;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
+import org.apache.poi.xwpf.usermodel.XWPFSettings;
 import org.apache.poi.xwpf.usermodel.XWPFStyle;
 import org.apache.poi.xwpf.usermodel.XWPFStyles;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
@@ -73,6 +74,7 @@ import org.openxmlformats.schemas.officeDocument.x2006.sharedTypes.STVerticalAli
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBody;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBookmark;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBorder;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTCompat;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDecimalNumber;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDocument1;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTFldChar;
@@ -89,6 +91,7 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTRPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectType;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSettings;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTShd;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSimpleField;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTStyle;
@@ -111,7 +114,6 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.STSectionMark;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STShd;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STStyleType;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STTblLayoutType;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.impl.STOnOffImpl;
 import org.wordinator.xml2docx.xwpf.model.XWPFHeaderFooterPolicy;
 
 /**
@@ -460,6 +462,7 @@ public class DocxGenerator {
       setupPageSequence(doc, cursor.getObject());
     } else {
       CTDocument1 document = doc.getDocument();
+      setDocSettings(doc, xml);
       CTBody body = (document.isSetBody() ? document.getBody() : document.addNewBody());
       @SuppressWarnings("unused")
       CTSectPr sectPr = (body.isSetSectPr() ? body.getSectPr() : body.addNewSectPr());
@@ -471,6 +474,20 @@ public class DocxGenerator {
   }
 
   /**
+   * Set the document-level settings.
+   * @param doc Word document to write to
+   * @param xml Simple ML doc
+   */
+  private void setDocSettings(XWPFDocument doc, XmlObject xml) {
+      XWPFSettings settings = doc.getSettings();
+      CTSettings ctSettings = settings.getCTSettings();
+      CTCompat compat = ctSettings.addNewCompat();
+      // This may be all we need to do.
+      
+	
+  }
+
+/**
    * Set document properties.
    * @param doc Document to add properties to.
    * @param xml <document-properties> element
@@ -3460,7 +3477,7 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
     doc.getStyles().addStyle(new XWPFStyle(style));
 
     style  = CTStyle.Factory.newInstance();
-    style.setCustomStyle(STOnOffImpl.X_1);
+    style.setCustomStyle(STOnOff1.OFF);
     style.setStyleId("FootnoteTextChar");
     style.setType(STStyleType.CHARACTER);
     style.addNewName().setVal("Footnote Text Char");

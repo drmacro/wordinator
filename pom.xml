@@ -57,17 +57,17 @@ arbitrary XML, JSON, etc.</description>
     <dependency>
       <groupId>org.apache.poi</groupId>
       <artifactId>poi</artifactId>
-      <version>5.2.3</version>
+      <version>5.2.5</version>
     </dependency>
     <dependency>
       <groupId>org.apache.poi</groupId>
       <artifactId>poi-ooxml</artifactId>
-      <version>5.2.3</version>
+      <version>5.2.5</version>
     </dependency>
     <dependency>
       <groupId>org.apache.xmlbeans</groupId>
       <artifactId>xmlbeans</artifactId>
-      <version>5.1.1</version>
+      <version>5.2.0</version>
     </dependency>
     <dependency>
       <groupId>commons-cli</groupId>
@@ -77,7 +77,7 @@ arbitrary XML, JSON, etc.</description>
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
-      <version>2.11.0</version>
+      <version>2.15.0</version>
     </dependency>
     <!-- https://mvnrepository.com/artifact/net.sf.saxon/Saxon-HE -->
     <dependency>
@@ -86,11 +86,12 @@ arbitrary XML, JSON, etc.</description>
 	  <version>10.3</version>
 	</dependency>
     <!-- https://mvnrepository.com/artifact/org.apache.poi/ooxml-schemas -->
-	<dependency>
-	    <groupId>org.apache.poi</groupId>
-	    <artifactId>ooxml-schemas</artifactId>
-	    <version>1.4</version>
-	</dependency>    
+<!-- https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml-full -->
+<dependency>
+    <groupId>org.apache.poi</groupId>
+    <artifactId>poi-ooxml-full</artifactId>
+    <version>5.2.5</version>
+</dependency>
   <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
   <dependency>
     <groupId>org.apache.logging.log4j</groupId>
