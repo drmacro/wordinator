@@ -41,7 +41,9 @@ import org.apache.poi.ooxml.POIXMLProperties.CustomProperties;
 import org.apache.poi.ss.formula.eval.NotImplementedException;
 import org.apache.poi.util.Units;
 import org.apache.poi.wp.usermodel.HeaderFooterType;
+import org.apache.poi.xwpf.usermodel.BodyElementType;
 import org.apache.poi.xwpf.usermodel.BreakType;
+import org.apache.poi.xwpf.usermodel.IBodyElement;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.apache.poi.xwpf.usermodel.UnderlinePatterns;
 import org.apache.poi.xwpf.usermodel.XWPFAbstractFootnoteEndnote;
@@ -451,7 +453,7 @@ public class DocxGenerator {
     }
     cursor.pop();
     cursor.push();
-    cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "body"));
+    cursor.toChild(DocxConstants.QNAME_BODY_ELEM);
     setDocSettings(doc, xml);
     handleBody(doc, cursor.getObject());
 
@@ -464,13 +466,79 @@ public class DocxGenerator {
     } else {
       CTDocument1 document = doc.getDocument();
       CTBody body = (document.isSetBody() ? document.getBody() : document.addNewBody());
-      @SuppressWarnings("unused")
-      CTSectPr sectPr = (body.isSetSectPr() ? body.getSectPr() : body.addNewSectPr());
+      if (body.isSetSectPr()) {
+        body.getSectPr();
+      } else {
+        body.addNewSectPr();
+      }
       // At this point let Word fill in the details.
 
     }
     cursor.pop();
 
+    // if the document has multiple sections we need to move the section
+    // properties from the last paragraph to directly within the body
+    XWPFParagraph lastPara = getLastParagraph(doc);
+    if (hasMultipleSections(xml) && lastPara != null && lastPara.getCTPPr().isSetSectPr()) {
+      CTSectPr sectPr = lastPara.getCTPPr().getSectPr();
+      CTBody body = doc.getDocument().getBody();
+      mergeSectPrs(body.getSectPr(), sectPr);
+      lastPara.getCTPPr().unsetSectPr();
+    }
+  }
+
+  private boolean hasMultipleSections(XmlObject xml) {
+    XmlCursor cursor = xml.newCursor();
+    cursor.toFirstChild(); // go to root element
+
+    if (!cursor.toChild(DocxConstants.QNAME_BODY_ELEM)) {
+      return false;
+    }
+    if (!cursor.toFirstChild()) {
+      return false;
+    }
+    int sections = cursor.getName().equals(DocxConstants.QNAME_SECTION_ELEM) ? 1 : 0;
+    while (cursor.toNextSibling() && sections < 2) {
+      if (cursor.getName().equals(DocxConstants.QNAME_SECTION_ELEM)) {
+        sections++;
+      }
+    }
+    return sections >= 2;
+  }
+
+  private XWPFParagraph getLastParagraph(XWPFDocument doc) {
+    XWPFParagraph lastPara = null;
+    for (IBodyElement elem : doc.getBodyElements()) {
+      if (elem.getElementType() == BodyElementType.PARAGRAPH) {
+        lastPara = (XWPFParagraph) elem;
+      }
+    }
+    return lastPara;
+  }
+
+  // this method does not merge all section properties, but I hope it
+  // does merge those that wordinator actually sets
+  private void mergeSectPrs(CTSectPr toSectPr, CTSectPr fromSectPr) {
+    if (fromSectPr.isSetPgMar()) {
+      toSectPr.setPgMar(fromSectPr.getPgMar());
+    }
+    if (fromSectPr.isSetPgSz()) {
+      toSectPr.setPgSz(fromSectPr.getPgSz());
+    }
+    if (fromSectPr.isSetPgNumType()) {
+      toSectPr.setPgNumType(fromSectPr.getPgNumType());
+    }
+
+    for (CTHdrFtrRef ref : fromSectPr.getHeaderReferenceList()) {
+      int ix = toSectPr.getHeaderReferenceList().size();
+      toSectPr.insertNewHeaderReference(ix);
+      toSectPr.setHeaderReferenceArray(ix, ref);
+    }
+    for (CTHdrFtrRef ref : fromSectPr.getFooterReferenceList()) {
+      int ix = toSectPr.getFooterReferenceList().size();
+      toSectPr.insertNewFooterReference(ix);
+      toSectPr.setFooterReferenceArray(ix, ref);
+    }
   }
 
   /**

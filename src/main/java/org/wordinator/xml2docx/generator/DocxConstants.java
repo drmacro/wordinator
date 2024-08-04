@@ -123,6 +123,7 @@ public final class DocxConstants {
 	public static final QName QNAME_XSLT_FORMAT_ATT = new QName("", "xslt-format");
 
 	// Elements:
+	public static final QName QNAME_BODY_ELEM = new QName(SIMPLE_WP_NS, "body");
 	public static final QName QNAME_COLS_ELEM = new QName(SIMPLE_WP_NS, "cols");
 	public static final QName QNAME_COL_ELEM = new QName(SIMPLE_WP_NS, "col");
 	public static final QName QNAME_CORE_PROPERTIES_ELEM = new QName(SIMPLE_WP_NS, "core-properties");
@@ -137,6 +138,7 @@ public final class DocxConstants {
 	public static final QName QNAME_W_P_ELEM = new QName(OO_WPML_NS, "p");
 	public static final QName QNAME_R_ELEM = new QName(OO_WPML_NS, "r");
 	public static final QName QNAME_ROW_ELEM = new QName(SIMPLE_WP_NS, "row");
+	public static final QName QNAME_SECTION_ELEM = new QName(SIMPLE_WP_NS, "section");
 	public static final QName QNAME_T_ELEM = new QName(OO_WPML_NS, "t"); // w:t -- text element
 	public static final QName QNAME_TABLE_ELEM = new QName(SIMPLE_WP_NS, "table"); // w:table -- table element
 	public static final QName QNAME_THEAD_ELEM = new QName(SIMPLE_WP_NS, "thead");
