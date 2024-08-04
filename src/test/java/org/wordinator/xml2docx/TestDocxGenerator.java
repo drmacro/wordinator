@@ -705,13 +705,16 @@ public class TestDocxGenerator extends TestCase {
 
     XWPFTableCell cell = row.getCell(0);
     contents = cell.getBodyElements();
-    assertEquals(1, contents.size());
+    assertEquals(2, contents.size());
 
     it = contents.iterator();
     elem = it.next();
     assertEquals(BodyElementType.TABLE, elem.getElementType());
     t = (XWPFTable) elem;
     assertEquals(2, t.getNumberOfRows());
+
+    elem = it.next();
+    assertEquals(BodyElementType.PARAGRAPH, elem.getElementType());
   }
 
   @Test
@@ -757,6 +760,68 @@ public class TestDocxGenerator extends TestCase {
     assertNotNull("Expected a value for keepLines", onOff);
     String value = (String)onOff.getVal();
     assertEquals("Expected on", value, "on");
+  }
+
+  @Test
+  public void testTableEmptyCell() throws Exception {
+    XWPFDocument doc = convert("simplewp/simplewpml-table-empty-cell.swpx", "out/table-empty-cell.docx");
+
+    List<IBodyElement> contents = doc.getBodyElements();
+    assertEquals(1, contents.size());
+
+    Iterator<IBodyElement> it = contents.iterator();
+    IBodyElement elem = it.next();
+    assertEquals(BodyElementType.TABLE, elem.getElementType());
+
+    XWPFTable t = (XWPFTable) elem;
+    assertEquals(1, t.getNumberOfRows());
+
+    XWPFTableRow row = t.getRow(0);
+    assertEquals(2, row.getTableCells().size());
+
+    XWPFTableCell cell = row.getCell(0);
+    contents = cell.getBodyElements();
+    assertEquals(1, contents.size());
+
+    cell = row.getCell(1); // the empty cell
+    contents = cell.getBodyElements();
+    assertEquals(1, contents.size()); // used to fail with 0
+  }
+
+  @Test
+  public void testNestedTableParaBeforeTable() throws Exception {
+    XWPFDocument doc = convert("simplewp/simplewpml-table-nested-03.swpx", "out/table-nested-01.docx");
+
+    List<IBodyElement> contents = doc.getBodyElements();
+    assertEquals(1, contents.size());
+
+    Iterator<IBodyElement> it = contents.iterator();
+    IBodyElement elem = it.next();
+    assertEquals(BodyElementType.TABLE, elem.getElementType());
+
+    XWPFTable t = (XWPFTable) elem;
+    assertEquals(1, t.getNumberOfRows());
+
+    XWPFTableRow row = t.getRow(0);
+    assertEquals(1, row.getTableCells().size());
+
+    XWPFTableCell cell = row.getCell(0);
+    contents = cell.getBodyElements();
+    assertEquals(3, contents.size());
+
+    it = contents.iterator();
+    elem = it.next();
+
+    assertEquals(BodyElementType.PARAGRAPH, elem.getElementType());
+    assertEquals("NOTE", ((XWPFParagraph) elem).getText());
+
+    elem = it.next();
+    assertEquals(BodyElementType.TABLE, elem.getElementType());
+    t = (XWPFTable) elem;
+    assertEquals(1, t.getNumberOfRows());
+
+    elem = it.next();
+    assertEquals(BodyElementType.PARAGRAPH, elem.getElementType());
   }
 
   // ===== INTERNAL UTILITIES
