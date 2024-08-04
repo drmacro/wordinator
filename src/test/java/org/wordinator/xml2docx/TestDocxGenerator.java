@@ -39,11 +39,14 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDocument1;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTFldChar;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTOnOff;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageMar;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageNumber;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageSz;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTText;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STFldCharType;
-// import org.openxmlformats.schemas.wordprocessingml.x2006.main.STOnOff;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.STNumberFormat;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.STPageOrientation;
 import org.wordinator.xml2docx.generator.DocxConstants;
 import org.wordinator.xml2docx.generator.DocxGenerator;
 
@@ -123,8 +126,8 @@ public class TestDocxGenerator extends TestCase {
 
     CTSectPr docSectPr = doc.getDocument().getBody().getSectPr();
     assertNotNull("Expected to find a docSectPr element", docSectPr);
-    assertEquals("Expected 3 headers", 3, docSectPr.getHeaderReferenceList().size());
-    assertEquals("Expected 3 footers", 3, docSectPr.getFooterReferenceList().size());
+    assertEquals("Expected 6 headers", 6, docSectPr.getHeaderReferenceList().size());
+    assertEquals("Expected 6 footers", 6, docSectPr.getFooterReferenceList().size());
 
     // Document-level headers and footers:
     XWPFHeaderFooterPolicy hfPolicy = doc.getHeaderFooterPolicy();
@@ -822,6 +825,41 @@ public class TestDocxGenerator extends TestCase {
 
     elem = it.next();
     assertEquals(BodyElementType.PARAGRAPH, elem.getElementType());
+  }
+
+  @Test
+  public void testMultiSectionPageProps() throws Exception {
+    // verifies the solution to issues #68 and #117
+    XWPFDocument doc = convert("simplewp/simplewpml-multisection-01.swpx", "out/multisection-01.docx");
+
+    List<IBodyElement> contents = doc.getBodyElements();
+    assertEquals(2, contents.size());
+
+    Iterator<IBodyElement> it = contents.iterator();
+
+    IBodyElement elem = it.next();
+    assertEquals(BodyElementType.PARAGRAPH, elem.getElementType());
+    XWPFParagraph p = (XWPFParagraph) elem;
+    assertEquals("This is the first page numbered in Roman lower-case", p.getText());
+    assertTrue("first para lacks section properties", p.getCTPPr().isSetSectPr());
+
+    elem = it.next();
+    assertEquals(BodyElementType.PARAGRAPH, elem.getElementType());
+    p = (XWPFParagraph) elem;
+    assertEquals("This is the first page numbered in decimal", p.getText());
+    assertFalse("second para has section properties", p.getCTPPr().isSetSectPr());
+
+    CTSectPr sectPr = doc.getDocument().getBody().getSectPr();
+    CTPageNumber pgNum = sectPr.getPgNumType();
+    assertEquals(BigInteger.valueOf(1), pgNum.getStart());
+    assertEquals(STNumberFormat.Enum.forString("decimal"), pgNum.getFmt());
+
+    // FIXME: check header & footer (a bit tricky)
+
+    CTPageSz pageSz = sectPr.getPgSz();
+    assertEquals(STPageOrientation.Enum.forString("portrait"), pageSz.getOrient());
+    assertEquals(BigInteger.valueOf(11906), pageSz.getW());
+    assertEquals(BigInteger.valueOf(16838), pageSz.getH());
   }
 
   // ===== INTERNAL UTILITIES
