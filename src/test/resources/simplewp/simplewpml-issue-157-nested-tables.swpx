@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wp:document xmlns:wp="urn:ns:wordinator:simplewpml">
+  <wp:body>
+    <wp:table align="center" layout="auto" frame="none" colsep="0" rowsep="0" width="100%">
+      <wp:tbody>
+        <wp:tr>
+          <wp:td valign="top" align="left">
+            <wp:table align="center" layout="auto" frame="none" colsep="0" rowsep="0" width="100%">
+              <wp:cols>
+                <wp:col colwidth="50%"/>
+                <wp:col colwidth="50%"/>
+              </wp:cols>
+              <wp:tbody>
+                <wp:tr>
+                  <wp:td valign="top" align="left">
+                    <wp:p>
+                      <wp:run>Q [m</wp:run>
+                      <wp:run vertical-alignment="superscript">3</wp:run>
+                      <wp:run>/h]</wp:run>
+                    </wp:p>
+                  </wp:td>
+                  <wp:td valign="top" align="left">
+                    <wp:p>
+                      <wp:run>water flow</wp:run>
+                    </wp:p>
+                  </wp:td>
+                </wp:tr>
+                <wp:tr>
+                  <wp:td valign="top" align="left">
+                    <wp:p>
+                      <wp:run>k</wp:run>
+                      <wp:run vertical-alignment="subscript">v</wp:run>
+                      <wp:run> [m</wp:run>
+                      <wp:run vertical-alignment="superscript">3</wp:run>
+                      <wp:run>/h]</wp:run>
+                    </wp:p>
+                  </wp:td>
+                  <wp:td valign="top" align="left">
+                    <wp:p>
+                      <wp:run>flow coefficient of the valve     </wp:run>
+                    </wp:p>
+                  </wp:td>
+                </wp:tr>
+                <wp:tr>
+                  <wp:td valign="top" align="left">
+                    <wp:p>
+                      <wp:run>Δp</wp:run>
+                      <wp:run vertical-alignment="subscript">v</wp:run>
+                      <wp:run> [bar]</wp:run>
+                    </wp:p>
+                  </wp:td>
+                  <wp:td valign="top" align="left">
+                    <wp:p>
+                      <wp:run>differential pressure across the valve</wp:run>
+                    </wp:p>
+                  </wp:td>
+                </wp:tr>
+                <wp:tr>
+                  <wp:td valign="top" align="left">
+                    <wp:p>
+                      <wp:run>Δp</wp:run>
+                      <wp:run vertical-alignment="subscript">1bar</wp:run>
+                      <wp:run> [bar]</wp:run>
+                    </wp:p>
+                  </wp:td>
+                  <wp:td valign="top" align="left">
+                    <wp:p>
+                      <wp:run>1 bar differential pressure</wp:run>
+                    </wp:p>
+                  </wp:td>
+                </wp:tr>
+              </wp:tbody>
+            </wp:table>
+          </wp:td>
+          <wp:td valign="top" align="left"/>
+        </wp:tr>
+      </wp:tbody>
+    </wp:table>
+  </wp:body>
+</wp:document>
