@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wp:document xmlns:wp="urn:ns:wordinator:simplewpml">
+  <wp:body>
+    <wp:p style="Normal">
+      <wp:run>When 12 test specimens of size </wp:run>
+      <wp:run>
+        <math xmlns="http://www.w3.org/1998/Math/MathML" xmlns:xlink="http://www.w3.org/1999/xlink" id="mml_m54" xlink:href="./mml_m54.png" display="inline">
+          <mrow>
+            <msubsup>
+              <mrow>
+                <mn>300</mn>
+              </mrow>
+              <mrow>
+                <mo>−</mo>
+                <mn>0</mn>
+              </mrow>
+              <mrow>
+                <mo>+</mo>
+                <mn>10</mn>
+              </mrow>
+            </msubsup>
+          </mrow>
+        </math>
+      </wp:run>
+      <wp:run> mm × </wp:run>
+      <wp:run>
+        <math xmlns="http://www.w3.org/1998/Math/MathML" xmlns:xlink="http://www.w3.org/1999/xlink" id="mml_m55" xlink:href="./mml_m55.png" display="inline">
+          <mrow>
+            <msubsup>
+              <mrow>
+                <mn>300</mn>
+              </mrow>
+              <mrow>
+                <mo>−</mo>
+                <mn>0</mn>
+              </mrow>
+              <mrow>
+                <mo>+</mo>
+                <mn>10</mn>
+              </mrow>
+            </msubsup>
+          </mrow>
+        </math>
+      </wp:run>
+      <wp:run> mm are tested in accordance with </wp:run>
+      <wp:run>Appendix B</wp:run>
+      <wp:run>, the following apply:</wp:run>
+    </wp:p>
+  </wp:body>
+</wp:document>
