@@ -133,6 +133,7 @@ import org.wordinator.xml2docx.xwpf.model.XWPFHeaderFooterPolicy;
  */
 public class DocxGenerator {
   private static String NS_MATHML = "http://www.w3.org/1998/Math/MathML";
+  private static final int DEFAULT_BORDER_WIDTH = 8; // 1pt, in eighths of a point
 
   int imageCounter = 0; // Used to keep track of count of images created.
   
@@ -2970,7 +2971,6 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
   }
 
   private TableBorderStyles setTableFrame(XWPFTable table, XmlCursor cursor) {
-    int frameWidth = 8; // 1pt
     int frameSpace = 0;
     String frameColor = "auto";
 
@@ -3017,21 +3017,51 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
         leftBorder = XWPFBorderType.NONE;
         rightBorder = XWPFBorderType.NONE;
       }
+    }
 
+    int bwidth = getBorderWidth(DocxConstants.QNAME_BORDER_WIDTH_BOTTOM_ATT, cursor);
+    if (bottomBorder != null || bwidth != -1) {
+      table.setBottomBorder(bottomBorder, widthOrDefault(bwidth), frameSpace, frameColor);
     }
-    if (bottomBorder != null) {
-      table.setBottomBorder(bottomBorder, frameWidth, frameSpace, frameColor);
+
+    bwidth = getBorderWidth(DocxConstants.QNAME_BORDER_WIDTH_TOP_ATT, cursor);
+    if (topBorder != null || bwidth != -1) {
+      table.setTopBorder(topBorder, widthOrDefault(bwidth), frameSpace, frameColor);
     }
-    if (topBorder != null) {
-      table.setTopBorder(topBorder, frameWidth, frameSpace, frameColor);
+
+    bwidth = getBorderWidth(DocxConstants.QNAME_BORDER_WIDTH_LEFT_ATT, cursor);
+    if (leftBorder != null || bwidth != -1) {
+      table.setLeftBorder(leftBorder, widthOrDefault(bwidth), frameSpace, frameColor);
     }
-    if (leftBorder != null) {
-      table.setLeftBorder(leftBorder, frameWidth, frameSpace, frameColor);
-    }
-    if (rightBorder != null) {
-      table.setRightBorder(rightBorder, frameWidth, frameSpace, frameColor);
+
+    bwidth = getBorderWidth(DocxConstants.QNAME_BORDER_WIDTH_RIGHT_ATT, cursor);
+    if (rightBorder != null || bwidth != -1) {
+      table.setRightBorder(rightBorder, widthOrDefault(bwidth), frameSpace, frameColor);
     }
     return borderStyles;
+  }
+
+  private static int widthOrDefault(int width) {
+    return -1 == width ? DEFAULT_BORDER_WIDTH : width;
+  }
+
+  /**
+   * Get the width of a border from an attribute
+   * @return Width in eighths of a point, or -1 if not specified or invalid
+   */
+  private int getBorderWidth(QName attribute, XmlCursor cursor) {
+    String width = cursor.getAttributeText(attribute);
+    if (width == null) {
+      return -1;
+    }
+
+    // border width is given in 1/8th of a point
+    try {
+      return (int) Math.round(Measurement.toPoints(width, dotsPerInch) * 8);
+    } catch (MeasurementException e) {
+      log.warn("getBorderWidth(): " + e.getClass().getSimpleName() + " - " + e.getMessage(), e);
+      return -1;
+    }
   }
 
   /**

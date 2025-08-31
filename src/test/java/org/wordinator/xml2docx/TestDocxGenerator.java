@@ -1101,6 +1101,25 @@ public class TestDocxGenerator extends TestCase {
     assertEquals("The image is square, so the width should match the height", Units.toEMU(50), ext.getCx());
   }
 
+  @Test
+  public void testTableBorderWidth() throws Exception {
+    XWPFDocument doc = convert("simplewp/simplewpml-table-border-width.swpx", "out/table-border-width.docx");
+    List<IBodyElement> contents = doc.getBodyElements();
+    assertEquals(1, contents.size());
+
+    Iterator<IBodyElement> it = contents.iterator();
+    IBodyElement elem = it.next();
+    assertEquals(BodyElementType.TABLE, elem.getElementType());
+
+    XWPFTable t = (XWPFTable) elem;
+
+    // check the border widths
+    assertEquals(64, t.getLeftBorderSize());
+    assertEquals(23, t.getRightBorderSize());
+    assertEquals(8, t.getTopBorderSize());
+    assertEquals(227, t.getBottomBorderSize());
+  }
+
   // ===== INTERNAL UTILITIES
 
   private XWPFDocument convert(String infile, String outfile) throws Exception {
