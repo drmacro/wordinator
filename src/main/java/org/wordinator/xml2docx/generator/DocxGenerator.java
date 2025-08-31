@@ -3041,6 +3041,13 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
     return borderStyles;
   }
 
+  private boolean hasBorderWidths(XmlCursor cursor) {
+    return getBorderWidth(DocxConstants.QNAME_BORDER_WIDTH_BOTTOM_ATT, cursor) != -1 ||
+        getBorderWidth(DocxConstants.QNAME_BORDER_WIDTH_TOP_ATT, cursor) != -1 ||
+        getBorderWidth(DocxConstants.QNAME_BORDER_WIDTH_LEFT_ATT, cursor) != -1 ||
+        getBorderWidth(DocxConstants.QNAME_BORDER_WIDTH_RIGHT_ATT, cursor) != -1;
+  }
+
   private static int widthOrDefault(int width) {
     return -1 == width ? DEFAULT_BORDER_WIDTH : width;
   }
@@ -3515,42 +3522,64 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
     // log.debug("setCellBorders(): tag is \"" + cursor.getName().getLocalPart() + "\"");
     TableBorderStyles borderStyles = new TableBorderStyles(cursor.getObject());
 
-    if (borderStyles.hasBorders()) {
+    if (borderStyles.hasBorders() || hasBorderWidths(cursor)) {
       CTTcBorders borders = ctTcPr.addNewTcBorders();
 
       // Borders can be set per edge:
 
-      if (borderStyles.getBottomBorder() != null) {
+      int bwidth = getBorderWidth(DocxConstants.QNAME_BORDER_WIDTH_BOTTOM_ATT, cursor);
+      if (borderStyles.getBottomBorder() != null || bwidth != -1) {
         CTBorder bottom = borders.addNewBottom();
         STBorder.Enum val = borderStyles.getBottomBorderEnum();
         if (val != null) {
           bottom.setVal(val);
-        } else {
+        } else if (bwidth == -1) {
           log.warn("setCellBorders(): Failed to get STBorder.Enum value for XWPFBorderStyle \"" + borderStyles.getBottomBorder().name() + "\"");
         }
         if (borderStyles.getBottomColor() != null) {
           bottom.setColor(borderStyles.getBottomColor());
         }
+        if (bwidth != -1) {
+          bottom.setSz(BigInteger.valueOf(bwidth));
+        }
       }
-      if (borderStyles.getTopBorder() != null) {
+      bwidth = getBorderWidth(DocxConstants.QNAME_BORDER_WIDTH_TOP_ATT, cursor);
+      if (borderStyles.getTopBorder() != null || bwidth != -1) {
         CTBorder top = borders.addNewTop();
-        top.setVal(borderStyles.getTopBorderEnum());
+        if (borderStyles.getTopBorderEnum() != null) {
+          top.setVal(borderStyles.getTopBorderEnum());
+        }
         if (borderStyles.getTopColor() != null) {
           top.setColor(borderStyles.getTopColor());
         }
+        if (bwidth != -1) {
+          top.setSz(BigInteger.valueOf(bwidth));
+        }
       }
-      if (borderStyles.getLeftBorder() != null) {
+      bwidth = getBorderWidth(DocxConstants.QNAME_BORDER_WIDTH_LEFT_ATT, cursor);
+      if (borderStyles.getLeftBorder() != null || bwidth != -1) {
         CTBorder left = borders.addNewLeft();
-        left.setVal(borderStyles.getLeftBorderEnum());
+        if (borderStyles.getLeftBorderEnum() != null) {
+          left.setVal(borderStyles.getLeftBorderEnum());
+        }
         if (borderStyles.getLeftColor() != null) {
           left.setColor(borderStyles.getLeftColor());
         }
+        if (bwidth != -1) {
+          left.setSz(BigInteger.valueOf(bwidth));
+        }
       }
-      if (borderStyles.getRightBorder() != null) {
+      bwidth = getBorderWidth(DocxConstants.QNAME_BORDER_WIDTH_RIGHT_ATT, cursor);
+      if (borderStyles.getRightBorder() != null || bwidth != -1) {
         CTBorder right = borders.addNewRight();
-        right.setVal(borderStyles.getRightBorderEnum());
+        if (borderStyles.getRightBorderEnum() != null) {
+          right.setVal(borderStyles.getRightBorderEnum());
+        }
         if (borderStyles.getRightColor() != null) {
           right.setColor(borderStyles.getRightColor());
+        }
+        if (bwidth != -1) {
+          right.setSz(BigInteger.valueOf(bwidth));
         }
       }
     }
