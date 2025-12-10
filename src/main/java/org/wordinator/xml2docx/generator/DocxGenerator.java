@@ -1656,7 +1656,7 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
         } else {
           // There are other body-level things that could go in a footnote but
           // we aren't worrying about them for now.
-          log.warn("makeFootnote(): Unexpected element {" + namespace + "}:" + tagName + "' in <fn>. Ignored.");
+          log.warn("makeHeaderFooter(): Unexpected element {" + namespace + "}:" + tagName + "' in <fn>. Ignored.");
         }
       } while(cursor.toNextSibling());
     }
