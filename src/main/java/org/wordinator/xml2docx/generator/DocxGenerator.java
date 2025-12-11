@@ -2677,7 +2677,7 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
       // Create an external hyperlink. This creates the necessary relationship.
       // Not using the createHyperlinkRun() of paragraph because it doesn't handle the
       // runs within the <hyperlink> as we need. Set the @rId attribute.
-      String rId = para.getDocument().getPackagePart().addExternalRelationship(href, XWPFRelation.HYPERLINK.getRelation()).getId();
+      String rId = para.getPart().getPackagePart().addExternalRelationship(href, XWPFRelation.HYPERLINK.getRelation()).getId();
       hyperlink.setId(rId);
     }
 
