@@ -104,6 +104,7 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTShd;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSimpleField;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTStyle;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTbl;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblGrid;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblLayoutType;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblWidth;
@@ -2825,6 +2826,8 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
       } while (cursor.toNextSibling());
     }
 
+    setTableGrid(table, colDefs);
+
     // populate the rows and cells.
     cursor = xml.newCursor();
 
@@ -3601,6 +3604,34 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
       style = (null == style.getBasisStyleID()) ? null : styles.getStyle(style.getBasisStyleID());
     }
     return null;
+  }
+
+  /**
+   * Sets the table grid (w:tblGrid) from the column definitions when all of the
+   * columns have absolute widths. The grid can only hold absolute widths, in twips.
+   * If any column is auto or a percentage, the grid is left as it is and the widths
+   * on the cells determine the layout.
+   * @param table The table to set the grid on
+   * @param colDefs The table's column definitions
+   */
+  public static void setTableGrid(XWPFTable table, TableColumnDefinitions colDefs) {
+    List<TableColumnDefinition> cols = colDefs.getColumnDefinitions();
+    if (cols.isEmpty()) {
+      return;
+    }
+    for (TableColumnDefinition col : cols) {
+      if (!col.getWidth().matches("[0-9]+")) {
+        return;
+      }
+    }
+    CTTbl ctTbl = table.getCTTbl();
+    CTTblGrid grid = null != ctTbl.getTblGrid() ? ctTbl.getTblGrid() : ctTbl.addNewTblGrid();
+    while (grid.sizeOfGridColArray() > 0) {
+      grid.removeGridCol(0);
+    }
+    for (TableColumnDefinition col : cols) {
+      grid.addNewGridCol().setW(new BigInteger(col.getWidth()));
+    }
   }
 
   private void setupNumbering(XWPFDocument doc, XWPFDocument templateDoc) throws DocxGenerationException {

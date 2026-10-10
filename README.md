@@ -29,6 +29,9 @@ If you need to go from Word documents back to XML, you may find [the DITA for Pu
 * Unreleased
 
   * Numbering of ordered lists now restarts for each list. New optional attribute wp:p/@numId identifies the list a paragraph belongs to; each distinct value gets its own Word numbering instance, based on the numbering definition of the paragraph's style, that starts at 1. The html2docx transform sets @numId on the items of each ol. Paragraphs whose style has no numbering are left as they are. Thanks to Oleksandr Oboznyi for the original implementation (pull requests 125 and 128).
+  * html2docx: Column widths specified on HTML col elements (@width or width in @style) are now used as the widths of the table columns. Percentages and measurements are supported. A number without units is pixels. Widths that can't be used, such as relative widths ("2*"), are ignored and the column is auto-sized.
+  * When all of a table's columns have absolute widths, the table grid (w:tblGrid) is now set from them, which helps tools such as LibreOffice lay out the table.
+  * This replaces pull requests 126 and 127 from Oleksandr Oboznyi, who first took on column widths. Thanks!
 
 * 1.2.0
 
