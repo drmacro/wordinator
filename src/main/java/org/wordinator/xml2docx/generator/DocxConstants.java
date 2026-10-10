@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.wordinator.xml2docx.generator;
 
@@ -15,16 +15,21 @@ import javax.xml.namespace.QName;
  */
 @SuppressWarnings("unused")
 public final class DocxConstants {
-	
+
   // Namespace names:
 	public static final String OO_WPML_NS = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
 	public static final String SIMPLE_WP_NS = "urn:ns:wordinator:simplewpml";
-	
+
 	// Attributes:
 	public static final QName QNAME_ALIGN_ATT = new QName("", "align");
+  public static final QName QNAME_ARG_A_ATT = new QName("", "arg-a");
+  public static final QName QNAME_ARG_B_ATT = new QName("", "arg-b");
+  public static final QName QNAME_ARG_C_ATT = new QName("", "arg-c");
   public static final QName QNAME_ARG_D_ATT = new QName("", "arg-d");
   public static final QName QNAME_ARG_F_ATT = new QName("", "arg-f");
   public static final QName QNAME_ARG_H_ATT = new QName("", "arg-h");
+  public static final QName QNAME_ARG_L_ATT = new QName("", "arg-l");
+  public static final QName QNAME_ARG_N_ATT = new QName("", "arg-n");
   public static final QName QNAME_ARG_O_ATT = new QName("", "arg-o");
   public static final QName QNAME_ARG_P_ATT = new QName("", "arg-p");
   public static final QName QNAME_ARG_S_ATT = new QName("", "arg-s");
@@ -49,7 +54,7 @@ public final class DocxConstants {
 	public static final QName QNAME_BOTTOM_ATT = new QName("", "bottom");
 	public static final QName QNAME_CALCULATEDWIDTH_ATT = new QName("", "calculatedWidth");
   public static final QName QNAME_CALLOUT_ATT = new QName("", "callout");
-	public static final QName QNAME_CAPS_ATT = new QName("", "caps");	
+	public static final QName QNAME_CAPS_ATT = new QName("", "caps");
   public static final QName QNAME_CHAPTER_SEPARATOR_ATT = new QName("", "chapter-separator");
   public static final QName QNAME_CHAPTER_STYLE_ATT = new QName("", "chapter-style");
   public static final QName QNAME_CODE_ATT = new QName(SIMPLE_WP_NS, "code");
@@ -81,6 +86,8 @@ public final class DocxConstants {
   public static final QName QNAME_INSIDEINDENT_ATT = new QName("", "insideindent");
   public static final QName QNAME_INSTR_ATT = new QName(OO_WPML_NS, "instr");
 	public static final QName QNAME_ITALIC_ATT = new QName("", "italic");
+	public static final QName QNAME_KEEPLINES_ATT = new QName("", "keeplines");
+	public static final QName QNAME_KEEPNEXT_ATT = new QName("", "keepnext");
   public static final QName QNAME_LAYOUT_ATT = new QName("", "layout");
 	public static final QName QNAME_LEFT_ATT = new QName("", "left");
   public static final QName QNAME_LEFTINDENT_ATT = new QName("", "leftindent");
@@ -113,26 +120,35 @@ public final class DocxConstants {
 	public static final QName QNAME_VANISH_ATT = new QName("", "vanish");
 	public static final QName QNAME_VERTICAL_ALIGNMENT_ATT = new QName("", "vertical-alignment");
 	public static final QName QNAME_WIDTH_ATT = new QName("", "width");
-	public static final QName QNAME_XSLT_FORMAT_ATT = new QName("", "xslt-format");	 
+	public static final QName QNAME_XSLT_FORMAT_ATT = new QName("", "xslt-format");
+	public static final QName QNAME_NUMID_ATT = new QName("", "numId");
+	public static final QName QNAME_FIT_TO_PAGE_WIDTH_ATT = new QName("", "fit-to-page-width");
 
 	// Elements:
+	public static final QName QNAME_BODY_ELEM = new QName(SIMPLE_WP_NS, "body");
 	public static final QName QNAME_COLS_ELEM = new QName(SIMPLE_WP_NS, "cols");
 	public static final QName QNAME_COL_ELEM = new QName(SIMPLE_WP_NS, "col");
-  public static final QName QNAME_FIELDRESULTS_ELEM = new QName(SIMPLE_WP_NS, "fieldResults");
-  public static final QName QNAME_FOOTNOTEREF_ELEM = new QName(OO_WPML_NS, "footnoteRef");
-  public static final QName QNAME_FOOTNOTEREFEREMCE_ELEM = new QName(OO_WPML_NS, "footnoteReference");
-  public static final QName QNAME_INSTRUCTIONTEXT_ELEM = new QName(SIMPLE_WP_NS, "instructionText");
-  public static final QName QNAME_P_ELEM = new QName(SIMPLE_WP_NS, "p");
-  public static final QName QNAME_W_P_ELEM = new QName(OO_WPML_NS, "p");
-  public static final QName QNAME_R_ELEM = new QName(OO_WPML_NS, "r");
-  public static final QName QNAME_ROW_ELEM = new QName(SIMPLE_WP_NS, "row");
-  public static final QName QNAME_T_ELEM = new QName(OO_WPML_NS, "t"); // w:t -- text element
+	public static final QName QNAME_CORE_PROPERTIES_ELEM = new QName(SIMPLE_WP_NS, "core-properties");
+	public static final QName QNAME_CUSTOM_PROPERTIES_ELEM = new QName(SIMPLE_WP_NS, "custom-properties");
+	public static final QName QNAME_DOCUMENT_PROPERTIES_ELEM = new QName(SIMPLE_WP_NS, "document-properties");
+	public static final QName QNAME_EXTENDED_PROPERTIES_ELEM = new QName(SIMPLE_WP_NS, "extended-properties");
+	public static final QName QNAME_FIELDRESULTS_ELEM = new QName(SIMPLE_WP_NS, "fieldResults");
+	public static final QName QNAME_FOOTNOTEREF_ELEM = new QName(OO_WPML_NS, "footnoteRef");
+	public static final QName QNAME_FOOTNOTEREFEREMCE_ELEM = new QName(OO_WPML_NS, "footnoteReference");
+	public static final QName QNAME_INSTRUCTIONTEXT_ELEM = new QName(SIMPLE_WP_NS, "instructionText");
+	public static final QName QNAME_P_ELEM = new QName(SIMPLE_WP_NS, "p");
+	public static final QName QNAME_W_P_ELEM = new QName(OO_WPML_NS, "p");
+	public static final QName QNAME_R_ELEM = new QName(OO_WPML_NS, "r");
+	public static final QName QNAME_ROW_ELEM = new QName(SIMPLE_WP_NS, "row");
+	public static final QName QNAME_SECTION_ELEM = new QName(SIMPLE_WP_NS, "section");
+	public static final QName QNAME_T_ELEM = new QName(OO_WPML_NS, "t"); // w:t -- text element
+	public static final QName QNAME_TABLE_ELEM = new QName(SIMPLE_WP_NS, "table"); // w:table -- table element
 	public static final QName QNAME_THEAD_ELEM = new QName(SIMPLE_WP_NS, "thead");
 	public static final QName QNAME_TBODY_ELEM = new QName(SIMPLE_WP_NS, "tbody");
 	public static final QName QNAME_TR_ELEM = new QName(SIMPLE_WP_NS, "tr");
 	public static final QName QNAME_TD_ELEM = new QName(SIMPLE_WP_NS, "td");
 	public static final QName QNAME_VSPAN_ELEM = new QName(SIMPLE_WP_NS, "vspan");
-
+	
 	public static final String PROPERTY_VALUE_CONTINUOUS = "continuous";
   public static final String PROPERTY_PAGEBREAK = "pagebreak";
   public static final QName QNAME_TCPR_ELEM = new QName(OO_WPML_NS, "tcPr");
@@ -153,6 +169,6 @@ public final class DocxConstants {
   public static final QName QNAME_TBLPR_ELEM = new QName(OO_WPML_NS, "tblPr");
   public static final QName QNAME_TBLLAYOUT_ELEM = new QName(OO_WPML_NS, "tblLayout");
   public static final QName QNAME_WTYPE_ATT = new QName(OO_WPML_NS, "type");
-  
-  
+
+
 }

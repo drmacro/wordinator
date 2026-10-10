@@ -141,10 +141,15 @@
   
   <xsl:template match="xhtml:a[@href] | a[@href]">
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
-    
-    <xsl:variable name="targetId" as="xs:string?" select="tokenize(@href, '#')[last()]"/>
-    
-    <wp:hyperlink href="#{$targetId}">
+    <!-- Links with a URI scheme (http:, mailto:, etc.) are external and pass through
+         unchanged. Anything else is a reference into the document, so only the
+         fragment ID is kept and it becomes a bookmark reference. -->
+    <xsl:variable name="target" as="xs:string"
+      select="if (matches(@href, '^[a-zA-Z][a-zA-Z0-9+.\-]*:'))
+                 then string(@href)
+                 else '#' || tokenize(@href, '#')[last()]"
+    />
+    <wp:hyperlink href="{$target}">
       <xsl:apply-templates>
         <xsl:with-param name="doDebug" as="xs:boolean" tunnel="yes" select="$doDebug"/>
       </xsl:apply-templates>
@@ -269,6 +274,13 @@
     </xsl:apply-templates>      
   </xsl:template>
   
+  <!-- Set to "true" to make images that are wider than the page's content area fit it.
+       Pass on the command line as, e.g., fit-images=true. Off by default so that
+       image sizes are not changed unless asked for.
+       A string rather than a boolean because the Wordinator command line passes
+       parameter values as strings. -->
+  <xsl:param name="fit-images" as="xs:string" select="'false'"/>
+  
   <xsl:template match="xhtml:img | img">
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
 
@@ -293,6 +305,9 @@
       <wp:image src="{$imageUrl}">
         <!-- HTML @width and @height should work as is as long as unit is not % -->
         <xsl:sequence select="@width, @height"/>
+        <xsl:if test="$fit-images = ('true', 'yes', '1')">
+          <xsl:attribute name="fit-to-page-width" select="'true'"/>
+        </xsl:if>
 <!--          <xsl:apply-templates select="@*"/>-->
       </wp:image>        
     </xsl:if>
@@ -339,7 +354,33 @@
   <!-- ==========================
        Tables
        ========================== -->
-  <xsl:template match="xhtml:table | table | xhtml:tbody | tbody | xhtml:thead | thead | xhtml:tr | tr | xhtml:col | col">
+  <!-- SWPX tables hold rows only in thead and tbody. In HTML the tbody is optional, so
+       rows that are direct children of the table (and there is no tbody) are put in a tbody. -->
+  <xsl:template match="xhtml:table | table">
+    <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
+    
+    <xsl:variable name="hasBody" as="xs:boolean" select="exists(xhtml:tbody | tbody)"/>
+    <xsl:element name="{name(.)}" namespace="urn:ns:wordinator:simplewpml">
+      <xsl:for-each-group select="*" group-adjacent="not($hasBody) and exists(self::xhtml:tr | self::tr)">
+        <xsl:choose>
+          <xsl:when test="current-grouping-key()">
+            <wp:tbody>
+              <xsl:apply-templates select="current-group()">
+                <xsl:with-param name="doDebug" as="xs:boolean" tunnel="yes" select="$doDebug"/>
+              </xsl:apply-templates>
+            </wp:tbody>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:apply-templates select="current-group()">
+              <xsl:with-param name="doDebug" as="xs:boolean" tunnel="yes" select="$doDebug"/>
+            </xsl:apply-templates>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:for-each-group>
+    </xsl:element>
+  </xsl:template>
+  
+  <xsl:template match="xhtml:tbody | tbody | xhtml:thead | thead | xhtml:tr | tr">
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
 
     <!-- FIXME: For table rows, handle vertical spanning, which means examining preceding rows to look for
@@ -353,6 +394,40 @@
     </xsl:element>
     
   </xsl:template>
+  
+  <!-- Column definition. The width comes from @width or from a width property in @style.
+       Widths that can't be used, e.g., the HTML 4 relative width "2*", are ignored and the column is auto. -->
+  <xsl:template match="xhtml:col | col">
+    <xsl:variable name="width" as="xs:string?" select="local:get-column-width(.)"/>
+    <wp:col>
+      <xsl:if test="exists($width)">
+        <xsl:attribute name="colwidth" select="$width"/>
+      </xsl:if>
+    </wp:col>
+  </xsl:template>
+  
+  <!-- Gets the width of a col as a SWPX width: a percentage or a measurement with units.
+       A number without units is pixels, as in HTML, and gets the "px" unit so it isn't
+       taken to be twips. -->
+  <xsl:function name="local:get-column-width" as="xs:string?">
+    <xsl:param name="col" as="element()"/>
+    <xsl:variable name="styleWidth" as="xs:string?"
+      select="if (matches($col/@style, '(^|;)\s*width\s*:'))
+                 then replace($col/@style, '^(.*;)?\s*width\s*:\s*([^;]+?)\s*(;.*)?$', '$2')
+                 else ()"
+    />
+    <xsl:variable name="candidate" as="xs:string?"
+      select="normalize-space(($styleWidth, $col/@width)[1])"
+    />
+    <xsl:choose>
+      <xsl:when test="matches($candidate, '^[0-9]+(\.[0-9]+)?$')">
+        <xsl:sequence select="$candidate || 'px'"/>
+      </xsl:when>
+      <xsl:when test="matches($candidate, '^[0-9]+(\.[0-9]+)?(%|px|pt|pc|in|mm|cm)$')">
+        <xsl:sequence select="$candidate"/>
+      </xsl:when>
+    </xsl:choose>
+  </xsl:function>
   
   <xsl:template match="xhtml:td | td | xhtml:th | th">
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
@@ -623,6 +698,10 @@
       <xsl:call-template name="set-style">
         <xsl:with-param name="doDebug" as="xs:boolean" tunnel="yes" select="$doDebug"/>
       </xsl:call-template>
+      <!-- Each ordered list is its own numbered list, so numbering restarts for each list -->
+      <xsl:if test="parent::xhtml:ol or parent::ol">
+        <xsl:attribute name="numId" select="generate-id(..)"/>
+      </xsl:if>
       <xsl:apply-templates select="node() except (xhtml:ul, xhtml:ol, ul, ol)">
         <xsl:with-param name="doDebug" as="xs:boolean" tunnel="yes" select="$doDebug"/>
       </xsl:apply-templates>

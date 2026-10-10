@@ -64,5 +64,7 @@
       <run> 1996; 24: 1-11.</run>
       <bookmarkEnd id="IDunique_6_Connect_42_li_olb_5tg_tt"/>
     </p>
-  </body>
+    <p><run>External hyperlink: </run><hyperlink href="https://github.com/drmacro/wordinator"><run>Wordinator</run>
+    </hyperlink><run>After hyperlink para with external hyperlink</run></p>
+ </body>
 </document>

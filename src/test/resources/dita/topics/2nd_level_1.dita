@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="_2nd_level_1">
+    <title>2nd-level 1</title>
+    <shortdesc></shortdesc>
+    <prolog>     
+    </prolog>
+    <body>
+        <p>First 2nd-level topic</p>
+    </body>
+</topic>

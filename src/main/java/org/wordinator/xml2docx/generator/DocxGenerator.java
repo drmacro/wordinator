@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.wordinator.xml2docx.generator;
 
@@ -17,10 +17,15 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.imageio.ImageIO;
 import javax.xml.namespace.QName;
@@ -30,11 +35,18 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.poi.ooxml.POIXMLProperties;
+import org.apache.poi.ooxml.POIXMLProperties.CoreProperties;
+import org.apache.poi.ooxml.POIXMLProperties.ExtendedProperties;
+import org.apache.poi.ooxml.POIXMLProperties.CustomProperties;
 import org.apache.poi.ss.formula.eval.NotImplementedException;
 import org.apache.poi.util.Units;
 import org.apache.poi.wp.usermodel.HeaderFooterType;
+import org.apache.poi.xwpf.usermodel.BodyElementType;
 import org.apache.poi.xwpf.usermodel.BreakType;
+import org.apache.poi.xwpf.usermodel.IBodyElement;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
+import org.apache.poi.xwpf.usermodel.TableRowAlign;
 import org.apache.poi.xwpf.usermodel.UnderlinePatterns;
 import org.apache.poi.xwpf.usermodel.XWPFAbstractFootnoteEndnote;
 import org.apache.poi.xwpf.usermodel.XWPFAbstractNum;
@@ -46,7 +58,10 @@ import org.apache.poi.xwpf.usermodel.XWPFHyperlinkRun;
 import org.apache.poi.xwpf.usermodel.XWPFNum;
 import org.apache.poi.xwpf.usermodel.XWPFNumbering;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.apache.poi.xwpf.usermodel.XWPFPicture;
+import org.apache.poi.xwpf.usermodel.XWPFRelation;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
+import org.apache.poi.xwpf.usermodel.XWPFSettings;
 import org.apache.poi.xwpf.usermodel.XWPFStyle;
 import org.apache.poi.xwpf.usermodel.XWPFStyles;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
@@ -59,10 +74,18 @@ import org.apache.xmlbeans.XmlCursor.TokenType;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.impl.xb.xmlschema.SpaceAttribute.Space;
+import org.openxmlformats.schemas.drawingml.x2006.main.CTPositiveSize2D;
+import org.openxmlformats.schemas.drawingml.x2006.wordprocessingDrawing.CTInline;
+import org.openxmlformats.schemas.officeDocument.x2006.sharedTypes.STOnOff1;
+import org.openxmlformats.schemas.officeDocument.x2006.sharedTypes.STVerticalAlignRun;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBody;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBookmark;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBorder;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTCompat;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTCompatSetting;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDecimalNumber;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTNumLvl;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTNumPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDocument1;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTFldChar;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTFtnEdn;
@@ -71,6 +94,7 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTHyperlink;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTMarkupRange;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTOnOff;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPPr;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPPrGeneral;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageMar;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageNumber;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageSz;
@@ -78,10 +102,12 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTRPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectType;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSettings;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTShd;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSimpleField;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTStyle;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTbl;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblGrid;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblLayoutType;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblWidth;
@@ -95,23 +121,24 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.STFldCharType;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STHdrFtr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STMerge;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STNumberFormat;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.STOnOff;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STPageOrientation;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STSectionMark;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STShd;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STStyleType;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STTblLayoutType;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.STVerticalAlignRun;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.impl.STOnOffImpl;
 import org.wordinator.xml2docx.xwpf.model.XWPFHeaderFooterPolicy;
 
 /**
  * Generates DOCX files from Simple Word Processing Markup Language XML.
  */
 public class DocxGenerator {
-  
+  private static String NS_MATHML = "http://www.w3.org/1998/Math/MathML";
+
   int imageCounter = 0; // Used to keep track of count of images created.
   
+  private static SimpleDateFormat isoDateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX", Locale.ENGLISH);
+  
+
   /**
    * Holds a set of table border styles
    *
@@ -123,24 +150,24 @@ public class DocxGenerator {
     XWPFBorderType defaultBorderType = null;
     XWPFBorderType topBorder = null;
     XWPFBorderType bottomBorder = null;
-    XWPFBorderType leftBorder = null; 
+    XWPFBorderType leftBorder = null;
     XWPFBorderType rightBorder = null;
     XWPFBorderType rowSepBorder = null;
     XWPFBorderType colSepBorder = null;
-    
+
     String defaultColor = null;
-    String topColor = null; 
-    String leftColor = null; 
-    String bottomColor = null; 
+    String topColor = null;
+    String leftColor = null;
+    String bottomColor = null;
     String rightColor = null;
-    
+
     public TableBorderStyles(
-        XWPFBorderType defaultBorderType, 
-        XWPFBorderType topBorder, 
+        XWPFBorderType defaultBorderType,
+        XWPFBorderType topBorder,
         XWPFBorderType bottomBorder,
-        XWPFBorderType leftBorder, 
+        XWPFBorderType leftBorder,
         XWPFBorderType rightBorder) {
-      
+
     }
 
     /**
@@ -151,11 +178,11 @@ public class DocxGenerator {
       defaultBorderType = parentBorderStyles.getDefaultBorderType();
       topBorder = parentBorderStyles.getTopBorder();
       bottomBorder = parentBorderStyles.getBottomBorder();
-      leftBorder = parentBorderStyles.getLeftBorder(); 
+      leftBorder = parentBorderStyles.getLeftBorder();
       rightBorder = parentBorderStyles.getRightBorder();
       rowSepBorder = parentBorderStyles.getRowSepBorder();
       colSepBorder = parentBorderStyles.getColSepBorder();
-      
+
       // Get default border colors from parent?
     }
 
@@ -165,23 +192,23 @@ public class DocxGenerator {
      * @param borderStyleSpecifier XML element that may specify frame style attributes (table, td)
      */
     public TableBorderStyles(XmlObject borderStyleSpecifier) {
-      
+
       XmlCursor cursor = borderStyleSpecifier.newCursor();
-      String tagname = cursor.getName().getLocalPart(); 
-      String styleValue = null;    
+      String tagname = cursor.getName().getLocalPart();
+      String styleValue = null;
       String styleBottomValue= null;
       String styleTopValue= null;
       String styleLeftValue= null;
       String styleRightValue= null;
-      
+
       String colorValue = null;
       String colorBottomValue= null;
       String colorTopValue= null;
       String colorLeftValue= null;
       String colorRightValue= null;
-      
+
       // Issue 30: Also get the border color values.
-      
+
       if ("table".equals(tagname)) {
         styleValue = cursor.getAttributeText(DocxConstants.QNAME_FRAMESTYLE_ATT);
         styleBottomValue= cursor.getAttributeText(DocxConstants.QNAME_FRAMESTYLE_BOTTOM_ATT);
@@ -194,7 +221,7 @@ public class DocxGenerator {
         styleTopValue= cursor.getAttributeText(DocxConstants.QNAME_BORDER_STYLE_TOP_ATT);
         styleLeftValue= cursor.getAttributeText(DocxConstants.QNAME_BORDER_STYLE_LEFT_ATT);
         styleRightValue= cursor.getAttributeText(DocxConstants.QNAME_BORDER_STYLE_RIGHT_ATT);
-        
+
         colorValue = cursor.getAttributeText(DocxConstants.QNAME_BORDER_COLOR_ATT);
         colorBottomValue = cursor.getAttributeText(DocxConstants.QNAME_BORDER_COLOR_BOTTOM_ATT);
         colorTopValue = cursor.getAttributeText(DocxConstants.QNAME_BORDER_COLOR_TOP_ATT);
@@ -205,7 +232,7 @@ public class DocxGenerator {
       if (styleValue != null) {
         setDefaultBorderType(xwpfBorderType(styleValue));
       }
-      
+
       if (styleBottomValue != null) {
         setBottomBorder(xwpfBorderType(styleBottomValue));
       }
@@ -222,7 +249,7 @@ public class DocxGenerator {
       if (colorValue != null) {
         setDefaultBorderColor(colorValue);
       }
-      
+
       if (colorBottomValue != null) {
         setBottomColor(colorBottomValue);
       }
@@ -243,7 +270,7 @@ public class DocxGenerator {
       if (this.getTopColor() == null) this.setTopColor(colorValue);
       if (this.getLeftColor() == null) this.setLeftColor(colorValue);
       if (this.getRightColor() == null) this.setRightColor(colorValue);
-      
+
     }
 
     public String getBottomColor() {
@@ -301,7 +328,7 @@ public class DocxGenerator {
     public XWPFBorderType getBottomBorder() {
       return bottomBorder;
     }
-    
+
     public STBorder.Enum getBottomBorderEnum() {
       return getBorderEnumForType(getBottomBorder());
     }
@@ -314,7 +341,7 @@ public class DocxGenerator {
     public STBorder.Enum getRightBorderEnum() {
       return getBorderEnumForType(getRightBorder());
     }
-    
+
     public STBorder.Enum getBorderEnumForType(XWPFBorderType type) {
       STBorder.Enum result = null;
       if (type != null) {
@@ -364,7 +391,7 @@ public class DocxGenerator {
      * @return True if one or more borders have a defined style.
      */
     public boolean hasBorders() {
-      boolean result = 
+      boolean result =
               getDefaultBorderType() != null ||
               getBottomBorder() != null ||
               getTopBorder() != null ||
@@ -375,7 +402,7 @@ public class DocxGenerator {
 
   }
 
-  public static final Logger log = LogManager.getLogger();
+  private static final Logger log = LogManager.getLogger(DocxGenerator.class);
 
   private File outFile;
   private int dotsPerInch = 72; /* DPI */
@@ -389,9 +416,13 @@ public class DocxGenerator {
   private boolean isFirstParagraphStyleWarning = true;
   private boolean isFirstCharacterStyleWarning = true;
   private boolean isFirstTableStyleWarning = true;
+  /** Paragraphs that belong to each list, keyed by the value of the list's wp:p/@numId, in document order */
+  private Map<String, List<XWPFParagraph>> listParagraphs = new LinkedHashMap<>();
+  /** Pictures that are to be resized to fit the page width once the section properties are known */
+  private List<PictureToFit> picturesToFit = new ArrayList<>();
 
   /**
-   * 
+   *
    * @param inFile File representing input document.
    * @param outFile File to write DOCX result to
    * @param templateDoc DOTX template to initialize result DOCX with (provides style definitions)
@@ -400,25 +431,26 @@ public class DocxGenerator {
    */
   public DocxGenerator(File inFile, File outFile, XWPFDocument templateDoc) throws FileNotFoundException, Exception {
     this.inFile = inFile;
-    this.outFile = outFile;    
+    this.outFile = outFile;
     this.templateDoc = templateDoc;
   }
 
   /*
-   * Generate the DOCX file from the input Simple WP ML document. 
+   * Generate the DOCX file from the input Simple WP ML document.
    * @param xml The XmlObject that holds the Simple WP XML content
    */
   public void generate(XmlObject xml) throws DocxGenerationException, XmlException, IOException {
-        
+
     XWPFDocument doc = new XWPFDocument();
-    
+
     setupNumbering(doc, this.templateDoc);
     setupStyles(doc, this.templateDoc);
     constructDoc(doc, xml);
-    
+    restartNumberedLists(doc);
+
     FileOutputStream out = new FileOutputStream(outFile);
         doc.write(out);
-    doc.close(); 
+    doc.close();
   }
 
   /**
@@ -430,29 +462,380 @@ public class DocxGenerator {
     XmlCursor cursor = xml.newCursor();
     cursor.toFirstChild(); // Put us on the root element of the document
     cursor.push();
-    cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "body"));
-
-    handleBody(doc, cursor.getObject());
-    
+    if (cursor.toChild(DocxConstants.SIMPLE_WP_NS, "document-properties")) {
+    	handleDocumentProperties(doc, cursor.getObject());
+    }
     cursor.pop();
-    
+    cursor.push();
+    cursor.toChild(DocxConstants.QNAME_BODY_ELEM);
+    setDocSettings(doc, xml);
+    handleBody(doc, cursor.getObject());
+
+    cursor.pop();
+
     if (cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "page-sequence-properties"))) {
-      // Results in a w:sectPr as  the last child 
+      // Results in a w:sectPr as  the last child
       // of w:body.
       setupPageSequence(doc, cursor.getObject());
     } else {
       CTDocument1 document = doc.getDocument();
       CTBody body = (document.isSetBody() ? document.getBody() : document.addNewBody());
-      @SuppressWarnings("unused")
-      CTSectPr sectPr = (body.isSetSectPr() ? body.getSectPr() : body.addNewSectPr());
+      if (body.isSetSectPr()) {
+        body.getSectPr();
+      } else {
+        body.addNewSectPr();
+      }
       // At this point let Word fill in the details.
-      
+
     }
     cursor.pop();
 
+    // if the document has multiple sections we need to move the section
+    // properties from the last paragraph to directly within the body
+    XWPFParagraph lastPara = getLastParagraph(doc);
+    if (hasMultipleSections(xml) && lastPara != null && lastPara.getCTPPr().isSetSectPr()) {
+      CTSectPr sectPr = lastPara.getCTPPr().getSectPr();
+      CTBody body = doc.getDocument().getBody();
+      mergeSectPrs(body.getSectPr(), sectPr);
+      lastPara.getCTPPr().unsetSectPr();
+    }
+
+    fitPicturesToPageWidth(doc);
+  }
+
+  private boolean hasMultipleSections(XmlObject xml) {
+    XmlCursor cursor = xml.newCursor();
+    cursor.toFirstChild(); // go to root element
+
+    if (!cursor.toChild(DocxConstants.QNAME_BODY_ELEM)) {
+      return false;
+    }
+    if (!cursor.toFirstChild()) {
+      return false;
+    }
+    int sections = cursor.getName().equals(DocxConstants.QNAME_SECTION_ELEM) ? 1 : 0;
+    while (cursor.toNextSibling() && sections < 2) {
+      if (cursor.getName().equals(DocxConstants.QNAME_SECTION_ELEM)) {
+        sections++;
+      }
+    }
+    return sections >= 2;
+  }
+
+  private XWPFParagraph getLastParagraph(XWPFDocument doc) {
+    XWPFParagraph lastPara = null;
+    for (IBodyElement elem : doc.getBodyElements()) {
+      if (elem.getElementType() == BodyElementType.PARAGRAPH) {
+        lastPara = (XWPFParagraph) elem;
+      }
+    }
+    return lastPara;
+  }
+
+  // this method does not merge all section properties, but I hope it
+  // does merge those that wordinator actually sets
+  private void mergeSectPrs(CTSectPr toSectPr, CTSectPr fromSectPr) {
+    if (fromSectPr.isSetPgMar()) {
+      toSectPr.setPgMar(fromSectPr.getPgMar());
+    }
+    if (fromSectPr.isSetPgSz()) {
+      toSectPr.setPgSz(fromSectPr.getPgSz());
+    }
+    if (fromSectPr.isSetPgNumType()) {
+      toSectPr.setPgNumType(fromSectPr.getPgNumType());
+    }
+    // The section type determines how the section starts, so the last section's
+    // type must carry over to the body-level section properties.
+    if (fromSectPr.isSetType()) {
+      toSectPr.setType(fromSectPr.getType());
+    }
+
+    // A section may have only one header or footer reference of each type, so
+    // references from the last section replace any same-type references already
+    // set on the body-level section properties (e.g., from document-level headers
+    // and footers), rather than being added alongside them. Issue #172.
+    for (CTHdrFtrRef ref : fromSectPr.getHeaderReferenceList()) {
+      for (int i = toSectPr.sizeOfHeaderReferenceArray() - 1; i >= 0; i--) {
+        if (toSectPr.getHeaderReferenceArray(i).getType() == ref.getType()) {
+          toSectPr.removeHeaderReference(i);
+        }
+      }
+      int ix = toSectPr.sizeOfHeaderReferenceArray();
+      toSectPr.insertNewHeaderReference(ix);
+      toSectPr.setHeaderReferenceArray(ix, ref);
+    }
+    for (CTHdrFtrRef ref : fromSectPr.getFooterReferenceList()) {
+      for (int i = toSectPr.sizeOfFooterReferenceArray() - 1; i >= 0; i--) {
+        if (toSectPr.getFooterReferenceArray(i).getType() == ref.getType()) {
+          toSectPr.removeFooterReference(i);
+        }
+      }
+      int ix = toSectPr.sizeOfFooterReferenceArray();
+      toSectPr.insertNewFooterReference(ix);
+      toSectPr.setFooterReferenceArray(ix, ref);
+    }
   }
 
   /**
+   * Set the document-level settings.
+   * @param doc Word document to write to
+   * @param xml Simple ML doc
+   */
+  private void setDocSettings(XWPFDocument doc, XmlObject xml) {
+	  // Issue #133: Turn off compatibility mode.
+      XWPFSettings settings = doc.getSettings();
+      CTSettings ctSettings = settings.getCTSettings();
+      CTCompat compat = ctSettings.addNewCompat();
+      // This may be all we need to do.
+      CTCompatSetting compatSetting = compat.addNewCompatSetting();
+      // Name, URI, and value come from inspecting working Word docs.
+      // I do not know where these values are documented.
+      compatSetting.setName("compatibilityMode");
+      compatSetting.setUri("http://schemas.microsoft.com/office/word");
+      compatSetting.setVal("15");
+  }
+
+/**
+   * Set document properties.
+   * @param doc Document to add properties to.
+   * @param xml <document-properties> element
+   */
+  private void handleDocumentProperties(
+		  XWPFDocument doc, 
+		  XmlObject xml) {
+	  XmlCursor cursor = xml.newCursor();
+	  cursor.push();
+	  if (cursor.toChild(DocxConstants.QNAME_CORE_PROPERTIES_ELEM)) {
+		  handleCoreProperties(doc, cursor.getObject());
+	  }
+	  cursor.pop();
+	  cursor.push();
+	  if (cursor.toChild(DocxConstants.QNAME_EXTENDED_PROPERTIES_ELEM)) {
+		  handleExtendedProperties(doc, cursor.getObject());
+	  }
+	  cursor.pop();
+	  if (cursor.toChild(DocxConstants.QNAME_CUSTOM_PROPERTIES_ELEM)) {
+		  handleCustomProperties(doc, cursor.getObject());
+	  }
+	  
+  }
+
+/**
+ * Set core properties from the <core-properties> element.
+ * @param doc XWPF document to set the properties on
+ * @param xml <core-properties> element.
+ */
+private void handleCoreProperties(XWPFDocument doc, XmlObject xml) {
+	// DateTime properties have ISO times like:
+	// 2022-12-18T18:05:00Z
+	POIXMLProperties properties = doc.getProperties();
+	CoreProperties coreProperties = properties.getCoreProperties();
+	XmlCursor cursor = xml.newCursor();	
+	if (cursor.toFirstChild()) {
+		do {
+			String tagName = cursor.getName().getLocalPart();
+			String value = cursor.getTextValue();
+			if ("category".equals(tagName)) {
+				coreProperties.setCategory(value);
+			} else if ("contentStatus".equals(tagName)) {
+				coreProperties.setContentStatus(value);
+			} else if ("created".equals(tagName)) {
+				try {					
+					Date date = isoDateFormatter.parse(value);
+					Optional<Date> opional = Optional.of(date);
+					coreProperties.setCreated(opional);
+				} catch (Exception e) {
+					log.warn("handleCoreProperties(): " + e.getClass().getSimpleName() + " parsing <created> value '" + value + "'");
+				}
+			} else if ("creator".equals(tagName)) {
+				coreProperties.setCreator(value);
+			} else if ("description".equals(tagName)) {
+				coreProperties.setDescription(value);
+			} else if ("identifier".equals(tagName)) {
+				coreProperties.setIdentifier(value);
+			} else if ("keywords".equals(tagName)) {
+				coreProperties.setKeywords(value);
+			} else if ("language".equals(tagName)) {
+				// There doesn't see to be a setLanguage() method on CoreProperties
+			} else if ("lastModifiedBy".equals(tagName)) {
+				coreProperties.setLastModifiedByUser(value);
+			} else if ("lastPrinted".equals(tagName)) {
+				try {					
+					Date date = isoDateFormatter.parse(value);
+					Optional<Date> opional = Optional.of(date);
+					coreProperties.setLastPrinted(opional);
+				} catch (Exception e) {
+					log.warn("handleCoreProperties(): " + e.getClass().getSimpleName() + " parsing <lastPrinted> value '" + value + "'");
+				}				
+			} else if ("modified".equals(tagName)) {
+				try {					
+					Date date = isoDateFormatter.parse(value);
+					Optional<Date> opional = Optional.of(date);
+					coreProperties.setModified(opional);
+				} catch (Exception e) {
+					log.warn("handleCoreProperties(): " + e.getClass().getSimpleName() + " parsing <modified> value '" + value + "'");
+				}				
+			} else if ("revision".equals(tagName)) {
+				coreProperties.setRevision(value);
+			} else if ("subject".equals(tagName)) {
+				coreProperties.setSubjectProperty(value);
+			} else if ("title".equals(tagName)) {
+				coreProperties.setTitle(value);
+			} else if ("version".equals(tagName)) {
+				coreProperties.setVersion(value);
+			} else {
+				log.warn("handleCoreProperties(): Unexpected element '" + tagName + "' in <core-properties>. Ignored.");
+			}
+		} while (cursor.toNextSibling());
+	}	
+}
+
+/**
+ * Handle the <extended-properties> element.
+ * @param doc XWPF document to set the properties on
+ * @param xml <extended-properties> element.
+ */
+private void handleExtendedProperties(XWPFDocument doc, XmlObject xml) {
+	POIXMLProperties properties = doc.getProperties();
+	ExtendedProperties extendedProperties = properties.getExtendedProperties();
+	XmlCursor cursor = xml.newCursor();	
+	
+	if (cursor.toFirstChild()) {
+		do {
+			String tagName = cursor.getName().getLocalPart();
+			String value = cursor.getTextValue();
+			if ("Application".equals(tagName)) {
+				extendedProperties.setApplication(value);
+			} else if ("AppVersion".equals(tagName)) {
+				extendedProperties.setAppVersion(value);
+			} else if ("Characters".equals(tagName)) {
+				try {
+					int intValue = Integer.parseInt(value);
+					extendedProperties.setCharacters(intValue);
+				} catch (Exception e) {
+					log.warn("handleExtendedProperties(): " + e.getClass().getSimpleName() + " parsing <" + tagName + "> value '" + value + "'");
+				}
+			} else if ("CharactersWithSpaces".equals(tagName)) {
+				try {
+					int intValue = Integer.parseInt(value);
+					extendedProperties.setCharactersWithSpaces(intValue);
+				} catch (Exception e) {
+					log.warn("handleExtendedProperties(): " + e.getClass().getSimpleName() + " parsing <" + tagName + "> value '" + value + "'");
+				}
+			} else if ("Company".equals(tagName)) {
+				extendedProperties.setCompany(value);
+			} else if ("DigSig".equals(tagName)) {
+				log.warn("handleExtendedProperties(): No set method for '" + tagName + "' extended property.");
+			} else if ("DocSecurity".equals(tagName)) {
+				log.warn("handleExtendedProperties(): No set method for '" + tagName + "' extended property.");
+			} else if ("HeadingPairs".equals(tagName)) {
+				log.warn("handleExtendedProperties(): No set method for '" + tagName + "' extended property.");
+			} else if ("HiddenSlides".equals(tagName)) {
+				try {
+					int intValue = Integer.parseInt(value);
+					extendedProperties.setHiddenSlides(intValue);
+				} catch (Exception e) {
+					log.warn("handleExtendedProperties(): " + e.getClass().getSimpleName() + " parsing <" + tagName + "> value '" + value + "'");
+				}
+			} else if ("HLinks".equals(tagName)) {
+				log.warn("handleExtendedProperties(): No set method for '" + tagName + "' extended property.");
+			} else if ("HyperlinkBase".equals(tagName)) {
+				extendedProperties.setHyperlinkBase(value);
+			} else if ("HyperlinksChanged".equals(tagName)) {
+				log.warn("handleExtendedProperties(): No set method for '" + tagName + "' extended property.");
+			} else if ("Lines".equals(tagName)) {
+				try {
+					int intValue = Integer.parseInt(value);
+					extendedProperties.setLines(intValue);
+				} catch (Exception e) {
+					log.warn("handleExtendedProperties(): " + e.getClass().getSimpleName() + " parsing <" + tagName + "> value '" + value + "'");
+				}
+			} else if ("LinksUpToDate".equals(tagName)) {
+				log.warn("handleExtendedProperties(): No set method for '" + tagName + "' extended property.");
+			} else if ("Manager".equals(tagName)) {
+				extendedProperties.setManager(value);
+			} else if ("MMClips".equals(tagName)) {
+				try {
+					int intValue = Integer.parseInt(value);
+					extendedProperties.setMMClips(intValue);
+				} catch (Exception e) {
+					log.warn("handleExtendedProperties(): " + e.getClass().getSimpleName() + " parsing <" + tagName + "> value '" + value + "'");
+				}
+			} else if ("Notes".equals(tagName)) {
+				try {
+					int intValue = Integer.parseInt(value);
+					extendedProperties.setNotes(intValue);
+				} catch (Exception e) {
+					log.warn("handleExtendedProperties(): " + e.getClass().getSimpleName() + " parsing <" + tagName + "> value '" + value + "'");
+				}
+			} else if ("Paragraphs".equals(tagName)) {
+				try {
+					int intValue = Integer.parseInt(value);
+					extendedProperties.setParagraphs(intValue);
+				} catch (Exception e) {
+					log.warn("handleExtendedProperties(): " + e.getClass().getSimpleName() + " parsing <" + tagName + "> value '" + value + "'");
+				}
+			} else if ("PresentationFormat".equals(tagName)) {
+				extendedProperties.setPresentationFormat(value);
+			} else if ("ScaleCrop".equals(tagName)) {
+				log.warn("handleExtendedProperties(): No set method for '" + tagName + "' extended property.");
+			} else if ("SharedDoc".equals(tagName)) {
+				log.warn("handleExtendedProperties(): No set method for '" + tagName + "' extended property.");
+			} else if ("Slides".equals(tagName)) {
+				try {
+					int intValue = Integer.parseInt(value);
+					extendedProperties.setParagraphs(intValue);
+				} catch (Exception e) {
+					log.warn("handleExtendedProperties(): " + e.getClass().getSimpleName() + " parsing <" + tagName + "> value '" + value + "'");
+				}
+			} else if ("Template".equals(tagName)) {
+				extendedProperties.setTemplate(value);
+			} else if ("TitlesOfParts".equals(tagName)) {
+				log.warn("handleExtendedProperties(): No set method for '" + tagName + "' extended property.");
+			} else if ("TotalTime".equals(tagName)) {
+				try {
+					int intValue = Integer.parseInt(value);
+					extendedProperties.setTotalTime(intValue);
+				} catch (Exception e) {
+					log.warn("handleExtendedProperties(): " + e.getClass().getSimpleName() + " parsing <" + tagName + "> value '" + value + "'");
+				}
+			} else if ("contentStatus".equals(tagName)) {
+				extendedProperties.setApplication(value);
+			} else if ("contentStatus".equals(tagName)) {
+				extendedProperties.setApplication(value);
+			} else if ("Words".equals(tagName)) {
+				try {
+					int intValue = Integer.parseInt(value);
+					extendedProperties.setWords(intValue);
+				} catch (Exception e) {
+					log.warn("handleExtendedProperties(): " + e.getClass().getSimpleName() + " parsing <" + tagName + "> value '" + value + "'");
+				}
+			}
+		} while (cursor.toNextSibling());
+	}	
+}
+
+private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
+	POIXMLProperties properties = doc.getProperties();
+	CustomProperties customProperties = properties.getCustomProperties();
+	
+	XmlCursor cursor = xml.newCursor();	
+	if (cursor.toFirstChild()) {
+		do {
+			String tagName = cursor.getName().getLocalPart();
+			String value = cursor.getTextValue();
+			String propName = cursor.getAttributeText(DocxConstants.QNAME_NAME_ATT);
+			if (propName == null || "".equals(propName)) {
+				log.warn("handleCustomProperties(): No value for required @name attribute on <" + tagName + "> element with value '" + value + "'");
+				continue;				
+			}
+			customProperties.addProperty(propName, value);
+		} while (cursor.toNextSibling());
+	}
+}
+
+
+/**
    * Process the elements in &lt;body&gt;
    * @param doc Document to add paragraphs to.
    * @param xml Body or section element
@@ -460,8 +843,8 @@ public class DocxGenerator {
    * @throws DocxGenerationException
    */
   private XWPFParagraph handleBody(
-      XWPFDocument doc, 
-      XmlObject xml) 
+      XWPFDocument doc,
+      XmlObject xml)
           throws DocxGenerationException {
     if (log.isDebugEnabled()) {
       // log.debug("handleBody(): starting...");
@@ -491,7 +874,7 @@ public class DocxGenerator {
           log.warn("handleBody(): Unexpected element {" + namespace + "}:'" + tagName + "' in <body>. Ignored.");
         }
       } while (cursor.toNextSibling());
-      
+
     }
     return lastPara;
   }
@@ -521,9 +904,9 @@ public class DocxGenerator {
    * @param xml &lt;toc&gt; element
    */
   private void makeTableOfContents(
-      XWPFDocument doc, 
-      XmlObject xml) 
-          throws DocxGenerationException 
+      XWPFDocument doc,
+      XmlObject xml)
+          throws DocxGenerationException
   {
     XmlCursor cursor = xml.newCursor();
     cursor.push();
@@ -534,50 +917,52 @@ public class DocxGenerator {
       makeParagraphStyle(doc, tocStyleId, tocStyleId);
     }
     para.setStyle(tocStyleId);
-    
+
     // Start the outer field
-    
+
     makeTocStartField(cursor, para);
-    
+
     para.createRun().getCTR().addNewFldChar().setFldCharType(STFldCharType.SEPARATE);
 
     if (cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "tocentry"))) {
       int tocLevel = 1;
-      handleTocEntry(doc, cursor, tocLevel);
+      do {
+    	  handleTocEntry(doc, cursor, tocLevel);
+      } while (cursor.toNextSibling());
     }
     cursor.pop();
     para = doc.createParagraph();
-    para.createRun().getCTR().addNewFldChar().setFldCharType(STFldCharType.END);    
-    
+    para.createRun().getCTR().addNewFldChar().setFldCharType(STFldCharType.END);
+
   }
-  
+
   /**
    * Handles a table of contents entry
    * @param doc Document to add the ToC entry to
    * @param cursor Cursor pointing at <tocentry> element
    * @param tocLevel The current ToC level. 1 (one) = highest level
-   * @throws Exception 
+   * @throws Exception
    */
   private void handleTocEntry(XWPFDocument doc, XmlCursor cursor, int tocLevel) throws DocxGenerationException {
-    
+
     // The tocentry element can contain a <p> that provides the text of the toc entry
     // It can also contain nested <tocentry> elements.
 
-    // With POI 5 and XML Beans 4 we can use XPath and XQuery with Saxon 10 but with 
+    // With POI 5 and XML Beans 4 we can use XPath and XQuery with Saxon 10 but with
     // POI 4 we would need Saxon 9.0.0.4 and don't want to include that in the dependencies
     // since it would interfere with Saxon 10 as far as I know.
     // So for now just using a simple walk of the children.
 
     cursor.push();
 
-  
+
     XWPFParagraph para = doc.createParagraph();
     cursor.push();
     if (cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "p"))) {
       this.makeParagraph(para, cursor);
     }
     cursor.pop();
-    
+
     // Set to TOC style
     String tocStyleId = "TOC" + tocLevel;
     XWPFStyle tocStyle = para.getDocument().getStyles().getStyle(tocStyleId);
@@ -601,30 +986,55 @@ public class DocxGenerator {
 
   /**
    * Makes the start field for a table of contents complex field.
-   * 
-   * @param cursor The XML cursor pointing at a <toc> element.   * 
+   *
+   * @param cursor The XML cursor pointing at a <toc> element.   *
    * @param para The paragraph that will contain the field.
    */
   private void makeTocStartField(XmlCursor cursor, XWPFParagraph para) {
-    para.createRun().getCTR().addNewFldChar().setFldCharType(STFldCharType.BEGIN);    
+    // Issue 85: Set w:dirty="true" on the field to trigger ToC update on open
+    //           when the Word Update automatic links on open setting is active.
+    CTFldChar field = para.createRun().getCTR().addNewFldChar();
+    field.setFldCharType(STFldCharType.BEGIN);
+    field.setDirty(STOnOff1.ON);
     CTText ctText = para.createRun().getCTR().addNewInstrText();
     ctText.setSpace(Space.PRESERVE);
     String tocOptions = "";
     String attValue = null;
-    
+
+    // Includes captioned items, but omits caption labels and numbers.
+    attValue = cursor.getAttributeText(DocxConstants.QNAME_ARG_A_ATT);
+    if (null != attValue) {
+      tocOptions += " \\a \"" + attValue + "\"";
+    } // No default
+
+    // Includes entries only from the portion of the document marked by
+    // the named bookmark
+    attValue = cursor.getAttributeText(DocxConstants.QNAME_ARG_B_ATT);
+    if (null != attValue) {
+      tocOptions += " \\b \"" + attValue + "\"";
+    } // No default
+
+    // Includes figures, tables, charts, and other items that are numbered
+    // by a SEQ field
+    attValue = cursor.getAttributeText(DocxConstants.QNAME_ARG_C_ATT);
+    if (null != attValue) {
+      tocOptions += " \\c \"" + attValue + "\"";
+    } // No default
+
     // Sequence separator character
     attValue = cursor.getAttributeText(DocxConstants.QNAME_ARG_D_ATT);
     if (null != attValue) {
       tocOptions += " \\d \"" + attValue + "\"";
     } // No default
-    
+
     // The list type to include
     attValue = cursor.getAttributeText(DocxConstants.QNAME_ARG_F_ATT);
     if (null != attValue) {
       tocOptions += " \\f \"" + attValue + "\"";
-    } 
-    
+    }
+
     // Use hyperlinks
+    // Default is "true" per the SWPX grammar
     attValue = cursor.getAttributeText(DocxConstants.QNAME_ARG_H_ATT);
     if ("false".equalsIgnoreCase(attValue)) {
       // Omit \h option
@@ -632,23 +1042,95 @@ public class DocxGenerator {
       tocOptions += " \\h";
     }
 
+    // Levels to include
+    attValue = cursor.getAttributeText(DocxConstants.QNAME_ARG_L_ATT);
+    if (null != attValue) {     
+      tocOptions += " \\l \"" + attValue + "\"";
+    }
+
+    // Turn off page numbers
+    attValue = cursor.getAttributeText(DocxConstants.QNAME_ARG_N_ATT);
+    if (null != attValue) {     
+      tocOptions += " \\n";
+      if ("none".equalsIgnoreCase(attValue)) {
+        // No additional parameter
+      } else {
+        // Value is a range: 2-4
+        tocOptions += " \"" + attValue + "\"";
+      }
+    }
+
     // Heading levels to include
     attValue = cursor.getAttributeText(DocxConstants.QNAME_ARG_O_ATT);
     if (null != attValue) {
-      tocOptions += " \\o \"" + attValue + "\"";
-    } 
+      if ("all".equalsIgnoreCase(attValue)) {
+        // No additional parameter
+        tocOptions += " \\o";
+      } else {
+        tocOptions += " \\o \"" + attValue + "\"";
+      }
+    }
+
+    // Entry and page number separator
+    attValue = cursor.getAttributeText(DocxConstants.QNAME_ARG_P_ATT);
+    if (null != attValue) {
+      tocOptions += " \\p \"" + attValue + "\"";
+    }
+
+    // For entries numbered with a SEQ field (§17.16.5.56), adds a prefix
+    // to the page number.
+    attValue = cursor.getAttributeText(DocxConstants.QNAME_ARG_S_ATT);
+    if (null != attValue) {
+      tocOptions += " \\s \"" + attValue + "\"";
+    }
+
+    // Style names to select
+    attValue = cursor.getAttributeText(DocxConstants.QNAME_ARG_T_ATT);
+    if (null != attValue) {
+      tocOptions += " \\t \"" + attValue + "\"";
+    }
+
+    // Uses the applied paragraph outline level.
+    attValue = cursor.getAttributeText(DocxConstants.QNAME_ARG_U_ATT);
+    if (null != attValue) {
+      if ("false".equalsIgnoreCase(attValue)) {
+        // Omit \\u option
+      } else {
+        tocOptions += " \\u";
+      }
+    }
     
-    // Omit page numbers in web view
+    // Preserves tab entries within table entries.
+    attValue = cursor.getAttributeText(DocxConstants.QNAME_ARG_W_ATT);
+    if (null != attValue) {
+      if ("false".equalsIgnoreCase(attValue)) {
+        // Omit \w option
+      } else {
+        tocOptions += " \\w";
+      }
+    }
+    
+    // Preserves newline characters within table entries.
+    attValue = cursor.getAttributeText(DocxConstants.QNAME_ARG_X_ATT);
+    if (null != attValue) {
+      if ("false".equalsIgnoreCase(attValue)) {
+        // Omit \x option
+      } else {
+        tocOptions += " \\x";
+      }
+    }
+    
+    // Hides tab leader and page numbers in web page view (§17.18.102).
+    // Default is "true" per the SWPX grammar
     attValue = cursor.getAttributeText(DocxConstants.QNAME_ARG_Z_ATT);
     if ("false".equalsIgnoreCase(attValue)) {
-      // Omit \h option
+      // Omit \z option
     } else {
       tocOptions += " \\z";
     }
 
-    // FIXME: Do the rest of the edge case options: p, s, u, w, x
-
     ctText.setStringValue("TOC " + tocOptions);
+    
   }
 
   private void makeParagraphStyle(XWPFDocument doc, String styleId, String string) {
@@ -669,19 +1151,19 @@ public class DocxGenerator {
    * @param xml &lt;section&gt; element
    */
   private void handleSection(
-      XWPFDocument doc, 
-      XmlObject xml) 
+      XWPFDocument doc,
+      XmlObject xml)
           throws DocxGenerationException {
     XmlCursor cursor = xml.newCursor();
-        
+
     XmlObject localPageSequenceProperties = null;
-    
+
     cursor.push();
     if (cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "page-sequence-properties"))) {
       localPageSequenceProperties = cursor.getObject();
     }
     cursor.pop();
-        
+
     String sectionType = cursor.getAttributeText(DocxConstants.QNAME_TYPE_ATT);
 
     cursor.push();
@@ -690,13 +1172,13 @@ public class DocxGenerator {
     XWPFParagraph lastPara = handleSectionContent(doc, cursor.getObject());
 
     CTSectPr sectPr = null;
-      
-    if (log.isDebugEnabled()) {
-      // log.debug("handleSection(): Setting sectPr on last paragraph.");
-    }
-    CTPPr ppr = (lastPara.getCTP().isSetPPr() ? lastPara.getCTP().getPPr() : lastPara.getCTP().addNewPPr()); 
+
+//    if (log.isDebugEnabled()) {
+//      log.debug("handleSection(): Setting sectPr on last paragraph.");
+//    }
+    CTPPr ppr = (lastPara.getCTP().isSetPPr() ? lastPara.getCTP().getPPr() : lastPara.getCTP().addNewPPr());
     sectPr = ppr.addNewSectPr();
-    ppr.setSectPr(sectPr); 
+    ppr.setSectPr(sectPr);
 
     if (sectionType != null) {
       CTSectType type = sectPr.addNewType();
@@ -704,7 +1186,7 @@ public class DocxGenerator {
     }
 
     if (localPageSequenceProperties != null) {
-      setupPageSequence(doc, localPageSequenceProperties, sectPr);      
+      setupPageSequence(doc, localPageSequenceProperties, sectPr);
     }
 
     cursor.pop();
@@ -713,17 +1195,17 @@ public class DocxGenerator {
 
   /**
    * Handle the contents of a section
-   * 
+   *
    * @param doc
    * @param object
    * @return The last paragraph in the section
-   * @throws DocxGenerationException 
+   * @throws DocxGenerationException
    */
   private XWPFParagraph handleSectionContent(
-      XWPFDocument doc, 
+      XWPFDocument doc,
       XmlObject object) throws DocxGenerationException {
     XWPFParagraph lastPara = handleBody(doc, object);
-    
+
     // For sections, the section properties go on the last paragraph, so if the last thing
     // in the section isn't already a paragraph, create one.
     if (lastPara == null) {
@@ -734,35 +1216,35 @@ public class DocxGenerator {
 
     return lastPara;
   }
-  
+
   /**
    * Set up page sequence properties for the entire document, including page geometry, numbering, and headers and footers.
    * @param doc Document to be constructed
    * @param xml page-sequence-properties element
-   * @throws DocxGenerationException 
+   * @throws DocxGenerationException
    */
   private void setupPageSequence(XWPFDocument doc, XmlObject xml) throws DocxGenerationException {
-    
+
     CTDocument1 document = doc.getDocument();
     CTBody body = (document.isSetBody() ? document.getBody() : document.addNewBody());
     CTSectPr sectPr = (body.isSetSectPr() ? body.getSectPr() : body.addNewSectPr());
-    
+
     setupPageSequence(doc, xml, sectPr);
-  }  
+  }
 
   /**
    * Set up a page sequence for a section, as opposed to for the document
    * as a whole.
    * @param doc Document
-   * @param object The page-sequence-properties element 
+   * @param object The page-sequence-properties element
    * @param sectPr The sectPr object to set the page sequence properties on.
-   * @throws DocxGenerationException 
+   * @throws DocxGenerationException
    */
   private void setupPageSequence(XWPFDocument doc, XmlObject xml, CTSectPr sectPr) throws DocxGenerationException {
     XmlCursor cursor = xml.newCursor();
-    
+
     setPageNumberProperties(cursor, sectPr);
-    
+
 
     // Issue 46: Use page margins
     cursor.push();
@@ -770,19 +1252,19 @@ public class DocxGenerator {
       setPageMargins(cursor, sectPr);
     }
     cursor.pop();
-    
+
     cursor.push();
     if (cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "headers-and-footers"))) {
       constructHeadersAndFooters(doc, cursor.getObject(), sectPr);
     }
     cursor.pop();
-    
+
     cursor.push();
     if (cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "page-size"))) {
       setPageSize(cursor, sectPr);
     }
     cursor.pop();
-    
+
   }
 
   /**
@@ -855,11 +1337,11 @@ public class DocxGenerator {
         log.warn("setPageMargins(): Value \"" + gutter + " for attribute \"gutter\" is not a decimal number");
       }
     }
-    
+
   }
 
   private void setPageSize(XmlCursor cursor, CTSectPr sectPr) {
-    
+
     CTPageSz pageSize = (sectPr.isSetPgSz() ? sectPr.getPgSz() : sectPr.addNewPgSz());
     String codeValue = cursor.getAttributeText(DocxConstants.QNAME_CODE_ATT);
     if (codeValue != null) {
@@ -875,7 +1357,7 @@ public class DocxGenerator {
       pageSize.setOrient(STPageOrientation.Enum.forString(orientValue));
     }
     String widthVal = cursor.getAttributeText(DocxConstants.QNAME_WIDTH_ATT);
-    if (null != widthVal) {
+    if (null != widthVal && !"".equals(widthVal.trim())) {
       try {
         long width = Measurement.toTwips(widthVal, getDotsPerInch());
         pageSize.setW(BigInteger.valueOf(width));
@@ -885,7 +1367,7 @@ public class DocxGenerator {
     }
 
     String heightVal = cursor.getAttributeText(DocxConstants.QNAME_HEIGHT_ATT);
-    if (null != heightVal) {
+    if (null != heightVal && !"".equals(heightVal.trim())) {
       try {
         long height = Measurement.toTwips(heightVal, getDotsPerInch());
         pageSize.setH(BigInteger.valueOf(height));
@@ -906,15 +1388,15 @@ public class DocxGenerator {
         CTPageNumber pageNumber = (sectPr.isSetPgNumType() ? sectPr.getPgNumType() : sectPr.addNewPgNumType());
         if (null != format) {
           if ("custom".equals(format)) {
-            // FIXME: Implement translation from XSLT number format values to the equivalent Word 
+            // FIXME: Implement translation from XSLT number format values to the equivalent Word
             // number formatting values.
             log.warn("Page number format \"" + format + "\" not supported. Use Word-specific values. Using \"decimal\"");
             format = "decimal";
           }
-          STNumberFormat.Enum fmt = STNumberFormat.Enum.forString(format); 
+          STNumberFormat.Enum fmt = STNumberFormat.Enum.forString(format);
           if (fmt != null) {
-            pageNumber.setFmt(fmt);          
-          }        
+            pageNumber.setFmt(fmt);
+          }
         }
         if (chapterSep != null) {
           STChapterSep.Enum sep = STChapterSep.Enum.forString(chapterSep);
@@ -950,7 +1432,7 @@ public class DocxGenerator {
    * section must also create the appropriate header references.
    * @param doc Document to add headers and footers to.
    * @param xml headers-and-footers element
-   * @throws DocxGenerationException 
+   * @throws DocxGenerationException
    */
   private void constructHeadersAndFooters(XWPFDocument doc, XmlObject xml) throws DocxGenerationException {
     constructHeadersAndFooters(doc, xml, null);
@@ -964,18 +1446,18 @@ public class DocxGenerator {
    * @param doc Document to add headers and footers to.
    * @param xml headers-and-footers element
    * @param sectPr Section properties to add header and footer references to. May be null
-   * @throws DocxGenerationException 
+   * @throws DocxGenerationException
    */
   private void constructHeadersAndFooters(XWPFDocument doc, XmlObject xml, CTSectPr sectPr) throws DocxGenerationException {
     XmlCursor cursor = xml.newCursor();
-    
+
     boolean haveOddHeader = false;
     boolean haveEvenHeader = false;
     boolean haveOddFooter = false;
     boolean haveEvenFooter = false;
-    
+
     boolean isDocument = sectPr == null;
-        
+
     if (cursor.toFirstChild()) {
       XWPFHeaderFooterPolicy sectionHfPolicy = null;
       if (!isDocument) {
@@ -983,7 +1465,7 @@ public class DocxGenerator {
       }
       do {
         String tagName = cursor.getName().getLocalPart();
-        String namespace = cursor.getName().getNamespaceURI();        
+        String namespace = cursor.getName().getNamespaceURI();
         List<CTHdrFtrRef> refs = null;
 
         if ("header".equals(tagName)) {
@@ -992,10 +1474,10 @@ public class DocxGenerator {
             CTSectPr localSectPr = sectPr;
             if (localSectPr == null) {
               // FIXME: Can body be null at this time?
-              localSectPr = doc.getDocument().getBody().getSectPr();              
+              localSectPr = doc.getDocument().getBody().getSectPr();
             }
             CTOnOff titlePg = (localSectPr.isSetTitlePg() ? localSectPr.getTitlePg() : localSectPr.addNewTitlePg());
-            titlePg.setVal(STOnOff.TRUE);
+            titlePg.setVal(STOnOff1.ON);
           }
           if (type == HeaderFooterType.DEFAULT) {
             haveOddHeader = true;
@@ -1027,10 +1509,10 @@ public class DocxGenerator {
             CTSectPr localSectPr = sectPr;
             if (localSectPr == null) {
               // FIXME: Can body be null at this time?
-              localSectPr = doc.getDocument().getBody().getSectPr();              
+              localSectPr = doc.getDocument().getBody().getSectPr();
             }
             CTOnOff titlePg = (localSectPr.isSetTitlePg() ? localSectPr.getTitlePg() : localSectPr.addNewTitlePg());
-            titlePg.setVal(STOnOff.TRUE);
+            titlePg.setVal(STOnOff1.ON);
           }
           if (isDocument) {
             // Document-level footer
@@ -1053,12 +1535,12 @@ public class DocxGenerator {
       }
       // Now set any default headers and footers from the document:
     }
-    
-    if ((haveOddHeader || haveOddFooter) && 
+
+    if ((haveOddHeader || haveOddFooter) &&
       (haveEvenHeader || haveEvenFooter)) {
       doc.setEvenAndOddHeadings(true);
     }
-    
+
   }
 
   private CTHdrFtrRef getHeadeFooterRefForType(CTSectPr sectPr, List<CTHdrFtrRef> refs, HeaderFooterType type) {
@@ -1081,12 +1563,12 @@ public class DocxGenerator {
    * headers and footers, if any, for any header on the document but not already set on the section.
    * @param doc Document containing the section
    * @param sectPr Section properties for the section to set the headers on.
-   * @param sectionHfPolicy The section header/footer policy that holds any headers 
+   * @param sectionHfPolicy The section header/footer policy that holds any headers
    * set on th esection.
    */
   public void setDefaultSectionHeadersAndFooters(
-      XWPFDocument doc, 
-      CTSectPr sectPr, 
+      XWPFDocument doc,
+      CTSectPr sectPr,
       XWPFHeaderFooterPolicy sectionHfPolicy) {
     XWPFHeaderFooterPolicy docHfPolicy = new XWPFHeaderFooterPolicy(doc);
     if (docHfPolicy != null) {
@@ -1135,7 +1617,7 @@ public class DocxGenerator {
       }
     }
   }
-  
+
   public STHdrFtr.Enum getSTHFTypeForXWPFHFType(HeaderFooterType type) {
     switch (type) {
     case EVEN:
@@ -1156,11 +1638,11 @@ public class DocxGenerator {
    * Construct the content of a page header or footer
    * @param headerFooter {@link XPWFHeader} or {@link XWPFFooter} to add content to
    * @param xml The &lt;header&gt; or &lt;footer&gt; element to process
-   * @throws DocxGenerationException 
+   * @throws DocxGenerationException
    */
   private void makeHeaderFooter(XWPFHeaderFooter headerFooter, XmlObject xml) throws DocxGenerationException {
     XmlCursor cursor = xml.newCursor();
-    
+
     if (cursor.toFirstChild()) {
       do {
         String tagName = cursor.getName().getLocalPart();
@@ -1172,7 +1654,7 @@ public class DocxGenerator {
           XWPFTable table = headerFooter.createTable(0, 0);
           makeTable(table, cursor.getObject());
         } else {
-          // There are other body-level things that could go in a footnote but 
+          // There are other body-level things that could go in a footnote but
           // we aren't worrying about them for now.
           log.warn("makeFootnote(): Unexpected element {" + namespace + "}:" + tagName + "' in <fn>. Ignored.");
         }
@@ -1190,7 +1672,7 @@ public class DocxGenerator {
     String typeName = cursor.getAttributeText(DocxConstants.QNAME_TYPE_ATT);
     if ("even".equals(typeName)) {
       type = HeaderFooterType.EVEN;
-    } 
+    }
     if ("first".equals(typeName)) {
       type = HeaderFooterType.FIRST;
     }
@@ -1202,7 +1684,7 @@ public class DocxGenerator {
    * @param para The Word paragraph to construct
    * @param cursor Cursor pointing at the <p> element the paragraph will reflect.
    * @return Paragraph (should be same object as passed in).
-   * @throws Exception 
+   * @throws Exception
    */
   private XWPFParagraph makeParagraph(XWPFParagraph p, XmlCursor cursor) throws DocxGenerationException {
     return makeParagraph(p, cursor, null);
@@ -1214,17 +1696,18 @@ public class DocxGenerator {
    * @param cursor Cursor pointing at the <p> element the paragraph will reflect.
    * @param additionalProperties Additional properties to add to the paragraph, i.e., from sections
    * @return Paragraph (should be same object as passed in).
-   * @throws Exception 
+   * @throws Exception
    */
   private XWPFParagraph makeParagraph(
-      XWPFParagraph para, 
-      XmlCursor cursor, 
-      Map<String, String> additionalProperties) 
+      XWPFParagraph para,
+      XmlCursor cursor,
+      Map<String, String> additionalProperties)
           throws DocxGenerationException {
-    
+
     cursor.push();
     String styleName = cursor.getAttributeText(DocxConstants.QNAME_STYLE_ATT);
     String styleId = cursor.getAttributeText(DocxConstants.QNAME_STYLEID_ATT);
+    String listId = cursor.getAttributeText(DocxConstants.QNAME_NUMID_ATT);
 
     if (null != styleName && null == styleId) {
       // Look up the style by name:
@@ -1233,12 +1716,12 @@ public class DocxGenerator {
         styleId = style.getStyleId();
       } else {
         // Try style name as styleId
-        
+
         style = para.getDocument().getStyles().getStyle(styleName);
         if (null != style) {
           styleId = styleName;
         } else {
-        
+
           // Issue 23: see if this is a latent style and report it
           //
           // This will require an enhancement to the POI API as there is no easy
@@ -1258,7 +1741,7 @@ public class DocxGenerator {
             //        or the list of style names that I can find short of parsing the
             //        underlying document part XML, so no way to report the
             //        style names at this time.
-            
+
           }
           this.isFirstParagraphStyleWarning = false;
         }
@@ -1267,8 +1750,8 @@ public class DocxGenerator {
     if (null != styleId) {
       para.setStyle(styleId);
     }
-      
-    
+
+
     if (additionalProperties != null) {
       for (String propName : additionalProperties.keySet()) {
         String value = additionalProperties.get(propName);
@@ -1293,6 +1776,28 @@ public class DocxGenerator {
       para.setPageBreak(breakValue);
     }
 
+    // Issue 143: keepLines property.
+    String keepLines = cursor.getAttributeText(DocxConstants.QNAME_KEEPLINES_ATT);
+    if (keepLines != null) {
+      boolean keepValue = Boolean.valueOf(keepLines);
+      // If the paragraph does not already have a ctPPr then
+      // we need to add one.
+	  CTPPr ppr = (para.getCTP().isSetPPr() ? para.getCTP().getPPr() : para.getCTP().addNewPPr());
+      CTOnOff onOff = ppr.addNewKeepLines();
+      onOff.setVal(keepValue ? "on" : "off");
+    }
+
+    // Issue 143: keepNext property.
+    String keepNext = cursor.getAttributeText(DocxConstants.QNAME_KEEPNEXT_ATT);
+    if (keepNext != null) {
+      boolean keepValue = Boolean.valueOf(keepNext);
+      // If the paragraph does not already have a ctPPr then
+      // we need to add one.
+      @SuppressWarnings("unused")
+	  CTPPr ppr = (para.getCTP().isSetPPr() ? para.getCTP().getPPr() : para.getCTP().addNewPPr());
+      para.setKeepNext(keepValue);
+    }
+
     if (cursor.toFirstChild()) {
       do {
         String tagName = cursor.getName().getLocalPart();
@@ -1315,12 +1820,18 @@ public class DocxGenerator {
           makeObject(para, cursor);
         } else if ("page-number-ref".equals(tagName)) {
           makePageNumberRef(para, cursor);
+        } else if ("math".equals(tagName) && NS_MATHML.equals(namespace)) {
+          MathMLConverter.convertMath(para, cursor.getObject());
         } else {
           log.warn("Unexpected element {" + namespace + "}:" + tagName + " in <p>. Ignored.");
         }
       } while(cursor.toNextSibling());
     }
     cursor.pop();
+
+    if (null != listId && !listId.isEmpty()) {
+      listParagraphs.computeIfAbsent(listId, k -> new ArrayList<>()).add(para);
+    }
     return para;
   }
 
@@ -1330,10 +1841,10 @@ public class DocxGenerator {
    * @param cursor
    */
   private void makePageNumberRef(XWPFParagraph para, XmlCursor cursor) {
-    
+
     String fieldData = "PAGE";
     makeSimpleField(para, fieldData);
-    
+
   }
 
   /**
@@ -1353,13 +1864,17 @@ public class DocxGenerator {
    */
   private XWPFRun makeRun(XWPFParagraph para, XmlObject xml) throws DocxGenerationException {
     XmlCursor cursor = xml.newCursor();
-    
+
+    // if this run contains mathml then any whitespace here should *not*
+    // go into the converted document
+    boolean containsMathML = containsMathML(cursor);
+
     // String tagname = cursor.getName().getLocalPart(); // For debugging
-    
+
     XWPFRun run = para.createRun();
     String styleName = cursor.getAttributeText(DocxConstants.QNAME_STYLE_ATT);
     String styleId = cursor.getAttributeText(DocxConstants.QNAME_STYLEID_ATT);
-    
+
     if (null != styleName && null == styleId) {
       // Look up the style by name:
       XWPFStyle style = para.getDocument().getStyles().getStyleWithName(styleName);
@@ -1372,31 +1887,35 @@ public class DocxGenerator {
         } else {
            log.warn("Character style name \"" + styleName + "\" not found in the document.");
            if (this.isFirstCharacterStyleWarning) {
-                // FIXME: The POI 4.x API doesn't provide a way to get the list of styles
-                //        or the list of style names that I can find short of parsing the
-                //        underlying document part XML, so no way to report the
-                //        style names at this time.
+             // FIXME: The POI 4.x API doesn't provide a way to get the list of styles
+             //        or the list of style names that I can find short of parsing the
+             //        underlying document part XML, so no way to report the
+             //        style names at this time.
            }
            this.isFirstCharacterStyleWarning = false;
         }
       }
     }
-    
+
     if (null != styleId) {
       run.setStyle(styleId);
     }
-    
+
     handleFormattingAttributes(run, xml);
-    
+
     cursor.toLastAttribute();
-    cursor.toNextToken(); // Should be first text or subelement.    
+    cursor.toNextToken(); // Should be first text or subelement.
     // In this loop, each different token handler is responsible for positioning
     // the cursor past the thing that was handled such that the only END token
     // is the end for the run element being processed.
     while (TokenType.END != cursor.currentTokenType()) {
       // TokenType tokenType = cursor.currentTokenType(); // For debugging
       if (cursor.isText()) {
-        run.setText(cursor.getTextValue());
+        // if this run contains mathml then any whitespace here should *not*
+        // go into the converted document
+        if (!containsMathML) {
+          run.setText(cursor.getTextValue());
+        }
         cursor.toNextToken();
       } else if (cursor.isAttr()) {
         // Ignore attributes in this context.
@@ -1410,8 +1929,22 @@ public class DocxGenerator {
           makeSymbol(run, cursor);
         } else if ("tab".equals(name)) {
           makeTab(run, cursor);
+        } else if ("math".equals(name) && NS_MATHML.equals(namespace)) {
+          MathMLConverter.convertMath(para, cursor.getObject());
+
+          // converter doesn't move cursor, so we have to do it here
+          cursor.toEndToken(); // now we're at </mml:math>
+          // when we end, we should be on the last token before </wp:run>, but
+          // there could be whitespace in between
+          XmlCursor.TokenType tt = null;
+          while (tt != XmlCursor.TokenType.END) {
+            tt = cursor.toNextToken();
+          }
+          // now we are at </wp:run>, but we need to go one step back
+          cursor.toPrevToken();
         } else {
           log.error("makeRun(); Unexpected element {" + namespace + "}:" + name + ". Skipping.");
+          log.debug("  Element contents: " + cursor.getTextValue());
           cursor.toEndToken(); // Skip this element.
         }
         cursor.toNextToken();
@@ -1428,12 +1961,33 @@ public class DocxGenerator {
         }
         cursor.toNextToken();
       }
-    } 
-    
+    }
+
     cursor.pop();
     return run;
   }
-  
+
+  /**
+   * True iff the parent element of wherever we are now contains MathML.
+   */
+  private boolean containsMathML(XmlCursor cursor) {
+    cursor.push();
+
+    try {
+      while (cursor.currentTokenType() != TokenType.END) {
+        if (cursor.currentTokenType() == TokenType.START &&
+            cursor.getName().getLocalPart().equals("math") &&
+            cursor.getName().getNamespaceURI().equals(NS_MATHML)) {
+          return true;
+        }
+        cursor.toNextToken();
+      }
+      return false;
+    } finally {
+      cursor.pop();
+    }
+  }
+
   private void handleFormattingAttributes(XWPFRun run, XmlObject xml) {
     XmlCursor cursor = xml.newCursor();
     if (cursor.toFirstAttribute()) {
@@ -1471,8 +2025,8 @@ public class DocxGenerator {
               run.setItalic(value);
           } else if ("outline".equals(attName)) {
               CTOnOff onOff = CTOnOff.Factory.newInstance();
-              onOff.setVal(STOnOff.Enum.forString(attValue));
-              run.getCTR().getRPr().setOutline(onOff);
+              onOff.setVal(STOnOff1.Enum.forString(attValue));
+              run.getCTR().getRPr().setOutlineArray(new CTOnOff[] { onOff });
           } else if ("position".equals(attName)) {
             int val = Integer.parseInt(attValue);
               run.setTextPosition(val);
@@ -1503,10 +2057,10 @@ public class DocxGenerator {
           } else if ("vertical-alignment".equals(attName)) {
               run.setVerticalAlignment(attValue);
           }
-        
+
       } while(cursor.toNextAttribute());
     }
-    
+
   }
 
   /**
@@ -1515,9 +2069,9 @@ public class DocxGenerator {
    * @param cursor
    */
   private void makeTab(XWPFRun run, XmlCursor cursor) {
-    
+
     run.addTab();
-    
+
   }
 
   /**
@@ -1527,32 +2081,32 @@ public class DocxGenerator {
    */
   private void makeSymbol(XWPFRun run, XmlCursor cursor) {
     throw new NotImplementedException("symbol within run not implemented");
-    
+
   }
 
   /**
    * Construct a footnote
    * @param para the paragraph containing the footnote.
    * @param cursor Pointing at the &lt;fn> element
-   * @throws DocxGenerationException 
+   * @throws DocxGenerationException
    */
   private void makeFootnote(XWPFParagraph para, XmlObject xml) throws DocxGenerationException {
-    
+
     XmlCursor cursor = xml.newCursor();
-    
+
     String type = cursor.getAttributeText(DocxConstants.QNAME_TYPE_ATT);
     String callout = cursor.getAttributeText(DocxConstants.QNAME_CALLOUT_ATT);
     String referenceCallout = cursor.getAttributeText(DocxConstants.QNAME_REFERENCE_CALLOUT_ATT);
-    
+
     XWPFAbstractFootnoteEndnote note = null;
     if ("endnote".equals(type)) {
       note = para.getDocument().createEndnote();
     } else {
       note = para.getDocument().createFootnote();
     }
-    
+
     // NOTE: The footnote is not created with any initial paragraph.
-    
+
     if (cursor.toFirstChild()) {
       do {
         String tagName = cursor.getName().getLocalPart();
@@ -1564,7 +2118,7 @@ public class DocxGenerator {
           XWPFTable table = note.createTable();
           makeTable(table, cursor.getObject());
         } else {
-          // There are other body-level things that could go in a footnote but 
+          // There are other body-level things that could go in a footnote but
           // we aren't worrying about them for now.
           log.warn("makeFootnote(): Unexpected element {" + namespace + "}:" + tagName + "' in <fn>. Ignored.");
         }
@@ -1580,9 +2134,9 @@ public class DocxGenerator {
       if (referenceCallout == null) {
         referenceCallout = callout;
       }
-      
+
       XmlCursor paraCursor = para.getCTP().newCursor();
-      
+
       if (paraCursor.toLastChild()) {
         // Should be the run created for the footnote reference.
         if (paraCursor.toChild(DocxConstants.QNAME_FOOTNOTEREFEREMCE_ELEM)) {
@@ -1591,32 +2145,32 @@ public class DocxGenerator {
           paraCursor.toEndToken();
           paraCursor.insertElementWithText(DocxConstants.QNAME_T_ELEM, referenceCallout);
         }
-      
+
       }
-      
+
       // Set literal callout on the footnote itself:
       CTFtnEdn ctfNote = note.getCTFtnEdn();
-      
+
       XmlCursor noteCursor = ctfNote.newCursor();
-      
-      // Find the first run. This should have a <w:footnoteRef/> element as it's content. 
+
+      // Find the first run. This should have a <w:footnoteRef/> element as it's content.
       // Remove that and replace it with a w:t with the callout.
       if (noteCursor.toChild(DocxConstants.QNAME_W_P_ELEM)) {
         if (noteCursor.toChild(DocxConstants.QNAME_R_ELEM)) {
           cursor.push();
           if (noteCursor.toChild(DocxConstants.QNAME_FOOTNOTEREF_ELEM)) {
-            noteCursor.removeXml();        
+            noteCursor.removeXml();
           }
           cursor.pop();
           // Now construct a literal footnote reference callout.
           noteCursor.insertElementWithText(DocxConstants.QNAME_T_ELEM, callout);
         }
       }
-      
-      noteCursor.dispose();
-      
+
+      noteCursor.close();
+
     }
-    
+
     cursor.pop();
   }
 
@@ -1644,7 +2198,7 @@ public class DocxGenerator {
    * @param cursor Cursor pointing to the &lt;break> element
    */
   private void makeBreak(XWPFRun run, XmlCursor cursor) throws DocxGenerationException {
-    
+
     String typeValue = cursor.getAttributeText(DocxConstants.QNAME_TYPE_ATT);
     BreakType type = BreakType.TEXT_WRAPPING;
     if ("line".equals(typeValue) || "textWrapping".equals(typeValue)) {
@@ -1654,7 +2208,7 @@ public class DocxGenerator {
     } else if ("column".equals(typeValue)) {
       type = BreakType.COLUMN;
     } else {
-      log.warn("makeBreak(): Unexpected @type value '" + typeValue + "'. Using 'line'.");      
+      log.warn("makeBreak(): Unexpected @type value '" + typeValue + "'. Using 'line'.");
     }
     run.addBreak(type);
     // Now move the cursor past the end of the break element
@@ -1669,10 +2223,15 @@ public class DocxGenerator {
    * @param para
    * @param cursor
    */
-  private void makeBookmarkStart(XWPFParagraph para, XmlCursor cursor) throws DocxGenerationException 
+  private void makeBookmarkStart(XWPFParagraph para, XmlCursor cursor) throws DocxGenerationException
   {
     CTBookmark bookmark = para.getCTP().addNewBookmarkStart();
-    bookmark.setName(cursor.getAttributeText(DocxConstants.QNAME_NAME_ATT));
+    String nameValue = cursor.getAttributeText(DocxConstants.QNAME_NAME_ATT);
+    String idValue = cursor.getAttributeText(DocxConstants.QNAME_ID_ATT);
+    if (null == nameValue || "".equals(nameValue.trim())) {
+    	nameValue = idValue;
+    }
+    bookmark.setName(nameValue);
     BigInteger id = nextId();
     bookmark.setId(id);
     this.bookmarkIdToIdMap.put(cursor.getAttributeText(DocxConstants.QNAME_ID_ATT), id);
@@ -1682,7 +2241,7 @@ public class DocxGenerator {
    * Construct a bookmark end
    * @param doc
    * @param cursor
-   * @throws DocxGenerationException 
+   * @throws DocxGenerationException
    */
   private void makeBookmarkEnd(XWPFParagraph para, XmlCursor cursor) throws DocxGenerationException {
     CTMarkupRange bookmark = para.getCTP().addNewBookmarkEnd();
@@ -1692,9 +2251,9 @@ public class DocxGenerator {
       throw new DocxGenerationException("No bookmark start found for bookmark end with ID '" + sourceID + "'");
     } else {
       bookmark.setId(id);
-    }    
+    }
   }
-  
+
   /**
    * Construct a complex field
    * @param para The paragraph to add the field to
@@ -1708,12 +2267,12 @@ public class DocxGenerator {
       instructionText = cursor.getTextValue();
     }
     cursor.pop();
-    // The XWPF API has XWPFFieldRun() but no method to create one on XWPFParagraph 
+    // The XWPF API has XWPFFieldRun() but no method to create one on XWPFParagraph
     // so have to construct it at the CT markup level.
     XWPFRun r = para.createRun();
     CTFldChar fldChar = r.getCTR().addNewFldChar();
     fldChar.setFldCharType(STFldCharType.BEGIN);
-    
+
     // Set the instruction text
     r = para.createRun();
     CTText text = r.getCTR().addNewInstrText();
@@ -1721,7 +2280,7 @@ public class DocxGenerator {
       log.warn("makeComplexField(): No instruction text for complext field: " + cursor.getTextValue());
     }
     text.setStringValue(instructionText);
-    
+
     cursor.push();
     // Get the field result, if any
     if (cursor.toChild(DocxConstants.QNAME_FIELDRESULTS_ELEM)) {
@@ -1740,32 +2299,32 @@ public class DocxGenerator {
           }
         } while(cursor.toNextSibling());
       }
-      
-    }    
+
+    }
     cursor.pop();
 
     r = para.createRun();
     fldChar = r.getCTR().addNewFldChar();
     fldChar.setFldCharType(STFldCharType.END);
-    
+
 }
 
   /**
    * Create runs within a hyperlink element
    * @param hyperlink The CTHyperlink to add the runs to
    * @param cursor Points to the SWPF hyperlink element
-   * @param para 
-   * @throws Exception 
+   * @param para
+   * @throws Exception
    */
   private XWPFHyperlinkRun makeHyperlinkRun(
-      CTHyperlink hyperlink, 
-      XmlCursor cursor, 
+      CTHyperlink hyperlink,
+      XmlCursor cursor,
       XWPFParagraph para) throws DocxGenerationException {
     // The POI 4.2 API doesn't quite match the Word structure for hyperlinks.
     // A w:hyperlink goes within a paragraph as a peer to w:run and may then contain
     // one or more w:run elements.
     //
-    // The XWPF API should have XWPFHyperlinkRun implement 
+    // The XWPF API should have XWPFHyperlinkRun implement
 
     // Workaround here is to add the runs to the paragraph then move
     // them to the hyperlink run.
@@ -1773,7 +2332,7 @@ public class DocxGenerator {
     int runIndex =  para.getRuns().size(); // Index of first new run
 
     List<XWPFRun> newRuns = new ArrayList<XWPFRun>();
-    
+
     // Add runs to the paragraph and capture them so we can then
     // move them to the hyperlink.
     if (cursor.toFirstChild()) {
@@ -1814,15 +2373,15 @@ public class DocxGenerator {
             } else {
               log.warn("Unexpected element {" + namespace + "}:" + tagName + " in run in hyperlink. Ignored.");
             }
-  
+
           } while(runCursor.toNextSibling());
-          
+
         }
         para.removeRun(runIndex);
       }
     } else {
       CTR run = hyperlink.addNewR();
-      run.addNewT().setStringValue(cursor.getTextValue());      
+      run.addNewT().setStringValue(cursor.getTextValue());
     }
 
     return hyperlinkRun;
@@ -1835,11 +2394,11 @@ public class DocxGenerator {
    */
   private void makeImage(XWPFParagraph para, XmlCursor cursor) throws DocxGenerationException {
     cursor.push();
-    
+
     // FIXME: This is all a bit scripty because of the need to get both the image data and
     //        MIME type. Not sure it's worth the effort to make it cleaner. Could define
     //        an object to hold the image data and MIME type and file name.
-    
+
     String imageUrl = cursor.getAttributeText(DocxConstants.QNAME_SRC_ATT);
     if (null == imageUrl) {
       log.error("- [ERROR] No @src attribute for image.");
@@ -1891,7 +2450,7 @@ public class DocxGenerator {
       } else {
         // Must be relative file reference, read the file
         URL baseUrl = inFile.getParentFile().toURI().toURL();
-        url = new URL(baseUrl, imageUrl); 
+        url = new URL(baseUrl, imageUrl);
         File file = new File(url.getFile());
         imageFilename = file.getName();
         try {
@@ -1905,9 +2464,9 @@ public class DocxGenerator {
       log.error("- [ERROR] " + e.getClass().getSimpleName() + " on img/@src value: " + e.getMessage());
       return;
     }
-    
+
     // We have to read the input stream twice, so capture the bytes
-    // so we can make new streams. Can't depend on reset() on 
+    // so we can make new streams. Can't depend on reset() on
     // the input stream (i.e., HTTP connetion stream).
     byte[] imageBytes = null;
     try {
@@ -1916,13 +2475,13 @@ public class DocxGenerator {
       log.error("- [ERROR] " + e.getClass().getSimpleName() + " reading image input stream: " + e.getMessage());
       return;
     }
-    
+
     // This assumes that the URL looks like a file reference.
     if (imageFilename == null || imageFilename.equals("")) {
       imageFilename = "image_" + imageCounter;
     }
-    
-    String imgExtension = FilenameUtils.getExtension(imageFilename).toLowerCase();    
+
+    String imgExtension = FilenameUtils.getExtension(imageFilename).toLowerCase();
     int format = 0;
     if (null != imgExtension && !"".equals(imgExtension)) {
       format = getImageFormat(imgExtension);
@@ -1931,7 +2490,7 @@ public class DocxGenerator {
     }
     int width = 200; // Default width in pixels
     int height = 200; // Default height in pixels
-    
+
     if (format == 0) {
       // FIXME: Might be more appropriate to throw an exception here.
         log.error("Unsupported picture, format code \"" + format + "\": " + imageFilename +
@@ -1942,7 +2501,7 @@ public class DocxGenerator {
     BufferedImage img = null;
     int intrinsicWidth = 0;
     int intrinsicHeight = 0;
-    try {    
+    try {
       // FIXME: Need to limit this to the formats Java2D can read.
       img = ImageIO.read(new ByteArrayInputStream(imageBytes));
       intrinsicWidth = img.getWidth();
@@ -1956,7 +2515,8 @@ public class DocxGenerator {
     boolean goodWidth = false;
     boolean goodHeight = false;
 
-    if (null != widthVal) {
+    // Issue 82: Handle empty width and height attributes (width="", height="")
+    if (null != widthVal && !"".equals(widthVal.trim())) {
       try {
         width = (int) Measurement.toPixels(widthVal, getDotsPerInch());
         goodWidth = true;
@@ -1966,10 +2526,10 @@ public class DocxGenerator {
         width = intrinsicWidth > 0 ? intrinsicWidth : width;
       }
     } else {
-      width = intrinsicWidth > 0 ? intrinsicWidth : width;      
+      width = intrinsicWidth > 0 ? intrinsicWidth : width;
     }
 
-    if (null != heightVal) {
+    if (null != heightVal && !"".equals(heightVal.trim())) {
       try {
         height = (int) Measurement.toPixels(heightVal, getDotsPerInch());
         goodHeight = true;
@@ -1985,21 +2545,21 @@ public class DocxGenerator {
     // Issue 16: If either dimension is not specified, scale the intrinsic width
     //           proportionally.
     if (widthVal == null && heightVal != null && (intrinsicWidth > 0) && goodHeight) {
-      double factor = height / intrinsicHeight;
+      double factor = (double)height / intrinsicHeight;
       width = (int)Math.round(intrinsicWidth * factor);
     }
     if (widthVal != null && heightVal == null && (intrinsicHeight > 0) && goodWidth) {
       double factor = (double)width / intrinsicWidth;
       height = (int)Math.round(intrinsicHeight * factor);
     }
-    
+
     // At this point, the measurement is pixels. If the original specification
     // was also pixels, we need to convert to inches and then back to pixels
     // in order to apply the dots-per-inch value.
-    
+
     // Word uses a DPI of 72, so if the current dotsPerInch is not 72, we need to
     // adjust the width and height by the difference.
-    
+
     if (getDotsPerInch() != 72) {
       double factor = 72.0 / getDotsPerInch();
       if (widthVal != null && widthVal.matches("[0-9]+(px)?")) {
@@ -2008,17 +2568,20 @@ public class DocxGenerator {
       if (heightVal != null && heightVal.matches("[0-9]+(px)?")) {
         height = (int)Math.round(height * factor);
       }
-    }        
+    }
 
-    
-    XWPFRun run = para.createRun();      
+
+    XWPFRun run = para.createRun();
 
         try {
-      run.addPicture(new ByteArrayInputStream(imageBytes), 
-                 format, 
-                 imageFilename, 
-                 Units.toEMU(width), 
+      XWPFPicture picture = run.addPicture(new ByteArrayInputStream(imageBytes),
+                 format,
+                 imageFilename,
+                 Units.toEMU(width),
                  Units.toEMU(height));
+      if ("true".equals(cursor.getAttributeText(DocxConstants.QNAME_FIT_TO_PAGE_WIDTH_ATT))) {
+        picturesToFit.add(new PictureToFit(para, picture, run.getCTR().getDrawingArray(0).getInlineArray(0)));
+      }
     } catch (Exception e) {
       log.warn("" + e.getClass().getSimpleName() + " exception adding picture for reference '" + imageFilename +"': " +
                             e.getMessage());
@@ -2084,42 +2647,44 @@ public class DocxGenerator {
    * Construct a hyperlink
    * @param doc
    * @param cursor
-   * @throws Exception 
+   * @throws Exception
    */
   private void makeHyperlink(XWPFParagraph para, XmlCursor cursor) throws DocxGenerationException {
-    
+
     String href = cursor.getAttributeText(DocxConstants.QNAME_HREF_ATT);
-    
+
     // Hyperlink's anchor (@w:anchor) points to the name (not ID) of a bookmark.
     //
     // Alternatively, can use the @r:id attribute to point to a relationship
     // element that then points to something, normally an external resource
-    // targeted by URI. 
-    
+    // targeted by URI.
+
     // Convention in simple WP XML is fragment identifiers are to bookmark IDs,
     // while everything else is a URI to an external resource.
-    
+
+    // If the hyperlink is to a bookmark (just a fragment ID) then we we create a hyperlink with
+    // an anchor, otherwise we create an external hyperlink to a URI.
+
     CTHyperlink hyperlink = para.getCTP().addNewHyperlink();
-    
+
     // Set the appropriate target:
-    
+
     if (href.startsWith("#")) {
-      // Just a fragment ID, must be to a bookmark
+      // Just a fragment ID, must be to a bookmark, set @anchor attribute.
       String bookmarkName = href.substring(1);
       hyperlink.setAnchor(bookmarkName);
     } else {
-      // Create a relationship that targets the href and use the
-      // relationship's ID on the hyperlink
-      // It's not yet clear from the POI API how to create a new relationship for
-      // use by an external hyperlink.
-      // throw new NotImplementedException("Links to external resources not yet implemented.");
+      // Create an external hyperlink. This creates the necessary relationship.
+      // Not using the createHyperlinkRun() of paragraph because it doesn't handle the
+      // runs within the <hyperlink> as we need. Set the @rId attribute.
+      String rId = para.getDocument().getPackagePart().addExternalRelationship(href, XWPFRelation.HYPERLINK.getRelation()).getId();
+      hyperlink.setId(rId);
     }
-    
+
     cursor.push();
     XWPFHyperlinkRun hyperlinkRun = makeHyperlinkRun(hyperlink, cursor, para);
     cursor.pop();
     para.addRun(hyperlinkRun);
-    
   }
 
   /**
@@ -2129,7 +2694,7 @@ public class DocxGenerator {
   public int getDotsPerInch() {
     return this.dotsPerInch;
   }
-  
+
   /**
    * Set the dots-per-inch to use when converting from pixels to absolute measurements.
    * <p>Typical values are 72 and 96</p>
@@ -2141,14 +2706,14 @@ public class DocxGenerator {
 
   /**
    * Construct an embedded object.
-   * @param para 
+   * @param para
    * @param cursor Cursor pointing to an <object> element.
    */
   private void makeObject(XWPFParagraph para, XmlCursor cursor) throws DocxGenerationException {
     throw new NotImplementedException("Object handling not implemented");
     //     cursor.push();
     //    cursor.pop();
-    
+
   }
 
   /**
@@ -2160,37 +2725,36 @@ public class DocxGenerator {
     throw new NotImplementedException("Object handling not implemented");
     //     cursor.push();
     //    cursor.pop();
-    
+
   }
 
   /**
    * Construct a table.
    * @param table Table object to construct
    * @param xml The &lt;table&gt; element
-   * @throws DocxGenerationException 
+   * @throws DocxGenerationException
    */
   private void makeTable(XWPFTable table, XmlObject xml) throws DocxGenerationException {
-    
+
     // If the column widths are absolute measurements they can be set on the grid,
     // but if they are proportional, then they have to be set on at least the first
     // row's cells. The table grid is not required (it always reflects the calculated
-    // width of the columns, possibly determined by applying percentage table and 
+    // width of the columns, possibly determined by applying percentage table and
     // column widths.
     XmlCursor cursor = xml.newCursor();
-    
+
     String widthValue = cursor.getAttributeText(DocxConstants.QNAME_WIDTH_ATT);
-    if (null != widthValue) {
-        table.setWidth(getMeasurementValue(widthValue));
+    if (null != widthValue && !"".equals(widthValue.trim())) {
+      table.setWidth(getMeasurementValue(widthValue));
     }
-    
+
     setTableIndents(table, cursor);
     setTableLayout(table, cursor);
-    
+    setTableAlign(table, cursor);
 
-    
     String styleName = cursor.getAttributeText(DocxConstants.QNAME_STYLE_ATT);
     String styleId = cursor.getAttributeText(DocxConstants.QNAME_STYLEID_ATT);
-    
+
     if (null != styleName && null == styleId) {
       // Look up the style by name:
       XWPFStyle style = table.getBody().getXWPFDocument().getStyles().getStyleWithName(styleName);
@@ -2202,7 +2766,7 @@ public class DocxGenerator {
           // FIXME: The POI 4.x API doesn't provide a way to get the list of styles
           //        or the list of style names that I can find short of parsing the
           //        underlying document part XML, so no way to report the
-          //        style names at this time.          
+          //        style names at this time.
         }
         this.isFirstTableStyleWarning = false;
         // Try to make a style ID out of the style name:
@@ -2212,7 +2776,7 @@ public class DocxGenerator {
     if (null != styleId) {
       table.setStyleID(styleId);
     }
-    
+
     TableBorderStyles borderStyles = setTableFrame(table, cursor);
     Map<QName, String> defaults = new HashMap<QName, String>();
     String rowsep = cursor.getAttributeText(DocxConstants.QNAME_ROWSEP_ATT);
@@ -2223,34 +2787,34 @@ public class DocxGenerator {
     if (colsep != null) {
       defaults.put(DocxConstants.QNAME_COLSEP_ATT, colsep);
     }
-    
+
     int borderWidth = 8; // 8 8ths of a point, i.e. 1pt
     int borderSpace = 8; // ???
     String borderColor = "auto";
-    
+
     // Rowsep is either 1 or 0
     // Default for new tables is all frames and internal borders so need
     // to explicitly set to none if rowsep or colsep is 0.
     if (rowsep != null || colsep != null) {
       if ("1".equals(rowsep)) {
         borderStyles.setRowSepBorder(borderStyles.getDefaultBorderType());
-        table.setInsideHBorder(borderStyles.getRowSepBorder(), borderWidth, borderSpace, borderColor);        
+        table.setInsideHBorder(borderStyles.getRowSepBorder(), borderWidth, borderSpace, borderColor);
       } else if (rowsep != null) {
         borderStyles.setRowSepBorder(XWPFBorderType.NONE);
-        table.setInsideHBorder(borderStyles.getRowSepBorder(), 0, 0, borderColor);        
+        table.setInsideHBorder(borderStyles.getRowSepBorder(), 0, 0, borderColor);
       }
       if ("1.".equals(colsep)) {
         borderStyles.setColSepBorder(borderStyles.getDefaultBorderType());
         table.setInsideVBorder(borderStyles.getColSepBorder(), borderWidth, borderSpace, borderColor);
       } else if (colsep !=  null) {
         borderStyles.setRowSepBorder(XWPFBorderType.NONE);
-        table.setInsideVBorder(borderStyles.getRowSepBorder(), 0, 0, borderColor);        
+        table.setInsideVBorder(borderStyles.getRowSepBorder(), 0, 0, borderColor);
       }
     }
 
-    // Not setting a grid on the tables because it only uses absolute 
+    // Not setting a grid on the tables because it only uses absolute
     // measurements. And there's no XWPF API for it.
-    
+
     // So setting widths on columns, which allows percentages as well as
     // explicit values.
     TableColumnDefinitions colDefs = new TableColumnDefinitions();
@@ -2258,23 +2822,25 @@ public class DocxGenerator {
     if (cursor.toFirstChild()) {
       do {
         TableColumnDefinition colDef = colDefs.newColumnDef();
-        
+
         String width = cursor.getAttributeText(DocxConstants.QNAME_COLWIDTH_ATT);
         if (null != width && !width.equals("")) {
           try {
             colDef.setWidth(width, getDotsPerInch());
           } catch (MeasurementException e) {
             log.warn("makeTable(): " + e.getClass().getSimpleName() + " - " + e.getMessage());
-          }          
+          }
         } else {
           colDef.setWidthAuto();
         }
       } while (cursor.toNextSibling());
     }
-    
+
+    setTableGrid(table, colDefs);
+
     // populate the rows and cells.
     cursor = xml.newCursor();
-    
+
     // Header rows:
     cursor.push();
     if (cursor.toChild(DocxConstants.QNAME_THEAD_ELEM)) {
@@ -2287,9 +2853,9 @@ public class DocxGenerator {
         } while(cursor.toNextSibling());
       }
     }
-    
+
     // Body rows:
-    
+
     cursor = xml.newCursor();
     if (cursor.toChild(DocxConstants.QNAME_TBODY_ELEM)) {
       if (cursor.toFirstChild()) {
@@ -2307,7 +2873,7 @@ public class DocxGenerator {
 
   private void setTableIndents(XWPFTable table, XmlCursor cursor) {
     // Should only have left/right or inside/outside values, not both.
-    
+
     CTTbl ctTbl = table.getCTTbl();
     CTTblPr ctTblPr = (ctTbl.getTblPr());
     if (ctTblPr == null) {
@@ -2318,7 +2884,7 @@ public class DocxGenerator {
 //    String rightindentValue = cursor.getAttributeText(DocxConstants.QNAME_RIGHTINDENT_ATT);
 //    String insideindentValue = cursor.getAttributeText(DocxConstants.QNAME_LEFTINDENT_ATT);
 //    String outsideindentValue = cursor.getAttributeText(DocxConstants.QNAME_RIGHTINDENT_ATT);
-        
+
     if (leftindentValue != null) {
       CTTblWidth tblWidth = CTTblWidth.Factory.newInstance();
       String value = getMeasurementValue(leftindentValue);
@@ -2329,9 +2895,29 @@ public class DocxGenerator {
         // log.debug("setTableIndents(): leftindentVale \"" + leftindentValue + "\" not an integer", e);
       }
     }
-    
+
   }
 
+  private void setTableAlign(XWPFTable table, XmlCursor cursor) throws DocxGenerationException {
+    String align = cursor.getAttributeText(DocxConstants.QNAME_ALIGN_ATT);
+    if (align == null) {
+      return;
+    }
+
+    TableRowAlign alignObj;
+    if (align.equals("start")) {
+      alignObj = TableRowAlign.LEFT;
+    } else if (align.equals("center")) {
+      alignObj = TableRowAlign.CENTER;
+    } else if (align.equals("end")) {
+      alignObj = TableRowAlign.RIGHT;
+    } else {
+      throw new DocxGenerationException("Unknown value for table align: '" +
+                                        align + "'");
+    }
+
+    table.setTableAlignment(alignObj);
+  }
 
   /**
    * Sets the w:tblLayout to fixed or auto
@@ -2340,16 +2926,16 @@ public class DocxGenerator {
    */
   private void setTableLayout(XWPFTable table, XmlCursor cursor) {
     // Should only have left/right or inside/outside values, not both.
-    
+
     CTTbl ctTbl = table.getCTTbl();
     CTTblPr ctTblPr = (ctTbl.getTblPr());
     if (ctTblPr == null) {
       ctTblPr = ctTbl.addNewTblPr();
     }
-    
+
 
     String layoutValue = cursor.getAttributeText(DocxConstants.QNAME_LAYOUT_ATT);
-    
+
     CTTblLayoutType ctTblLayout = ctTblPr.getTblLayout();
     if (ctTblLayout == null) {
       ctTblLayout = ctTblPr.addNewTblLayout();
@@ -2360,7 +2946,7 @@ public class DocxGenerator {
     if (layoutValue != null && !"auto".equals(layoutValue)) {
       ctTblLayout.setType(STTblLayoutType.FIXED);
     }
-    
+
   }
 
   /**
@@ -2387,17 +2973,17 @@ public class DocxGenerator {
     int frameWidth = 8; // 1pt
     int frameSpace = 0;
     String frameColor = "auto";
-    
+
     String frameValue = cursor.getAttributeText(DocxConstants.QNAME_FRAME_ATT);
-    
-    TableBorderStyles borderStyles = 
+
+    TableBorderStyles borderStyles =
         new TableBorderStyles(cursor.getObject());
-    
+
     XWPFBorderType topBorder = borderStyles.getTopBorder();
     XWPFBorderType bottomBorder = borderStyles.getBottomBorder();
     XWPFBorderType leftBorder = borderStyles.getLeftBorder();
     XWPFBorderType rightBorder = borderStyles.getRightBorder();
-    
+
 
     if (frameValue != null) {
       if ("none".equals(frameValue)) {
@@ -2431,7 +3017,7 @@ public class DocxGenerator {
         leftBorder = XWPFBorderType.NONE;
         rightBorder = XWPFBorderType.NONE;
       }
-      
+
     }
     if (bottomBorder != null) {
       table.setBottomBorder(bottomBorder, frameWidth, frameSpace, frameColor);
@@ -2442,12 +3028,12 @@ public class DocxGenerator {
     if (leftBorder != null) {
       table.setLeftBorder(leftBorder, frameWidth, frameSpace, frameColor);
     }
-    if (rightBorder != null) {      
+    if (rightBorder != null) {
       table.setRightBorder(rightBorder, frameWidth, frameSpace, frameColor);
     }
     return borderStyles;
   }
-  
+
   /**
    * Get the border style, using the default if the explicit style null
    * @param explicitStyle Explicitly-specified border style. May be null
@@ -2464,9 +3050,9 @@ public class DocxGenerator {
    * @return Corresponding XWPFBorderType value or null if there is no corresponding value.
    */
   private XWPFBorderType xwpfBorderType(String borderValue) {
-    
+
     STBorder.Enum borderStyle = STBorder.Enum.forString(borderValue);
-    
+
     // There's not a direct correspondence between STBorder int values
     // and XWPFBorderType so just building a switch statement.
     XWPFBorderType xwpfType = null;
@@ -2551,7 +3137,7 @@ public class DocxGenerator {
       break;
     case STBorder.INT_WAVE:
       xwpfType = XWPFBorderType.WAVE;
-      break;    
+      break;
     }
     return xwpfType;
   }
@@ -2562,7 +3148,7 @@ public class DocxGenerator {
    * @return Corresponding XWPFBorderType value or null if there is no corresponding value.
    */
   private STBorder.Enum stBorderType(XWPFBorderType borderType) {
-    
+
     // There's not a direct correspondence between STBorder int values
     // and XWPFBorderType so just building a switch statement.
     STBorder.Enum stBorder = null;
@@ -2647,7 +3233,7 @@ public class DocxGenerator {
       break;
     case WAVE:
       stBorder = STBorder.WAVE;
-      break;    
+      break;
     }
     return stBorder;
   }
@@ -2660,22 +3246,22 @@ public class DocxGenerator {
    * @param rowSpanManager Manages setting vertical spanning across multiple rows.
    * @param defaults Defaults inherited from the table (or elsewhere)
    * @return Constructed row object
-   * @throws DocxGenerationException 
+   * @throws DocxGenerationException
    */
   private XWPFTableRow makeTableRow(
-      XWPFTable table, 
-      XmlObject xml, 
-      TableColumnDefinitions colDefs, 
-      RowSpanManager rowSpanManager, 
-      Map<QName, String> defaults) 
+      XWPFTable table,
+      XmlObject xml,
+      TableColumnDefinitions colDefs,
+      RowSpanManager rowSpanManager,
+      Map<QName, String> defaults)
           throws DocxGenerationException {
     XmlCursor cursor = xml.newCursor();
     XWPFTableRow row = table.createRow();
-        
+
     cursor.push();
     cursor.toChild(DocxConstants.QNAME_TD_ELEM);
     int cellCtr = 0;
-    
+
     do {
       // log.debug("makeTableRow(): Cell " + cellCtr);
       TableColumnDefinition colDef = colDefs.get(cellCtr);
@@ -2683,20 +3269,20 @@ public class DocxGenerator {
       // FIXME: At some point the POI API will remove the automatic creation
       // of the first cell in a row.
       XWPFTableCell cell = cellCtr == 0 ? row.getCell(0) : row.addNewTableCell();
-      
+
       CTTcPr ctTcPr = cell.getCTTc().addNewTcPr();
       String align = cursor.getAttributeText(DocxConstants.QNAME_ALIGN_ATT);
       String valign = cursor.getAttributeText(DocxConstants.QNAME_VALIGN_ATT);
       String colspan = cursor.getAttributeText(DocxConstants.QNAME_COLSPAN_ATT);
       String rowspan = cursor.getAttributeText(DocxConstants.QNAME_ROWSPAN_ATT);
       String shade = cursor.getAttributeText(DocxConstants.QNAME_SHADE_ATT);
-      
-      setCellBorders(cursor, ctTcPr);     
+
+      setCellBorders(cursor, ctTcPr);
       long spanCount = 1; // Default value;
-      
+
       try {
         String widthValue = cursor.getAttributeText(DocxConstants.QNAME_WIDTH_ATT);
-        if (null != widthValue) {
+        if (null != widthValue && !"".equals(widthValue.trim())) {
           cell.setWidth(TableColumnDefinition.interpretWidthSpecification(widthValue, getDotsPerInch()));
         } else {
           String width = null;
@@ -2714,7 +3300,7 @@ public class DocxGenerator {
               boolean allNumbers = true;
               boolean allAuto = true;
               for (int i = cellCtr; i < cellCtr + spanCount; i++) {
-                String widthVal = colDefs.get(i).getSpecifiedWidth(); 
+                String widthVal = colDefs.get(i).getSpecifiedWidth();
                 spanWidths.add(widthVal);
                 allPercents = allPercents && widthVal.endsWith("%");
                 allNumbers = allNumbers && !widthVal.endsWith("%") && !widthVal.equals("auto");
@@ -2753,9 +3339,9 @@ public class DocxGenerator {
               }
               cell.setWidth(width);
             } catch (Exception e) {
-              log.error("makeTableRow(): @colspan value \"" + colspan + "\" is not an integer. Using first column's width.");               
+              log.error("makeTableRow(): @colspan value \"" + colspan + "\" is not an integer. Using first column's width.");
             }
-            
+
           }
           cell.setWidth(width);
           //log.debug("makeTableRow():   Setting width from column definition: " + colDef.getWidth() + " (" + colDef.getSpecifiedWidth() + ")");
@@ -2776,7 +3362,7 @@ public class DocxGenerator {
           // set up the width correctly when Word lays out the table
           // regardless of what the nominal column width is. This is because
           // Word infers the table grid from the columns and cells automatically.
-          // However, it appears this doesn't always work as expected.          
+          // However, it appears this doesn't always work as expected.
           ctTcPr.setGridSpan(spanNumber);
         } catch (NumberFormatException e) {
           log.warn("Non-numeric value for @colspan: \"" + colspan + "\". Ignored.");
@@ -2795,7 +3381,7 @@ public class DocxGenerator {
           log.warn("Non-numeric value for @rowspan: \"" + rowspan + "\". Ignored.");
         }
       }
-      
+
       if (null != shade) {
         try {
           CTShd ctShd = CTShd.Factory.newInstance();
@@ -2808,7 +3394,7 @@ public class DocxGenerator {
           log.warn("Shade value must be a 6-digit hex string, got \"" + shade + "\"");
         }
       }
-      
+
       cursor.push();
       // The first cell of a span will already have a vertical span set for it.
       if (rowspan == null && cursor.toChild(DocxConstants.QNAME_VSPAN_ELEM)) {
@@ -2819,25 +3405,66 @@ public class DocxGenerator {
           ctTcPr.setVMerge(CTVMerge.Factory.newInstance());
         }
       } else {
-        if (cursor.toChild(DocxConstants.QNAME_P_ELEM)) {
-          do {
-            XWPFParagraph p = cell.addParagraph();
-            makeParagraph(p, cursor);
-            if (null != align) {
-              if ("JUSTIFY".equalsIgnoreCase(align)) {
-                // Issue 18: "BOTH" is the better match to "JUSTIFY"
-                align = "BOTH"; // Slight mistmatch between markup and model
-              }
-              if ("CHAR".equalsIgnoreCase(align)) {
-                // I'm not sure this is the best mapping but it seemed close enough
-                align = "NUM_TAB"; // Slight mistmatch between markup and model
-              }
-              ParagraphAlignment alignment = ParagraphAlignment.valueOf(align.toUpperCase());
-              p.setAlignment(alignment);
-            }
-          } while(cursor.toNextSibling());
-          // Cells always have at least one paragraph.
-          cell.removeParagraph(0);
+        // convert the contents of the cell
+        boolean hasMore = cursor.toFirstChild();
+        // Issue 134: If <td> is empty, hasMore will be false.
+        if (!hasMore) {
+          // Leave the empty paragraph, which is required by Word.
+          
+        } else {
+			// Cells always have at least one paragraph.
+			cell.removeParagraph(0);
+
+	        // the cell has to *end* with a paragraph, so if the last block isn't
+	        // a paragraph we need to add one at the end.  using this to track
+	        boolean lastIsParagraph = false;
+	
+	        // convert the contents of the cell
+	          while (hasMore) {
+	            if (cursor.getName().equals(DocxConstants.QNAME_P_ELEM)) {
+	            lastIsParagraph = true;
+	              XWPFParagraph p = cell.addParagraph();
+	              makeParagraph(p, cursor);
+	              if (null != align) {
+	                if ("JUSTIFY".equalsIgnoreCase(align)) {
+	                  // Issue 18: "BOTH" is the better match to "JUSTIFY"
+	                  align = "BOTH"; // Slight mistmatch between markup and model
+	                }
+	                if ("CHAR".equalsIgnoreCase(align)) {
+	                  // I'm not sure this is the best mapping but it seemed close enough
+	                  align = "NUM_TAB"; // Slight mistmatch between markup and model
+	                }
+	                ParagraphAlignment alignment = ParagraphAlignment.valueOf(align.toUpperCase());
+	                p.setAlignment(alignment);
+	              }
+	            } else if (cursor.getName().equals(DocxConstants.QNAME_TABLE_ELEM)) {
+	            lastIsParagraph = false;
+	
+	              // record how many tables were in the cell previously
+	              int preTables = cell.getCTTc().getTblList().size();
+
+	              CTTbl ctTbl = cell.getCTTc().addNewTbl();
+	              ctTbl = cell.getCTTc().addNewTbl();
+
+	              XWPFTable nestedTable = new XWPFTable(ctTbl, cell);
+	              makeTable(nestedTable, cursor.getObject());
+
+	              // for some reason this inserts two tables, where the
+	              // first one is empty. we need to remove that one.
+	              // luckily, the number of tables we used to have equals
+	              // the index of the first new table
+	              cell.getCTTc().removeTbl(preTables);
+	            } else {
+	              log.warn("Table cell contains unknown element {} -- skipping", cursor.getName());
+	            }
+	  
+	            hasMore = cursor.toNextSibling();
+	          }
+	
+	        // cell didn't end in a paragraph, so need to add one
+	        if (!lastIsParagraph) {
+	          cell.addParagraph();
+	        }
         }
       }
       cursor.pop();
@@ -2845,24 +3472,24 @@ public class DocxGenerator {
     } while(cursor.toNextSibling());
     return row;
   }
-  
-  
+
+
   /**
    * Set the borders on the cells.
    * @param cursor cursor for the table cell markup
    * @param ctTcPr Table cell style properties
-   * @return 
+   * @return
    */
   private void setCellBorders(XmlCursor cursor, CTTcPr ctTcPr) {
-    
+
     // log.debug("setCellBorders(): tag is \"" + cursor.getName().getLocalPart() + "\"");
     TableBorderStyles borderStyles = new TableBorderStyles(cursor.getObject());
-    
+
     if (borderStyles.hasBorders()) {
       CTTcBorders borders = ctTcPr.addNewTcBorders();
-        
+
       // Borders can be set per edge:
-      
+
       if (borderStyles.getBottomBorder() != null) {
         CTBorder bottom = borders.addNewBottom();
         STBorder.Enum val = borderStyles.getBottomBorderEnum();
@@ -2902,9 +3529,9 @@ public class DocxGenerator {
   private void setupStyles(XWPFDocument doc, XWPFDocument templateDoc) throws DocxGenerationException {
     // Load template. For now this is hard coded but will need to be
     // parameterized
-        
+
     // Copy the template's styles to result document:
-        
+
     try {
       XWPFStyles newStyles = doc.createStyles();
       newStyles.setStyles(templateDoc.getStyle());
@@ -2913,25 +3540,224 @@ public class DocxGenerator {
     } catch (XmlException e) {
       new DocxGenerationException(e.getClass().getSimpleName() + " Copying styles from template doc: " + e.getMessage(), e);
     }
-    
 
+
+  }
+
+  /**
+   * Gives each list identified by a wp:p/@numId its own Word numbering instance
+   * so that numbering restarts at 1 for each list rather than continuing from
+   * the previous list that uses the same paragraph style.
+   * <p>Each instance uses the same abstract numbering definition as the list's
+   * paragraph style. If that can't be determined, the list's paragraphs are left
+   * as they are, since a numbering instance without an abstract definition is invalid.</p>
+   * @param doc The document being generated
+   */
+  private void restartNumberedLists(XWPFDocument doc) {
+    XWPFNumbering numbering = doc.getNumbering();
+    if (null == numbering) {
+      return;
+    }
+    BigInteger nextNumId = BigInteger.ONE;
+    for (XWPFNum num : numbering.getNums()) {
+      BigInteger numId = num.getCTNum().getNumId();
+      if (numId.compareTo(nextNumId) >= 0) {
+        nextNumId = numId.add(BigInteger.ONE);
+      }
+    }
+
+    for (Map.Entry<String, List<XWPFParagraph>> entry : listParagraphs.entrySet()) {
+      List<XWPFParagraph> paras = entry.getValue();
+      BigInteger abstractNumId = getStyleAbstractNumId(doc, paras.get(0).getStyle());
+      if (null == abstractNumId) {
+        log.warn("restartNumberedLists(): Style '" + paras.get(0).getStyle()
+            + "' has no numbering definition. Numbering for list '" + entry.getKey() + "' not restarted.");
+        continue;
+      }
+      BigInteger listNumId = nextNumId;
+      nextNumId = nextNumId.add(BigInteger.ONE);
+      numbering.addNum(abstractNumId, listNumId);
+
+      CTNumLvl lvlOverride = numbering.getNum(listNumId).getCTNum().addNewLvlOverride();
+      lvlOverride.setIlvl(BigInteger.ZERO);
+      lvlOverride.addNewStartOverride().setVal(BigInteger.ONE);
+
+      for (XWPFParagraph para : paras) {
+        CTPPr pPr = para.getCTPPr();
+        CTNumPr numPr = pPr.isSetNumPr() ? pPr.getNumPr() : pPr.addNewNumPr();
+        CTDecimalNumber numIdElem = numPr.isSetNumId() ? numPr.getNumId() : numPr.addNewNumId();
+        numIdElem.setVal(listNumId);
+      }
+    }
+  }
+
+  /**
+   * Gets the ID of the abstract numbering definition used by a style, following
+   * the style's basedOn chain.
+   * @param doc The document
+   * @param styleId ID of the style
+   * @return The abstract numbering ID or null if the style, or the styles it's based on, has no numbering.
+   */
+  private BigInteger getStyleAbstractNumId(XWPFDocument doc, String styleId) {
+    XWPFStyles styles = doc.getStyles();
+    XWPFStyle style = (null == styleId || null == styles) ? null : styles.getStyle(styleId);
+    // Limit depth to protect against basedOn cycles:
+    for (int depth = 0; null != style && depth < 20; depth++) {
+      CTPPrGeneral pPr = style.getCTStyle().getPPr();
+      if (null != pPr && pPr.isSetNumPr() && pPr.getNumPr().isSetNumId()) {
+        XWPFNum num = doc.getNumbering().getNum(pPr.getNumPr().getNumId().getVal());
+        if (null != num && null != num.getCTNum().getAbstractNumId()) {
+          return num.getCTNum().getAbstractNumId().getVal();
+        }
+        return null;
+      }
+      style = (null == style.getBasisStyleID()) ? null : styles.getStyle(style.getBasisStyleID());
+    }
+    return null;
+  }
+
+  /**
+   * Sets the table grid (w:tblGrid) from the column definitions when all of the
+   * columns have absolute widths. The grid can only hold absolute widths, in twips.
+   * If any column is auto or a percentage, the grid is left as it is and the widths
+   * on the cells determine the layout.
+   * @param table The table to set the grid on
+   * @param colDefs The table's column definitions
+   */
+  public static void setTableGrid(XWPFTable table, TableColumnDefinitions colDefs) {
+    List<TableColumnDefinition> cols = colDefs.getColumnDefinitions();
+    if (cols.isEmpty()) {
+      return;
+    }
+    for (TableColumnDefinition col : cols) {
+      if (!col.getWidth().matches("[0-9]+")) {
+        return;
+      }
+    }
+    CTTbl ctTbl = table.getCTTbl();
+    CTTblGrid grid = null != ctTbl.getTblGrid() ? ctTbl.getTblGrid() : ctTbl.addNewTblGrid();
+    while (grid.sizeOfGridColArray() > 0) {
+      grid.removeGridCol(0);
+    }
+    for (TableColumnDefinition col : cols) {
+      grid.addNewGridCol().setW(new BigInteger(col.getWidth()));
+    }
+  }
+
+  /** A picture to resize if it's wider than the page's content area */
+  private static class PictureToFit {
+    final XWPFParagraph paragraph;
+    final XWPFPicture picture;
+    final CTInline inline;
+
+    PictureToFit(XWPFParagraph paragraph, XWPFPicture picture, CTInline inline) {
+      this.paragraph = paragraph;
+      this.picture = picture;
+      this.inline = inline;
+    }
+  }
+
+  // Word's defaults when the section properties don't specify a page size or margins (Letter, 1" margins)
+  private static final long DEFAULT_PAGE_WIDTH_TWIPS = 12240;
+  private static final long DEFAULT_MARGIN_TWIPS = 1440;
+  private static final long EMUS_PER_TWIP = 635;
+
+  /**
+   * Shrinks the pictures that asked to fit the page width (image/@fit-to-page-width)
+   * to the width of the content area of the section they're in, keeping their proportions.
+   * Pictures that already fit are not changed. Only pictures in paragraphs that are
+   * direct children of the body or of a section are handled, not those in tables, footnotes,
+   * headers, or footers.
+   * <p>This is done after the document has been constructed because the section properties
+   * are not set until after the section's content is.</p>
+   * @param doc The constructed document
+   */
+  private void fitPicturesToPageWidth(XWPFDocument doc) {
+    if (picturesToFit.isEmpty()) {
+      return;
+    }
+    // Paragraphs of the section being walked. The section's properties are on its last paragraph,
+    // except for the last section, which has them in the body.
+    List<XWPFParagraph> sectionParas = new ArrayList<>();
+    for (IBodyElement elem : doc.getBodyElements()) {
+      if (elem.getElementType() == BodyElementType.PARAGRAPH) {
+        XWPFParagraph para = (XWPFParagraph) elem;
+        sectionParas.add(para);
+        if (para.getCTP().isSetPPr() && para.getCTP().getPPr().isSetSectPr()) {
+          fitPicturesInParagraphs(sectionParas, para.getCTP().getPPr().getSectPr());
+          sectionParas.clear();
+        }
+      }
+    }
+    CTBody body = doc.getDocument().getBody();
+    fitPicturesInParagraphs(sectionParas, body.isSetSectPr() ? body.getSectPr() : null);
+  }
+
+  private void fitPicturesInParagraphs(List<XWPFParagraph> paras, CTSectPr sectPr) {
+    long maxWidthEmu = getContentWidthInTwips(sectPr) * EMUS_PER_TWIP;
+    for (PictureToFit toFit : picturesToFit) {
+      if (!paras.contains(toFit.paragraph)) {
+        continue;
+      }
+      CTPositiveSize2D extent = toFit.inline.getExtent();
+      if (extent.getCx() > maxWidthEmu) {
+        long newHeight = Math.round(extent.getCy() * (double) maxWidthEmu / extent.getCx());
+        extent.setCx(maxWidthEmu);
+        extent.setCy(newHeight);
+        // Keep the picture's own size in step with the inline's:
+        CTPositiveSize2D picExt = toFit.picture.getCTPicture().getSpPr().getXfrm().getExt();
+        picExt.setCx(maxWidthEmu);
+        picExt.setCy(newHeight);
+      }
+    }
+  }
+
+  /**
+   * Get the width of the area between the margins (and gutter) for a section.
+   * @param sectPr Section properties. May be null.
+   * @return Width in twips. Word's defaults are used for what the properties don't specify.
+   */
+  public static long getContentWidthInTwips(CTSectPr sectPr) {
+    long pageWidth = DEFAULT_PAGE_WIDTH_TWIPS;
+    long left = DEFAULT_MARGIN_TWIPS;
+    long right = DEFAULT_MARGIN_TWIPS;
+    long gutter = 0;
+    if (null != sectPr) {
+      if (sectPr.isSetPgSz() && null != sectPr.getPgSz().getW()) {
+        pageWidth = twips(sectPr.getPgSz().getW(), pageWidth);
+      }
+      if (sectPr.isSetPgMar()) {
+        CTPageMar mar = sectPr.getPgMar();
+        left = twips(mar.getLeft(), left);
+        right = twips(mar.getRight(), right);
+        gutter = twips(mar.getGutter(), gutter);
+      }
+    }
+    return Math.max(0, pageWidth - left - right - gutter);
+  }
+
+  private static long twips(Object value, long defaultValue) {
+    if (value instanceof BigInteger) {
+      return ((BigInteger) value).longValue();
+    }
+    return defaultValue;
   }
 
   private void setupNumbering(XWPFDocument doc, XWPFDocument templateDoc) throws DocxGenerationException {
     // Load the template's numbering definitions to the new document
-                
+
     try {
       XWPFNumbering templateNumbering = templateDoc.getNumbering();
       XWPFNumbering numbering = doc.createNumbering();
       // In 4.1.2 There is no method to just get all the abstract and concrete
       // numbers or their IDs so we just iterate until we don't get any more
       // Trunk has new methods for this as of 4/26/2020
-      
+
       // Abstract numbers:
       int i = 1;
-      
+
       XWPFAbstractNum abstractNum = null;
-      // Number IDs appear to always be integers starting at 1 
+      // Number IDs appear to always be integers starting at 1
       // so we're really just guessing.
       do {
         abstractNum = templateNumbering.getAbstractNum(BigInteger.valueOf(i));
@@ -2951,13 +3777,13 @@ public class DocxGenerator {
           numbering.addNum(num);
         }
       } while (num != null);
-            
+
 
     } catch (Exception e) {
       new DocxGenerationException(e.getClass().getSimpleName() + " Copying numbering definitions from template doc: " + e.getMessage(), e);
     }
-    
-    
+
+
   }
 
   /**
@@ -2966,11 +3792,11 @@ public class DocxGenerator {
    */
   @SuppressWarnings("unused")
   private void setupFootnoteStyles(XWPFDocument doc) throws DocxGenerationException {
-    
+
     // Styles for footnotes:
-    
+
     doc.createStyles(); // Make sure we have styles
-    
+
     CTStyle style = CTStyle.Factory.newInstance();
     style.setStyleId("FootnoteReference");
     style.setType(STStyleType.CHARACTER);
@@ -2999,7 +3825,7 @@ public class DocxGenerator {
     doc.getStyles().addStyle(new XWPFStyle(style));
 
     style  = CTStyle.Factory.newInstance();
-    style.setCustomStyle(STOnOffImpl.X_1);
+    style.setCustomStyle(STOnOff1.OFF);
     style.setStyleId("FootnoteTextChar");
     style.setType(STStyleType.CHARACTER);
     style.addNewName().setVal("Footnote Text Char");
@@ -3012,21 +3838,21 @@ public class DocxGenerator {
     rpr.addNewSzCs().setVal(new BigInteger("20"));
 
     doc.getStyles().addStyle(new XWPFStyle(style));
-    
+
   }
 
   /**
-   * Get the Word-specific format value. 
+   * Get the Word-specific format value.
    * @param imgExtension
    * @return The format or 0 (zero) if the format is not recognized.
    */
   private int getImageFormat(String imgExtension) {
     int format = 0;
-    
+
     if ("emf".equals(imgExtension)) format = XWPFDocument.PICTURE_TYPE_EMF;
         else if ("wmf".equals(imgExtension)) format = XWPFDocument.PICTURE_TYPE_WMF;
         else if ("pict".equals(imgExtension)) format = XWPFDocument.PICTURE_TYPE_PICT;
-        else if ("jpeg".equals(imgExtension) || 
+        else if ("jpeg".equals(imgExtension) ||
              "jpg".equals(imgExtension)) format = XWPFDocument.PICTURE_TYPE_JPEG;
         else if ("png".equals(imgExtension)) format = XWPFDocument.PICTURE_TYPE_PNG;
         else if ("dib".equals(imgExtension)) format = XWPFDocument.PICTURE_TYPE_DIB;
@@ -3041,4 +3867,3 @@ public class DocxGenerator {
 
 
 }
-

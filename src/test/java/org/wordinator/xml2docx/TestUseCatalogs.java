@@ -16,10 +16,10 @@ public class TestUseCatalogs extends TestCase {
 
   private static final String DOTX_TEMPLATE_PATH = "docx/Test_Template.dotx";
   private static final String CATALOG_FILE_PATH = "catalog/catalog.xml";
-  
-  public static final Logger log = LogManager.getLogger(TestUseCatalogs.class.getSimpleName());
 
-  
+  private static final Logger log = LogManager.getLogger(TestUseCatalogs.class);
+
+
   @Test
   public void testCatalogResolution() throws Exception {
 
@@ -28,7 +28,7 @@ public class TestUseCatalogs extends TestCase {
     File templateFile = new File(classLoader.getResource(DOTX_TEMPLATE_PATH).getFile());
     File xformFile = new File(classLoader.getResource("xsl/test-catalog-resolution.xsl").getFile());
     // NOTE: The running test uses the catalog as copied to the target/test-classes/catalog directory,
-    //       not the source diretory, so if you're testing the catalog, e.g., in Oxygen, use 
+    //       not the source diretory, so if you're testing the catalog, e.g., in Oxygen, use
     //       the copy in the target directory or the relative path won't resolve.
     File catalogFile = new File(classLoader.getResource(CATALOG_FILE_PATH).getFile());
     File outFile = new File("out/testCatalogResolution.docx");
@@ -42,32 +42,32 @@ public class TestUseCatalogs extends TestCase {
       options = MakeDocx.buildOptions();
       GOOD_OPTIONS = true;
     } catch (Exception e) {
-      // 
+      //
     }
-    
+
     assertTrue("Options not good", GOOD_OPTIONS);
-    
+
     assertTrue("No catalog option", options.hasLongOption("catalog"));
     assertTrue("No -k option", options.hasOption("k"));
-    
-    String[] args = { 
-        "-k " + catalogFile.getAbsolutePath(), 
-        "-i " + inFile.getAbsolutePath(), 
-        "-o " + outFile.getAbsolutePath(), 
+
+    String[] args = {
+        "-k " + catalogFile.getAbsolutePath(),
+        "-i " + inFile.getAbsolutePath(),
+        "-o " + outFile.getAbsolutePath(),
         "-t " + templateFile.getAbsolutePath(),
-        "-x " + xformFile.getAbsolutePath() 
+        "-x " + xformFile.getAbsolutePath()
 
         };
-    
+
     CommandLineParser parser = new DefaultParser();
     CommandLine cmd = parser.parse( options, args);
-    
+
     String catalog = cmd.getOptionValue("k");
     assertNotNull("No catalog option value", catalog);
     assertEquals(catalogFile.getAbsolutePath(), catalog.trim());
-    
+
     try {
-      MakeDocx.handleCommandLine(options, args, log);
+      MakeDocx.handleCommandLine(options, args);
     } catch (Throwable e) {
       fail("Got exception from handleCommandLine(): " + e.getMessage());
     }

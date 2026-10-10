@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE map PUBLIC "-//OASIS//DTD DITA Map//EN" "map.dtd">
+<map>
+    <title>Issue 85: ToC Generation</title>
+    <topicref href="topics/topic-01.dita">
+    <topicref href="topics/2nd_level_1.dita"/>
+    <topicref href="topics/2nd_level_2.dita"/>
+  </topicref>
+</map>

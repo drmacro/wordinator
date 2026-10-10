@@ -93,7 +93,8 @@
     </p>
     <p><run>An end note reference.</run><fn type="endnote"><p><run>This is an end note.</run></p></fn></p>
     <p style="Heading2"><run>This is a Heading 2</run></p>
-    <p><run style="style1">An image reference, no width or height: </run><image src="images/picture-01.gif"/></p>
+    <!-- Issue 82: Ignore empty @width and @height attributes. Failure symptom is index out of range runtime failure. -->
+    <p><run style="style1">An image reference, no width or height: </run><image src="images/picture-01.gif" width="" height=""/></p>
     <p><run>A page break:<break type="page"/>After the page break.</run></p>
     <p><run>A line break:<break type="line"/>After the line break.</run></p>
     <p><run>A textwrapping break:<break type="textWrapping"/>After the textwrapping break.</run></p>

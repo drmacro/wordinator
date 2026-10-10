@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/css" href="../../../../main/doctypes/simplewpml/css/simplewpml.css"?>
+<?xml-model href="../../../main/doctypes/simplewpml/simplewpml.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<document xmlns="urn:ns:wordinator:simplewpml">
+  <page-sequence-properties>
+    <page-number-properties format="custom" start="1" xslt-format="1."/>
+    <headers-and-footers>
+      <header>
+        <p>
+          <run>Odd Header Paragraph 1 (document-level)</run>
+        </p>
+      </header>
+      <header type="even">
+        <p>
+          <run>Even Header Paragraph 1 (document-level)</run>
+        </p>
+      </header>
+      <header type="first">
+        <p>
+          <run>First Header Paragraph 1 (document-level)</run>
+        </p>
+      </header>
+      <footer>
+        <p><run>(document-level odd/default) </run>
+          <page-number-ref format="numberInDash"/>
+        </p>
+      </footer>
+      <footer type="even">
+        <p><run>(document-level even) </run>
+          <page-number-ref format="numberInDash"/>
+        </p>
+      </footer>
+      <footer type="first">
+        <p><run>(document-level first) </run><page-number-ref format="numberInDash"/></p>
+      </footer>
+    </headers-and-footers>
+  </page-sequence-properties>
+  <body>   
+    <p style="heading 1">
+      <run style="Strong">Test of keepLines property (17.3.1.14)</run>
+    </p>
+<p>
+<run>This element specifies that the contents of this paragraph are at least partly rendered on the same page as the
+following paragraph whenever possible.</run>
+</p>
+<p>
+<run>This means that if the contents of the current paragraph would normally be completely rendered on a different
+page than the following paragraph (because only one of the two paragraphs would fit on the remaining space on
+the first page), then both paragraphs shall be rendered on a single page. This property can be chained between
+multiple paragraphs to ensure that all paragraphs are rendered on a single page without any intervening page
+boundaries. If this is not possible the entire set of paragraphs that are grouped together using this property
+would exceed a single page in any case, then the set of "keep with next" paragraphs shall start on a new page,
+with page breaks as needed afterwards.</run>
+</p>
+<p>
+<run>If this element is omitted on a given paragraph, its value is determined by the setting previously set at any level
+of the style hierarchy (i.e. that previous setting remains unchanged). If this setting is never specified in the style
+hierarchy, then this property shall not be applied.</run>
+</p>
+<p>
+<run>As shown above, the second paragraph and third paragraph are being rendered on two separate pages.
+However, a producer can specify that the second paragraph should not be displayed without any part of the
+third by setting the keepNext element as follows:</run>
+</p>
+<p>
+<run>This element specifies that the contents of this paragraph are at least partly rendered on the same page as the
+following paragraph whenever possible.</run>
+</p>
+<p>
+<run>This means that if the contents of the current paragraph would normally be completely rendered on a different
+page than the following paragraph (because only one of the two paragraphs would fit on the remaining space on
+the first page), then both paragraphs shall be rendered on a single page. This property can be chained between
+multiple paragraphs to ensure that all paragraphs are rendered on a single page without any intervening page
+boundaries. If this is not possible the entire set of paragraphs that are grouped together using this property
+would exceed a single page in any case, then the set of "keep with next" paragraphs shall start on a new page,
+with page breaks as needed afterwards.</run>
+</p>
+<p>
+<run>If this element is omitted on a given paragraph, its value is determined by the setting previously set at any level
+of the style hierarchy (i.e. that previous setting remains unchanged). If this setting is never specified in the style
+hierarchy, then this property shall not be applied.</run>
+</p>
+<p>
+<run>The following paragraph specifies keeplines="true", which should cause it to move to page 2.</run>
+</p>
+<p keeplines="true">
+  <run>Paragraph with keeplines set on it. It should be forced to page 2. We hold these truths to be self-evident, that all men are
+created equal, that they are endowed by their Creator with certain unalienable Rights, that among these are Life, Liberty and the
+pursuit of Happiness.--That to secure these rights, Governments are instituted among Men, deriving their just powers from the consent
+of the governed, --That whenever any Form of Government becomes destructive of these ends, it is the Right of the People to alter or
+to abolish it, and to institute new Government, laying its foundation on such principles and organizing its powers in such form, as to
+them shall seem most likely to effect their Safety and Happiness. Prudence, indeed, will dictate that Governments long established
+should not be changed for light and transient causes; and accordingly all experience hath shewn, that mankind are more disposed to
+suffer, while evils are sufferable, than to right themselves by abolishing the forms to which they are accustomed. But when a long
+train of abuses and usurpations, pursuing invariably the same Object evinces a design to reduce them under absolute Despotism, it is
+their right, it is their duty, to throw off such Government, and to provide new Guards for their future security.--Such has been the
+patient sufferance of these Colonies; and such is now the necessity which constrains them to alter their former Systems of Government.
+The history of the present King of Great Britain is a history of repeated injuries and usurpations, all having in direct object the
+establishment of an absolute Tyranny over these States. To prove this, let Facts be submitted to a candid world.</run>
+</p>
+<p>
+<run>This paragraph follows the keepLines paragraph.
+</run>      
+</p>
+  </body>
+</document>

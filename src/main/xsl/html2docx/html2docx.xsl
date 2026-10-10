@@ -42,7 +42,7 @@
   
   <xsl:param name="outdir" as="xs:string" select="'out/swpx'"/>
   <xsl:variable name="outputDirectory" as="xs:string"
-    select="relpath:newFile(relpath:getParent(string(document-uri(/))), $outdir)"
+    select="relpath:newFile(relpath:getParent(string(base-uri(/))), $outdir)"
   />
   
   <!-- Controls level at which new result SWPX documents are generated, by
@@ -60,7 +60,7 @@
     <xsl:param name="doDebug" as="xs:boolean" select="false()"/>
     
     <log started="{format-dateTime(current-dateTime(), '[Y000]-[m0]}-[d0]')}">
-      <message>+ [INFO] inputdoc={document-uri(.)}</message>
+      <message>+ [INFO] inputdoc={base-uri(.)}</message>
       <message>+ [INFO] outdir={$outdir}</message>
       <generation-process>
         <xsl:if test="$doDebug">

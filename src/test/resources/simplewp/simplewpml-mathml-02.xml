@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wp:document xmlns:wp="urn:ns:wordinator:simplewpml">
+      <wp:body>
+        <wp:p style="BodyText">
+          <wp:run>And it is possible for inline equations </wp:run>
+          <wp:run><math xmlns="http://www.w3.org/1998/Math/MathML" xmlns:xlink="http://www.w3.org/1999/xlink" id="mml_m2" xlink:href="mml_m2.png">
+              <msubsup>
+                <mn>48</mn>
+                <mrow>
+                  <mo>−</mo>
+                  <mn>0</mn>
+                </mrow>
+                <mrow>
+                  <mo>+</mo>
+                  <mn>2</mn>
+                </mrow>
+              </msubsup>
+              <mrow>
+                <mspace width=".2em"/>
+                <mi>km</mi>
+                <mo>/</mo>
+                <mi>h</mi>
+              </mrow>
+            </math></wp:run>
+          <wp:run> to be in the middle of paragraphs.</wp:run>
+        </wp:p>
+      </wp:body>
+</wp:document>

@@ -1,12 +1,12 @@
 # The Wordinator
 
-Version 1.1.2
+Version 1.2.0
 
 Generate high-quality Microsoft Word DOCX files using a simplified XML format (simple word processing XML).
 
 Simple Word Processing XML (SWPX) makes it relatively easy to transform structured content into DOCX (or other similar word processing formats).
 
-The Wordinator uses the Apache POI library [https://poi.apache.org/] to generate DOCX files from SWPX XML. It uses Saxon [http://saxonica.com/] for XSLT transformations when using the built-in XSLT support.
+The Wordinator uses [the Apache POI library](https://poi.apache.org/) to generate DOCX files from SWPX XML. It uses [Saxon](http://saxonica.com/) for XSLT transformations when using the built-in XSLT support.
 
 This approach provides a two-stage X-to-DOCX conversion process, where the first stage is a transform from whatever your input is into one or more SWPX documents and the second stage generates DOCX files from the SWPX files. You can think of the SWPX XML as a very abstract API to the DOCX format.
 
@@ -14,7 +14,7 @@ The Wordinator Java code can run an XSLT to generate the SWPX dynamically from a
 
 The Wordinator is designed for batch or on-demand generation of DOCX files.
 
-The Wordinator requires Java 8 or newer (because POI 4 requires it).
+The Wordinator requires Java 9 or newer (because POI 5 requires it).
 
 The Wordinator provides a generic HTML5-to-DOCX transform that can easily be adapted to your specific HTML or other XML format. 
 
@@ -22,9 +22,39 @@ The main challenges are managing white space within text runs and mapping source
 
 You can use your own XSLT transform to generate SWPX files from any XML (or JSON source for that matter). You may find it easier to generate HTML and then use that as input to the Wordinator.
 
-If you need to go from Word documents back to XML, you may find the DITA for Publishers Word-to-DITA framework useful ([https://github.com/dita4publishers/org.dita4publishers.word2dita]). This packaged as a DITA Open Toolkit plugin but is really a general-purpose XML-to-DOCX framework. It does not depend on the DITA Open Toolkit in any way. While it is designed to generate DITA XML it can be adapted to produce any XML format, either directly or through a DITA-to-X transform applied
+If you need to go from Word documents back to XML, you may find [the DITA for Publishers Word-to-DITA framework](https://github.com/dita4publishers/org.dita4publishers.word2dita) useful. This is packaged as a DITA Open Toolkit plugin but is really a general-purpose XML-to-DOCX framework. It does not depend on the DITA Open Toolkit in any way. While it is designed to generate DITA XML it can be adapted to produce any XML format, either directly or through a DITA-to-X transform applied
 
 ## Release Notes
+
+* 1.2.0
+
+  * Issue 155: Implement the align attribute on tables. Thanks to Lars Marius Garshol.
+  * Issue 157: Support setting border properties on nested tables. Thanks to Lars Marius Garshol.
+  * Issue 160: Support more than one MathML equation in a single paragraph. Thanks to Lars Marius Garshol.
+  * html2docx: Links to external resources (those with a URI scheme, such as https: or mailto:) are now external hyperlinks instead of being turned into bookmark references. Items of ordered lists (ol) now use the "List Number" styles. Thanks to Oleksandr Oboznyi for pull request 124.
+  * Numbering of ordered lists now restarts for each list. New optional attribute wp:p/@numId identifies the list a paragraph belongs to; each distinct value gets its own Word numbering instance, based on the numbering definition of the paragraph's style, that starts at 1. The html2docx transform sets @numId on the items of each ol. Paragraphs whose style has no numbering are left as they are. Thanks to Oleksandr Oboznyi for the original implementation (pull requests 125 and 128).
+  * html2docx: Column widths specified on HTML col elements (@width or width in @style) are now used as the widths of the table columns. Percentages and measurements are supported. A number without units is pixels. Widths that can't be used, such as relative widths ("2*"), are ignored and the column is auto-sized.
+  * When all of a table's columns have absolute widths, the table grid (w:tblGrid) is now set from them, which helps tools such as LibreOffice lay out the table.
+  * This replaces pull requests 126 and 127 from Oleksandr Oboznyi, who first took on column widths. Thanks!
+  * html2docx: Fix tables whose rows are direct children of the table element (no tbody) losing all of their rows. These rows are now put in a SWPX tbody.
+  * New optional command-line option --fit-images and SWPX attribute image/@fit-to-page-width make images that are wider than the page's content area fit it, keeping their proportions. Off by default so that image sizes don't change unless asked for. Only images in the body and sections are resized. Thanks to Oleksandr Oboznyi for the original idea and implementation (pull request 129).
+  * Fix images with only a height specified: the width was calculated with integer division and came out as zero (or the intrinsic width).
+  * Issue 172: Fix duplicated headers and footers in the last section of documents with multiple sections. The last section's header and footer references now replace, rather than duplicate, the document-level references of the same type, and the last section's type (@type, e.g., oddPage) is now carried over to the document-level section properties.
+  * Issues 133, 105: Generated DOCX files now set the Word compatibility mode setting to 15 so that Word does not open them in "Compatibility Mode". This changes some layout details compared to earlier releases, which opened in compatibility mode.
+  * Issue 117: Section properties for the last section of a multi-section document are set at the document body level. Thanks to Lars Marius Garshol.
+  * Issue 109: Table cells always end with a paragraph. Thanks to Lars Marius Garshol.
+  * Issue 174: Fix mismatched Apache POI versions (poi, poi-ooxml, poi-ooxml-full now all 5.4.0). Update commons-io to 2.17.0, xmlbeans to 5.2.1, and log4j to 2.25.4.
+  * Issue 170: Fix test catalog that depended on a DTD URL that now redirects.
+  * Issue 143: Implement keepNext and keepLines paragraph properties.
+  * Issues 140, 145, 147: Implement support for document properties (core, extended, custom), including subject.
+  * Issue 136: Implement external hyperlinks.
+  * Issues 87, 132: Table of contents generation fixes, including nested entries and the -t argument.
+  * Issue 134: Retain empty paragraph in empty table cells (td with no child elements broke Word).
+  * Issue 106: Support nested tables.
+  * Issue 82: Handle specified-but-empty @height and @width attribute.
+  * Upgrade to POI 5. Addresses security issues with POI4 and makes newer POI features available for future.
+  * Support generation of MathML equations in Word. Thanks to Lars Marius Garshol for contributing this enhancment. This adds the MathML 2 and 3 RNG grammars (courtesy of Ken Holman) for use with the SWPX grammar. For validation, use the simplewpml-mathml3.rng or -mathml2.rng files as the top-level grammar. Requires that you get the MATHML2OOML.XSL from a Microsoft Office distribution if you want to use XSLT to convert MathML into OOXML.
+  * Various test case refinements
 
 * 1.1.2
   * Reworked release package to put dependency jars in lib/ dir and use non-all-dependencies jar to avoid issue with log4j multi-version jar not working right.
@@ -106,7 +136,8 @@ The Wordinator supports generation of documents with the following Word features
 * Running heads and feet
 * Bookmarks
 * Hyperlinks
-* Multiple sections with section-specific running heads and feet, page geomentry
+* Multiple sections with section-specific running heads and feet, page geometry
+* Formulas using MathML (see below)
 
 ## Getting Started
 
@@ -209,6 +240,7 @@ It's not a very pretty test but it demonstrates that the tool is working.
 * -x (optional) The XSLT transform to apply to the input file to generate SWPX files.
 * -k (optional) Semicolon-separated list of catalog files to use with Saxon. Same as Saxon's -catalog option.
 * -c (optional) Chunk level. Specifies the section level or type to create separate DOCX files for. The value to use is determined by the details of the XSLT transform (local:is-chunk() function).
+* --fit-images (optional) Make images that are wider than the page's content area (the area between the margins) fit it, keeping their proportions. Images that already fit are not enlarged, and without this option image sizes are not changed. Applies to images in the body and sections, not those in tables, footnotes, headers, or footers. The bundled html2docx and ditahtml2docx transforms support it. For your own SWPX, set image/@fit-to-page-width="true" on the images to fit.
 
 If the `-i` parameter is a directory then it looks for `*.swpx` files and generates a DOCX file for each one.
 
@@ -255,6 +287,26 @@ When all the values are percentages the resulting Word is generated with percent
 As a rule, it is best to use percentages for table column widths.
 
 If you have tables with a mix of percentage and absolute values for column widths and you have cells that span columns where the widths involved are mixed, Wordinator issues a warning message. The resulting table will likely not be correct.
+
+### Vertical (Row) Spans in Tables
+
+Wordinator supports vertical (row) spanning but requires that every cell in the vertical span be accounted for using `<vspan/>` markers in the `<td>` elements. 
+
+Thus, if a cell in row 1 specifies rowspan of 3, the next two rows must have `<td><vspan/></td>` elements in that column.
+
+Likewise, if the cells are also horizontally spanned, each placeholder cell must specify the same `colspan` value as the first cell that specifies `rowspan`.
+
+### Using MathML
+
+If your SimpleWPML document includes MathML markup (see the simplewpml-mathml3.rng grammar), then Wordinator will attempt to use the XSLT transform `MML2OMML.XSL` to transform the MathML into OOML markup before adding it to the DOCX.
+
+The `MML2OMML.xsl` transform is not open-source and so cannot be included in the release package. However, you should be able to find it in any Microsoft Office distribution, i.e.:
+
+```
+/Applications/Microsoft Office 2011/Microsoft Word.app/Contents/Resources/mathml2omml.xsl
+```
+
+To make the transform available to Wordinator, name it "MML2OMML.XSL" and put it in a directory on the Java class path. You must run Wordinator using the `-cp` Java option, you can't use the `-jar` option as it will ignore the class path.
 
 ### Customizing the HTML-to-SWPX Transforms
 
@@ -334,9 +386,77 @@ To get to the style organizer:
 4. Use the Organizer dialog to copy styles from the left side to the right side.
 5. Click "Close" to save your changes to the template document.
 
+## Math support in Wordinator
+
+The SWPX schema by default does not allow MathML to be included,
+because the Wordinator does not support it out of the box. However,
+the `src/main/doctypes/simplewpml/simplewpml.rng` schema is just a
+shell that includes `simplewpml-base.rng`, which has no MathML
+support. If you modify it to instead include `simplewpml-mathmlX.rng`
+(where X is 2 or 3) you get a schema supporting inclusion of MathML
+version X.
+
+For MathML embedded in SWPX to actually turn into formulas in the Word
+documents created by the Wordinator you need to supply an XSLT
+stylesheet that converts MathML to the OOXML math format. (If you
+don't have such a stylesheet, see the "Finding a stylesheet" section
+below.)
+
+### Running the Wordinator with the stylesheet
+
+The stylesheet must be named `MML2OMML.XSL`, and will be loaded from
+classpath.
+
+If you run the Wordinator with `-jar wordinator.jar` *only* resources
+in the jar file will be loaded, and so you will need to build a jar
+file with the stylesheet included.
+
+Alternatively, you can run the Wordinator as follows:
+
+```
+java -cp wordinator.jar:path/to/directory/with/stylesheet org.wordinator.xml2docx.MakeDocx ...
+```
+
+Running Java this way allows you to point to the directory where the
+stylesheet is, enabling Java to find it.
+
+### Finding a stylesheet
+
+No open source MathML to OOXML stylesheet appears to exist, but one is
+distributed with Microsoft Office. For copyright reasons it cannot be
+installed in the Wordinator, but you can extract it from a Microsoft
+Office installation and make it available to the Wordinator.
+
+You can find this stylesheet in a Windows installation of Microsoft
+Word at the following location:
+
+```
+C:\Program Files\Microsoft Office\root\Office16\MML2OMML.XSL
+```
+
+You can of course supply any other stylesheet as you wish.
+
+### Using MathML in SWPX
+
+Once you've turned on MathML support there are two places where
+MathML's `<mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML">`
+element can be used in an SWPX file:
+
+  * as a child of `<wp:p>` for block-level formulae, and
+  * as a child of `<wp:run>` for inline-level formulae.
+
+See the test file `test/simplewpml-test-mathml-01.xml` for an example
+of both placements.
+
+### Schemas
+
+By default, the `simplewpml.rng` schema points to a combination of the base SWPX schema and a modified MathML3 schema. It can be changed readily to support a modified MathML2 schema. These MathML RNG schemas were created from the DTDs and then modified specifically for use in Wordinator validation where annotations are not permitted.
+
+Typical MathML annotations are permitted to be restricted and/or augmented by users. These are important constructs in user-facing MathML markup. The MML2OMML.XSL stylesheet does not accommodate annotations and the MathML markup used with SWPX never is user-facing, and so can be deleted from the MathML stream without consequence. The absence of handling annotations in the MML2OMML.XSL stylesheet requires annotations to be deleted.
+
 ## Support, New Feature Development, and Contributing
 
-The Wordinator project is supported primarily by paying clients who fund development of the features they need. Initial development was funded by Municode [http://municode.com].
+The Wordinator project is supported primarily by paying clients who fund development of the features they need. Initial development was funded by [Municode](http://municode.com).
 
 Please use this project's issue tracker to report bugs or request new features. 
 
@@ -358,7 +478,7 @@ Maven dependency:
 <dependency>
   <groupId>org.wordinator</groupId>
   <artifactId>wordinator</artifactId>
-  <version>1.0.5</version>
+  <version>1.2.0</version>
 </dependency>
 ```
 

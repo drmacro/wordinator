@@ -26,6 +26,7 @@ import org.apache.poi.xwpf.usermodel.XWPFHeaderFooter;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRelation;
 import org.apache.xmlbeans.impl.values.XmlValueOutOfRangeException;
+import org.openxmlformats.schemas.officeDocument.x2006.sharedTypes.STTrueFalse;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBody;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTHdrFtr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTHdrFtrRef;
@@ -51,7 +52,6 @@ import com.microsoft.schemas.vml.CTShape;
 import com.microsoft.schemas.vml.CTShapetype;
 import com.microsoft.schemas.vml.CTTextPath;
 import com.microsoft.schemas.vml.STExt;
-import com.microsoft.schemas.vml.STTrueFalse;
 
 /**
  * A .docx file can have no headers/footers, the same header/footer

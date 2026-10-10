@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/css" href="../../../main/doctypes/simplewpml/css/simplewpml.css"?>
+<?xml-model href="../../../main/doctypes/simplewpml/simplewpml.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<document xmlns="urn:ns:wordinator:simplewpml">
+  <body>
+    <p style="normal">
+      <run>Nested table, just to show it works.</run>
+    </p>
+    <table frame="all" colsep="1" rowsep="1" calculatedWidth="6in" >
+      <cols>
+        <col colwidth="2in"/>
+        <col colwidth="1in"/>
+        <col colwidth="3in"/>
+      </cols>
+      <thead>
+        <tr>
+          <td borderstyle="single"><p><run>Column 1</run></p></td>
+          <td borderstyle="single"><p><run>Column 2</run></p></td>
+          <td borderstyle="single"><p><run>Column 3</run></p></td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td borderstyle="single">
+
+            <table>
+              <cols>
+                <col colwidth="0.5in"/>
+                <col colwidth="0.5in"/>
+              </cols>
+              <thead>
+                <tr>
+                  <td><p><run>A</run></p></td>
+                  <td><p><run>B</run></p></td>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><p><run>1</run></p></td>
+                  <td><p><run>2</run></p></td>
+                </tr>
+              </tbody>
+            </table>
+
+          </td>
+          <td borderstyle="single"><p><run>R1C2</run></p></td>
+          <td borderstyle="single"><p><run>R1C3</run></p></td>
+        </tr>
+        <tr>
+          <td borderstyle="single"><p><run>R2C1</run></p></td>
+          <td borderstyle="single"><p><run>R2C2</run></p></td>
+          <td borderstyle="single"><p><run>R2C3</run></p></td>
+        </tr>
+        <tr>
+          <td borderstyle="single"><p><run>R3C1</run></p></td>
+          <td borderstyle="single"><p><run>R3C2</run></p></td>
+          <td borderstyle="single"><p><run>R3C3</run></p></td>
+        </tr>
+      </tbody>
+    </table>
+  </body>
+</document>

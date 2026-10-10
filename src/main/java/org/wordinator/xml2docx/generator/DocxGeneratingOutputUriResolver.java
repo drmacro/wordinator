@@ -23,8 +23,8 @@ import net.sf.saxon.lib.OutputURIResolver;
  *
  */
 public class DocxGeneratingOutputUriResolver implements OutputURIResolver {
-	
-	public static Logger log = LogManager.getLogger();
+
+	private static Logger log = LogManager.getLogger(DocxGeneratingOutputUriResolver.class);
 
 	private File outDir;
 	private XmlSaxHandler saxHandler;
@@ -36,34 +36,31 @@ public class DocxGeneratingOutputUriResolver implements OutputURIResolver {
 	private XWPFDocument templateDoc;
 
 	/**
-	 * 
+	 *
 	 * @param outDir Directory to put new DOCX files into.
 	 * @param templateDoc The DOTX template to use in constructing new DOCX files.
-	 * @param log Log to write messages to
 	 */
-	public DocxGeneratingOutputUriResolver(File outDir, XWPFDocument templateDoc, Logger log) {
+	public DocxGeneratingOutputUriResolver(File outDir, XWPFDocument templateDoc) {
 		this.outDir = outDir;
-		this.templateDoc = templateDoc;		
-		DocxGeneratingOutputUriResolver.log = log;
-		
+		this.templateDoc = templateDoc;
 	}
 
 	public OutputURIResolver newInstance() {
-		return new DocxGeneratingOutputUriResolver(outDir, templateDoc, log);
+		return new DocxGeneratingOutputUriResolver(outDir, templateDoc);
 	}
 
 	public Result resolve(String href, String base) throws TransformerException {
 		saxHandler = XmlObject.Factory.newXmlSaxHandler();
-	
+
 		Result result = new SAXResult(saxHandler.getContentHandler());
 		result.setSystemId(href);
 		return result;
-		
+
 	}
 
 	public void close(Result result) throws TransformerException {
 		// Do the DOCX building
-		
+
 		try {
 			XmlObject xml = saxHandler.getObject();
 			String outFilepath = URLDecoder.decode(result.getSystemId(), "UTF-8");

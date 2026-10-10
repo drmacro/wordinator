@@ -23,6 +23,7 @@
 hs_err_pid*
 .settings/org.eclipse.jdt.core.prefs
 .settings/org.eclipse.m2e.core.prefs
+.settings/
 .classpath
 .project
 *.versionsBackup
@@ -33,3 +34,4 @@ out/
 dist/
 target/
 build.number
+temp/

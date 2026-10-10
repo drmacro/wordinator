@@ -1,0 +1,4576 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar ns="http://www.w3.org/1998/Math/MathML"
+         xmlns="http://relaxng.org/ns/structure/1.0"
+         xmlns:xlink="http://www.w3.org/1999/xlink"
+         xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"
+         datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+
+  <a:documentation>
+    An unofficial RELAX NG schema for MathML 2.0
+
+    Author: Masayasu Ishikawa (mimasa@w3.org)
+    $Id: mathml2.rng,v 1.7 2005/06/13 13:12:53 mimasa Exp $
+
+    This is the Mathematical Markup Language (MathML) 2.0, an XML
+    application for describing mathematical notation and capturing
+    both its structure and content.
+
+    Permission to use, copy, modify and distribute this MathML 2.0 RELAX NG
+    schema and its accompanying documentation for any purpose and without
+    fee is hereby granted in perpetuity, provided that the above copyright
+    notice and this paragraph appear in all copies.  The author makes no
+    representation about the suitability of this RELAX NG schema for
+    any purpose.
+
+    It is provided "as is" without expressed or implied warranty.
+  </a:documentation>
+
+  <define name="MATHML.Common.attrib">
+    <a:documentation>
+      Attributes shared by all elements
+    </a:documentation>
+    <optional>
+      <attribute name="xlink:href">
+        <data type="anyURI"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="xlink:type">
+        <choice>
+          <value>simple</value>
+          <value>none</value>
+        </choice>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="class">
+        <data type="NMTOKENS"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="style"/>
+    </optional>
+    <optional>
+      <attribute name="id">
+        <data type="ID"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="xref">
+        <data type="IDREF"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="other"/>
+    </optional>
+  </define>
+
+  <a:documentation>
+    Presentation element set
+    Attribute definitions
+  </a:documentation>
+
+  <define name="att-fontsize">
+    <optional>
+      <attribute name="fontsize"/>
+    </optional>
+  </define>
+
+  <define name="att-fontweight">
+    <optional>
+      <attribute name="fontweight">
+        <choice>
+          <value>normal</value>
+          <value>bold</value>
+        </choice>
+      </attribute>
+    </optional>
+  </define>
+
+  <define name="att-fontstyle">
+    <optional>
+      <attribute name="fontstyle">
+        <choice>
+          <value>normal</value>
+          <value>italic</value>
+        </choice>
+      </attribute>
+    </optional>
+  </define>
+
+  <define name="att-fontfamily">
+    <optional>
+      <attribute name="fontfamily"/>
+    </optional>
+  </define>
+
+  <define name="att-color">
+    <optional>
+      <attribute name="color"/>
+    </optional>
+  </define>
+
+  <define name="att-mathvariant">
+    <a:documentation>
+      MathML2 typographically-distinguished symbol attributes
+    </a:documentation>
+    <optional>
+      <attribute name="mathvariant"/>
+    </optional>
+  </define>
+
+  <define name="att-mathsize">
+    <optional>
+      <attribute name="mathsize"/>
+    </optional>
+  </define>
+
+  <define name="att-mathcolor">
+    <optional>
+      <attribute name="mathcolor"/>
+    </optional>
+  </define>
+
+  <define name="att-mathbackground">
+    <optional>
+      <attribute name="mathbackground"/>
+    </optional>
+  </define>
+
+  <define name="att-fontinfo">
+    <ref name="att-fontsize"/>
+    <ref name="att-fontweight"/>
+    <ref name="att-fontstyle"/>
+    <ref name="att-fontfamily"/>
+    <ref name="att-color"/>
+    <ref name="att-mathvariant"/>
+    <ref name="att-mathsize"/>
+    <ref name="att-mathcolor"/>
+    <ref name="att-mathbackground"/>
+  </define>
+
+  <define name="att-form">
+    <optional>
+      <attribute name="form">
+        <choice>
+          <value>prefix</value>
+          <value>infix</value>
+          <value>postfix</value>
+        </choice>
+      </attribute>
+    </optional>
+  </define>
+
+  <define name="att-fence">
+    <optional>
+      <attribute name="fence">
+        <choice>
+          <value>true</value>
+          <value>false</value>
+        </choice>
+      </attribute>
+    </optional>
+  </define>
+
+  <define name="att-separator">
+    <optional>
+      <attribute name="separator">
+        <choice>
+          <value>true</value>
+          <value>false</value>
+        </choice>
+      </attribute>
+    </optional>
+  </define>
+
+  <define name="att-lspace">
+    <optional>
+      <attribute name="lspace"/>
+    </optional>
+  </define>
+
+  <define name="att-rspace">
+    <optional>
+      <attribute name="rspace"/>
+    </optional>
+  </define>
+
+  <define name="att-stretchy">
+    <optional>
+      <attribute name="stretchy">
+        <choice>
+          <value>true</value>
+          <value>false</value>
+        </choice>
+      </attribute>
+    </optional>
+  </define>
+
+  <define name="att-symmetric">
+    <optional>
+      <attribute name="symmetric">
+        <choice>
+          <value>true</value>
+          <value>false</value>
+        </choice>
+      </attribute>
+    </optional>
+  </define>
+
+  <define name="att-maxsize">
+    <optional>
+      <attribute name="maxsize"/>
+    </optional>
+  </define>
+
+  <define name="att-minsize">
+    <optional>
+      <attribute name="minsize"/>
+    </optional>
+  </define>
+
+  <define name="att-largeop">
+    <optional>
+      <attribute name="largeop">
+        <choice>
+          <value>true</value>
+          <value>false</value>
+        </choice>
+      </attribute>
+    </optional>
+  </define>
+
+  <define name="att-movablelimits">
+    <optional>
+      <attribute name="movablelimits">
+        <choice>
+          <value>true</value>
+          <value>false</value>
+        </choice>
+      </attribute>
+    </optional>
+  </define>
+
+  <define name="att-accent">
+    <optional>
+      <attribute name="accent">
+        <choice>
+          <value>true</value>
+          <value>false</value>
+        </choice>
+      </attribute>
+    </optional>
+  </define>
+
+  <define name="att-opinfo">
+    <ref name="att-form"/>
+    <ref name="att-fence"/>
+    <ref name="att-separator"/>
+    <ref name="att-lspace"/>
+    <ref name="att-rspace"/>
+    <ref name="att-stretchy"/>
+    <ref name="att-symmetric"/>
+    <ref name="att-maxsize"/>
+    <ref name="att-minsize"/>
+    <ref name="att-largeop"/>
+    <ref name="att-movablelimits"/>
+    <ref name="att-accent"/>
+  </define>
+
+  <define name="att-width">
+    <optional>
+      <attribute name="width"/>
+    </optional>
+  </define>
+
+  <define name="att-height">
+    <optional>
+      <attribute name="height"/>
+    </optional>
+  </define>
+
+  <define name="att-depth">
+    <optional>
+      <attribute name="depth"/>
+    </optional>
+  </define>
+
+  <define name="att-linebreak">
+    <optional>
+      <attribute name="linebreak"/>
+    </optional>
+  </define>
+
+  <define name="att-sizeinfo">
+    <ref name="att-width"/>
+    <ref name="att-height"/>
+    <ref name="att-depth"/>
+  </define>
+
+  <define name="att-lquote">
+    <optional>
+      <attribute name="lquote"/>
+    </optional>
+  </define>
+
+  <define name="att-rquote">
+    <optional>
+      <attribute name="rquote"/>
+    </optional>
+  </define>
+
+  <define name="att-linethickness">
+    <optional>
+      <attribute name="linethickness"/>
+    </optional>
+  </define>
+
+  <define name="att-scriptlevel">
+    <optional>
+      <attribute name="scriptlevel"/>
+    </optional>
+  </define>
+
+  <define name="att-displaystyle">
+    <optional>
+      <attribute name="displaystyle">
+        <choice>
+          <value>true</value>
+          <value>false</value>
+        </choice>
+      </attribute>
+    </optional>
+  </define>
+
+  <define name="att-scriptsizemultiplier">
+    <optional>
+      <attribute name="scriptsizemultiplier"/>
+    </optional>
+  </define>
+
+  <define name="att-scriptminsize">
+    <optional>
+      <attribute name="scriptminsize"/>
+    </optional>
+  </define>
+
+  <define name="att-background">
+    <optional>
+      <attribute name="background"/>
+    </optional>
+  </define>
+
+  <define name="att-veryverythinmathspace">
+    <optional>
+      <attribute name="veryverythinmathspace"/>
+    </optional>
+  </define>
+
+  <define name="att-verythinmathspace">
+    <optional>
+      <attribute name="verythinmathspace"/>
+    </optional>
+  </define>
+
+  <define name="att-thinmathspace">
+    <optional>
+      <attribute name="thinmathspace"/>
+    </optional>
+  </define>
+
+  <define name="att-mediummathspace">
+    <optional>
+      <attribute name="mediummathspace"/>
+    </optional>
+  </define>
+
+  <define name="att-thickmathspace">
+    <optional>
+      <attribute name="thickmathspace"/>
+    </optional>
+  </define>
+
+  <define name="att-verythickmathspace">
+    <optional>
+      <attribute name="verythickmathspace"/>
+    </optional>
+  </define>
+
+  <define name="att-veryverythickmathspace">
+    <optional>
+      <attribute name="veryverythickmathspace"/>
+    </optional>
+  </define>
+
+  <define name="att-open">
+    <optional>
+      <attribute name="open"/>
+    </optional>
+  </define>
+
+  <define name="att-close">
+    <optional>
+      <attribute name="close"/>
+    </optional>
+  </define>
+
+  <define name="att-separators">
+    <optional>
+      <attribute name="separators"/>
+    </optional>
+  </define>
+
+  <define name="att-subscriptshift">
+    <optional>
+      <attribute name="subscriptshift"/>
+    </optional>
+  </define>
+
+  <define name="att-superscriptshift">
+    <optional>
+      <attribute name="superscriptshift"/>
+    </optional>
+  </define>
+
+  <define name="att-accentunder">
+    <optional>
+      <attribute name="accentunder">
+        <choice>
+          <value>true</value>
+          <value>false</value>
+        </choice>
+      </attribute>
+    </optional>
+  </define>
+
+  <define name="att-align">
+    <optional>
+      <attribute name="align"/>
+    </optional>
+  </define>
+
+  <define name="att-numalign">
+    <optional>
+      <attribute name="numalign"/>
+    </optional>
+  </define>
+
+  <define name="att-denomalign">
+    <optional>
+      <attribute name="denomalign"/>
+    </optional>
+  </define>
+
+  <define name="att-rowalign">
+    <optional>
+      <attribute name="rowalign"/>
+    </optional>
+  </define>
+
+  <define name="att-columnalign">
+    <optional>
+      <attribute name="columnalign"/>
+    </optional>
+  </define>
+
+  <define name="att-columnwidth">
+    <optional>
+      <attribute name="columnwidth"/>
+    </optional>
+  </define>
+
+  <define name="att-groupalign">
+    <optional>
+      <attribute name="groupalign"/>
+    </optional>
+  </define>
+
+  <define name="att-alignmentscope">
+    <optional>
+      <attribute name="alignmentscope"/>
+    </optional>
+  </define>
+
+  <define name="att-rowspacing">
+    <optional>
+      <attribute name="rowspacing"/>
+    </optional>
+  </define>
+
+  <define name="att-columnspacing">
+    <optional>
+      <attribute name="columnspacing"/>
+    </optional>
+  </define>
+
+  <define name="att-rowlines">
+    <optional>
+      <attribute name="rowlines"/>
+    </optional>
+  </define>
+
+  <define name="att-columnlines">
+    <optional>
+      <attribute name="columnlines"/>
+    </optional>
+  </define>
+
+  <define name="att-frame">
+    <optional>
+      <attribute name="frame">
+        <choice>
+          <value>none</value>
+          <value>solid</value>
+          <value>dashed</value>
+        </choice>
+      </attribute>
+    </optional>
+  </define>
+
+  <define name="att-side">
+    <optional>
+      <attribute name="side">
+        <choice>
+          <value>left</value>
+          <value>right</value>
+          <value>leftoverlap</value>
+          <value>rightoverlap</value>
+        </choice>
+      </attribute>
+    </optional>
+  </define>
+
+  <define name="att-framespacing">
+    <optional>
+      <attribute name="framespacing"/>
+    </optional>
+  </define>
+
+  <define name="att-equalrows">
+    <optional>
+      <attribute name="equalrows"/>
+    </optional>
+  </define>
+
+  <define name="att-equalcolumns">
+    <optional>
+      <attribute name="equalcolumns"/>
+    </optional>
+  </define>
+
+  <define name="att-tableinfo">
+    <ref name="att-align"/>
+    <ref name="att-rowalign"/>
+    <ref name="att-columnalign"/>
+    <ref name="att-columnwidth"/>
+    <ref name="att-groupalign"/>
+    <ref name="att-alignmentscope"/>
+    <ref name="att-side"/>
+    <ref name="att-rowspacing"/>
+    <ref name="att-columnspacing"/>
+    <ref name="att-rowlines"/>
+    <ref name="att-columnlines"/>
+    <ref name="att-width"/>
+    <ref name="att-frame"/>
+    <ref name="att-framespacing"/>
+    <ref name="att-equalrows"/>
+    <ref name="att-equalcolumns"/>
+    <ref name="att-displaystyle"/>
+  </define>
+
+  <define name="att-rowspan">
+    <optional>
+      <attribute name="rowspan"/>
+    </optional>
+  </define>
+
+  <define name="att-columnspan">
+    <optional>
+      <attribute name="columnspan"/>
+    </optional>
+  </define>
+
+  <define name="att-edge">
+    <optional>
+      <attribute name="edge">
+        <choice>
+          <value>left</value>
+          <value>right</value>
+        </choice>
+      </attribute>
+    </optional>
+  </define>
+
+  <define name="att-actiontype">
+    <optional>
+      <attribute name="actiontype"/>
+    </optional>
+  </define>
+
+  <define name="att-selection">
+    <optional>
+      <attribute name="selection"/>
+    </optional>
+  </define>
+
+  <define name="att-name">
+    <optional>
+      <attribute name="name"/>
+    </optional>
+  </define>
+
+  <define name="att-alt">
+    <optional>
+      <attribute name="alt"/>
+    </optional>
+  </define>
+
+  <define name="att-index">
+    <optional>
+      <attribute name="index"/>
+    </optional>
+  </define>
+
+  <define name="att-bevelled">
+    <optional>
+      <attribute name="bevelled"/>
+    </optional>
+  </define>
+
+  <a:documentation>
+    Presentation schemata with content
+  </a:documentation>
+
+  <define name="ptoken">
+    <choice>
+      <ref name="mi"/>
+      <ref name="mn"/>
+      <ref name="mo"/>
+      <ref name="mtext"/>
+      <ref name="ms"/>
+    </choice>
+  </define>
+
+  <define name="attlist-mi" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-fontinfo"/>
+  </define>
+
+  <define name="attlist-mn" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-fontinfo"/>
+  </define>
+
+  <define name="attlist-mo" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-fontinfo"/>
+    <ref name="att-opinfo"/>
+  </define>
+
+  <define name="attlist-mtext" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-fontinfo"/>
+  </define>
+
+  <define name="attlist-ms" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-fontinfo"/>
+    <ref name="att-lquote"/>
+    <ref name="att-rquote"/>
+  </define>
+
+  <a:documentation>
+    Empty presentation schemata
+  </a:documentation>
+
+  <define name="petoken">
+    <ref name="mspace"/>
+  </define>
+
+  <define name="mspace">
+    <element name="mspace">
+      <ref name="attlist-mspace"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="mspace"/>
+  </define>
+
+  <define name="attlist-mspace" combine="interleave">
+    <ref name="att-sizeinfo"/>
+    <ref name="att-linebreak"/>
+    <ref name="MATHML.Common.attrib"/>
+  </define>
+
+  <a:documentation>
+    Presentation: general layout schemata
+  </a:documentation>
+
+  <define name="pgenschema">
+    <choice>
+      <ref name="mrow"/>
+      <ref name="mfrac"/>
+      <ref name="msqrt"/>
+      <ref name="mroot"/>
+      <ref name="menclose"/>
+      <ref name="mstyle"/>
+      <ref name="merror"/>
+      <ref name="mpadded"/>
+      <ref name="mphantom"/>
+      <ref name="mfenced"/>
+    </choice>
+  </define>
+
+  <define name="attlist-mrow" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+  </define>
+
+  <define name="attlist-mfrac" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-bevelled"/>
+    <ref name="att-numalign"/>
+    <ref name="att-denomalign"/>
+    <ref name="att-linethickness"/>
+  </define>
+
+  <define name="attlist-msqrt" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+  </define>
+
+  <define name="attlist-menclose" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <optional>
+      <attribute name="notation" a:defaultValue="longdiv"/>
+    </optional>
+  </define>
+
+  <define name="attlist-mroot" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+  </define>
+
+  <define name="attlist-mstyle" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-fontinfo"/>
+    <ref name="att-opinfo"/>
+    <ref name="att-lquote"/>
+    <ref name="att-rquote"/>
+    <ref name="att-linethickness"/>
+    <ref name="att-scriptlevel"/>
+    <ref name="att-scriptsizemultiplier"/>
+    <ref name="att-scriptminsize"/>
+    <ref name="att-background"/>
+    <ref name="att-veryverythinmathspace"/>
+    <ref name="att-verythinmathspace"/>
+    <ref name="att-thinmathspace"/>
+    <ref name="att-mediummathspace"/>
+    <ref name="att-thickmathspace"/>
+    <ref name="att-verythickmathspace"/>
+    <ref name="att-veryverythickmathspace"/>
+    <ref name="att-open"/>
+    <ref name="att-close"/>
+    <ref name="att-separators"/>
+    <ref name="att-subscriptshift"/>
+    <ref name="att-superscriptshift"/>
+    <ref name="att-accentunder"/>
+    <ref name="att-tableinfo"/>
+    <ref name="att-rowspan"/>
+    <ref name="att-columnspan"/>
+    <ref name="att-edge"/>
+    <ref name="att-actiontype"/>
+    <ref name="att-selection"/>
+  </define>
+
+  <define name="attlist-merror" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+  </define>
+
+  <define name="attlist-mpadded" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-sizeinfo"/>
+    <ref name="att-lspace"/>
+  </define>
+
+  <define name="attlist-mphantom" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+  </define>
+
+  <define name="attlist-mfenced" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-open"/>
+    <ref name="att-close"/>
+    <ref name="att-separators"/>
+  </define>
+
+  <a:documentation>
+    Presentation layout schemata: scripts and limits
+  </a:documentation>
+
+  <define name="pscrschema">
+    <choice>
+      <ref name="msub"/>
+      <ref name="msup"/>
+      <ref name="msubsup"/>
+      <ref name="munder"/>
+      <ref name="mover"/>
+      <ref name="munderover"/>
+      <ref name="mmultiscripts"/>
+    </choice>
+  </define>
+
+  <define name="attlist-msub" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-subscriptshift"/>
+  </define>
+
+  <define name="attlist-msup" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-superscriptshift"/>
+  </define>
+
+  <define name="attlist-msubsup" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-subscriptshift"/>
+    <ref name="att-superscriptshift"/>
+  </define>
+
+  <define name="attlist-munder" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-accentunder"/>
+  </define>
+
+  <define name="attlist-mover" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-accent"/>
+  </define>
+
+  <define name="attlist-munderover" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-accent"/>
+    <ref name="att-accentunder"/>
+  </define>
+
+  <define name="attlist-mmultiscripts" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-subscriptshift"/>
+    <ref name="att-superscriptshift"/>
+  </define>
+
+  <a:documentation>
+    Presentation layout schemata: empty elements for scripts
+  </a:documentation>
+
+  <define name="pscreschema">
+    <choice>
+      <ref name="mprescripts"/>
+      <ref name="none"/>
+    </choice>
+  </define>
+
+  <define name="mprescripts">
+    <element name="mprescripts">
+      <ref name="attlist-mprescripts"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="mprescripts"/>
+  </define>
+
+  <define name="attlist-mprescripts" combine="interleave">
+    <empty/>
+  </define>
+
+  <define name="none">
+    <element name="none">
+      <ref name="attlist-none"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="none"/>
+  </define>
+
+  <define name="attlist-none" combine="interleave">
+    <empty/>
+  </define>
+
+  <a:documentation>
+    Presentation layout schemata: tables
+  </a:documentation>
+
+  <define name="ptabschema">
+    <choice>
+      <ref name="mtable"/>
+      <ref name="mtr"/>
+      <ref name="mlabeledtr"/>
+      <ref name="mtd"/>
+    </choice>
+  </define>
+
+  <define name="attlist-mtable" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-tableinfo"/>
+  </define>
+
+  <define name="attlist-mtr" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-rowalign"/>
+    <ref name="att-columnalign"/>
+    <ref name="att-groupalign"/>
+  </define>
+
+  <define name="attlist-mlabeledtr" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-rowalign"/>
+    <ref name="att-columnalign"/>
+    <ref name="att-groupalign"/>
+  </define>
+
+  <define name="attlist-mtd" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-rowalign"/>
+    <ref name="att-columnalign"/>
+    <ref name="att-groupalign"/>
+    <ref name="att-rowspan"/>
+    <ref name="att-columnspan"/>
+  </define>
+
+  <define name="plschema">
+    <choice>
+      <ref name="pgenschema"/>
+      <ref name="pscrschema"/>
+      <ref name="ptabschema"/>
+    </choice>
+  </define>
+
+  <a:documentation>
+    Empty presentation layout schemata
+  </a:documentation>
+
+  <define name="peschema">
+    <choice>
+      <ref name="maligngroup"/>
+      <ref name="malignmark"/>
+    </choice>
+  </define>
+
+  <define name="malignmark">
+    <element name="malignmark">
+      <ref name="attlist-malignmark"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="malignmark"/>
+  </define>
+
+  <define name="attlist-malignmark" combine="interleave">
+    <ref name="att-edge"/>
+  </define>
+
+  <define name="maligngroup">
+    <element name="maligngroup">
+      <ref name="attlist-maligngroup"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="maligngroup"/>
+  </define>
+
+  <define name="attlist-maligngroup" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-groupalign"/>
+  </define>
+
+  <define name="mglyph">
+    <element name="mglyph">
+      <ref name="attlist-mglyph"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="mglyph"/>
+  </define>
+
+  <define name="attlist-mglyph" combine="interleave">
+    <ref name="att-alt"/>
+    <ref name="att-fontfamily"/>
+    <ref name="att-index"/>
+  </define>
+
+  <a:documentation>
+    Presentation action schemata
+  </a:documentation>
+
+  <define name="pactions">
+    <ref name="maction"/>
+  </define>
+
+  <define name="attlist-maction" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-actiontype"/>
+    <ref name="att-selection"/>
+  </define>
+
+  <define name="PresInCont">
+    <a:documentation>
+      The following entity for substitution into
+      content constructs excludes elements that
+      are not valid as expressions.
+    </a:documentation>
+    <choice>
+      <ref name="ptoken"/>
+      <ref name="petoken"/>
+      <ref name="plschema"/>
+      <ref name="peschema"/>
+      <ref name="pactions"/>
+    </choice>
+  </define>
+
+  <define name="Presentation">
+    <a:documentation>
+      Presentation entity: all presentation constructs
+    </a:documentation>
+    <choice>
+      <ref name="ptoken"/>
+      <ref name="petoken"/>
+      <ref name="pscreschema"/>
+      <ref name="plschema"/>
+      <ref name="peschema"/>
+      <ref name="pactions"/>
+    </choice>
+  </define>
+
+  <a:documentation>
+    Content element set
+    Attribute definitions
+  </a:documentation>
+
+  <define name="att-base">
+    <optional>
+      <attribute name="base" a:defaultValue="10"/>
+    </optional>
+  </define>
+
+  <define name="att-closure">
+    <optional>
+      <attribute name="closure" a:defaultValue="closed"/>
+    </optional>
+  </define>
+
+  <define name="att-definition">
+    <optional>
+      <attribute name="definitionURL" a:defaultValue=""/>
+    </optional>
+  </define>
+
+  <define name="att-encoding">
+    <optional>
+      <attribute name="encoding" a:defaultValue=""/>
+    </optional>
+  </define>
+
+  <define name="att-nargs">
+    <optional>
+      <attribute name="nargs" a:defaultValue="1"/>
+    </optional>
+  </define>
+
+  <define name="att-occurrence">
+    <optional>
+      <attribute name="occurrence" a:defaultValue="function-model"/>
+    </optional>
+  </define>
+
+  <define name="att-order">
+    <optional>
+      <attribute name="order" a:defaultValue="numeric"/>
+    </optional>
+  </define>
+
+  <define name="att-scope">
+    <optional>
+      <attribute name="scope" a:defaultValue="local"/>
+    </optional>
+  </define>
+
+  <define name="att-type">
+    <optional>
+      <attribute name="type"/>
+    </optional>
+  </define>
+
+  <a:documentation>
+    Content elements: leaf nodes
+  </a:documentation>
+
+  <define name="ctoken">
+    <choice>
+      <ref name="csymbol"/>
+      <ref name="ci"/>
+      <ref name="cn"/>
+    </choice>
+  </define>
+
+  <define name="attlist-ci" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-type"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="attlist-csymbol" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-encoding"/>
+    <ref name="att-type"/>
+    <ref name="att-definition"/>
+  </define>
+
+  <define name="attlist-cn" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-type"/>
+    <ref name="att-base"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <a:documentation>
+    Content elements: specials
+  </a:documentation>
+
+  <define name="cspecial">
+    <choice>
+      <ref name="apply"/>
+      <ref name="reln"/>
+      <ref name="lambda"/>
+    </choice>
+  </define>
+
+  <define name="attlist-apply" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+  </define>
+
+  <define name="attlist-reln" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+  </define>
+
+  <define name="attlist-lambda" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+  </define>
+
+  <a:documentation>
+    Content elements: others
+  </a:documentation>
+
+  <define name="cother">
+    <choice>
+      <ref name="condition"/>
+      <ref name="declare"/>
+      <ref name="sep"/>
+    </choice>
+  </define>
+
+  <define name="attlist-condition" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+  </define>
+
+  <define name="attlist-declare" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-type"/>
+    <ref name="att-scope"/>
+    <ref name="att-nargs"/>
+    <ref name="att-occurrence"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="sep">
+    <element name="sep">
+      <ref name="attlist-sep"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="sep"/>
+  </define>
+
+  <define name="attlist-sep" combine="interleave">
+    <empty/>
+  </define>
+
+  <a:documentation>
+    Content elements: semantic mapping
+  </a:documentation>
+
+  <define name="csemantics">
+    <choice>
+      <ref name="semantics"/>
+      <ref name="annotation"/>
+      <ref name="annotation-xml"/>
+    </choice>
+  </define>
+
+  <define name="attlist-semantics" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="attlist-annotation" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="attlist-annotation-xml" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <a:documentation>
+    Content elements: constructors
+  </a:documentation>
+
+  <define name="cconstructor">
+    <choice>
+      <ref name="interval"/>
+      <ref name="list"/>
+      <ref name="matrix"/>
+      <ref name="matrixrow"/>
+      <ref name="set"/>
+      <ref name="vector"/>
+      <ref name="piecewise"/>
+    </choice>
+  </define>
+
+  <define name="attlist-interval" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-closure"/>
+  </define>
+
+  <define name="attlist-set" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-type"/>
+  </define>
+
+  <define name="attlist-list" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-order"/>
+  </define>
+
+  <define name="attlist-vector" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+  </define>
+
+  <define name="attlist-matrix" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+  </define>
+
+  <define name="attlist-matrixrow" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+  </define>
+
+  <define name="attlist-piecewise" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+  </define>
+
+  <define name="attlist-piece" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+  </define>
+
+  <define name="attlist-otherwise" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+  </define>
+
+  <a:documentation>
+    Content elements: symbols
+  </a:documentation>
+
+  <define name="c0ary">
+    <choice>
+      <ref name="integers"/>
+      <ref name="reals"/>
+      <ref name="rationals"/>
+      <ref name="naturalnumbers"/>
+      <ref name="complexes"/>
+      <ref name="primes"/>
+      <ref name="exponentiale"/>
+      <ref name="imaginaryi"/>
+      <ref name="notanumber"/>
+      <ref name="true"/>
+      <ref name="false"/>
+      <ref name="emptyset"/>
+      <ref name="pi"/>
+      <ref name="eulergamma"/>
+      <ref name="infinity"/>
+    </choice>
+  </define>
+
+  <define name="integers">
+    <element name="integers">
+      <ref name="attlist-integers"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="integers"/>
+  </define>
+
+  <define name="attlist-integers" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="reals">
+    <element name="reals">
+      <ref name="attlist-reals"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="reals"/>
+  </define>
+
+  <define name="attlist-reals" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="rationals">
+    <element name="rationals">
+      <ref name="attlist-rationals"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="rationals"/>
+  </define>
+
+  <define name="attlist-rationals" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="naturalnumbers">
+    <element name="naturalnumbers">
+      <ref name="attlist-naturalnumbers"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="naturalnumbers"/>
+  </define>
+
+  <define name="attlist-naturalnumbers" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="complexes">
+    <element name="complexes">
+      <ref name="attlist-complexes"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="complexes"/>
+  </define>
+
+  <define name="attlist-complexes" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="primes">
+    <element name="primes">
+      <ref name="attlist-primes"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="primes"/>
+  </define>
+
+  <define name="attlist-primes" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="exponentiale">
+    <element name="exponentiale">
+      <ref name="attlist-exponentiale"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="exponentiale"/>
+  </define>
+
+  <define name="attlist-exponentiale" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="imaginaryi">
+    <element name="imaginaryi">
+      <ref name="attlist-imaginaryi"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="imaginaryi"/>
+  </define>
+
+  <define name="attlist-imaginaryi" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="notanumber">
+    <element name="notanumber">
+      <ref name="attlist-notanumber"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="notanumber"/>
+  </define>
+
+  <define name="attlist-notanumber" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="true">
+    <element name="true">
+      <ref name="attlist-true"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="true"/>
+  </define>
+
+  <define name="attlist-true" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="false">
+    <element name="false">
+      <ref name="attlist-false"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="false"/>
+  </define>
+
+  <define name="attlist-false" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="emptyset">
+    <element name="emptyset">
+      <ref name="attlist-emptyset"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="emptyset"/>
+  </define>
+
+  <define name="attlist-emptyset" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="pi">
+    <element name="pi">
+      <ref name="attlist-pi"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="pi"/>
+  </define>
+
+  <define name="attlist-pi" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="eulergamma">
+    <element name="eulergamma">
+      <ref name="attlist-eulergamma"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="eulergamma"/>
+  </define>
+
+  <define name="attlist-eulergamma" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="infinity">
+    <element name="infinity">
+      <ref name="attlist-infinity"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="infinity"/>
+  </define>
+
+  <define name="attlist-infinity" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <a:documentation>
+    Content elements: operators
+  </a:documentation>
+
+  <define name="cfuncop1ary">
+    <choice>
+      <ref name="inverse"/>
+      <ref name="ident"/>
+      <ref name="domain"/>
+      <ref name="codomain"/>
+      <ref name="image"/>
+    </choice>
+  </define>
+
+  <define name="inverse">
+    <element name="inverse">
+      <ref name="attlist-inverse"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="inverse"/>
+  </define>
+
+  <define name="attlist-inverse" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="domain">
+    <element name="domain">
+      <ref name="attlist-domain"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="domain"/>
+  </define>
+
+  <define name="attlist-domain" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="codomain">
+    <element name="codomain">
+      <ref name="attlist-codomain"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="codomain"/>
+  </define>
+
+  <define name="attlist-codomain" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="image">
+    <element name="image">
+      <ref name="attlist-image"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="image"/>
+  </define>
+
+  <define name="attlist-image" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="cfuncopnary">
+    <choice>
+      <ref name="fn"/>
+      <ref name="compose"/>
+    </choice>
+  </define>
+
+  <define name="attlist-fn" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="ident">
+    <element name="ident">
+      <ref name="attlist-ident"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="ident"/>
+  </define>
+
+  <define name="attlist-ident" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="compose">
+    <element name="compose">
+      <ref name="attlist-compose"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="compose"/>
+  </define>
+
+  <define name="attlist-compose" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="carithop1ary">
+    <choice>
+      <ref name="abs"/>
+      <ref name="conjugate"/>
+      <ref name="exp"/>
+      <ref name="factorial"/>
+      <ref name="arg"/>
+      <ref name="real"/>
+      <ref name="imaginary"/>
+      <ref name="floor"/>
+      <ref name="ceiling"/>
+    </choice>
+  </define>
+
+  <define name="exp">
+    <element name="exp">
+      <ref name="attlist-exp"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="exp"/>
+  </define>
+
+  <define name="attlist-exp" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="abs">
+    <element name="abs">
+      <ref name="attlist-abs"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="abs"/>
+  </define>
+
+  <define name="attlist-abs" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="arg">
+    <element name="arg">
+      <ref name="attlist-arg"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="arg"/>
+  </define>
+
+  <define name="attlist-arg" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="real">
+    <element name="real">
+      <ref name="attlist-real"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="real"/>
+  </define>
+
+  <define name="attlist-real" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="imaginary">
+    <element name="imaginary">
+      <ref name="attlist-imaginary"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="imaginary"/>
+  </define>
+
+  <define name="attlist-imaginary" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="conjugate">
+    <element name="conjugate">
+      <ref name="attlist-conjugate"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="conjugate"/>
+  </define>
+
+  <define name="attlist-conjugate" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="factorial">
+    <element name="factorial">
+      <ref name="attlist-factorial"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="factorial"/>
+  </define>
+
+  <define name="attlist-factorial" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="floor">
+    <element name="floor">
+      <ref name="attlist-floor"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="floor"/>
+  </define>
+
+  <define name="attlist-floor" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="ceiling">
+    <element name="ceiling">
+      <ref name="attlist-ceiling"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="ceiling"/>
+  </define>
+
+  <define name="attlist-ceiling" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="carithop1or2ary">
+    <ref name="minus"/>
+  </define>
+
+  <define name="minus">
+    <element name="minus">
+      <ref name="attlist-minus"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="minus"/>
+  </define>
+
+  <define name="attlist-minus" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="carithop2ary">
+    <choice>
+      <ref name="quotient"/>
+      <ref name="divide"/>
+      <ref name="power"/>
+      <ref name="rem"/>
+    </choice>
+  </define>
+
+  <define name="quotient">
+    <element name="quotient">
+      <ref name="attlist-quotient"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="quotient"/>
+  </define>
+
+  <define name="attlist-quotient" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="divide">
+    <element name="divide">
+      <ref name="attlist-divide"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="divide"/>
+  </define>
+
+  <define name="attlist-divide" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="power">
+    <element name="power">
+      <ref name="attlist-power"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="power"/>
+  </define>
+
+  <define name="attlist-power" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="rem">
+    <element name="rem">
+      <ref name="attlist-rem"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="rem"/>
+  </define>
+
+  <define name="attlist-rem" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="carithopnary">
+    <choice>
+      <ref name="plus"/>
+      <ref name="times"/>
+      <ref name="max"/>
+      <ref name="min"/>
+      <ref name="gcd"/>
+      <ref name="lcm"/>
+    </choice>
+  </define>
+
+  <define name="plus">
+    <element name="plus">
+      <ref name="attlist-plus"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="plus"/>
+  </define>
+
+  <define name="attlist-plus" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="max">
+    <element name="max">
+      <ref name="attlist-max"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="max"/>
+  </define>
+
+  <define name="attlist-max" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="min">
+    <element name="min">
+      <ref name="attlist-min"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="min"/>
+  </define>
+
+  <define name="attlist-min" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="times">
+    <element name="times">
+      <ref name="attlist-times"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="times"/>
+  </define>
+
+  <define name="attlist-times" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="gcd">
+    <element name="gcd">
+      <ref name="attlist-gcd"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="gcd"/>
+  </define>
+
+  <define name="attlist-gcd" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="lcm">
+    <element name="lcm">
+      <ref name="attlist-lcm"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="lcm"/>
+  </define>
+
+  <define name="attlist-lcm" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="carithoproot">
+    <ref name="root"/>
+  </define>
+
+  <define name="root">
+    <element name="root">
+      <ref name="attlist-root"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="root"/>
+  </define>
+
+  <define name="attlist-root" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="clogicopquant">
+    <choice>
+      <ref name="exists"/>
+      <ref name="forall"/>
+    </choice>
+  </define>
+
+  <define name="exists">
+    <element name="exists">
+      <ref name="attlist-exists"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="exists"/>
+  </define>
+
+  <define name="attlist-exists" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="forall">
+    <element name="forall">
+      <ref name="attlist-forall"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="forall"/>
+  </define>
+
+  <define name="attlist-forall" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="clogicopnary">
+    <choice>
+      <ref name="and"/>
+      <ref name="or"/>
+      <ref name="xor"/>
+    </choice>
+  </define>
+
+  <define name="and">
+    <element name="and">
+      <ref name="attlist-and"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="and"/>
+  </define>
+
+  <define name="attlist-and" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="or">
+    <element name="or">
+      <ref name="attlist-or"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="or"/>
+  </define>
+
+  <define name="attlist-or" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="xor">
+    <element name="xor">
+      <ref name="attlist-xor"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="xor"/>
+  </define>
+
+  <define name="attlist-xor" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="clogicop1ary">
+    <ref name="not"/>
+  </define>
+
+  <define name="not">
+    <element name="not">
+      <ref name="attlist-not"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="not"/>
+  </define>
+
+  <define name="attlist-not" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="clogicop2ary">
+    <ref name="implies"/>
+  </define>
+
+  <define name="implies">
+    <element name="implies">
+      <ref name="attlist-implies"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="implies"/>
+  </define>
+
+  <define name="attlist-implies" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="ccalcop">
+    <choice>
+      <ref name="log"/>
+      <ref name="int"/>
+      <ref name="diff"/>
+      <ref name="partialdiff"/>
+      <ref name="divergence"/>
+      <ref name="grad"/>
+      <ref name="curl"/>
+      <ref name="laplacian"/>
+    </choice>
+  </define>
+
+  <define name="divergence">
+    <element name="divergence">
+      <ref name="attlist-divergence"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="divergence"/>
+  </define>
+
+  <define name="attlist-divergence" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="grad">
+    <element name="grad">
+      <ref name="attlist-grad"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="grad"/>
+  </define>
+
+  <define name="attlist-grad" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="curl">
+    <element name="curl">
+      <ref name="attlist-curl"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="curl"/>
+  </define>
+
+  <define name="attlist-curl" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="laplacian">
+    <element name="laplacian">
+      <ref name="attlist-laplacian"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="laplacian"/>
+  </define>
+
+  <define name="attlist-laplacian" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="log">
+    <element name="log">
+      <ref name="attlist-log"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="log"/>
+  </define>
+
+  <define name="attlist-log" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="int">
+    <element name="int">
+      <ref name="attlist-int"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="int"/>
+  </define>
+
+  <define name="attlist-int" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="diff">
+    <element name="diff">
+      <ref name="attlist-diff"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="diff"/>
+  </define>
+
+  <define name="attlist-diff" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="partialdiff">
+    <element name="partialdiff">
+      <ref name="attlist-partialdiff"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="partialdiff"/>
+  </define>
+
+  <define name="attlist-partialdiff" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="ccalcop1ary">
+    <ref name="ln"/>
+  </define>
+
+  <define name="ln">
+    <element name="ln">
+      <ref name="attlist-ln"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="ln"/>
+  </define>
+
+  <define name="attlist-ln" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="csetop1ary">
+    <ref name="card"/>
+  </define>
+
+  <define name="card">
+    <element name="card">
+      <ref name="attlist-card"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="card"/>
+  </define>
+
+  <define name="attlist-card" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="csetop2ary">
+    <ref name="setdiff"/>
+  </define>
+
+  <define name="setdiff">
+    <element name="setdiff">
+      <ref name="attlist-setdiff"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="setdiff"/>
+  </define>
+
+  <define name="attlist-setdiff" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="csetopnary">
+    <choice>
+      <ref name="union"/>
+      <ref name="intersect"/>
+      <ref name="cartesianproduct"/>
+    </choice>
+  </define>
+
+  <define name="union">
+    <element name="union">
+      <ref name="attlist-union"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="union"/>
+  </define>
+
+  <define name="attlist-union" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="intersect">
+    <element name="intersect">
+      <ref name="attlist-intersect"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="intersect"/>
+  </define>
+
+  <define name="attlist-intersect" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="cartesianproduct">
+    <element name="cartesianproduct">
+      <ref name="attlist-cartesianproduct"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="cartesianproduct"/>
+  </define>
+
+  <define name="attlist-cartesianproduct" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="cseqop">
+    <choice>
+      <ref name="sum"/>
+      <ref name="product"/>
+      <ref name="limit"/>
+    </choice>
+  </define>
+
+  <define name="sum">
+    <element name="sum">
+      <ref name="attlist-sum"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="sum"/>
+  </define>
+
+  <define name="attlist-sum" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="product">
+    <element name="product">
+      <ref name="attlist-product"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="product"/>
+  </define>
+
+  <define name="attlist-product" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="limit">
+    <element name="limit">
+      <ref name="attlist-limit"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="limit"/>
+  </define>
+
+  <define name="attlist-limit" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="ctrigop">
+    <choice>
+      <ref name="sin"/>
+      <ref name="cos"/>
+      <ref name="tan"/>
+      <ref name="sec"/>
+      <ref name="csc"/>
+      <ref name="cot"/>
+      <ref name="sinh"/>
+      <ref name="cosh"/>
+      <ref name="tanh"/>
+      <ref name="sech"/>
+      <ref name="csch"/>
+      <ref name="coth"/>
+      <ref name="arcsin"/>
+      <ref name="arccos"/>
+      <ref name="arctan"/>
+      <ref name="arccosh"/>
+      <ref name="arccot"/>
+      <ref name="arccoth"/>
+      <ref name="arccsc"/>
+      <ref name="arccsch"/>
+      <ref name="arcsec"/>
+      <ref name="arcsech"/>
+      <ref name="arcsinh"/>
+      <ref name="arctanh"/>
+    </choice>
+  </define>
+
+  <define name="sin">
+    <element name="sin">
+      <ref name="attlist-sin"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="sin"/>
+  </define>
+
+  <define name="attlist-sin" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="cos">
+    <element name="cos">
+      <ref name="attlist-cos"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="cos"/>
+  </define>
+
+  <define name="attlist-cos" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="tan">
+    <element name="tan">
+      <ref name="attlist-tan"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="tan"/>
+  </define>
+
+  <define name="attlist-tan" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="sec">
+    <element name="sec">
+      <ref name="attlist-sec"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="sec"/>
+  </define>
+
+  <define name="attlist-sec" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="csc">
+    <element name="csc">
+      <ref name="attlist-csc"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="csc"/>
+  </define>
+
+  <define name="attlist-csc" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="cot">
+    <element name="cot">
+      <ref name="attlist-cot"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="cot"/>
+  </define>
+
+  <define name="attlist-cot" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="sinh">
+    <element name="sinh">
+      <ref name="attlist-sinh"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="sinh"/>
+  </define>
+
+  <define name="attlist-sinh" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="cosh">
+    <element name="cosh">
+      <ref name="attlist-cosh"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="cosh"/>
+  </define>
+
+  <define name="attlist-cosh" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="tanh">
+    <element name="tanh">
+      <ref name="attlist-tanh"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="tanh"/>
+  </define>
+
+  <define name="attlist-tanh" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="sech">
+    <element name="sech">
+      <ref name="attlist-sech"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="sech"/>
+  </define>
+
+  <define name="attlist-sech" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="csch">
+    <element name="csch">
+      <ref name="attlist-csch"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="csch"/>
+  </define>
+
+  <define name="attlist-csch" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="coth">
+    <element name="coth">
+      <ref name="attlist-coth"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="coth"/>
+  </define>
+
+  <define name="attlist-coth" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="arcsin">
+    <element name="arcsin">
+      <ref name="attlist-arcsin"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="arcsin"/>
+  </define>
+
+  <define name="attlist-arcsin" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="arccos">
+    <element name="arccos">
+      <ref name="attlist-arccos"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="arccos"/>
+  </define>
+
+  <define name="attlist-arccos" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="arctan">
+    <element name="arctan">
+      <ref name="attlist-arctan"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="arctan"/>
+  </define>
+
+  <define name="attlist-arctan" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="arccosh">
+    <element name="arccosh">
+      <ref name="attlist-arccosh"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="arccosh"/>
+  </define>
+
+  <define name="attlist-arccosh" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="arccot">
+    <element name="arccot">
+      <ref name="attlist-arccot"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="arccot"/>
+  </define>
+
+  <define name="attlist-arccot" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="arccoth">
+    <element name="arccoth">
+      <ref name="attlist-arccoth"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="arccoth"/>
+  </define>
+
+  <define name="attlist-arccoth" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="arccsc">
+    <element name="arccsc">
+      <ref name="attlist-arccsc"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="arccsc"/>
+  </define>
+
+  <define name="attlist-arccsc" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="arccsch">
+    <element name="arccsch">
+      <ref name="attlist-arccsch"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="arccsch"/>
+  </define>
+
+  <define name="attlist-arccsch" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="arcsec">
+    <element name="arcsec">
+      <ref name="attlist-arcsec"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="arcsec"/>
+  </define>
+
+  <define name="attlist-arcsec" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="arcsech">
+    <element name="arcsech">
+      <ref name="attlist-arcsech"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="arcsech"/>
+  </define>
+
+  <define name="attlist-arcsech" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="arcsinh">
+    <element name="arcsinh">
+      <ref name="attlist-arcsinh"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="arcsinh"/>
+  </define>
+
+  <define name="attlist-arcsinh" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="arctanh">
+    <element name="arctanh">
+      <ref name="attlist-arctanh"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="arctanh"/>
+  </define>
+
+  <define name="attlist-arctanh" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="cstatopnary">
+    <choice>
+      <ref name="mean"/>
+      <ref name="sdev"/>
+      <ref name="variance"/>
+      <ref name="median"/>
+      <ref name="mode"/>
+    </choice>
+  </define>
+
+  <define name="mean">
+    <element name="mean">
+      <ref name="attlist-mean"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="mean"/>
+  </define>
+
+  <define name="attlist-mean" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="sdev">
+    <element name="sdev">
+      <ref name="attlist-sdev"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="sdev"/>
+  </define>
+
+  <define name="attlist-sdev" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="variance">
+    <element name="variance">
+      <ref name="attlist-variance"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="variance"/>
+  </define>
+
+  <define name="attlist-variance" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="median">
+    <element name="median">
+      <ref name="attlist-median"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="median"/>
+  </define>
+
+  <define name="attlist-median" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="mode">
+    <element name="mode">
+      <ref name="attlist-mode"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="mode"/>
+  </define>
+
+  <define name="attlist-mode" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="cstatopmoment">
+    <ref name="moment"/>
+  </define>
+
+  <define name="moment">
+    <element name="moment">
+      <ref name="attlist-moment"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="moment"/>
+  </define>
+
+  <define name="attlist-moment" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="clalgop1ary">
+    <choice>
+      <ref name="determinant"/>
+      <ref name="transpose"/>
+    </choice>
+  </define>
+
+  <define name="determinant">
+    <element name="determinant">
+      <ref name="attlist-determinant"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="determinant"/>
+  </define>
+
+  <define name="attlist-determinant" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="transpose">
+    <element name="transpose">
+      <ref name="attlist-transpose"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="transpose"/>
+  </define>
+
+  <define name="attlist-transpose" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="clalgop2ary">
+    <choice>
+      <ref name="vectorproduct"/>
+      <ref name="scalarproduct"/>
+      <ref name="outerproduct"/>
+    </choice>
+  </define>
+
+  <define name="vectorproduct">
+    <element name="vectorproduct">
+      <ref name="attlist-vectorproduct"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="vectorproduct"/>
+  </define>
+
+  <define name="attlist-vectorproduct" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="scalarproduct">
+    <element name="scalarproduct">
+      <ref name="attlist-scalarproduct"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="scalarproduct"/>
+  </define>
+
+  <define name="attlist-scalarproduct" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="outerproduct">
+    <element name="outerproduct">
+      <ref name="attlist-outerproduct"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="outerproduct"/>
+  </define>
+
+  <define name="attlist-outerproduct" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="clalgopnary">
+    <ref name="selector"/>
+  </define>
+
+  <define name="selector">
+    <element name="selector">
+      <ref name="attlist-selector"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="selector"/>
+  </define>
+
+  <define name="attlist-selector" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <a:documentation>
+    Content elements: relations
+  </a:documentation>
+
+  <define name="cgenrel2ary">
+    <choice>
+      <ref name="neq"/>
+      <ref name="factorof"/>
+    </choice>
+  </define>
+
+  <define name="neq">
+    <element name="neq">
+      <ref name="attlist-neq"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="neq"/>
+  </define>
+
+  <define name="attlist-neq" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="factorof">
+    <element name="factorof">
+      <ref name="attlist-factorof"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="factorof"/>
+  </define>
+
+  <define name="attlist-factorof" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="cgenrelnary">
+    <choice>
+      <ref name="eq"/>
+      <ref name="leq"/>
+      <ref name="lt"/>
+      <ref name="geq"/>
+      <ref name="gt"/>
+      <ref name="equivalent"/>
+      <ref name="approx"/>
+    </choice>
+  </define>
+
+  <define name="eq">
+    <element name="eq">
+      <ref name="attlist-eq"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="eq"/>
+  </define>
+
+  <define name="attlist-eq" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="equivalent">
+    <element name="equivalent">
+      <ref name="attlist-equivalent"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="equivalent"/>
+  </define>
+
+  <define name="attlist-equivalent" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="approx">
+    <element name="approx">
+      <ref name="attlist-approx"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="approx"/>
+  </define>
+
+  <define name="attlist-approx" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="gt">
+    <element name="gt">
+      <ref name="attlist-gt"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="gt"/>
+  </define>
+
+  <define name="attlist-gt" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="lt">
+    <element name="lt">
+      <ref name="attlist-lt"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="lt"/>
+  </define>
+
+  <define name="attlist-lt" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="geq">
+    <element name="geq">
+      <ref name="attlist-geq"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="geq"/>
+  </define>
+
+  <define name="attlist-geq" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="leq">
+    <element name="leq">
+      <ref name="attlist-leq"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="leq"/>
+  </define>
+
+  <define name="attlist-leq" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="csetrel2ary">
+    <choice>
+      <ref name="in"/>
+      <ref name="notin"/>
+      <ref name="notsubset"/>
+      <ref name="notprsubset"/>
+    </choice>
+  </define>
+
+  <define name="in">
+    <element name="in">
+      <ref name="attlist-in"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="in"/>
+  </define>
+
+  <define name="attlist-in" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="notin">
+    <element name="notin">
+      <ref name="attlist-notin"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="notin"/>
+  </define>
+
+  <define name="attlist-notin" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="notsubset">
+    <element name="notsubset">
+      <ref name="attlist-notsubset"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="notsubset"/>
+  </define>
+
+  <define name="attlist-notsubset" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="notprsubset">
+    <element name="notprsubset">
+      <ref name="attlist-notprsubset"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="notprsubset"/>
+  </define>
+
+  <define name="attlist-notprsubset" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="csetrelnary">
+    <choice>
+      <ref name="subset"/>
+      <ref name="prsubset"/>
+    </choice>
+  </define>
+
+  <define name="subset">
+    <element name="subset">
+      <ref name="attlist-subset"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="subset"/>
+  </define>
+
+  <define name="attlist-subset" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="prsubset">
+    <element name="prsubset">
+      <ref name="attlist-prsubset"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="prsubset"/>
+  </define>
+
+  <define name="attlist-prsubset" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+  </define>
+
+  <define name="cseqrel2ary">
+    <ref name="tendsto"/>
+  </define>
+
+  <define name="tendsto">
+    <element name="tendsto">
+      <ref name="attlist-tendsto"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="tendsto"/>
+  </define>
+
+  <define name="attlist-tendsto" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-definition"/>
+    <ref name="att-encoding"/>
+    <ref name="att-type"/>
+  </define>
+
+  <a:documentation>
+    Content elements: quantifiers
+  </a:documentation>
+
+  <define name="cquantifier">
+    <choice>
+      <ref name="lowlimit"/>
+      <ref name="uplimit"/>
+      <ref name="bvar"/>
+      <ref name="degree"/>
+      <ref name="logbase"/>
+      <ref name="momentabout"/>
+      <ref name="domainofapplication"/>
+    </choice>
+  </define>
+
+  <define name="attlist-lowlimit" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+  </define>
+
+  <define name="attlist-uplimit" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+  </define>
+
+  <define name="attlist-bvar" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+  </define>
+
+  <define name="attlist-degree" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+  </define>
+
+  <define name="attlist-logbase" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+  </define>
+
+  <define name="attlist-momentabout" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+  </define>
+
+  <define name="attlist-domainofapplication" combine="interleave">
+    <ref name="MATHML.Common.attrib"/>
+  </define>
+
+  <a:documentation>
+    Operator groups
+  </a:documentation>
+
+  <define name="cop1ary">
+    <choice>
+      <ref name="cfuncop1ary"/>
+      <ref name="carithop1ary"/>
+      <ref name="clogicop1ary"/>
+      <ref name="ccalcop1ary"/>
+      <ref name="ctrigop"/>
+      <ref name="clalgop1ary"/>
+      <ref name="csetop1ary"/>
+    </choice>
+  </define>
+
+  <define name="cop2ary">
+    <choice>
+      <ref name="carithop2ary"/>
+      <ref name="clogicop2ary"/>
+      <ref name="clalgop2ary"/>
+      <ref name="csetop2ary"/>
+    </choice>
+  </define>
+
+  <define name="copnary">
+    <choice>
+      <ref name="cfuncopnary"/>
+      <ref name="carithopnary"/>
+      <ref name="clogicopnary"/>
+      <ref name="csetopnary"/>
+      <ref name="cstatopnary"/>
+      <ref name="clalgopnary"/>
+    </choice>
+  </define>
+
+  <define name="copmisc">
+    <choice>
+      <ref name="carithoproot"/>
+      <ref name="carithop1or2ary"/>
+      <ref name="ccalcop"/>
+      <ref name="cseqop"/>
+      <ref name="cstatopmoment"/>
+      <ref name="clogicopquant"/>
+    </choice>
+  </define>
+
+  <a:documentation>
+    Relation groups
+  </a:documentation>
+
+  <define name="crel2ary">
+    <choice>
+      <ref name="cgenrel2ary"/>
+      <ref name="csetrel2ary"/>
+      <ref name="cseqrel2ary"/>
+    </choice>
+  </define>
+
+  <define name="crelnary">
+    <choice>
+      <ref name="cgenrelnary"/>
+      <ref name="csetrelnary"/>
+    </choice>
+  </define>
+
+
+  <define name="Content">
+    <a:documentation>
+      Content constructs: all
+    </a:documentation>
+    <choice>
+      <ref name="ctoken"/>
+      <ref name="cspecial"/>
+      <ref name="cother"/>
+      <ref name="csemantics"/>
+      <ref name="c0ary"/>
+      <ref name="cconstructor"/>
+      <ref name="cquantifier"/>
+      <ref name="cop1ary"/>
+      <ref name="cop2ary"/>
+      <ref name="copnary"/>
+      <ref name="copmisc"/>
+      <ref name="crel2ary"/>
+      <ref name="crelnary"/>
+    </choice>
+  </define>
+
+  <define name="ContInPres">
+    <a:documentation>
+      Content constructs for substitution in presentation structures
+    </a:documentation>
+    <choice>
+      <ref name="ci"/>
+      <ref name="csymbol"/>
+      <ref name="cn"/>
+      <ref name="c0ary"/>
+      <ref name="apply"/>
+      <ref name="fn"/>
+      <ref name="lambda"/>
+      <ref name="reln"/>
+      <ref name="cconstructor"/>
+      <ref name="semantics"/>
+      <ref name="declare"/>
+    </choice>
+  </define>
+
+  <a:documentation>
+    Recursive definition for content of expressions. Include
+    presentation constructs at lowest level so presentation
+    layout schemata hold presentation or content elements.
+    Include content constructs at lowest level so content
+    elements hold PCDATA or presentation elements at leaf
+    level (for permitted substitutable elements in context)
+  </a:documentation>
+
+  <define name="ContentExpression">
+    <zeroOrMore>
+      <choice>
+        <ref name="Content"/>
+        <ref name="PresInCont"/>
+      </choice>
+    </zeroOrMore>
+  </define>
+
+  <define name="PresExpression">
+    <zeroOrMore>
+      <choice>
+        <ref name="Presentation"/>
+        <ref name="ContInPres"/>
+      </choice>
+    </zeroOrMore>
+  </define>
+
+  <define name="MathExpression">
+    <zeroOrMore>
+      <choice>
+        <ref name="PresInCont"/>
+        <ref name="ContInPres"/>
+      </choice>
+    </zeroOrMore>
+  </define>
+
+  <define name="MathMLCharacters">
+    <a:documentation>
+      PCDATA or MathML character elements
+    </a:documentation>
+    <choice>
+      <text/>
+      <ref name="mglyph"/>
+    </choice>
+  </define>
+
+  <a:documentation>
+    Content elements: tokens
+    (may contain embedded presentation constructs)
+  </a:documentation>
+
+  <define name="ci">
+    <element name="ci">
+      <ref name="attlist-ci"/>
+      <zeroOrMore>
+        <choice>
+          <ref name="MathMLCharacters"/>
+          <ref name="PresInCont"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="ci"/>
+  </define>
+
+  <define name="csymbol">
+    <element name="csymbol">
+      <ref name="attlist-csymbol"/>
+      <zeroOrMore>
+        <choice>
+          <ref name="MathMLCharacters"/>
+          <ref name="PresInCont"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="csymbol"/>
+  </define>
+
+  <define name="cn">
+    <element name="cn">
+      <ref name="attlist-cn"/>
+      <zeroOrMore>
+        <choice>
+          <ref name="MathMLCharacters"/>
+          <ref name="sep"/>
+          <ref name="PresInCont"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="cn"/>
+  </define>
+
+  <a:documentation>
+    Content elements: special
+  </a:documentation>
+
+  <define name="apply">
+    <element name="apply">
+      <ref name="attlist-apply"/>
+      <ref name="ContentExpression"/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="apply"/>
+  </define>
+
+  <define name="reln">
+    <element name="reln">
+      <ref name="attlist-reln"/>
+      <ref name="ContentExpression"/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="reln"/>
+  </define>
+
+  <define name="lambda">
+    <element name="lambda">
+      <ref name="attlist-lambda"/>
+      <ref name="ContentExpression"/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="lambda"/>
+  </define>
+
+  <a:documentation>
+    Content elements: other
+  </a:documentation>
+
+  <define name="condition">
+    <element name="condition">
+      <ref name="attlist-condition"/>
+      <ref name="ContentExpression"/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="condition"/>
+  </define>
+
+  <define name="declare">
+    <element name="declare">
+      <ref name="attlist-declare"/>
+      <ref name="ContentExpression"/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="declare"/>
+  </define>
+
+  <a:documentation>
+    Content elements: semantics
+  </a:documentation>
+
+  <define name="semantics">
+    <element name="semantics">
+      <ref name="attlist-semantics"/>
+      <ref name="ContentExpression"/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="semantics"/>
+  </define>
+
+  <define name="Annotation.content">
+    <text/>
+  </define>
+
+  <define name="annotation">
+    <element name="annotation">
+      <ref name="attlist-annotation"/>
+      <ref name="Annotation.content"/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="annotation"/>
+  </define>
+
+  <define name="annotation-xml">
+    <element name="annotation-xml">
+      <ref name="attlist-annotation-xml"/>
+      <zeroOrMore>
+        <ref name="any"/>
+        <!--ref name="anyElement"/-->
+      </zeroOrMore>
+    </element>
+  </define>
+
+  <define name="anyElement">
+    <element>
+      <anyName/>
+      <zeroOrMore>
+	<choice>
+	  <attribute>
+	    <anyName/>
+	  </attribute>
+	  <text/>
+	  <ref name="anyElement"/>
+	</choice>
+      </zeroOrMore>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="annotation-xml"/>
+  </define>
+
+  <a:documentation>
+    Content elements: constructors
+  </a:documentation>
+
+  <define name="interval">
+    <element name="interval">
+      <ref name="attlist-interval"/>
+      <ref name="ContentExpression"/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="interval"/>
+  </define>
+
+  <define name="set">
+    <element name="set">
+      <ref name="attlist-set"/>
+      <ref name="ContentExpression"/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="set"/>
+  </define>
+
+  <define name="list">
+    <element name="list">
+      <ref name="attlist-list"/>
+      <ref name="ContentExpression"/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="list"/>
+  </define>
+
+  <define name="vector">
+    <element name="vector">
+      <ref name="attlist-vector"/>
+      <ref name="ContentExpression"/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="vector"/>
+  </define>
+
+  <define name="matrix">
+    <element name="matrix">
+      <ref name="attlist-matrix"/>
+      <ref name="ContentExpression"/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="matrix"/>
+  </define>
+
+  <define name="matrixrow">
+    <element name="matrixrow">
+      <ref name="attlist-matrixrow"/>
+      <ref name="ContentExpression"/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="matrixrow"/>
+  </define>
+
+  <define name="piecewise">
+    <element name="piecewise">
+      <ref name="attlist-piecewise"/>
+      <zeroOrMore>
+        <ref name="piece"/>
+      </zeroOrMore>
+      <optional>
+        <ref name="otherwise"/>
+      </optional>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="piecewise"/>
+  </define>
+
+  <define name="piece">
+    <element name="piece">
+      <ref name="attlist-piece"/>
+      <ref name="ContentExpression"/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="piece"/>
+  </define>
+
+  <define name="otherwise">
+    <element name="otherwise">
+      <ref name="attlist-otherwise"/>
+      <ref name="ContentExpression"/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="otherwise"/>
+  </define>
+
+  <a:documentation>
+    Content elements: operator (user-defined)
+  </a:documentation>
+
+  <define name="fn">
+    <element name="fn">
+      <ref name="attlist-fn"/>
+      <ref name="ContentExpression"/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="fn"/>
+  </define>
+
+  <a:documentation>
+    Content elements: quantifiers
+  </a:documentation>
+
+  <define name="lowlimit">
+    <element name="lowlimit">
+      <ref name="attlist-lowlimit"/>
+      <ref name="ContentExpression"/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="lowlimit"/>
+  </define>
+
+  <define name="uplimit">
+    <element name="uplimit">
+      <ref name="attlist-uplimit"/>
+      <ref name="ContentExpression"/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="uplimit"/>
+  </define>
+
+  <define name="bvar">
+    <element name="bvar">
+      <ref name="attlist-bvar"/>
+      <ref name="ContentExpression"/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="bvar"/>
+  </define>
+
+  <define name="degree">
+    <element name="degree">
+      <ref name="attlist-degree"/>
+      <ref name="ContentExpression"/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="degree"/>
+  </define>
+
+  <define name="logbase">
+    <element name="logbase">
+      <ref name="attlist-logbase"/>
+      <ref name="ContentExpression"/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="logbase"/>
+  </define>
+
+  <define name="momentabout">
+    <element name="momentabout">
+      <ref name="attlist-momentabout"/>
+      <ref name="ContentExpression"/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="momentabout"/>
+  </define>
+
+  <define name="domainofapplication">
+    <element name="domainofapplication">
+      <ref name="attlist-domainofapplication"/>
+      <ref name="ContentExpression"/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="domainofapplication"/>
+  </define>
+
+  <a:documentation>
+    Presentation layout schemata contain tokens,
+    layout and content schemata.
+</a:documentation>
+
+  <define name="mstyle">
+    <element name="mstyle">
+      <ref name="attlist-mstyle"/>
+      <ref name="PresExpression"/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="mstyle"/>
+  </define>
+
+  <define name="merror">
+    <element name="merror">
+      <ref name="attlist-merror"/>
+      <ref name="PresExpression"/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="merror"/>
+  </define>
+
+  <define name="mphantom">
+    <element name="mphantom">
+      <ref name="attlist-mphantom"/>
+      <ref name="PresExpression"/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="mphantom"/>
+  </define>
+
+  <define name="mrow">
+    <element name="mrow">
+      <ref name="attlist-mrow"/>
+      <ref name="PresExpression"/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="mrow"/>
+  </define>
+
+  <define name="mfrac">
+    <element name="mfrac">
+      <ref name="attlist-mfrac"/>
+      <ref name="PresExpression"/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="mfrac"/>
+  </define>
+
+  <define name="msqrt">
+    <element name="msqrt">
+      <ref name="attlist-msqrt"/>
+      <ref name="PresExpression"/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="msqrt"/>
+  </define>
+
+  <define name="menclose">
+    <element name="menclose">
+      <ref name="attlist-menclose"/>
+      <ref name="PresExpression"/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="menclose"/>
+  </define>
+
+  <define name="mroot">
+    <element name="mroot">
+      <ref name="attlist-mroot"/>
+      <ref name="PresExpression"/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="mroot"/>
+  </define>
+
+  <define name="msub">
+    <element name="msub">
+      <ref name="attlist-msub"/>
+      <ref name="PresExpression"/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="msub"/>
+  </define>
+
+  <define name="msup">
+    <element name="msup">
+      <ref name="attlist-msup"/>
+      <ref name="PresExpression"/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="msup"/>
+  </define>
+
+  <define name="msubsup">
+    <element name="msubsup">
+      <ref name="attlist-msubsup"/>
+      <ref name="PresExpression"/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="msubsup"/>
+  </define>
+
+  <define name="mmultiscripts">
+    <element name="mmultiscripts">
+      <ref name="attlist-mmultiscripts"/>
+      <ref name="PresExpression"/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="mmultiscripts"/>
+  </define>
+
+  <define name="munder">
+    <element name="munder">
+      <ref name="attlist-munder"/>
+      <ref name="PresExpression"/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="munder"/>
+  </define>
+
+  <define name="mover">
+    <element name="mover">
+      <ref name="attlist-mover"/>
+      <ref name="PresExpression"/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="mover"/>
+  </define>
+
+  <define name="munderover">
+    <element name="munderover">
+      <ref name="attlist-munderover"/>
+      <ref name="PresExpression"/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="munderover"/>
+  </define>
+
+  <define name="mtable">
+    <element name="mtable">
+      <ref name="attlist-mtable"/>
+      <ref name="PresExpression"/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="mtable"/>
+  </define>
+
+  <define name="mtr">
+    <element name="mtr">
+      <ref name="attlist-mtr"/>
+      <ref name="PresExpression"/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="mtr"/>
+  </define>
+
+  <define name="mlabeledtr">
+    <element name="mlabeledtr">
+      <ref name="attlist-mlabeledtr"/>
+      <ref name="PresExpression"/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="mlabeledtr"/>
+  </define>
+
+  <define name="mtd">
+    <element name="mtd">
+      <ref name="attlist-mtd"/>
+      <ref name="PresExpression"/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="mtd"/>
+  </define>
+
+  <define name="maction">
+    <element name="maction">
+      <ref name="attlist-maction"/>
+      <ref name="PresExpression"/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="maction"/>
+  </define>
+
+  <define name="mfenced">
+    <element name="mfenced">
+      <ref name="attlist-mfenced"/>
+      <ref name="PresExpression"/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="mfenced"/>
+  </define>
+
+  <define name="mpadded">
+    <element name="mpadded">
+      <ref name="attlist-mpadded"/>
+      <ref name="PresExpression"/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="mpadded"/>
+  </define>
+
+  <a:documentation>
+    Presentation elements contain PCDATA or malignmark constructs.
+  </a:documentation>
+
+  <define name="mi">
+    <element name="mi">
+      <ref name="attlist-mi"/>
+      <zeroOrMore>
+        <choice>
+          <ref name="MathMLCharacters"/>
+          <ref name="malignmark"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="mi"/>
+  </define>
+
+  <define name="mn">
+    <element name="mn">
+      <ref name="attlist-mn"/>
+      <zeroOrMore>
+        <choice>
+          <ref name="MathMLCharacters"/>
+          <ref name="malignmark"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="mn"/>
+  </define>
+
+  <define name="mo">
+    <element name="mo">
+      <ref name="attlist-mo"/>
+      <zeroOrMore>
+        <choice>
+          <ref name="MathMLCharacters"/>
+          <ref name="malignmark"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="mo"/>
+  </define>
+
+  <define name="mtext">
+    <element name="mtext">
+      <ref name="attlist-mtext"/>
+      <zeroOrMore>
+        <choice>
+          <ref name="MathMLCharacters"/>
+          <ref name="malignmark"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="mtext"/>
+  </define>
+
+  <define name="ms">
+    <element name="ms">
+      <ref name="attlist-ms"/>
+      <zeroOrMore>
+        <choice>
+          <ref name="MathMLCharacters"/>
+          <ref name="malignmark"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="ms"/>
+  </define>
+
+  <a:documentation>
+    Browser interface definition
+    Attributes for top-level element "math"
+  </a:documentation>
+
+  <define name="att-macros">
+    <optional>
+      <attribute name="macros"/>
+    </optional>
+  </define>
+
+  <define name="att-mode">
+    <optional>
+      <attribute name="mode"/>
+    </optional>
+  </define>
+
+  <define name="att-display">
+    <optional>
+      <attribute name="display"/>
+    </optional>
+  </define>
+
+  <define name="att-topinfo">
+    <ref name="MATHML.Common.attrib"/>
+    <ref name="att-macros"/>
+    <ref name="att-mode"/>
+    <ref name="att-display"/>
+  </define>
+
+  <a:documentation>
+    Attributes for browser interface element
+  </a:documentation>
+
+  <define name="att-baseline">
+    <optional>
+      <attribute name="baseline"/>
+    </optional>
+  </define>
+
+  <define name="att-overflow">
+    <optional>
+      <attribute name="overflow" a:defaultValue="scroll">
+        <choice>
+          <value>scroll</value>
+          <value>elide</value>
+          <value>truncate</value>
+          <value>scale</value>
+        </choice>
+      </attribute>
+    </optional>
+  </define>
+
+  <define name="att-altimg">
+    <optional>
+      <attribute name="altimg"/>
+    </optional>
+  </define>
+
+  <define name="att-alttext">
+    <optional>
+      <attribute name="alttext"/>
+    </optional>
+  </define>
+
+  <define name="att-browif">
+    <ref name="att-type"/>
+    <ref name="att-name"/>
+    <ref name="att-height"/>
+    <ref name="att-width"/>
+    <ref name="att-baseline"/>
+    <ref name="att-overflow"/>
+    <ref name="att-altimg"/>
+    <ref name="att-alttext"/>
+  </define>
+
+  <a:documentation>
+    The top-level element "math" contains MathML encoded
+    mathematics. The "math" element has the browser info
+    attributes iff it is also the browser interface element.
+  </a:documentation>
+
+  <define name="math">
+    <element name="math">
+      <ref name="attlist-math"/>
+      <ref name="MathExpression"/>
+    </element>
+  </define>
+
+  <define name="any" combine="choice">
+    <ref name="math"/>
+  </define>
+
+  <define name="attlist-math" combine="interleave">
+    <ref name="att-topinfo"/>
+    <ref name="att-browif"/>
+  </define>
+
+  <start combine="choice">
+    <ref name="math"/>
+  </start>
+
+  <define name="any" combine="choice">
+    <text/>
+  </define>
+
+</grammar>
