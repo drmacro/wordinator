@@ -58,6 +58,7 @@ import org.apache.poi.xwpf.usermodel.XWPFHyperlinkRun;
 import org.apache.poi.xwpf.usermodel.XWPFNum;
 import org.apache.poi.xwpf.usermodel.XWPFNumbering;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.apache.poi.xwpf.usermodel.XWPFPicture;
 import org.apache.poi.xwpf.usermodel.XWPFRelation;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.apache.poi.xwpf.usermodel.XWPFSettings;
@@ -73,6 +74,8 @@ import org.apache.xmlbeans.XmlCursor.TokenType;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.impl.xb.xmlschema.SpaceAttribute.Space;
+import org.openxmlformats.schemas.drawingml.x2006.main.CTPositiveSize2D;
+import org.openxmlformats.schemas.drawingml.x2006.wordprocessingDrawing.CTInline;
 import org.openxmlformats.schemas.officeDocument.x2006.sharedTypes.STOnOff1;
 import org.openxmlformats.schemas.officeDocument.x2006.sharedTypes.STVerticalAlignRun;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBody;
@@ -415,6 +418,8 @@ public class DocxGenerator {
   private boolean isFirstTableStyleWarning = true;
   /** Paragraphs that belong to each list, keyed by the value of the list's wp:p/@numId, in document order */
   private Map<String, List<XWPFParagraph>> listParagraphs = new LinkedHashMap<>();
+  /** Pictures that are to be resized to fit the page width once the section properties are known */
+  private List<PictureToFit> picturesToFit = new ArrayList<>();
 
   /**
    *
@@ -494,6 +499,8 @@ public class DocxGenerator {
       mergeSectPrs(body.getSectPr(), sectPr);
       lastPara.getCTPPr().unsetSectPr();
     }
+
+    fitPicturesToPageWidth(doc);
   }
 
   private boolean hasMultipleSections(XmlObject xml) {
@@ -2538,7 +2545,7 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
     // Issue 16: If either dimension is not specified, scale the intrinsic width
     //           proportionally.
     if (widthVal == null && heightVal != null && (intrinsicWidth > 0) && goodHeight) {
-      double factor = height / intrinsicHeight;
+      double factor = (double)height / intrinsicHeight;
       width = (int)Math.round(intrinsicWidth * factor);
     }
     if (widthVal != null && heightVal == null && (intrinsicHeight > 0) && goodWidth) {
@@ -2567,11 +2574,14 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
     XWPFRun run = para.createRun();
 
         try {
-      run.addPicture(new ByteArrayInputStream(imageBytes),
+      XWPFPicture picture = run.addPicture(new ByteArrayInputStream(imageBytes),
                  format,
                  imageFilename,
                  Units.toEMU(width),
                  Units.toEMU(height));
+      if ("true".equals(cursor.getAttributeText(DocxConstants.QNAME_FIT_TO_PAGE_WIDTH_ATT))) {
+        picturesToFit.add(new PictureToFit(para, picture, run.getCTR().getDrawingArray(0).getInlineArray(0)));
+      }
     } catch (Exception e) {
       log.warn("" + e.getClass().getSimpleName() + " exception adding picture for reference '" + imageFilename +"': " +
                             e.getMessage());
@@ -3632,6 +3642,105 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
     for (TableColumnDefinition col : cols) {
       grid.addNewGridCol().setW(new BigInteger(col.getWidth()));
     }
+  }
+
+  /** A picture to resize if it's wider than the page's content area */
+  private static class PictureToFit {
+    final XWPFParagraph paragraph;
+    final XWPFPicture picture;
+    final CTInline inline;
+
+    PictureToFit(XWPFParagraph paragraph, XWPFPicture picture, CTInline inline) {
+      this.paragraph = paragraph;
+      this.picture = picture;
+      this.inline = inline;
+    }
+  }
+
+  // Word's defaults when the section properties don't specify a page size or margins (Letter, 1" margins)
+  private static final long DEFAULT_PAGE_WIDTH_TWIPS = 12240;
+  private static final long DEFAULT_MARGIN_TWIPS = 1440;
+  private static final long EMUS_PER_TWIP = 635;
+
+  /**
+   * Shrinks the pictures that asked to fit the page width (image/@fit-to-page-width)
+   * to the width of the content area of the section they're in, keeping their proportions.
+   * Pictures that already fit are not changed. Only pictures in paragraphs that are
+   * direct children of the body or of a section are handled, not those in tables, footnotes,
+   * headers, or footers.
+   * <p>This is done after the document has been constructed because the section properties
+   * are not set until after the section's content is.</p>
+   * @param doc The constructed document
+   */
+  private void fitPicturesToPageWidth(XWPFDocument doc) {
+    if (picturesToFit.isEmpty()) {
+      return;
+    }
+    // Paragraphs of the section being walked. The section's properties are on its last paragraph,
+    // except for the last section, which has them in the body.
+    List<XWPFParagraph> sectionParas = new ArrayList<>();
+    for (IBodyElement elem : doc.getBodyElements()) {
+      if (elem.getElementType() == BodyElementType.PARAGRAPH) {
+        XWPFParagraph para = (XWPFParagraph) elem;
+        sectionParas.add(para);
+        if (para.getCTP().isSetPPr() && para.getCTP().getPPr().isSetSectPr()) {
+          fitPicturesInParagraphs(sectionParas, para.getCTP().getPPr().getSectPr());
+          sectionParas.clear();
+        }
+      }
+    }
+    CTBody body = doc.getDocument().getBody();
+    fitPicturesInParagraphs(sectionParas, body.isSetSectPr() ? body.getSectPr() : null);
+  }
+
+  private void fitPicturesInParagraphs(List<XWPFParagraph> paras, CTSectPr sectPr) {
+    long maxWidthEmu = getContentWidthInTwips(sectPr) * EMUS_PER_TWIP;
+    for (PictureToFit toFit : picturesToFit) {
+      if (!paras.contains(toFit.paragraph)) {
+        continue;
+      }
+      CTPositiveSize2D extent = toFit.inline.getExtent();
+      if (extent.getCx() > maxWidthEmu) {
+        long newHeight = Math.round(extent.getCy() * (double) maxWidthEmu / extent.getCx());
+        extent.setCx(maxWidthEmu);
+        extent.setCy(newHeight);
+        // Keep the picture's own size in step with the inline's:
+        CTPositiveSize2D picExt = toFit.picture.getCTPicture().getSpPr().getXfrm().getExt();
+        picExt.setCx(maxWidthEmu);
+        picExt.setCy(newHeight);
+      }
+    }
+  }
+
+  /**
+   * Get the width of the area between the margins (and gutter) for a section.
+   * @param sectPr Section properties. May be null.
+   * @return Width in twips. Word's defaults are used for what the properties don't specify.
+   */
+  public static long getContentWidthInTwips(CTSectPr sectPr) {
+    long pageWidth = DEFAULT_PAGE_WIDTH_TWIPS;
+    long left = DEFAULT_MARGIN_TWIPS;
+    long right = DEFAULT_MARGIN_TWIPS;
+    long gutter = 0;
+    if (null != sectPr) {
+      if (sectPr.isSetPgSz() && null != sectPr.getPgSz().getW()) {
+        pageWidth = twips(sectPr.getPgSz().getW(), pageWidth);
+      }
+      if (sectPr.isSetPgMar()) {
+        CTPageMar mar = sectPr.getPgMar();
+        left = twips(mar.getLeft(), left);
+        right = twips(mar.getRight(), right);
+        gutter = twips(mar.getGutter(), gutter);
+      }
+    }
+    return Math.max(0, pageWidth - left - right - gutter);
+  }
+
+  private static long twips(Object value, long defaultValue) {
+    if (value instanceof BigInteger) {
+      return ((BigInteger) value).longValue();
+    }
+    return defaultValue;
   }
 
   private void setupNumbering(XWPFDocument doc, XWPFDocument templateDoc) throws DocxGenerationException {

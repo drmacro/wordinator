@@ -1113,6 +1113,21 @@
         <ref name="tagName.att"/>
       </optional>
       <ref name="width-height-atts"/>
+      <optional>
+        <attribute name="fit-to-page-width">
+          <a:documentation>
+            <p>If "true", an image that is wider than the area between the margins of the page it is on
+            is made that wide, keeping its proportions. An image that fits is not changed.
+            Default is "false", which leaves the image at its specified or intrinsic size.</p>
+            <p>Applies to images in the body and sections. Images in tables, footnotes, headers, and footers
+            are not changed.</p>
+          </a:documentation>
+          <choice>
+            <value>true</value>
+            <value>false</value>
+          </choice>
+        </attribute>
+      </optional>
     </element>
   </define>
   

@@ -122,6 +122,7 @@ public final class DocxConstants {
 	public static final QName QNAME_WIDTH_ATT = new QName("", "width");
 	public static final QName QNAME_XSLT_FORMAT_ATT = new QName("", "xslt-format");
 	public static final QName QNAME_NUMID_ATT = new QName("", "numId");
+	public static final QName QNAME_FIT_TO_PAGE_WIDTH_ATT = new QName("", "fit-to-page-width");
 
 	// Elements:
 	public static final QName QNAME_BODY_ELEM = new QName(SIMPLE_WP_NS, "body");

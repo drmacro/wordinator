@@ -274,6 +274,13 @@
     </xsl:apply-templates>      
   </xsl:template>
   
+  <!-- Set to "true" to make images that are wider than the page's content area fit it.
+       Pass on the command line as, e.g., fit-images=true. Off by default so that
+       image sizes are not changed unless asked for.
+       A string rather than a boolean because the Wordinator command line passes
+       parameter values as strings. -->
+  <xsl:param name="fit-images" as="xs:string" select="'false'"/>
+  
   <xsl:template match="xhtml:img | img">
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
 
@@ -298,6 +305,9 @@
       <wp:image src="{$imageUrl}">
         <!-- HTML @width and @height should work as is as long as unit is not % -->
         <xsl:sequence select="@width, @height"/>
+        <xsl:if test="$fit-images = ('true', 'yes', '1')">
+          <xsl:attribute name="fit-to-page-width" select="'true'"/>
+        </xsl:if>
 <!--          <xsl:apply-templates select="@*"/>-->
       </wp:image>        
     </xsl:if>
