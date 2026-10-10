@@ -26,13 +26,37 @@ If you need to go from Word documents back to XML, you may find [the DITA for Pu
 
 ## Release Notes
 
-* 1.2.0
+* Unreleased
 
+  Note: Versions 1.2.0 and 1.2.1 were never released, so these notes include the changes made for them.
+
+  * Issue 155: Implement the align attribute on tables. Thanks to Lars Marius Garshol.
+  * Issue 157: Support setting border properties on nested tables. Thanks to Lars Marius Garshol.
+  * Issue 160: Support more than one MathML equation in a single paragraph. Thanks to Lars Marius Garshol.
+  * html2docx: Links to external resources (those with a URI scheme, such as https: or mailto:) are now external hyperlinks instead of being turned into bookmark references. Items of ordered lists (ol) now use the "List Number" styles. Thanks to Oleksandr Oboznyi for pull request 124.
+  * Numbering of ordered lists now restarts for each list. New optional attribute wp:p/@numId identifies the list a paragraph belongs to; each distinct value gets its own Word numbering instance, based on the numbering definition of the paragraph's style, that starts at 1. The html2docx transform sets @numId on the items of each ol. Paragraphs whose style has no numbering are left as they are. Thanks to Oleksandr Oboznyi for the original implementation (pull requests 125 and 128).
+  * html2docx: Column widths specified on HTML col elements (@width or width in @style) are now used as the widths of the table columns. Percentages and measurements are supported. A number without units is pixels. Widths that can't be used, such as relative widths ("2*"), are ignored and the column is auto-sized.
+  * When all of a table's columns have absolute widths, the table grid (w:tblGrid) is now set from them, which helps tools such as LibreOffice lay out the table.
+  * This replaces pull requests 126 and 127 from Oleksandr Oboznyi, who first took on column widths. Thanks!
+  * html2docx: Fix tables whose rows are direct children of the table element (no tbody) losing all of their rows. These rows are now put in a SWPX tbody.
+  * New optional command-line option --fit-images and SWPX attribute image/@fit-to-page-width make images that are wider than the page's content area fit it, keeping their proportions. Off by default so that image sizes don't change unless asked for. Only images in the body and sections are resized. Thanks to Oleksandr Oboznyi for the original idea and implementation (pull request 129).
+  * Fix images with only a height specified: the width was calculated with integer division and came out as zero (or the intrinsic width).
+  * Issue 172: Fix duplicated headers and footers in the last section of documents with multiple sections. The last section's header and footer references now replace, rather than duplicate, the document-level references of the same type, and the last section's type (@type, e.g., oddPage) is now carried over to the document-level section properties.
+  * Issues 133, 105: Generated DOCX files now set the Word compatibility mode setting to 15 so that Word does not open them in "Compatibility Mode". This changes some layout details compared to earlier releases, which opened in compatibility mode.
+  * Issue 117: Section properties for the last section of a multi-section document are set at the document body level. Thanks to Lars Marius Garshol.
+  * Issue 109: Table cells always end with a paragraph. Thanks to Lars Marius Garshol.
+  * Issue 174: Fix mismatched Apache POI versions (poi, poi-ooxml, poi-ooxml-full now all 5.4.0). Update commons-io to 2.17.0, xmlbeans to 5.2.1, and log4j to 2.25.4.
+  * Issue 170: Fix test catalog that depended on a DTD URL that now redirects.
+  * Issue 143: Implement keepNext and keepLines paragraph properties.
+  * Issues 140, 145, 147: Implement support for document properties (core, extended, custom), including subject.
+  * Issue 136: Implement external hyperlinks.
+  * Issues 87, 132: Table of contents generation fixes, including nested entries and the -t argument.
+  * Issue 134: Retain empty paragraph in empty table cells (td with no child elements broke Word).
+  * Issue 106: Support nested tables.
+  * Issue 82: Handle specified-but-empty @height and @width attribute.
   * Upgrade to POI 5. Addresses security issues with POI4 and makes newer POI features available for future.
   * Support generation of MathML equations in Word. Thanks to Lars Marius Garshol for contributing this enhancment. This adds the MathML 2 and 3 RNG grammars (courtesy of Ken Holman) for use with the SWPX grammar. For validation, use the simplewpml-mathml3.rng or -mathml2.rng files as the top-level grammar. Requires that you get the MATHML2OOML.XSL from a Microsoft Office distribution if you want to use XSLT to convert MathML into OOXML.
   * Various test case refinements
-  * Issue 82: Handle specified-but-empty @height and @width attribute
-  * Implement support for document properties (core, extendeded, custom).
 
 * 1.1.2
   * Reworked release package to put dependency jars in lib/ dir and use non-all-dependencies jar to avoid issue with log4j multi-version jar not working right.
@@ -218,6 +242,7 @@ It's not a very pretty test but it demonstrates that the tool is working.
 * -x (optional) The XSLT transform to apply to the input file to generate SWPX files.
 * -k (optional) Semicolon-separated list of catalog files to use with Saxon. Same as Saxon's -catalog option.
 * -c (optional) Chunk level. Specifies the section level or type to create separate DOCX files for. The value to use is determined by the details of the XSLT transform (local:is-chunk() function).
+* --fit-images (optional) Make images that are wider than the page's content area (the area between the margins) fit it, keeping their proportions. Images that already fit are not enlarged, and without this option image sizes are not changed. Applies to images in the body and sections, not those in tables, footnotes, headers, or footers. The bundled html2docx and ditahtml2docx transforms support it. For your own SWPX, set image/@fit-to-page-width="true" on the images to fit.
 
 If the `-i` parameter is a directory then it looks for `*.swpx` files and generates a DOCX file for each one.
 

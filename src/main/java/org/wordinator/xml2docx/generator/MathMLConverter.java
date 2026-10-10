@@ -42,7 +42,14 @@ public class MathMLConverter {
       CTOMathPara ctOMathPara = CTOMathPara.Factory.parse(convertToOOML(indoc));
 
       CTP ctp = para.getCTP();
-      ctp.setOMathArray(ctOMathPara.getOMathArray());
+
+      int oMathCount = ctp.getOMathList().size();
+
+      // add empty OMath
+      ctp.addNewOMath();
+
+      // then overwrite that empty OMath with ours
+      ctp.setOMathArray(oMathCount, ctOMathPara.getOMathArray()[0]);
     } catch (XmlException e) {
       // we seem to have produced bad OOXML, but this was done by the
       // stylesheet the user supplied, so treating as user error

@@ -21,6 +21,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -45,6 +46,7 @@ import org.apache.poi.xwpf.usermodel.BodyElementType;
 import org.apache.poi.xwpf.usermodel.BreakType;
 import org.apache.poi.xwpf.usermodel.IBodyElement;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
+import org.apache.poi.xwpf.usermodel.TableRowAlign;
 import org.apache.poi.xwpf.usermodel.UnderlinePatterns;
 import org.apache.poi.xwpf.usermodel.XWPFAbstractFootnoteEndnote;
 import org.apache.poi.xwpf.usermodel.XWPFAbstractNum;
@@ -56,6 +58,7 @@ import org.apache.poi.xwpf.usermodel.XWPFHyperlinkRun;
 import org.apache.poi.xwpf.usermodel.XWPFNum;
 import org.apache.poi.xwpf.usermodel.XWPFNumbering;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.apache.poi.xwpf.usermodel.XWPFPicture;
 import org.apache.poi.xwpf.usermodel.XWPFRelation;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.apache.poi.xwpf.usermodel.XWPFSettings;
@@ -71,6 +74,8 @@ import org.apache.xmlbeans.XmlCursor.TokenType;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.impl.xb.xmlschema.SpaceAttribute.Space;
+import org.openxmlformats.schemas.drawingml.x2006.main.CTPositiveSize2D;
+import org.openxmlformats.schemas.drawingml.x2006.wordprocessingDrawing.CTInline;
 import org.openxmlformats.schemas.officeDocument.x2006.sharedTypes.STOnOff1;
 import org.openxmlformats.schemas.officeDocument.x2006.sharedTypes.STVerticalAlignRun;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBody;
@@ -79,6 +84,8 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBorder;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTCompat;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTCompatSetting;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDecimalNumber;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTNumLvl;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTNumPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDocument1;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTFldChar;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTFtnEdn;
@@ -87,6 +94,7 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTHyperlink;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTMarkupRange;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTOnOff;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPPr;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPPrGeneral;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageMar;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageNumber;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageSz;
@@ -99,6 +107,7 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTShd;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSimpleField;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTStyle;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTbl;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblGrid;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblLayoutType;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblWidth;
@@ -407,6 +416,10 @@ public class DocxGenerator {
   private boolean isFirstParagraphStyleWarning = true;
   private boolean isFirstCharacterStyleWarning = true;
   private boolean isFirstTableStyleWarning = true;
+  /** Paragraphs that belong to each list, keyed by the value of the list's wp:p/@numId, in document order */
+  private Map<String, List<XWPFParagraph>> listParagraphs = new LinkedHashMap<>();
+  /** Pictures that are to be resized to fit the page width once the section properties are known */
+  private List<PictureToFit> picturesToFit = new ArrayList<>();
 
   /**
    *
@@ -433,6 +446,7 @@ public class DocxGenerator {
     setupNumbering(doc, this.templateDoc);
     setupStyles(doc, this.templateDoc);
     constructDoc(doc, xml);
+    restartNumberedLists(doc);
 
     FileOutputStream out = new FileOutputStream(outFile);
         doc.write(out);
@@ -485,6 +499,8 @@ public class DocxGenerator {
       mergeSectPrs(body.getSectPr(), sectPr);
       lastPara.getCTPPr().unsetSectPr();
     }
+
+    fitPicturesToPageWidth(doc);
   }
 
   private boolean hasMultipleSections(XmlObject xml) {
@@ -528,14 +544,33 @@ public class DocxGenerator {
     if (fromSectPr.isSetPgNumType()) {
       toSectPr.setPgNumType(fromSectPr.getPgNumType());
     }
+    // The section type determines how the section starts, so the last section's
+    // type must carry over to the body-level section properties.
+    if (fromSectPr.isSetType()) {
+      toSectPr.setType(fromSectPr.getType());
+    }
 
+    // A section may have only one header or footer reference of each type, so
+    // references from the last section replace any same-type references already
+    // set on the body-level section properties (e.g., from document-level headers
+    // and footers), rather than being added alongside them. Issue #172.
     for (CTHdrFtrRef ref : fromSectPr.getHeaderReferenceList()) {
-      int ix = toSectPr.getHeaderReferenceList().size();
+      for (int i = toSectPr.sizeOfHeaderReferenceArray() - 1; i >= 0; i--) {
+        if (toSectPr.getHeaderReferenceArray(i).getType() == ref.getType()) {
+          toSectPr.removeHeaderReference(i);
+        }
+      }
+      int ix = toSectPr.sizeOfHeaderReferenceArray();
       toSectPr.insertNewHeaderReference(ix);
       toSectPr.setHeaderReferenceArray(ix, ref);
     }
     for (CTHdrFtrRef ref : fromSectPr.getFooterReferenceList()) {
-      int ix = toSectPr.getFooterReferenceList().size();
+      for (int i = toSectPr.sizeOfFooterReferenceArray() - 1; i >= 0; i--) {
+        if (toSectPr.getFooterReferenceArray(i).getType() == ref.getType()) {
+          toSectPr.removeFooterReference(i);
+        }
+      }
+      int ix = toSectPr.sizeOfFooterReferenceArray();
       toSectPr.insertNewFooterReference(ix);
       toSectPr.setFooterReferenceArray(ix, ref);
     }
@@ -1672,6 +1707,7 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
     cursor.push();
     String styleName = cursor.getAttributeText(DocxConstants.QNAME_STYLE_ATT);
     String styleId = cursor.getAttributeText(DocxConstants.QNAME_STYLEID_ATT);
+    String listId = cursor.getAttributeText(DocxConstants.QNAME_NUMID_ATT);
 
     if (null != styleName && null == styleId) {
       // Look up the style by name:
@@ -1792,6 +1828,10 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
       } while(cursor.toNextSibling());
     }
     cursor.pop();
+
+    if (null != listId && !listId.isEmpty()) {
+      listParagraphs.computeIfAbsent(listId, k -> new ArrayList<>()).add(para);
+    }
     return para;
   }
 
@@ -2505,7 +2545,7 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
     // Issue 16: If either dimension is not specified, scale the intrinsic width
     //           proportionally.
     if (widthVal == null && heightVal != null && (intrinsicWidth > 0) && goodHeight) {
-      double factor = height / intrinsicHeight;
+      double factor = (double)height / intrinsicHeight;
       width = (int)Math.round(intrinsicWidth * factor);
     }
     if (widthVal != null && heightVal == null && (intrinsicHeight > 0) && goodWidth) {
@@ -2534,11 +2574,14 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
     XWPFRun run = para.createRun();
 
         try {
-      run.addPicture(new ByteArrayInputStream(imageBytes),
+      XWPFPicture picture = run.addPicture(new ByteArrayInputStream(imageBytes),
                  format,
                  imageFilename,
                  Units.toEMU(width),
                  Units.toEMU(height));
+      if ("true".equals(cursor.getAttributeText(DocxConstants.QNAME_FIT_TO_PAGE_WIDTH_ATT))) {
+        picturesToFit.add(new PictureToFit(para, picture, run.getCTR().getDrawingArray(0).getInlineArray(0)));
+      }
     } catch (Exception e) {
       log.warn("" + e.getClass().getSimpleName() + " exception adding picture for reference '" + imageFilename +"': " +
                             e.getMessage());
@@ -2707,8 +2750,7 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
 
     setTableIndents(table, cursor);
     setTableLayout(table, cursor);
-
-
+    setTableAlign(table, cursor);
 
     String styleName = cursor.getAttributeText(DocxConstants.QNAME_STYLE_ATT);
     String styleId = cursor.getAttributeText(DocxConstants.QNAME_STYLEID_ATT);
@@ -2794,6 +2836,8 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
       } while (cursor.toNextSibling());
     }
 
+    setTableGrid(table, colDefs);
+
     // populate the rows and cells.
     cursor = xml.newCursor();
 
@@ -2854,6 +2898,26 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
 
   }
 
+  private void setTableAlign(XWPFTable table, XmlCursor cursor) throws DocxGenerationException {
+    String align = cursor.getAttributeText(DocxConstants.QNAME_ALIGN_ATT);
+    if (align == null) {
+      return;
+    }
+
+    TableRowAlign alignObj;
+    if (align.equals("start")) {
+      alignObj = TableRowAlign.LEFT;
+    } else if (align.equals("center")) {
+      alignObj = TableRowAlign.CENTER;
+    } else if (align.equals("end")) {
+      alignObj = TableRowAlign.RIGHT;
+    } else {
+      throw new DocxGenerationException("Unknown value for table align: '" +
+                                        align + "'");
+    }
+
+    table.setTableAlignment(alignObj);
+  }
 
   /**
    * Sets the w:tblLayout to fixed or auto
@@ -3378,15 +3442,13 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
 	
 	              // record how many tables were in the cell previously
 	              int preTables = cell.getCTTc().getTblList().size();
-	  
+
 	              CTTbl ctTbl = cell.getCTTc().addNewTbl();
 	              ctTbl = cell.getCTTc().addNewTbl();
-	              CTTblPr tblPr = ctTbl.addNewTblPr();
-	              tblPr.addNewTblW();
-	  
+
 	              XWPFTable nestedTable = new XWPFTable(ctTbl, cell);
 	              makeTable(nestedTable, cursor.getObject());
-	  
+
 	              // for some reason this inserts two tables, where the
 	              // first one is empty. we need to remove that one.
 	              // luckily, the number of tables we used to have equals
@@ -3480,6 +3542,205 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
     }
 
 
+  }
+
+  /**
+   * Gives each list identified by a wp:p/@numId its own Word numbering instance
+   * so that numbering restarts at 1 for each list rather than continuing from
+   * the previous list that uses the same paragraph style.
+   * <p>Each instance uses the same abstract numbering definition as the list's
+   * paragraph style. If that can't be determined, the list's paragraphs are left
+   * as they are, since a numbering instance without an abstract definition is invalid.</p>
+   * @param doc The document being generated
+   */
+  private void restartNumberedLists(XWPFDocument doc) {
+    XWPFNumbering numbering = doc.getNumbering();
+    if (null == numbering) {
+      return;
+    }
+    BigInteger nextNumId = BigInteger.ONE;
+    for (XWPFNum num : numbering.getNums()) {
+      BigInteger numId = num.getCTNum().getNumId();
+      if (numId.compareTo(nextNumId) >= 0) {
+        nextNumId = numId.add(BigInteger.ONE);
+      }
+    }
+
+    for (Map.Entry<String, List<XWPFParagraph>> entry : listParagraphs.entrySet()) {
+      List<XWPFParagraph> paras = entry.getValue();
+      BigInteger abstractNumId = getStyleAbstractNumId(doc, paras.get(0).getStyle());
+      if (null == abstractNumId) {
+        log.warn("restartNumberedLists(): Style '" + paras.get(0).getStyle()
+            + "' has no numbering definition. Numbering for list '" + entry.getKey() + "' not restarted.");
+        continue;
+      }
+      BigInteger listNumId = nextNumId;
+      nextNumId = nextNumId.add(BigInteger.ONE);
+      numbering.addNum(abstractNumId, listNumId);
+
+      CTNumLvl lvlOverride = numbering.getNum(listNumId).getCTNum().addNewLvlOverride();
+      lvlOverride.setIlvl(BigInteger.ZERO);
+      lvlOverride.addNewStartOverride().setVal(BigInteger.ONE);
+
+      for (XWPFParagraph para : paras) {
+        CTPPr pPr = para.getCTPPr();
+        CTNumPr numPr = pPr.isSetNumPr() ? pPr.getNumPr() : pPr.addNewNumPr();
+        CTDecimalNumber numIdElem = numPr.isSetNumId() ? numPr.getNumId() : numPr.addNewNumId();
+        numIdElem.setVal(listNumId);
+      }
+    }
+  }
+
+  /**
+   * Gets the ID of the abstract numbering definition used by a style, following
+   * the style's basedOn chain.
+   * @param doc The document
+   * @param styleId ID of the style
+   * @return The abstract numbering ID or null if the style, or the styles it's based on, has no numbering.
+   */
+  private BigInteger getStyleAbstractNumId(XWPFDocument doc, String styleId) {
+    XWPFStyles styles = doc.getStyles();
+    XWPFStyle style = (null == styleId || null == styles) ? null : styles.getStyle(styleId);
+    // Limit depth to protect against basedOn cycles:
+    for (int depth = 0; null != style && depth < 20; depth++) {
+      CTPPrGeneral pPr = style.getCTStyle().getPPr();
+      if (null != pPr && pPr.isSetNumPr() && pPr.getNumPr().isSetNumId()) {
+        XWPFNum num = doc.getNumbering().getNum(pPr.getNumPr().getNumId().getVal());
+        if (null != num && null != num.getCTNum().getAbstractNumId()) {
+          return num.getCTNum().getAbstractNumId().getVal();
+        }
+        return null;
+      }
+      style = (null == style.getBasisStyleID()) ? null : styles.getStyle(style.getBasisStyleID());
+    }
+    return null;
+  }
+
+  /**
+   * Sets the table grid (w:tblGrid) from the column definitions when all of the
+   * columns have absolute widths. The grid can only hold absolute widths, in twips.
+   * If any column is auto or a percentage, the grid is left as it is and the widths
+   * on the cells determine the layout.
+   * @param table The table to set the grid on
+   * @param colDefs The table's column definitions
+   */
+  public static void setTableGrid(XWPFTable table, TableColumnDefinitions colDefs) {
+    List<TableColumnDefinition> cols = colDefs.getColumnDefinitions();
+    if (cols.isEmpty()) {
+      return;
+    }
+    for (TableColumnDefinition col : cols) {
+      if (!col.getWidth().matches("[0-9]+")) {
+        return;
+      }
+    }
+    CTTbl ctTbl = table.getCTTbl();
+    CTTblGrid grid = null != ctTbl.getTblGrid() ? ctTbl.getTblGrid() : ctTbl.addNewTblGrid();
+    while (grid.sizeOfGridColArray() > 0) {
+      grid.removeGridCol(0);
+    }
+    for (TableColumnDefinition col : cols) {
+      grid.addNewGridCol().setW(new BigInteger(col.getWidth()));
+    }
+  }
+
+  /** A picture to resize if it's wider than the page's content area */
+  private static class PictureToFit {
+    final XWPFParagraph paragraph;
+    final XWPFPicture picture;
+    final CTInline inline;
+
+    PictureToFit(XWPFParagraph paragraph, XWPFPicture picture, CTInline inline) {
+      this.paragraph = paragraph;
+      this.picture = picture;
+      this.inline = inline;
+    }
+  }
+
+  // Word's defaults when the section properties don't specify a page size or margins (Letter, 1" margins)
+  private static final long DEFAULT_PAGE_WIDTH_TWIPS = 12240;
+  private static final long DEFAULT_MARGIN_TWIPS = 1440;
+  private static final long EMUS_PER_TWIP = 635;
+
+  /**
+   * Shrinks the pictures that asked to fit the page width (image/@fit-to-page-width)
+   * to the width of the content area of the section they're in, keeping their proportions.
+   * Pictures that already fit are not changed. Only pictures in paragraphs that are
+   * direct children of the body or of a section are handled, not those in tables, footnotes,
+   * headers, or footers.
+   * <p>This is done after the document has been constructed because the section properties
+   * are not set until after the section's content is.</p>
+   * @param doc The constructed document
+   */
+  private void fitPicturesToPageWidth(XWPFDocument doc) {
+    if (picturesToFit.isEmpty()) {
+      return;
+    }
+    // Paragraphs of the section being walked. The section's properties are on its last paragraph,
+    // except for the last section, which has them in the body.
+    List<XWPFParagraph> sectionParas = new ArrayList<>();
+    for (IBodyElement elem : doc.getBodyElements()) {
+      if (elem.getElementType() == BodyElementType.PARAGRAPH) {
+        XWPFParagraph para = (XWPFParagraph) elem;
+        sectionParas.add(para);
+        if (para.getCTP().isSetPPr() && para.getCTP().getPPr().isSetSectPr()) {
+          fitPicturesInParagraphs(sectionParas, para.getCTP().getPPr().getSectPr());
+          sectionParas.clear();
+        }
+      }
+    }
+    CTBody body = doc.getDocument().getBody();
+    fitPicturesInParagraphs(sectionParas, body.isSetSectPr() ? body.getSectPr() : null);
+  }
+
+  private void fitPicturesInParagraphs(List<XWPFParagraph> paras, CTSectPr sectPr) {
+    long maxWidthEmu = getContentWidthInTwips(sectPr) * EMUS_PER_TWIP;
+    for (PictureToFit toFit : picturesToFit) {
+      if (!paras.contains(toFit.paragraph)) {
+        continue;
+      }
+      CTPositiveSize2D extent = toFit.inline.getExtent();
+      if (extent.getCx() > maxWidthEmu) {
+        long newHeight = Math.round(extent.getCy() * (double) maxWidthEmu / extent.getCx());
+        extent.setCx(maxWidthEmu);
+        extent.setCy(newHeight);
+        // Keep the picture's own size in step with the inline's:
+        CTPositiveSize2D picExt = toFit.picture.getCTPicture().getSpPr().getXfrm().getExt();
+        picExt.setCx(maxWidthEmu);
+        picExt.setCy(newHeight);
+      }
+    }
+  }
+
+  /**
+   * Get the width of the area between the margins (and gutter) for a section.
+   * @param sectPr Section properties. May be null.
+   * @return Width in twips. Word's defaults are used for what the properties don't specify.
+   */
+  public static long getContentWidthInTwips(CTSectPr sectPr) {
+    long pageWidth = DEFAULT_PAGE_WIDTH_TWIPS;
+    long left = DEFAULT_MARGIN_TWIPS;
+    long right = DEFAULT_MARGIN_TWIPS;
+    long gutter = 0;
+    if (null != sectPr) {
+      if (sectPr.isSetPgSz() && null != sectPr.getPgSz().getW()) {
+        pageWidth = twips(sectPr.getPgSz().getW(), pageWidth);
+      }
+      if (sectPr.isSetPgMar()) {
+        CTPageMar mar = sectPr.getPgMar();
+        left = twips(mar.getLeft(), left);
+        right = twips(mar.getRight(), right);
+        gutter = twips(mar.getGutter(), gutter);
+      }
+    }
+    return Math.max(0, pageWidth - left - right - gutter);
+  }
+
+  private static long twips(Object value, long defaultValue) {
+    if (value instanceof BigInteger) {
+      return ((BigInteger) value).longValue();
+    }
+    return defaultValue;
   }
 
   private void setupNumbering(XWPFDocument doc, XWPFDocument templateDoc) throws DocxGenerationException {

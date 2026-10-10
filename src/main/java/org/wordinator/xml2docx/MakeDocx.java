@@ -70,6 +70,8 @@ public class MakeDocx {
   private static final Logger log = LogManager.getLogger(MakeDocx.class);
 
   public static final String XSLT_PARAM_CHUNKLEVEL = "chunklevel";
+  public static final String OPTION_FIT_IMAGES = "fit-images";
+  public static final String XSLT_PARAM_FIT_IMAGES = "fit-images";
 
   public static void main( String[] args ) throws Exception {
     Options options = buildOptions();
@@ -120,6 +122,10 @@ public class MakeDocx {
     }
 
     chunkLevel = chunkLevel == null ? "root" : chunkLevel;
+
+    if (cmd.hasOption(OPTION_FIT_IMAGES)) {
+      xsltParameters.put(XSLT_PARAM_FIT_IMAGES, "true");
+    }
 
     log.info("Input document or directory='" + inDocPath + "'");
     log.info("Output directory           ='" + docxPath + "'");
@@ -371,6 +377,15 @@ public class MakeDocx {
       .desc("Semicolon-separated list of XML catalog file names, as for the Saxon -catalog option.")
       .build();
 
+    Option fitImages = Option.builder()
+      .longOpt(OPTION_FIT_IMAGES)
+      .required(false)
+      .hasArg(false)
+      .desc("Make images that are wider than the page's content area fit it, keeping their proportions. "
+            + "Passes fit-images=true to the XSLT transform (the bundled html2docx and ditahtml2docx transforms support it). "
+            + "Images are not resized by default.")
+      .build();
+
     options.addOption(input);
     options.addOption(output);
     options.addOption(template);
@@ -378,6 +393,7 @@ public class MakeDocx {
     options.addOption(dpi);
     options.addOption(chunkLevel);
     options.addOption(catalog);
+    options.addOption(fitImages);
 
     return options;
   }

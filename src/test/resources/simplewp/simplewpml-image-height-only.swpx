@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wp:document xmlns:wp="urn:ns:wordinator:simplewpml">
+  <wp:body>
+    <!-- picture-01.gif is 111 x 111 pixels, so width should follow the height -->
+    <wp:p><wp:image src="images/picture-01.gif" height="50"/></wp:p>
+  </wp:body>
+</wp:document>
