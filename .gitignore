@@ -35,3 +35,9 @@ dist/
 target/
 build.number
 temp/
+
+# Hidden files and directories (except those that should be tracked)
+.*
+!.gitignore
+!.java-version
+!.github/
