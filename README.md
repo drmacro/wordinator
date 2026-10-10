@@ -26,9 +26,7 @@ If you need to go from Word documents back to XML, you may find [the DITA for Pu
 
 ## Release Notes
 
-* Unreleased
-
-  Note: Versions 1.2.0 and 1.2.1 were never released, so these notes include the changes made for them.
+* 1.2.0
 
   * Issue 155: Implement the align attribute on tables. Thanks to Lars Marius Garshol.
   * Issue 157: Support setting border properties on nested tables. Thanks to Lars Marius Garshol.
@@ -480,7 +478,7 @@ Maven dependency:
 <dependency>
   <groupId>org.wordinator</groupId>
   <artifactId>wordinator</artifactId>
-  <version>1.1.2</version>
+  <version>1.2.0</version>
 </dependency>
 ```
 
