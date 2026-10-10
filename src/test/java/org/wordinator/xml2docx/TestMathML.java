@@ -48,6 +48,26 @@ public class TestMathML extends TestCase {
     assertEquals("And it is possible for inline equations  to be in the middle of paragraphs.", p.getText());
   }
 
+  @Test
+  public void testTwoMathMLInOnePara() throws Exception {
+    XWPFDocument doc = convert("simplewp/simplewpml-mathml-03.xml", "out/testMathML.docx");
+
+    // first para of text
+    Iterator<XWPFParagraph> iterator = doc.getParagraphsIterator();
+    XWPFParagraph p = iterator.next();
+    assertNotNull("Expected a paragraph", p);
+    assertEquals("When 12 test specimens of size  mm ×  mm are tested in accordance with Appendix B, the following apply:", p.getText());
+
+    // check the math in the para
+    CTP ctp = p.getCTP();
+    CTOMath[] maths = ctp.getOMathArray();
+    assertEquals(2, maths.length);
+
+    // there's no point in looking into the maths to see what's there,
+    // since that would amount to testing the stylesheet, but the
+    // stylesheet is not part of the Wordinator
+  }
+
   private XWPFDocument convert(String infile, String outfile) throws Exception {
     ClassLoader classLoader = getClass().getClassLoader();
     File inFile = new File(classLoader.getResource(infile).getFile());
