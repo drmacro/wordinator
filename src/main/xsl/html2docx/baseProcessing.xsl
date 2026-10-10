@@ -344,7 +344,7 @@
   <!-- ==========================
        Tables
        ========================== -->
-  <xsl:template match="xhtml:table | table | xhtml:tbody | tbody | xhtml:thead | thead | xhtml:tr | tr | xhtml:col | col">
+  <xsl:template match="xhtml:table | table | xhtml:tbody | tbody | xhtml:thead | thead | xhtml:tr | tr">
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
 
     <!-- FIXME: For table rows, handle vertical spanning, which means examining preceding rows to look for
@@ -358,6 +358,40 @@
     </xsl:element>
     
   </xsl:template>
+  
+  <!-- Column definition. The width comes from @width or from a width property in @style.
+       Widths that can't be used, e.g., the HTML 4 relative width "2*", are ignored and the column is auto. -->
+  <xsl:template match="xhtml:col | col">
+    <xsl:variable name="width" as="xs:string?" select="local:get-column-width(.)"/>
+    <wp:col>
+      <xsl:if test="exists($width)">
+        <xsl:attribute name="colwidth" select="$width"/>
+      </xsl:if>
+    </wp:col>
+  </xsl:template>
+  
+  <!-- Gets the width of a col as a SWPX width: a percentage or a measurement with units.
+       A number without units is pixels, as in HTML, and gets the "px" unit so it isn't
+       taken to be twips. -->
+  <xsl:function name="local:get-column-width" as="xs:string?">
+    <xsl:param name="col" as="element()"/>
+    <xsl:variable name="styleWidth" as="xs:string?"
+      select="if (matches($col/@style, '(^|;)\s*width\s*:'))
+                 then replace($col/@style, '^(.*;)?\s*width\s*:\s*([^;]+?)\s*(;.*)?$', '$2')
+                 else ()"
+    />
+    <xsl:variable name="candidate" as="xs:string?"
+      select="normalize-space(($styleWidth, $col/@width)[1])"
+    />
+    <xsl:choose>
+      <xsl:when test="matches($candidate, '^[0-9]+(\.[0-9]+)?$')">
+        <xsl:sequence select="$candidate || 'px'"/>
+      </xsl:when>
+      <xsl:when test="matches($candidate, '^[0-9]+(\.[0-9]+)?(%|px|pt|pc|in|mm|cm)$')">
+        <xsl:sequence select="$candidate"/>
+      </xsl:when>
+    </xsl:choose>
+  </xsl:function>
   
   <xsl:template match="xhtml:td | td | xhtml:th | th">
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>

@@ -43,6 +43,9 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageNumber;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageSz;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectPr;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblGrid;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.STTblWidth;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblWidth;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTText;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STFldCharType;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STNumberFormat;
@@ -860,6 +863,36 @@ public class TestDocxGenerator extends TestCase {
     assertEquals(STPageOrientation.Enum.forString("portrait"), pageSz.getOrient());
     assertEquals(BigInteger.valueOf(11906), pageSz.getW());
     assertEquals(BigInteger.valueOf(16838), pageSz.getH());
+  }
+
+  @Test
+  public void testTableGridFromAbsoluteColumnWidths() throws Exception {
+    XWPFDocument doc = convert("simplewp/simplewpml-table-col-widths.swpx", "out/table-col-widths.docx");
+    List<XWPFTable> tables = doc.getTables();
+    assertEquals(3, tables.size());
+
+    CTTblGrid grid = tables.get(0).getCTTbl().getTblGrid();
+    assertNotNull("Expected a table grid", grid);
+    assertEquals(2, grid.sizeOfGridColArray());
+    assertEquals(BigInteger.valueOf(1440), grid.getGridColArray(0).getW());
+    assertEquals(BigInteger.valueOf(2880), grid.getGridColArray(1).getW());
+  }
+
+  @Test
+  public void testTableGridNotSetForPercentOrMissingColumnWidths() throws Exception {
+    XWPFDocument doc = convert("simplewp/simplewpml-table-col-widths.swpx", "out/table-col-widths-no-grid.docx");
+    List<XWPFTable> tables = doc.getTables();
+
+    for (int i = 1; i <= 2; i++) {
+      CTTblGrid grid = tables.get(i).getCTTbl().getTblGrid();
+      assertTrue("Table " + i + " should not have grid columns",
+          null == grid || 0 == grid.sizeOfGridColArray());
+    }
+    // Percent widths are still applied to the cells:
+    XWPFTableCell cell = tables.get(1).getRow(0).getCell(0);
+    CTTblWidth cellWidth = cell.getCTTc().getTcPr().getTcW();
+    assertEquals(STTblWidth.PCT, cellWidth.getType());
+    assertEquals(BigInteger.valueOf(1250), cellWidth.getW()); // Fiftieths of a percent
   }
 
   // ===== INTERNAL UTILITIES

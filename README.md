@@ -26,6 +26,12 @@ If you need to go from Word documents back to XML, you may find [the DITA for Pu
 
 ## Release Notes
 
+* Unreleased
+
+  * html2docx: Column widths specified on HTML col elements (@width or width in @style) are now used as the widths of the table columns. Percentages and measurements are supported. A number without units is pixels. Widths that can't be used, such as relative widths ("2*"), are ignored and the column is auto-sized.
+  * When all of a table's columns have absolute widths, the table grid (w:tblGrid) is now set from them, which helps tools such as LibreOffice lay out the table.
+  * This replaces pull requests 126 and 127 from Oleksandr Oboznyi, who first took on column widths. Thanks!
+
 * 1.2.0
 
   * Upgrade to POI 5. Addresses security issues with POI4 and makes newer POI features available for future.

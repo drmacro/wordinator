@@ -62,6 +62,29 @@ public class TestHtml2Docx extends TestCase {
     assertEquals("List Number 2", xpath(swpx, "normalize-space(//wp:p[wp:run = 'nested number']/@style)"));
   }
 
+  @Test
+  public void testColumnWidthsFromColElements() throws Exception {
+    Document swpx = html2swpx("html/html2docx-tables.html");
+
+    assertEquals("25%", xpath(swpx, "string((//wp:cols)[1]/wp:col[1]/@colwidth)"));
+    assertEquals("75%", xpath(swpx, "string((//wp:cols)[1]/wp:col[2]/@colwidth)"));
+    // A number without units is pixels, as in HTML:
+    assertEquals("100px", xpath(swpx, "string((//wp:cols)[2]/wp:col[1]/@colwidth)"));
+    // A width in @style is used, ignoring other properties:
+    assertEquals("2in", xpath(swpx, "string((//wp:cols)[2]/wp:col[2]/@colwidth)"));
+  }
+
+  @Test
+  public void testUnusableColumnWidthsAreIgnored() throws Exception {
+    Document swpx = html2swpx("html/html2docx-tables.html");
+
+    assertEquals("4", xpath(swpx, "string(count((//wp:cols)[2]/wp:col))"));
+    // HTML 4 relative width:
+    assertEquals("0", xpath(swpx, "string(count((//wp:cols)[2]/wp:col[3]/@colwidth))"));
+    // max-width is not width:
+    assertEquals("0", xpath(swpx, "string(count((//wp:cols)[2]/wp:col[4]/@colwidth))"));
+  }
+
   // ===== INTERNAL UTILITIES
 
   /**

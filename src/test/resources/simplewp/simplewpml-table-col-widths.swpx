@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="urn:ns:wordinator:simplewpml">
+  <body>
+    <table>
+      <cols>
+        <col colwidth="1in"/>
+        <col colwidth="2in"/>
+      </cols>
+      <tbody>
+        <tr><td><p><run>absolute-1</run></p></td><td><p><run>absolute-2</run></p></td></tr>
+      </tbody>
+    </table>
+    <p><run>Between</run></p>
+    <table>
+      <cols>
+        <col colwidth="25%"/>
+        <col colwidth="75%"/>
+      </cols>
+      <tbody>
+        <tr><td><p><run>percent-1</run></p></td><td><p><run>percent-2</run></p></td></tr>
+      </tbody>
+    </table>
+    <p><run>Between</run></p>
+    <table>
+      <tbody>
+        <tr><td><p><run>nocols-1</run></p></td><td><p><run>nocols-2</run></p></td></tr>
+      </tbody>
+    </table>
+  </body>
+</document>
