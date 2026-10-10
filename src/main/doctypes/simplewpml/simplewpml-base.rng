@@ -1330,11 +1330,23 @@
           </choice>
         </attribute>
       </optional>
-      
-      <ref name="style-atts"/>    
+      <optional>
+        <attribute name="align">
+          <a:documentation>
+            <p>Specifies the alignment of the table with respect to the text margins, but not the text inside the table. The default is implementation-dependent, but 'start' is typical.</p>
+          </a:documentation>
+          <choice>
+            <value type="string">start</value>
+            <value type="string">center</value>
+            <value type="string">end</value>
+          </choice>
+        </attribute>
+      </optional>
+
+      <ref name="style-atts"/>
     </element>
   </define>
-  
+
   <define name="cols">
     <element name="cols" ns="urn:ns:wordinator:simplewpml">
       <a:documentation>

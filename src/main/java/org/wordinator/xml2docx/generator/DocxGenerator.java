@@ -45,6 +45,7 @@ import org.apache.poi.xwpf.usermodel.BodyElementType;
 import org.apache.poi.xwpf.usermodel.BreakType;
 import org.apache.poi.xwpf.usermodel.IBodyElement;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
+import org.apache.poi.xwpf.usermodel.TableRowAlign;
 import org.apache.poi.xwpf.usermodel.UnderlinePatterns;
 import org.apache.poi.xwpf.usermodel.XWPFAbstractFootnoteEndnote;
 import org.apache.poi.xwpf.usermodel.XWPFAbstractNum;
@@ -2707,8 +2708,7 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
 
     setTableIndents(table, cursor);
     setTableLayout(table, cursor);
-
-
+    setTableAlign(table, cursor);
 
     String styleName = cursor.getAttributeText(DocxConstants.QNAME_STYLE_ATT);
     String styleId = cursor.getAttributeText(DocxConstants.QNAME_STYLEID_ATT);
@@ -2854,6 +2854,26 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
 
   }
 
+  private void setTableAlign(XWPFTable table, XmlCursor cursor) throws DocxGenerationException {
+    String align = cursor.getAttributeText(DocxConstants.QNAME_ALIGN_ATT);
+    if (align == null) {
+      return;
+    }
+
+    TableRowAlign alignObj;
+    if (align.equals("start")) {
+      alignObj = TableRowAlign.LEFT;
+    } else if (align.equals("center")) {
+      alignObj = TableRowAlign.CENTER;
+    } else if (align.equals("end")) {
+      alignObj = TableRowAlign.RIGHT;
+    } else {
+      throw new DocxGenerationException("Unknown value for table align: '" +
+                                        align + "'");
+    }
+
+    table.setTableAlignment(alignObj);
+  }
 
   /**
    * Sets the w:tblLayout to fixed or auto

@@ -17,6 +17,7 @@ import org.apache.poi.xwpf.model.XWPFHeaderFooterPolicy;
 import org.apache.poi.xwpf.usermodel.BodyElementType;
 import org.apache.poi.xwpf.usermodel.IBodyElement;
 import org.apache.poi.xwpf.usermodel.IRunElement;
+import org.apache.poi.xwpf.usermodel.TableRowAlign;
 import org.apache.poi.xwpf.usermodel.XWPFAbstractNum;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFFooter;
@@ -860,6 +861,29 @@ public class TestDocxGenerator extends TestCase {
     assertEquals(STPageOrientation.Enum.forString("portrait"), pageSz.getOrient());
     assertEquals(BigInteger.valueOf(11906), pageSz.getW());
     assertEquals(BigInteger.valueOf(16838), pageSz.getH());
+  }
+
+  public void testTableAlign() throws Exception {
+    XWPFDocument doc = convert("simplewp/simplewpml-table-align.swpx", "out/table-align.docx");
+    List<IBodyElement> contents = doc.getBodyElements();
+    assertEquals(2, contents.size());
+
+    // first table
+    Iterator<IBodyElement> it = contents.iterator();
+    IBodyElement elem = it.next();
+    assertEquals(BodyElementType.TABLE, elem.getElementType());
+
+    XWPFTable t = (XWPFTable) elem;
+    TableRowAlign align = t.getTableAlignment();
+    assertEquals(TableRowAlign.LEFT, align);
+
+    // second table
+    elem = it.next();
+    assertEquals(BodyElementType.TABLE, elem.getElementType());
+
+    t = (XWPFTable) elem;
+    align = t.getTableAlignment();
+    assertEquals(TableRowAlign.CENTER, align);
   }
 
   // ===== INTERNAL UTILITIES
