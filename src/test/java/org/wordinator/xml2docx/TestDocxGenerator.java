@@ -886,6 +886,32 @@ public class TestDocxGenerator extends TestCase {
     assertEquals(TableRowAlign.CENTER, align);
   }
 
+  @Test
+  public void testNestedTableBorders() throws Exception {
+    XWPFDocument doc = convert("simplewp/simplewpml-issue-157-nested-tables.swpx", "out/nested-tables.docx");
+    List<IBodyElement> contents = doc.getBodyElements();
+    assertEquals(1, contents.size());
+
+    // outer table
+    Iterator<IBodyElement> it = contents.iterator();
+    IBodyElement elem = it.next();
+    assertEquals(BodyElementType.TABLE, elem.getElementType());
+
+    XWPFTable t = (XWPFTable) elem;
+
+    // inner table
+    XWPFTableCell cell = t.getRows().get(0).getTableCells().get(0);
+    elem = cell.getBodyElements().get(0);
+    assertEquals(BodyElementType.TABLE, elem.getElementType());
+    t = (XWPFTable) elem;
+
+    // check the border properties
+    assertEquals(XWPFTable.XWPFBorderType.NONE, t.getLeftBorderType());
+    assertEquals(XWPFTable.XWPFBorderType.NONE, t.getRightBorderType());
+    assertEquals(XWPFTable.XWPFBorderType.NONE, t.getTopBorderType());
+    assertEquals(XWPFTable.XWPFBorderType.NONE, t.getBottomBorderType());
+  }
+
   // ===== INTERNAL UTILITIES
 
   private XWPFDocument convert(String infile, String outfile) throws Exception {

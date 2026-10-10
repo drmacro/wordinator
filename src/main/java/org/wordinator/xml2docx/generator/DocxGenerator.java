@@ -3398,15 +3398,13 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
 	
 	              // record how many tables were in the cell previously
 	              int preTables = cell.getCTTc().getTblList().size();
-	  
+
 	              CTTbl ctTbl = cell.getCTTc().addNewTbl();
 	              ctTbl = cell.getCTTc().addNewTbl();
-	              CTTblPr tblPr = ctTbl.addNewTblPr();
-	              tblPr.addNewTblW();
-	  
+
 	              XWPFTable nestedTable = new XWPFTable(ctTbl, cell);
 	              makeTable(nestedTable, cursor.getObject());
-	  
+
 	              // for some reason this inserts two tables, where the
 	              // first one is empty. we need to remove that one.
 	              // luckily, the number of tables we used to have equals

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wp:document xmlns:wp="urn:ns:wordinator:simplewpml">
+  <wp:body>
+    <!-- left-aligned table -->
+    <wp:table layout="auto" align="start">
+      <wp:tbody>
+        <wp:tr>
+          <wp:td>
+            <wp:p>
+              <wp:run>Left-aligned</wp:run>
+            </wp:p>
+          </wp:td>
+          <wp:td>
+            <wp:p>
+              <wp:run>table</wp:run>
+            </wp:p>
+          </wp:td>
+        </wp:tr>
+      </wp:tbody>
+    </wp:table>
+
+    <!-- centered table -->
+    <wp:table layout="auto" align="center">
+      <wp:tbody>
+        <wp:tr>
+          <wp:td>
+            <wp:p>
+              <wp:run>Centered</wp:run>
+            </wp:p>
+          </wp:td>
+          <wp:td>
+            <wp:p>
+              <wp:run>table</wp:run>
+            </wp:p>
+          </wp:td>
+        </wp:tr>
+      </wp:tbody>
+    </wp:table>
+  </wp:body>
+</wp:document>
