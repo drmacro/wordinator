@@ -344,7 +344,33 @@
   <!-- ==========================
        Tables
        ========================== -->
-  <xsl:template match="xhtml:table | table | xhtml:tbody | tbody | xhtml:thead | thead | xhtml:tr | tr | xhtml:col | col">
+  <!-- SWPX tables hold rows only in thead and tbody. In HTML the tbody is optional, so
+       rows that are direct children of the table (and there is no tbody) are put in a tbody. -->
+  <xsl:template match="xhtml:table | table">
+    <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
+    
+    <xsl:variable name="hasBody" as="xs:boolean" select="exists(xhtml:tbody | tbody)"/>
+    <xsl:element name="{name(.)}" namespace="urn:ns:wordinator:simplewpml">
+      <xsl:for-each-group select="*" group-adjacent="not($hasBody) and exists(self::xhtml:tr | self::tr)">
+        <xsl:choose>
+          <xsl:when test="current-grouping-key()">
+            <wp:tbody>
+              <xsl:apply-templates select="current-group()">
+                <xsl:with-param name="doDebug" as="xs:boolean" tunnel="yes" select="$doDebug"/>
+              </xsl:apply-templates>
+            </wp:tbody>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:apply-templates select="current-group()">
+              <xsl:with-param name="doDebug" as="xs:boolean" tunnel="yes" select="$doDebug"/>
+            </xsl:apply-templates>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:for-each-group>
+    </xsl:element>
+  </xsl:template>
+  
+  <xsl:template match="xhtml:tbody | tbody | xhtml:thead | thead | xhtml:tr | tr | xhtml:col | col">
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
 
     <!-- FIXME: For table rows, handle vertical spanning, which means examining preceding rows to look for

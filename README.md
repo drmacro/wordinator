@@ -26,6 +26,10 @@ If you need to go from Word documents back to XML, you may find [the DITA for Pu
 
 ## Release Notes
 
+* Unreleased
+
+  * html2docx: Fix tables whose rows are direct children of the table element (no tbody) losing all of their rows. These rows are now put in a SWPX tbody.
+
 * 1.2.0
 
   * Upgrade to POI 5. Addresses security issues with POI4 and makes newer POI features available for future.
