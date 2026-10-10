@@ -26,6 +26,11 @@ If you need to go from Word documents back to XML, you may find [the DITA for Pu
 
 ## Release Notes
 
+* Unreleased
+
+  * New optional command-line option --fit-images and SWPX attribute image/@fit-to-page-width make images that are wider than the page's content area fit it, keeping their proportions. Off by default so that image sizes don't change unless asked for. Only images in the body and sections are resized. Thanks to Oleksandr Oboznyi for the original idea and implementation (pull request 129).
+  * Fix images with only a height specified: the width was calculated with integer division and came out as zero (or the intrinsic width).
+
 * 1.2.0
 
   * Upgrade to POI 5. Addresses security issues with POI4 and makes newer POI features available for future.
@@ -218,6 +223,7 @@ It's not a very pretty test but it demonstrates that the tool is working.
 * -x (optional) The XSLT transform to apply to the input file to generate SWPX files.
 * -k (optional) Semicolon-separated list of catalog files to use with Saxon. Same as Saxon's -catalog option.
 * -c (optional) Chunk level. Specifies the section level or type to create separate DOCX files for. The value to use is determined by the details of the XSLT transform (local:is-chunk() function).
+* --fit-images (optional) Make images that are wider than the page's content area (the area between the margins) fit it, keeping their proportions. Images that already fit are not enlarged, and without this option image sizes are not changed. Applies to images in the body and sections, not those in tables, footnotes, headers, or footers. The bundled html2docx and ditahtml2docx transforms support it. For your own SWPX, set image/@fit-to-page-width="true" on the images to fit.
 
 If the `-i` parameter is a directory then it looks for `*.swpx` files and generates a DOCX file for each one.
 

@@ -62,6 +62,25 @@ public class TestHtml2Docx extends TestCase {
     assertEquals("List Number 2", xpath(swpx, "normalize-space(//wp:p[wp:run = 'nested number']/@style)"));
   }
 
+  @Test
+  public void testImagesAreNotFitToPageUnlessAskedTo() throws Exception {
+    Document swpx = html2swpx("html/html2docx-images.html");
+    assertEquals("1", xpath(swpx, "string(count(//wp:image))"));
+    assertEquals("0", xpath(swpx, "string(count(//wp:image/@fit-to-page-width))"));
+  }
+
+  @Test
+  public void testFitImagesParameter() throws Exception {
+    Document swpx = html2swpx("html/html2docx-images.html",
+        java.util.Collections.singletonMap("fit-images", "true"));
+    assertEquals("true", xpath(swpx, "string(//wp:image/@fit-to-page-width)"));
+  }
+
+  @Test
+  public void testFitImagesCommandLineOption() throws Exception {
+    assertTrue("No --fit-images option", MakeDocx.buildOptions().hasLongOption("fit-images"));
+  }
+
   // ===== INTERNAL UTILITIES
 
   /**
@@ -69,6 +88,13 @@ public class TestHtml2Docx extends TestCase {
    * @return The generated SWPX document.
    */
   private Document html2swpx(String htmlResource) throws Exception {
+    return html2swpx(htmlResource, java.util.Collections.emptyMap());
+  }
+
+  /**
+   * Runs html2docx.xsl on a test-resource HTML file with stylesheet parameters.
+   */
+  private Document html2swpx(String htmlResource, java.util.Map<String, String> params) throws Exception {
     File inFile = new File(getClass().getClassLoader().getResource(htmlResource).getFile());
     File outDir = Files.createTempDirectory("html2docx-test").toFile();
     outDir.deleteOnExit();
@@ -78,6 +104,9 @@ public class TestHtml2Docx extends TestCase {
         .compile(new StreamSource(new File(HTML2DOCX_XSL)))
         .load();
     xform.setParameter(new QName("outdir"), new XdmAtomicValue(outDir.getAbsolutePath()));
+    for (java.util.Map.Entry<String, String> param : params.entrySet()) {
+      xform.setParameter(new QName(param.getKey()), new XdmAtomicValue(param.getValue()));
+    }
     // The stylesheet writes its results with xsl:result-document, which needs a base output URI.
     xform.setBaseOutputURI(new File(outDir, "principal.out").toURI().toString());
     xform.setSource(new StreamSource(inFile));

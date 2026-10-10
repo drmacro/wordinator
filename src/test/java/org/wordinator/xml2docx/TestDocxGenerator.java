@@ -15,6 +15,7 @@ import org.apache.poi.ooxml.POIXMLProperties.CustomProperties;
 import org.apache.poi.ooxml.POIXMLProperties.ExtendedProperties;
 import org.apache.poi.xwpf.model.XWPFHeaderFooterPolicy;
 import org.apache.poi.xwpf.usermodel.BodyElementType;
+import org.apache.poi.util.Units;
 import org.apache.poi.xwpf.usermodel.IBodyElement;
 import org.apache.poi.xwpf.usermodel.IRunElement;
 import org.apache.poi.xwpf.usermodel.XWPFAbstractNum;
@@ -32,10 +33,13 @@ import org.apache.poi.xwpf.usermodel.XWPFTableCell;
 import org.apache.poi.xwpf.usermodel.XWPFTableRow;
 import org.apache.xmlbeans.XmlCursor;
 import org.apache.xmlbeans.XmlObject;
+import org.openxmlformats.schemas.drawingml.x2006.main.CTPositiveSize2D;
+import org.openxmlformats.schemas.drawingml.x2006.wordprocessingDrawing.CTInline;
 import org.junit.Test;
 import org.openxmlformats.schemas.officeDocument.x2006.customProperties.CTProperty;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBody;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDocument1;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDrawing;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTFldChar;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTOnOff;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageMar;
@@ -860,6 +864,64 @@ public class TestDocxGenerator extends TestCase {
     assertEquals(STPageOrientation.Enum.forString("portrait"), pageSz.getOrient());
     assertEquals(BigInteger.valueOf(11906), pageSz.getW());
     assertEquals(BigInteger.valueOf(16838), pageSz.getH());
+  }
+
+  @Test
+  public void testFitImagesToPageWidth() throws Exception {
+    XWPFDocument doc = convert("simplewp/simplewpml-fit-images.swpx", "out/fit-images.docx");
+    List<XWPFPicture> pictures = new java.util.ArrayList<>();
+    List<CTInline> inlines = new java.util.ArrayList<>();
+    for (XWPFParagraph para : doc.getParagraphs()) {
+      for (XWPFRun run : para.getRuns()) {
+        pictures.addAll(run.getEmbeddedPictures());
+        for (CTDrawing drawing : run.getCTR().getDrawingArray()) {
+          inlines.addAll(java.util.Arrays.asList(drawing.getInlineArray()));
+        }
+      }
+    }
+    assertEquals(4, pictures.size());
+    assertEquals(4, inlines.size());
+
+    // Section 1 is 8.5in wide with 1in margins, so the content width is 6.5in (9360 twips)
+    long section1Width = 9360L * 635;
+    assertPictureSize(pictures.get(0), inlines.get(0), section1Width, section1Width / 2); // Wide and asks to fit: shrunk, same proportions
+    assertPictureSize(pictures.get(1), inlines.get(1), Units.toEMU(100), Units.toEMU(50)); // Fits already: not enlarged
+    assertPictureSize(pictures.get(2), inlines.get(2), Units.toEMU(1200), Units.toEMU(600)); // Does not ask to fit: not changed
+
+    // Section 2 is 11in wide with 1in margins, so 9in (12960 twips)
+    long section2Width = 12960L * 635;
+    assertPictureSize(pictures.get(3), inlines.get(3), section2Width, section2Width / 2);
+  }
+
+  @Test
+  public void testContentWidth() {
+    assertEquals("Word's defaults when there are no section properties", 9360, DocxGenerator.getContentWidthInTwips(null));
+
+    CTSectPr sectPr = CTSectPr.Factory.newInstance();
+    sectPr.addNewPgSz().setW(BigInteger.valueOf(11906)); // A4
+    CTPageMar pageMar = sectPr.addNewPgMar();
+    pageMar.setLeft(BigInteger.valueOf(1000));
+    pageMar.setRight(BigInteger.valueOf(900));
+    pageMar.setGutter(BigInteger.valueOf(100));
+    assertEquals(11906 - 1000 - 900 - 100, DocxGenerator.getContentWidthInTwips(sectPr));
+  }
+
+  private void assertPictureSize(XWPFPicture picture, CTInline inline, long expectedWidthEmu, long expectedHeightEmu) {
+    // Both the picture's own size and the size of its inline have to match
+    CTPositiveSize2D ext = picture.getCTPicture().getSpPr().getXfrm().getExt();
+    assertEquals(expectedWidthEmu, ext.getCx());
+    assertEquals(expectedHeightEmu, ext.getCy());
+    assertEquals(expectedWidthEmu, inline.getExtent().getCx());
+    assertEquals(expectedHeightEmu, inline.getExtent().getCy());
+  }
+
+  @Test
+  public void testImageWithOnlyHeightKeepsProportions() throws Exception {
+    XWPFDocument doc = convert("simplewp/simplewpml-image-height-only.swpx", "out/image-height-only.docx");
+    XWPFPicture picture = doc.getParagraphs().get(0).getRuns().get(0).getEmbeddedPictures().get(0);
+    CTPositiveSize2D ext = picture.getCTPicture().getSpPr().getXfrm().getExt();
+    assertEquals(Units.toEMU(50), ext.getCy());
+    assertEquals("The image is square, so the width should match the height", Units.toEMU(50), ext.getCx());
   }
 
   // ===== INTERNAL UTILITIES

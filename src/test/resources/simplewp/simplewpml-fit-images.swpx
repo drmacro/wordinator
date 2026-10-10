@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wp:document xmlns:wp="urn:ns:wordinator:simplewpml">
+  <wp:body>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-margins left="1in" right="1in"/>
+        <wp:page-size orient="portrait" width="8.5in" height="11in"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>Section 1, content width 6.5in</wp:run></wp:p>
+        <!-- Wider than the content area, asks to fit: -->
+        <wp:p><wp:image src="images/picture-01.gif" width="1200px" height="600px" fit-to-page-width="true"/></wp:p>
+        <!-- Narrower than the content area, asks to fit: not changed -->
+        <wp:p><wp:image src="images/picture-01.gif" width="100px" height="50px" fit-to-page-width="true"/></wp:p>
+        <!-- Wider but doesn't ask to fit: not changed -->
+        <wp:p><wp:image src="images/picture-01.gif" width="1200px" height="600px"/></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-margins left="1in" right="1in"/>
+        <wp:page-size orient="landscape" width="11in" height="8.5in"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>Section 2, content width 9in</wp:run></wp:p>
+        <wp:p><wp:image src="images/picture-01.gif" width="1200px" height="600px" fit-to-page-width="true"/></wp:p>
+      </wp:body>
+    </wp:section>
+  </wp:body>
+</wp:document>
