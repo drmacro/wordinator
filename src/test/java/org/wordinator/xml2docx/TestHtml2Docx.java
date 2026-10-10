@@ -62,6 +62,20 @@ public class TestHtml2Docx extends TestCase {
     assertEquals("List Number 2", xpath(swpx, "normalize-space(//wp:p[wp:run = 'nested number']/@style)"));
   }
 
+  @Test
+  public void testEachOrderedListGetsItsOwnNumId() throws Exception {
+    Document swpx = html2swpx("html/html2docx-ordered-lists.html");
+
+    String first1 = xpath(swpx, "string(//wp:p[wp:run = 'first-1']/@numId)");
+    String first2 = xpath(swpx, "string(//wp:p[wp:run = 'first-2']/@numId)");
+    String second1 = xpath(swpx, "string(//wp:p[wp:run = 'second-1']/@numId)");
+    assertFalse("Ordered list items should have a numId", first1.isEmpty());
+    assertEquals("Items in the same list share a numId", first1, first2);
+    assertFalse("Different lists have different numIds", first1.equals(second1));
+    assertEquals("Bullet list items have no numId", "0",
+        xpath(swpx, "string(count(//wp:p[wp:run = 'bullet']/@numId))"));
+  }
+
   // ===== INTERNAL UTILITIES
 
   /**

@@ -27,6 +27,7 @@ import org.apache.poi.xwpf.usermodel.XWPFNumbering;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFPicture;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
+import org.apache.poi.xwpf.usermodel.XWPFStyle;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
 import org.apache.poi.xwpf.usermodel.XWPFTableCell;
 import org.apache.poi.xwpf.usermodel.XWPFTableRow;
@@ -38,6 +39,7 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBody;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDocument1;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTFldChar;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTOnOff;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTNum;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageMar;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageNumber;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageSz;
@@ -862,7 +864,57 @@ public class TestDocxGenerator extends TestCase {
     assertEquals(BigInteger.valueOf(16838), pageSz.getH());
   }
 
+  @Test
+  public void testNumberedListsRestart() throws Exception {
+    XWPFDocument doc = convert("simplewp/simplewpml-numbered-lists.swpx", "out/numbered-lists.docx");
+    XWPFNumbering numbering = doc.getNumbering();
+
+    XWPFParagraph a1 = findParagraph(doc, "A1");
+    XWPFParagraph a2 = findParagraph(doc, "A2");
+    XWPFParagraph b1 = findParagraph(doc, "B1");
+    XWPFParagraph b2 = findParagraph(doc, "B2");
+    assertNotNull("No numId for A1", a1.getNumID());
+    assertEquals("Paragraphs in the same list should have the same numId", a1.getNumID(), a2.getNumID());
+    assertEquals(b1.getNumID(), b2.getNumID());
+    assertFalse("Different lists should have different numIds", a1.getNumID().equals(b1.getNumID()));
+
+    // The list's numbering instance uses the style's abstract numbering and restarts at 1.
+    XWPFStyle style = doc.getStyles().getStyle("ListNumber");
+    BigInteger styleAbstractNumId = numbering.getNum(style.getCTStyle().getPPr().getNumPr().getNumId().getVal())
+        .getCTNum().getAbstractNumId().getVal();
+    for (XWPFParagraph para : new XWPFParagraph[] {a1, b1}) {
+      CTNum ctNum = numbering.getNum(para.getNumID()).getCTNum();
+      assertEquals(styleAbstractNumId, ctNum.getAbstractNumId().getVal());
+      assertEquals(1, ctNum.sizeOfLvlOverrideArray());
+      assertEquals(BigInteger.ZERO, ctNum.getLvlOverrideArray(0).getIlvl());
+      assertEquals(BigInteger.ONE, ctNum.getLvlOverrideArray(0).getStartOverride().getVal());
+    }
+  }
+
+  @Test
+  public void testNumberedListWithoutStyleNumberingIsLeftAlone() throws Exception {
+    XWPFDocument doc = convert("simplewp/simplewpml-numbered-lists.swpx", "out/numbered-lists-no-style-numbering.docx");
+    XWPFNumbering numbering = doc.getNumbering();
+
+    XWPFParagraph c1 = findParagraph(doc, "C1");
+    assertNull("Paragraph in a list with no style numbering should not be given a numId", c1.getNumID());
+    // Every numbering instance must point to an abstract numbering definition.
+    for (XWPFNum num : numbering.getNums()) {
+      assertNotNull("numId " + num.getCTNum().getNumId() + " has no abstractNumId", num.getCTNum().getAbstractNumId());
+    }
+  }
+
   // ===== INTERNAL UTILITIES
+
+  private XWPFParagraph findParagraph(XWPFDocument doc, String text) {
+    for (XWPFParagraph para : doc.getParagraphs()) {
+      if (text.equals(para.getText())) {
+        return para;
+      }
+    }
+    fail("Paragraph '" + text + "' not found");
+    return null;
+  }
 
   private XWPFDocument convert(String infile, String outfile) throws Exception {
     ClassLoader classLoader = getClass().getClassLoader();

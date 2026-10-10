@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="urn:ns:wordinator:simplewpml">
+  <body>
+    <p styleId="ListNumber" numId="list-a"><run>A1</run></p>
+    <p styleId="ListNumber" numId="list-a"><run>A2</run></p>
+    <p><run>Between lists</run></p>
+    <p styleId="ListNumber" numId="list-b"><run>B1</run></p>
+    <p styleId="ListNumber" numId="list-b"><run>B2</run></p>
+    <!-- Normal has no numbering definition, so there is nothing to restart. -->
+    <p styleId="Normal" numId="list-c"><run>C1</run></p>
+  </body>
+</document>
