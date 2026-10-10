@@ -141,10 +141,15 @@
   
   <xsl:template match="xhtml:a[@href] | a[@href]">
     <xsl:param name="doDebug" as="xs:boolean" tunnel="yes" select="false()"/>
-    
-    <xsl:variable name="targetId" as="xs:string?" select="tokenize(@href, '#')[last()]"/>
-    
-    <wp:hyperlink href="#{$targetId}">
+    <!-- Links with a URI scheme (http:, mailto:, etc.) are external and pass through
+         unchanged. Anything else is a reference into the document, so only the
+         fragment ID is kept and it becomes a bookmark reference. -->
+    <xsl:variable name="target" as="xs:string"
+      select="if (matches(@href, '^[a-zA-Z][a-zA-Z0-9+.\-]*:'))
+                 then string(@href)
+                 else '#' || tokenize(@href, '#')[last()]"
+    />
+    <wp:hyperlink href="{$target}">
       <xsl:apply-templates>
         <xsl:with-param name="doDebug" as="xs:boolean" tunnel="yes" select="$doDebug"/>
       </xsl:apply-templates>

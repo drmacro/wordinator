@@ -87,7 +87,14 @@
     <xsl:variable name="level" as="xs:string"
       select="if ($level eq '1') then '' else $level"
     />
-    <xsl:sequence select="'List ' || $level"/>
+    <xsl:choose>
+      <xsl:when test="$list-type = 'ol'">
+        <xsl:sequence select="'List Number ' || $level"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:sequence select="'List ' || $level"/>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
   
   <xsl:template mode="get-style-name" match="*" priority="-1" as="xs:string?">
