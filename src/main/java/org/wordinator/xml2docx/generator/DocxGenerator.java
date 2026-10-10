@@ -528,14 +528,33 @@ public class DocxGenerator {
     if (fromSectPr.isSetPgNumType()) {
       toSectPr.setPgNumType(fromSectPr.getPgNumType());
     }
+    // The section type determines how the section starts, so the last section's
+    // type must carry over to the body-level section properties.
+    if (fromSectPr.isSetType()) {
+      toSectPr.setType(fromSectPr.getType());
+    }
 
+    // A section may have only one header or footer reference of each type, so
+    // references from the last section replace any same-type references already
+    // set on the body-level section properties (e.g., from document-level headers
+    // and footers), rather than being added alongside them. Issue #172.
     for (CTHdrFtrRef ref : fromSectPr.getHeaderReferenceList()) {
-      int ix = toSectPr.getHeaderReferenceList().size();
+      for (int i = toSectPr.sizeOfHeaderReferenceArray() - 1; i >= 0; i--) {
+        if (toSectPr.getHeaderReferenceArray(i).getType() == ref.getType()) {
+          toSectPr.removeHeaderReference(i);
+        }
+      }
+      int ix = toSectPr.sizeOfHeaderReferenceArray();
       toSectPr.insertNewHeaderReference(ix);
       toSectPr.setHeaderReferenceArray(ix, ref);
     }
     for (CTHdrFtrRef ref : fromSectPr.getFooterReferenceList()) {
-      int ix = toSectPr.getFooterReferenceList().size();
+      for (int i = toSectPr.sizeOfFooterReferenceArray() - 1; i >= 0; i--) {
+        if (toSectPr.getFooterReferenceArray(i).getType() == ref.getType()) {
+          toSectPr.removeFooterReference(i);
+        }
+      }
+      int ix = toSectPr.sizeOfFooterReferenceArray();
       toSectPr.insertNewFooterReference(ix);
       toSectPr.setFooterReferenceArray(ix, ref);
     }

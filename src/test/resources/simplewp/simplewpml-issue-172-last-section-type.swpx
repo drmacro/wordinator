@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wp:document xmlns:wp="urn:ns:wordinator:simplewpml">
+  <wp:body>
+    <wp:section type="nextPage">
+      <wp:body>
+        <wp:p><wp:run>First section</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="oddPage">
+      <wp:body>
+        <wp:p><wp:run>Last section, starts on an odd page</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+  </wp:body>
+</wp:document>
