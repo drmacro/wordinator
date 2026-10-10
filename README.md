@@ -26,6 +26,10 @@ If you need to go from Word documents back to XML, you may find [the DITA for Pu
 
 ## Release Notes
 
+* Unreleased
+
+  * Numbering of ordered lists now restarts for each list. New optional attribute wp:p/@numId identifies the list a paragraph belongs to; each distinct value gets its own Word numbering instance, based on the numbering definition of the paragraph's style, that starts at 1. The html2docx transform sets @numId on the items of each ol. Paragraphs whose style has no numbering are left as they are. Thanks to Oleksandr Oboznyi for the original implementation (pull requests 125 and 128).
+
 * 1.2.0
 
   * Upgrade to POI 5. Addresses security issues with POI4 and makes newer POI features available for future.
