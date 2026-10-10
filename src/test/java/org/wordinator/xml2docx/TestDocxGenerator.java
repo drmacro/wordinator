@@ -126,8 +126,10 @@ public class TestDocxGenerator extends TestCase {
 
     CTSectPr docSectPr = doc.getDocument().getBody().getSectPr();
     assertNotNull("Expected to find a docSectPr element", docSectPr);
-    assertEquals("Expected 6 headers", 6, docSectPr.getHeaderReferenceList().size());
-    assertEquals("Expected 6 footers", 6, docSectPr.getFooterReferenceList().size());
+    // The last section's headers and footers replace the document-level ones
+    // of the same type on the body sectPr (issue #172), so one of each type at most.
+    assertEquals("Expected 3 headers", 3, docSectPr.getHeaderReferenceList().size());
+    assertEquals("Expected 3 footers", 3, docSectPr.getFooterReferenceList().size());
 
     // Document-level headers and footers:
     XWPFHeaderFooterPolicy hfPolicy = doc.getHeaderFooterPolicy();
@@ -177,6 +179,39 @@ public class TestDocxGenerator extends TestCase {
       }
     } while(iter.hasNext());
     assertTrue("No section headers or footers", foundHeadersOrFooters);
+  }
+
+  /**
+   * Issue #172: Headers and footers of the last section were added to the body-level
+   * section properties alongside the document-level ones, producing duplicate
+   * references of the same type and doubled headers and footers in Word.
+   */
+  @Test
+  public void testNoDuplicateHeaderFooterReferencesInLastSection() throws Exception {
+    XWPFDocument doc = convert("simplewp/simplewpml-test-02.swpx", "out/output-issue-172.docx");
+    CTSectPr docSectPr = doc.getDocument().getBody().getSectPr();
+    assertNotNull("Expected a body-level sectPr", docSectPr);
+    java.util.Set<String> types = new java.util.HashSet<String>();
+    for (org.openxmlformats.schemas.wordprocessingml.x2006.main.CTHdrFtrRef ref : docSectPr.getHeaderReferenceList()) {
+      assertTrue("Duplicate header reference of type " + ref.getType(), types.add(ref.getType().toString()));
+    }
+    types.clear();
+    for (org.openxmlformats.schemas.wordprocessingml.x2006.main.CTHdrFtrRef ref : docSectPr.getFooterReferenceList()) {
+      assertTrue("Duplicate footer reference of type " + ref.getType(), types.add(ref.getType().toString()));
+    }
+  }
+
+  /**
+   * Issue #172: The type of the last section (how it starts) must be carried over
+   * to the body-level section properties when they replace the last paragraph's.
+   */
+  @Test
+  public void testLastSectionTypeCopiedToBodySectPr() throws Exception {
+    XWPFDocument doc = convert("simplewp/simplewpml-issue-172-last-section-type.swpx", "out/output-issue-172-type.docx");
+    CTSectPr docSectPr = doc.getDocument().getBody().getSectPr();
+    assertNotNull("Expected a body-level sectPr", docSectPr);
+    assertTrue("Expected type to be set on body-level sectPr", docSectPr.isSetType());
+    assertEquals("Expected last section type", "oddPage", docSectPr.getType().getVal().toString());
   }
 
   @Test
