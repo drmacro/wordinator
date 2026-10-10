@@ -580,6 +580,17 @@
         <ref name="tagName.att"/>
       </optional>
       <optional>
+        <attribute name="numId">
+          <a:documentation>
+            <p>Identifies the list the paragraph belongs to. All paragraphs with the same value are
+            in the same list. Each list is numbered separately, so numbering restarts at 1 for each list.
+            Requires that the paragraph's style, or a style it is based on, defines numbering.</p>
+            <p>The value is only an identifier. It does not need to be a number and is not the Word numId.</p>
+          </a:documentation>
+          <data type="NMTOKEN"/>
+        </attribute>
+      </optional>
+      <optional>
         <attribute name="align">
           <a:documentation>
             <p>The horizontal alignment of the paragraph contents.</p>

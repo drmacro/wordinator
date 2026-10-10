@@ -21,6 +21,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -80,6 +81,8 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBorder;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTCompat;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTCompatSetting;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDecimalNumber;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTNumLvl;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTNumPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDocument1;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTFldChar;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTFtnEdn;
@@ -88,6 +91,7 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTHyperlink;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTMarkupRange;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTOnOff;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPPr;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPPrGeneral;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageMar;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageNumber;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageSz;
@@ -408,6 +412,8 @@ public class DocxGenerator {
   private boolean isFirstParagraphStyleWarning = true;
   private boolean isFirstCharacterStyleWarning = true;
   private boolean isFirstTableStyleWarning = true;
+  /** Paragraphs that belong to each list, keyed by the value of the list's wp:p/@numId, in document order */
+  private Map<String, List<XWPFParagraph>> listParagraphs = new LinkedHashMap<>();
 
   /**
    *
@@ -434,6 +440,7 @@ public class DocxGenerator {
     setupNumbering(doc, this.templateDoc);
     setupStyles(doc, this.templateDoc);
     constructDoc(doc, xml);
+    restartNumberedLists(doc);
 
     FileOutputStream out = new FileOutputStream(outFile);
         doc.write(out);
@@ -1692,6 +1699,7 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
     cursor.push();
     String styleName = cursor.getAttributeText(DocxConstants.QNAME_STYLE_ATT);
     String styleId = cursor.getAttributeText(DocxConstants.QNAME_STYLEID_ATT);
+    String listId = cursor.getAttributeText(DocxConstants.QNAME_NUMID_ATT);
 
     if (null != styleName && null == styleId) {
       // Look up the style by name:
@@ -1812,6 +1820,10 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
       } while(cursor.toNextSibling());
     }
     cursor.pop();
+
+    if (null != listId && !listId.isEmpty()) {
+      listParagraphs.computeIfAbsent(listId, k -> new ArrayList<>()).add(para);
+    }
     return para;
   }
 
@@ -3517,6 +3529,78 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
     }
 
 
+  }
+
+  /**
+   * Gives each list identified by a wp:p/@numId its own Word numbering instance
+   * so that numbering restarts at 1 for each list rather than continuing from
+   * the previous list that uses the same paragraph style.
+   * <p>Each instance uses the same abstract numbering definition as the list's
+   * paragraph style. If that can't be determined, the list's paragraphs are left
+   * as they are, since a numbering instance without an abstract definition is invalid.</p>
+   * @param doc The document being generated
+   */
+  private void restartNumberedLists(XWPFDocument doc) {
+    XWPFNumbering numbering = doc.getNumbering();
+    if (null == numbering) {
+      return;
+    }
+    BigInteger nextNumId = BigInteger.ONE;
+    for (XWPFNum num : numbering.getNums()) {
+      BigInteger numId = num.getCTNum().getNumId();
+      if (numId.compareTo(nextNumId) >= 0) {
+        nextNumId = numId.add(BigInteger.ONE);
+      }
+    }
+
+    for (Map.Entry<String, List<XWPFParagraph>> entry : listParagraphs.entrySet()) {
+      List<XWPFParagraph> paras = entry.getValue();
+      BigInteger abstractNumId = getStyleAbstractNumId(doc, paras.get(0).getStyle());
+      if (null == abstractNumId) {
+        log.warn("restartNumberedLists(): Style '" + paras.get(0).getStyle()
+            + "' has no numbering definition. Numbering for list '" + entry.getKey() + "' not restarted.");
+        continue;
+      }
+      BigInteger listNumId = nextNumId;
+      nextNumId = nextNumId.add(BigInteger.ONE);
+      numbering.addNum(abstractNumId, listNumId);
+
+      CTNumLvl lvlOverride = numbering.getNum(listNumId).getCTNum().addNewLvlOverride();
+      lvlOverride.setIlvl(BigInteger.ZERO);
+      lvlOverride.addNewStartOverride().setVal(BigInteger.ONE);
+
+      for (XWPFParagraph para : paras) {
+        CTPPr pPr = para.getCTPPr();
+        CTNumPr numPr = pPr.isSetNumPr() ? pPr.getNumPr() : pPr.addNewNumPr();
+        CTDecimalNumber numIdElem = numPr.isSetNumId() ? numPr.getNumId() : numPr.addNewNumId();
+        numIdElem.setVal(listNumId);
+      }
+    }
+  }
+
+  /**
+   * Gets the ID of the abstract numbering definition used by a style, following
+   * the style's basedOn chain.
+   * @param doc The document
+   * @param styleId ID of the style
+   * @return The abstract numbering ID or null if the style, or the styles it's based on, has no numbering.
+   */
+  private BigInteger getStyleAbstractNumId(XWPFDocument doc, String styleId) {
+    XWPFStyles styles = doc.getStyles();
+    XWPFStyle style = (null == styleId || null == styles) ? null : styles.getStyle(styleId);
+    // Limit depth to protect against basedOn cycles:
+    for (int depth = 0; null != style && depth < 20; depth++) {
+      CTPPrGeneral pPr = style.getCTStyle().getPPr();
+      if (null != pPr && pPr.isSetNumPr() && pPr.getNumPr().isSetNumId()) {
+        XWPFNum num = doc.getNumbering().getNum(pPr.getNumPr().getNumId().getVal());
+        if (null != num && null != num.getCTNum().getAbstractNumId()) {
+          return num.getCTNum().getAbstractNumId().getVal();
+        }
+        return null;
+      }
+      style = (null == style.getBasisStyleID()) ? null : styles.getStyle(style.getBasisStyleID());
+    }
+    return null;
   }
 
   private void setupNumbering(XWPFDocument doc, XWPFDocument templateDoc) throws DocxGenerationException {

@@ -628,6 +628,10 @@
       <xsl:call-template name="set-style">
         <xsl:with-param name="doDebug" as="xs:boolean" tunnel="yes" select="$doDebug"/>
       </xsl:call-template>
+      <!-- Each ordered list is its own numbered list, so numbering restarts for each list -->
+      <xsl:if test="parent::xhtml:ol or parent::ol">
+        <xsl:attribute name="numId" select="generate-id(..)"/>
+      </xsl:if>
       <xsl:apply-templates select="node() except (xhtml:ul, xhtml:ol, ul, ol)">
         <xsl:with-param name="doDebug" as="xs:boolean" tunnel="yes" select="$doDebug"/>
       </xsl:apply-templates>
