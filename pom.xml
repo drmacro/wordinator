@@ -67,7 +67,7 @@ arbitrary XML, JSON, etc.</description>
     <dependency>
       <groupId>org.apache.xmlbeans</groupId>
       <artifactId>xmlbeans</artifactId>
-      <version>5.2.0</version>
+      <version>5.2.1</version>
     </dependency>
     <dependency>
       <groupId>commons-cli</groupId>
