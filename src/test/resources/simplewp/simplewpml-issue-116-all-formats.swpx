@@ -1,0 +1,845 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wp:document xmlns:wp="urn:ns:wordinator:simplewpml">
+  <wp:body>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="aiueo"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="aiueo"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="aiueoFullWidth"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="aiueoFullWidth"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="arabicAbjad"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="arabicAbjad"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="arabicAlpha"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="arabicAlpha"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="bahtText"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="bahtText"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="bullet"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="bullet"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="cardinalText"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="cardinalText"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="chicago"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="chicago"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="chineseCounting"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="chineseCounting"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="chineseCountingThousand"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="chineseCountingThousand"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="chineseLegalSimplified"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="chineseLegalSimplified"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="chosung"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="chosung"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="decimal"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="decimal"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="decimalEnclosedCircle"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="decimalEnclosedCircle"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="decimalEnclosedCircleChinese"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="decimalEnclosedCircleChinese"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="decimalEnclosedFullstop"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="decimalEnclosedFullstop"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="decimalEnclosedParen"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="decimalEnclosedParen"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="decimalFullWidth"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="decimalFullWidth"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="decimalHalfWidth"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="decimalHalfWidth"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="decimalZero"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="decimalZero"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="dollarText"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="dollarText"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="ganada"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="ganada"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="hebrew1"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="hebrew1"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="hebrew2"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="hebrew2"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="hex"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="hex"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="hindiConsonants"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="hindiConsonants"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="hindiCounting"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="hindiCounting"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="hindiNumbers"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="hindiNumbers"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="hindiVowels"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="hindiVowels"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="ideographDigital"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="ideographDigital"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="ideographEnclosedCircle"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="ideographEnclosedCircle"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="ideographLegalTraditional"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="ideographLegalTraditional"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="ideographTraditional"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="ideographTraditional"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="ideographZodiac"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="ideographZodiac"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="ideographZodiacTraditional"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="ideographZodiacTraditional"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="iroha"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="iroha"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="irohaFullWidth"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="irohaFullWidth"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="japaneseCounting"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="japaneseCounting"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="japaneseDigitalTenThousand"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="japaneseDigitalTenThousand"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="japaneseLegal"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="japaneseLegal"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="koreanCounting"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="koreanCounting"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="koreanDigital"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="koreanDigital"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="koreanDigital2"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="koreanDigital2"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="koreanLegal"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="koreanLegal"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="lowerLetter"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="lowerLetter"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="lowerRoman"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="lowerRoman"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="none"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="none"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="numberInDash"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="numberInDash"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="ordinal"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="ordinal"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="ordinalText"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="ordinalText"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="russianUpper"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="russianUpper"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="taiwaneseCounting"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="taiwaneseCounting"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="taiwaneseCountingThousand"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="taiwaneseCountingThousand"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="taiwaneseDigital"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="taiwaneseDigital"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="thaiCounting"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="thaiCounting"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="thaiLetters"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="thaiLetters"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="thaiNumbers"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="thaiNumbers"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="upperLetter"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="upperLetter"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="upperRoman"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="upperRoman"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="vietnameseCounting"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format="vietnameseCounting"</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+  </wp:body>
+</wp:document>

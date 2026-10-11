@@ -985,6 +985,41 @@ public class TestDocxGenerator extends TestCase {
     assertEquals(BigInteger.valueOf(16838), pageSz.getH());
   }
 
+  /**
+   * Checks that each section's page number format matches the format named in the section's
+   * paragraph: either format="X" (all-formats) or "expect X" (xslt-formats).
+   */
+  private void checkSectionPageNumberFormats(XWPFDocument doc, java.util.regex.Pattern expectedPat, int expectedCount) {
+    List<IBodyElement> contents = doc.getBodyElements();
+    assertEquals(expectedCount, contents.size());
+    for (int i = 0; i < contents.size(); i++) {
+      XWPFParagraph p = (XWPFParagraph) contents.get(i);
+      java.util.regex.Matcher m = expectedPat.matcher(p.getText());
+      assertTrue("No expected format in \"" + p.getText() + "\"", m.find());
+      String expected = m.group(1);
+      CTSectPr sectPr = (i < contents.size() - 1)
+          ? p.getCTPPr().getSectPr()
+          : doc.getDocument().getBody().getSectPr();
+      assertNotNull("Section " + i + " has no section properties", sectPr);
+      assertEquals("Section " + i + " (" + p.getText() + ")",
+          STNumberFormat.Enum.forString(expected), sectPr.getPgNumType().getFmt());
+    }
+  }
+
+  @Test
+  public void testPageNumberAllFormats() throws Exception {
+    // issue #116: every value of page-number-properties/@format other than "custom"
+    XWPFDocument doc = convert("simplewp/simplewpml-issue-116-all-formats.swpx", "out/issue-116-all-formats.docx");
+    checkSectionPageNumberFormats(doc, java.util.regex.Pattern.compile("format=\"([A-Za-z0-9]+)\""), 60);
+  }
+
+  @Test
+  public void testPageNumberAllXsltFormats() throws Exception {
+    // issue #116: supported and unsupported @xslt-format values, and @xslt-format without @format
+    XWPFDocument doc = convert("simplewp/simplewpml-issue-116-xslt-formats.swpx", "out/issue-116-xslt-formats.docx");
+    checkSectionPageNumberFormats(doc, java.util.regex.Pattern.compile("expect ([A-Za-z0-9]+)"), 13);
+  }
+
   @Test
   public void testPageNumberXsltFormat() throws Exception {
     // issue #116

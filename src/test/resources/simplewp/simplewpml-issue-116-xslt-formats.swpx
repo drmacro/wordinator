@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wp:document xmlns:wp="urn:ns:wordinator:simplewpml">
+  <wp:body>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="custom" xslt-format="1"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format=custom xslt-format="1" expect decimal</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="custom" xslt-format="01"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format=custom xslt-format="01" expect decimalZero</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="custom" xslt-format="a"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format=custom xslt-format="a" expect lowerLetter</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="custom" xslt-format="A"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format=custom xslt-format="A" expect upperLetter</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="custom" xslt-format="i"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format=custom xslt-format="i" expect lowerRoman</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="custom" xslt-format="I"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format=custom xslt-format="I" expect upperRoman</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="custom" xslt-format="(1)"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format=custom xslt-format="(1)" expect decimal</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="custom" xslt-format="1."/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format=custom xslt-format="1." expect decimal</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="custom" xslt-format="a)"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format=custom xslt-format="a)" expect lowerLetter</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="custom" xslt-format="w"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format=custom xslt-format="w" expect decimal</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="custom" xslt-format="001"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format=custom xslt-format="001" expect decimal</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" format="custom" xslt-format="١"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>format=custom xslt-format="١" expect decimal</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+    <wp:section type="nextPage">
+      <wp:page-sequence-properties>
+        <wp:page-number-properties start="1" xslt-format="I"/>
+        <wp:headers-and-footers>
+          <wp:header>
+            <wp:p style="Normal"><wp:page-number-ref/></wp:p>
+          </wp:header>
+        </wp:headers-and-footers>
+        <wp:page-size orient="portrait" width="210mm" height="297mm"/>
+      </wp:page-sequence-properties>
+      <wp:body>
+        <wp:p><wp:run>xslt-format="I" with no format: expect upperRoman</wp:run></wp:p>
+      </wp:body>
+    </wp:section>
+  </wp:body>
+</wp:document>
