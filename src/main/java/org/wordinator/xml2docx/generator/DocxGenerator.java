@@ -410,6 +410,8 @@ public class DocxGenerator {
 
   private static final Logger log = LogManager.getLogger(DocxGenerator.class);
 
+  private static final String USER_AGENT = "Wordinator (https://github.com/drmacro/wordinator)";
+
   private File outFile;
   private int dotsPerInch = 72; /* DPI */
   // Map of source IDs to internal object IDs.
@@ -2447,6 +2449,9 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
           URLConnection conn = null;
           try {
             conn = url.openConnection();
+            // Some servers (e.g., Wikimedia) reject requests that use Java's default
+            // User-Agent with a 403, so identify ourselves.
+            conn.setRequestProperty("User-Agent", USER_AGENT);
           } catch (Exception e) {
             log.error(e.getClass().getSimpleName() + " opening image URL: " + e.getMessage());
             return;
