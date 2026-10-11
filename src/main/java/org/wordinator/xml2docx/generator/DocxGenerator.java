@@ -2104,6 +2104,15 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
     String callout = cursor.getAttributeText(DocxConstants.QNAME_CALLOUT_ATT);
     String referenceCallout = cursor.getAttributeText(DocxConstants.QNAME_REFERENCE_CALLOUT_ATT);
 
+    // Issue #154: An empty callout means "no literal callout". Treating it as a literal
+    //             produces empty callout text, which makes Word stop rendering the document.
+    if (callout != null && callout.trim().isEmpty()) {
+      callout = null;
+    }
+    if (referenceCallout != null && referenceCallout.trim().isEmpty()) {
+      referenceCallout = null;
+    }
+
     XWPFAbstractFootnoteEndnote note = null;
     if ("endnote".equals(type)) {
       note = para.getDocument().createEndnote();

@@ -312,6 +312,28 @@ public class TestDocxGenerator extends TestCase {
   }
 
   @Test
+  public void testEmptyFootnoteCallout() throws Exception {
+    // Issue #154: callout="" must be treated as no literal callout.
+    XWPFDocument doc = convert("simplewp/simplewpml-issue-154-empty-callout.swpx", "out/issue-154-empty-callout.docx");
+    XWPFParagraph p = null;
+    for (XWPFParagraph candidate : doc.getParagraphs()) {
+      if (candidate.getText().contains("empty callout")) {
+        p = candidate;
+      }
+    }
+    assertNotNull("Expected the paragraph with the footnote", p);
+    String paraXml = p.getCTP().xmlText();
+    assertFalse("Reference should not use a custom mark", paraXml.contains("customMarkFollows"));
+    assertFalse("Reference should not contain an empty literal callout", paraXml.contains("<w:t/>"));
+    XWPFFootnote footnote = doc.getFootnotes().stream()
+        .filter(fn -> fn.getParagraphs().stream().anyMatch(fp -> fp.getText().contains("Footnote text")))
+        .findFirst().orElse(null);
+    assertNotNull("Expected the footnote", footnote);
+    String noteXml = footnote.getCTFtnEdn().xmlText();
+    assertTrue("Footnote should keep its generated footnoteRef", noteXml.contains("footnoteRef"));
+  }
+
+  @Test
   public void testHyperlinkInFootnote() throws Exception {
     XWPFDocument doc = convert("simplewp/simplewpml-footnote-hyperlink.swpx", "out/footnote-hyperlink.docx");
     XWPFFootnote footnote = doc.getFootnotes().stream()
