@@ -3,7 +3,7 @@
   <wp:body>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="aiueo"/>
+        <wp:page-number-properties start="12" format="aiueo"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
@@ -17,7 +17,7 @@
     </wp:section>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="aiueoFullWidth"/>
+        <wp:page-number-properties start="12" format="aiueoFullWidth"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
@@ -31,7 +31,7 @@
     </wp:section>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="arabicAbjad"/>
+        <wp:page-number-properties start="12" format="arabicAbjad"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
@@ -45,7 +45,7 @@
     </wp:section>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="arabicAlpha"/>
+        <wp:page-number-properties start="12" format="arabicAlpha"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
@@ -59,7 +59,7 @@
     </wp:section>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="bahtText"/>
+        <wp:page-number-properties start="12" format="bahtText"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
@@ -73,7 +73,7 @@
     </wp:section>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="bullet"/>
+        <wp:page-number-properties start="12" format="bullet"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
@@ -87,7 +87,7 @@
     </wp:section>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="cardinalText"/>
+        <wp:page-number-properties start="12" format="cardinalText"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
@@ -101,7 +101,7 @@
     </wp:section>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="chicago"/>
+        <wp:page-number-properties start="12" format="chicago"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
@@ -115,7 +115,7 @@
     </wp:section>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="chineseCounting"/>
+        <wp:page-number-properties start="12" format="chineseCounting"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
@@ -129,7 +129,7 @@
     </wp:section>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="chineseCountingThousand"/>
+        <wp:page-number-properties start="12" format="chineseCountingThousand"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
@@ -143,7 +143,7 @@
     </wp:section>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="chineseLegalSimplified"/>
+        <wp:page-number-properties start="12" format="chineseLegalSimplified"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
@@ -157,7 +157,7 @@
     </wp:section>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="chosung"/>
+        <wp:page-number-properties start="12" format="chosung"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
@@ -171,7 +171,7 @@
     </wp:section>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="decimal"/>
+        <wp:page-number-properties start="12" format="decimal"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
@@ -185,7 +185,7 @@
     </wp:section>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="decimalEnclosedCircle"/>
+        <wp:page-number-properties start="12" format="decimalEnclosedCircle"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
@@ -199,7 +199,7 @@
     </wp:section>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="decimalEnclosedCircleChinese"/>
+        <wp:page-number-properties start="12" format="decimalEnclosedCircleChinese"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
@@ -213,7 +213,7 @@
     </wp:section>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="decimalEnclosedFullstop"/>
+        <wp:page-number-properties start="12" format="decimalEnclosedFullstop"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
@@ -227,7 +227,7 @@
     </wp:section>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="decimalEnclosedParen"/>
+        <wp:page-number-properties start="12" format="decimalEnclosedParen"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
@@ -241,7 +241,7 @@
     </wp:section>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="decimalFullWidth"/>
+        <wp:page-number-properties start="12" format="decimalFullWidth"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
@@ -255,7 +255,7 @@
     </wp:section>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="decimalHalfWidth"/>
+        <wp:page-number-properties start="12" format="decimalHalfWidth"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
@@ -269,7 +269,7 @@
     </wp:section>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="decimalZero"/>
+        <wp:page-number-properties start="12" format="decimalZero"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
@@ -283,7 +283,7 @@
     </wp:section>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="dollarText"/>
+        <wp:page-number-properties start="12" format="dollarText"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
@@ -297,7 +297,7 @@
     </wp:section>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="ganada"/>
+        <wp:page-number-properties start="12" format="ganada"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
@@ -311,7 +311,7 @@
     </wp:section>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="hebrew1"/>
+        <wp:page-number-properties start="12" format="hebrew1"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
@@ -325,7 +325,7 @@
     </wp:section>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="hebrew2"/>
+        <wp:page-number-properties start="12" format="hebrew2"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
@@ -339,7 +339,7 @@
     </wp:section>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="hex"/>
+        <wp:page-number-properties start="12" format="hex"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
@@ -353,7 +353,7 @@
     </wp:section>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="hindiConsonants"/>
+        <wp:page-number-properties start="12" format="hindiConsonants"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
@@ -367,7 +367,7 @@
     </wp:section>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="hindiCounting"/>
+        <wp:page-number-properties start="12" format="hindiCounting"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
@@ -381,7 +381,7 @@
     </wp:section>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="hindiNumbers"/>
+        <wp:page-number-properties start="12" format="hindiNumbers"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
@@ -395,7 +395,7 @@
     </wp:section>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="hindiVowels"/>
+        <wp:page-number-properties start="12" format="hindiVowels"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
@@ -409,7 +409,7 @@
     </wp:section>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="ideographDigital"/>
+        <wp:page-number-properties start="12" format="ideographDigital"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
@@ -423,7 +423,7 @@
     </wp:section>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="ideographEnclosedCircle"/>
+        <wp:page-number-properties start="12" format="ideographEnclosedCircle"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
@@ -437,7 +437,7 @@
     </wp:section>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="ideographLegalTraditional"/>
+        <wp:page-number-properties start="12" format="ideographLegalTraditional"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
@@ -451,7 +451,7 @@
     </wp:section>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="ideographTraditional"/>
+        <wp:page-number-properties start="12" format="ideographTraditional"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
@@ -465,7 +465,7 @@
     </wp:section>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="ideographZodiac"/>
+        <wp:page-number-properties start="12" format="ideographZodiac"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
@@ -479,7 +479,7 @@
     </wp:section>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="ideographZodiacTraditional"/>
+        <wp:page-number-properties start="12" format="ideographZodiacTraditional"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
@@ -493,7 +493,7 @@
     </wp:section>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="iroha"/>
+        <wp:page-number-properties start="12" format="iroha"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
@@ -507,7 +507,7 @@
     </wp:section>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="irohaFullWidth"/>
+        <wp:page-number-properties start="12" format="irohaFullWidth"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
@@ -521,7 +521,7 @@
     </wp:section>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="japaneseCounting"/>
+        <wp:page-number-properties start="12" format="japaneseCounting"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
@@ -535,7 +535,7 @@
     </wp:section>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="japaneseDigitalTenThousand"/>
+        <wp:page-number-properties start="12" format="japaneseDigitalTenThousand"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
@@ -549,7 +549,7 @@
     </wp:section>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="japaneseLegal"/>
+        <wp:page-number-properties start="12" format="japaneseLegal"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
@@ -563,7 +563,7 @@
     </wp:section>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="koreanCounting"/>
+        <wp:page-number-properties start="12" format="koreanCounting"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
@@ -577,7 +577,7 @@
     </wp:section>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="koreanDigital"/>
+        <wp:page-number-properties start="12" format="koreanDigital"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
@@ -591,7 +591,7 @@
     </wp:section>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="koreanDigital2"/>
+        <wp:page-number-properties start="12" format="koreanDigital2"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
@@ -605,7 +605,7 @@
     </wp:section>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="koreanLegal"/>
+        <wp:page-number-properties start="12" format="koreanLegal"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
@@ -619,7 +619,7 @@
     </wp:section>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="lowerLetter"/>
+        <wp:page-number-properties start="12" format="lowerLetter"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
@@ -633,7 +633,7 @@
     </wp:section>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="lowerRoman"/>
+        <wp:page-number-properties start="12" format="lowerRoman"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
@@ -647,7 +647,7 @@
     </wp:section>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="none"/>
+        <wp:page-number-properties start="12" format="none"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
@@ -661,7 +661,7 @@
     </wp:section>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="numberInDash"/>
+        <wp:page-number-properties start="12" format="numberInDash"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
@@ -675,7 +675,7 @@
     </wp:section>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="ordinal"/>
+        <wp:page-number-properties start="12" format="ordinal"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
@@ -689,7 +689,7 @@
     </wp:section>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="ordinalText"/>
+        <wp:page-number-properties start="12" format="ordinalText"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
@@ -703,7 +703,7 @@
     </wp:section>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="russianUpper"/>
+        <wp:page-number-properties start="12" format="russianUpper"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
@@ -717,7 +717,7 @@
     </wp:section>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="taiwaneseCounting"/>
+        <wp:page-number-properties start="12" format="taiwaneseCounting"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
@@ -731,7 +731,7 @@
     </wp:section>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="taiwaneseCountingThousand"/>
+        <wp:page-number-properties start="12" format="taiwaneseCountingThousand"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
@@ -745,7 +745,7 @@
     </wp:section>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="taiwaneseDigital"/>
+        <wp:page-number-properties start="12" format="taiwaneseDigital"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
@@ -759,7 +759,7 @@
     </wp:section>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="thaiCounting"/>
+        <wp:page-number-properties start="12" format="thaiCounting"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
@@ -773,7 +773,7 @@
     </wp:section>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="thaiLetters"/>
+        <wp:page-number-properties start="12" format="thaiLetters"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
@@ -787,7 +787,7 @@
     </wp:section>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="thaiNumbers"/>
+        <wp:page-number-properties start="12" format="thaiNumbers"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
@@ -801,7 +801,7 @@
     </wp:section>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="upperLetter"/>
+        <wp:page-number-properties start="12" format="upperLetter"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
@@ -815,7 +815,7 @@
     </wp:section>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="upperRoman"/>
+        <wp:page-number-properties start="12" format="upperRoman"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
@@ -829,7 +829,7 @@
     </wp:section>
     <wp:section type="nextPage">
       <wp:page-sequence-properties>
-        <wp:page-number-properties start="1" format="vietnameseCounting"/>
+        <wp:page-number-properties start="12" format="vietnameseCounting"/>
         <wp:headers-and-footers>
           <wp:header>
             <wp:p style="Normal"><wp:page-number-ref/></wp:p>
