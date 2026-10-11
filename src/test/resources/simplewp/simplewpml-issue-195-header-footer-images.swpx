@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="../../../main/doctypes/simplewpml/simplewpml.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<document xmlns="urn:ns:wordinator:simplewpml">
+  <page-sequence-properties>
+    <headers-and-footers>
+      <header>
+        <!-- Letterhead-style image: top right of the page, text flows to its left -->
+        <p>
+          <image src="images/picture-02.jpg" width="0.8in">
+            <anchor h-relative="margin" h-align="right" v-relative="paragraph" v-offset="0in" wrap="square"/>
+          </image>
+          <run>Header text. A floating image is aligned to the right margin.</run>
+        </p>
+      </header>
+      <footer>
+        <!-- Watermark-style image: centered on the page behind the body text -->
+        <p>
+          <image src="images/picture-02.jpg" width="2in">
+            <anchor h-relative="page" h-align="center" v-relative="page" v-align="center"
+                    wrap="none" behind-text="true"/>
+          </image>
+          <run>Footer text. A floating image is centered on the page, behind the body text.</run>
+        </p>
+        <p>
+          <image src="images/picture-02.jpg" width="0.5in"/>
+          <run>An inline image in the footer, for comparison.</run>
+        </p>
+      </footer>
+    </headers-and-footers>
+  </page-sequence-properties>
+  <body>
+    <p style="Heading1"><run>Issue #195: Floating images in headers and footers</run></p>
+    <p><run>The header has a floating image at the right margin. The footer has an inline image and a floating image centered on the page behind this text. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</run></p>
+    <p><run>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</run></p>
+  </body>
+</document>

@@ -67,6 +67,12 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblWidth;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STTblWidth;
 import org.apache.poi.util.Units;
 import org.openxmlformats.schemas.drawingml.x2006.main.CTPositiveSize2D;
+import org.openxmlformats.schemas.drawingml.x2006.wordprocessingDrawing.CTAnchor;
+import org.openxmlformats.schemas.drawingml.x2006.wordprocessingDrawing.STAlignH;
+import org.openxmlformats.schemas.drawingml.x2006.wordprocessingDrawing.STAlignV;
+import org.openxmlformats.schemas.drawingml.x2006.wordprocessingDrawing.STRelFromH;
+import org.openxmlformats.schemas.drawingml.x2006.wordprocessingDrawing.STRelFromV;
+import org.openxmlformats.schemas.drawingml.x2006.wordprocessingDrawing.STWrapText;
 import org.openxmlformats.schemas.drawingml.x2006.wordprocessingDrawing.CTInline;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDrawing;
 
@@ -1191,6 +1197,120 @@ public class TestDocxGenerator extends TestCase {
     // One column is the full width
     cols.setNum(BigInteger.valueOf(1));
     assertEquals(9360, DocxGenerator.getContentWidthInTwips(sectPr));
+  }
+
+  @Test
+  public void testAnchoredImages() throws Exception {
+    // Issue #195
+    XWPFDocument doc = convert("simplewp/simplewpml-issue-195-anchored-images.swpx", "out/issue-195-anchored-images.docx");
+    List<CTAnchor> anchors = new java.util.ArrayList<>();
+    List<CTInline> inlines = new java.util.ArrayList<>();
+    List<XWPFParagraph> paras = new java.util.ArrayList<>(doc.getParagraphs());
+    for (XWPFTable table : doc.getTables()) {
+      for (XWPFTableRow row : table.getRows()) {
+        for (XWPFTableCell cell : row.getTableCells()) {
+          paras.addAll(cell.getParagraphs());
+        }
+      }
+    }
+    for (XWPFParagraph para : paras) {
+      for (XWPFRun run : para.getRuns()) {
+        for (CTDrawing drawing : run.getCTR().getDrawingArray()) {
+          anchors.addAll(java.util.Arrays.asList(drawing.getAnchorArray()));
+          inlines.addAll(java.util.Arrays.asList(drawing.getInlineArray()));
+        }
+      }
+    }
+    assertEquals("Expected three body anchors and one in the table", 4, anchors.size());
+    assertEquals("Expected the one image without an anchor to stay inline", 1, inlines.size());
+
+    // Square wrap, aligned right of the margin, 0.1in (91440 EMU) from the text
+    CTAnchor a = anchors.get(0);
+    assertTrue(a.isSetWrapSquare());
+    assertEquals(STWrapText.BOTH_SIDES, a.getWrapSquare().getWrapText());
+    assertEquals(STRelFromH.MARGIN, a.getPositionH().getRelativeFrom());
+    assertEquals(STAlignH.RIGHT, a.getPositionH().getAlign());
+    assertEquals(STRelFromV.PARAGRAPH, a.getPositionV().getRelativeFrom());
+    assertEquals(0, a.getPositionV().getPosOffset());
+    assertEquals(91440L, a.getDistL());
+    assertEquals(91440L, a.getDistT());
+    assertFalse(a.getBehindDoc());
+    assertTrue("Floating image should keep its size", a.getExtent().getCx() > 0 && a.getExtent().getCy() > 0);
+    assertEquals("Same size as an inline image would be", Units.toEMU(150), a.getExtent().getCx());
+    assertNotNull("Floating image should keep its picture", a.getGraphic());
+    assertNotNull(a.getDocPr());
+
+    // Top and bottom, centered
+    a = anchors.get(1);
+    assertTrue(a.isSetWrapTopAndBottom());
+    assertEquals(STAlignH.CENTER, a.getPositionH().getAlign());
+    assertEquals(91440, a.getPositionV().getPosOffset());
+
+    // Behind text, no wrap, offsets from the margin and paragraph (1in right, 0.1in above)
+    CTAnchor behind = anchors.get(2);
+    assertTrue(behind.isSetWrapNone());
+    assertTrue(behind.getBehindDoc());
+    assertEquals(STRelFromH.MARGIN, behind.getPositionH().getRelativeFrom());
+    assertEquals(914400, behind.getPositionH().getPosOffset());
+    assertEquals(STRelFromV.PARAGRAPH, behind.getPositionV().getRelativeFrom());
+    assertEquals(-91440, behind.getPositionV().getPosOffset());
+    assertTrue("Later images should be in front of earlier ones", behind.getRelativeHeight() > anchors.get(0).getRelativeHeight());
+
+    // In a table cell, defaults for what is not specified
+    a = anchors.get(3);
+    assertEquals(STRelFromH.COLUMN, a.getPositionH().getRelativeFrom());
+    assertEquals(STAlignH.RIGHT, a.getPositionH().getAlign());
+    assertEquals(0L, a.getDistL());
+    assertEquals(STWrapText.BOTH_SIDES, a.getWrapSquare().getWrapText());
+  }
+
+  @Test
+  public void testAnchoredImagesInHeaderAndFooter() throws Exception {
+    // Issue #195
+    XWPFDocument doc = convert("simplewp/simplewpml-issue-195-header-footer-images.swpx", "out/issue-195-header-footer-images.docx");
+    assertEquals(1, doc.getHeaderList().size());
+    assertEquals(1, doc.getFooterList().size());
+
+    // Header: floating image aligned to the right margin
+    XWPFHeader header = doc.getHeaderList().get(0);
+    List<CTAnchor> anchors = new java.util.ArrayList<>();
+    List<CTInline> inlines = new java.util.ArrayList<>();
+    collectDrawings(header.getParagraphs(), anchors, inlines);
+    assertEquals(1, anchors.size());
+    assertEquals(0, inlines.size());
+    CTAnchor a = anchors.get(0);
+    assertTrue(a.isSetWrapSquare());
+    assertEquals(STRelFromH.MARGIN, a.getPositionH().getRelativeFrom());
+    assertEquals(STAlignH.RIGHT, a.getPositionH().getAlign());
+    assertEquals("The picture data must be in the header part", 1, header.getAllPictures().size());
+
+    // Footer: floating image centered on the page behind the text, plus an inline image
+    XWPFFooter footer = doc.getFooterList().get(0);
+    anchors.clear();
+    inlines.clear();
+    collectDrawings(footer.getParagraphs(), anchors, inlines);
+    assertEquals(1, anchors.size());
+    assertEquals(1, inlines.size());
+    a = anchors.get(0);
+    assertTrue(a.isSetWrapNone());
+    assertTrue(a.getBehindDoc());
+    assertEquals(STRelFromH.PAGE, a.getPositionH().getRelativeFrom());
+    assertEquals(STAlignH.CENTER, a.getPositionH().getAlign());
+    assertEquals(STRelFromV.PAGE, a.getPositionV().getRelativeFrom());
+    assertEquals(STAlignV.CENTER, a.getPositionV().getAlign());
+    // Both images use the same file, which POI stores once:
+    assertEquals("The picture data must be in the footer part", 1, footer.getAllPictures().size());
+  }
+
+  private static void collectDrawings(List<XWPFParagraph> paras, List<CTAnchor> anchors, List<CTInline> inlines) {
+    for (XWPFParagraph para : paras) {
+      for (XWPFRun run : para.getRuns()) {
+        for (CTDrawing drawing : run.getCTR().getDrawingArray()) {
+          anchors.addAll(java.util.Arrays.asList(drawing.getAnchorArray()));
+          inlines.addAll(java.util.Arrays.asList(drawing.getInlineArray()));
+        }
+      }
+    }
   }
 
   @Test

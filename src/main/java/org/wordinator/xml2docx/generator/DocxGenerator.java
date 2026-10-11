@@ -75,7 +75,17 @@ import org.apache.xmlbeans.XmlCursor.TokenType;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.impl.xb.xmlschema.SpaceAttribute.Space;
+import org.openxmlformats.schemas.drawingml.x2006.main.CTPoint2D;
 import org.openxmlformats.schemas.drawingml.x2006.main.CTPositiveSize2D;
+import org.openxmlformats.schemas.drawingml.x2006.wordprocessingDrawing.CTAnchor;
+import org.openxmlformats.schemas.drawingml.x2006.wordprocessingDrawing.CTEffectExtent;
+import org.openxmlformats.schemas.drawingml.x2006.wordprocessingDrawing.CTPosH;
+import org.openxmlformats.schemas.drawingml.x2006.wordprocessingDrawing.CTPosV;
+import org.openxmlformats.schemas.drawingml.x2006.wordprocessingDrawing.STAlignH;
+import org.openxmlformats.schemas.drawingml.x2006.wordprocessingDrawing.STAlignV;
+import org.openxmlformats.schemas.drawingml.x2006.wordprocessingDrawing.STRelFromH;
+import org.openxmlformats.schemas.drawingml.x2006.wordprocessingDrawing.STRelFromV;
+import org.openxmlformats.schemas.drawingml.x2006.wordprocessingDrawing.STWrapText;
 import org.openxmlformats.schemas.drawingml.x2006.wordprocessingDrawing.CTInline;
 import org.openxmlformats.schemas.officeDocument.x2006.sharedTypes.STOnOff1;
 import org.openxmlformats.schemas.officeDocument.x2006.sharedTypes.STVerticalAlignRun;
@@ -89,6 +99,7 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTNumLvl;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTNumPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDocument1;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTColumns;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDrawing;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTFldChar;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTFtnEdn;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTHdrFtrRef;
@@ -2718,8 +2729,21 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
                  imageFilename,
                  Units.toEMU(width),
                  Units.toEMU(height));
-      if ("true".equals(cursor.getAttributeText(DocxConstants.QNAME_FIT_TO_PAGE_WIDTH_ATT))) {
-        picturesToFit.add(new PictureToFit(para, picture, run.getCTR().getDrawingArray(0).getInlineArray(0)));
+      boolean fitToPageWidth = "true".equals(cursor.getAttributeText(DocxConstants.QNAME_FIT_TO_PAGE_WIDTH_ATT));
+      boolean anchored = false;
+      // Issue #195: A nested anchor element makes the image float
+      cursor.push();
+      if (cursor.toChild(DocxConstants.QNAME_ANCHOR_ELEM)) {
+        makeAnchor(run, cursor);
+        anchored = true;
+      }
+      cursor.pop();
+      if (fitToPageWidth) {
+        if (anchored) {
+          log.warn("makeImage(): @fit-to-page-width is ignored for an image with an anchor element.");
+        } else {
+          picturesToFit.add(new PictureToFit(para, picture, run.getCTR().getDrawingArray(0).getInlineArray(0)));
+        }
       }
     } catch (Exception e) {
       log.warn("" + e.getClass().getSimpleName() + " exception adding picture for reference '" + imageFilename +"': " +
@@ -2727,6 +2751,178 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
     }
     imageCounter++;
     cursor.pop();
+  }
+
+  /**
+   * Converts the inline picture in a run into a floating (anchored) picture.
+   * @param run The run that contains the inline picture
+   * @param cursor Cursor pointing at the anchor element
+   */
+  private void makeAnchor(XWPFRun run, XmlCursor cursor) {
+    CTDrawing drawing = run.getCTR().getDrawingArray(0);
+    CTInline inline = drawing.getInlineArray(0);
+    CTAnchor anchor = drawing.addNewAnchor();
+
+    long distance = 0;
+    String distanceValue = cursor.getAttributeText(DocxConstants.QNAME_DISTANCE_ATT);
+    if (null != distanceValue && !"".equals(distanceValue.trim())) {
+      distance = toEmu(distanceValue, "distance");
+    }
+    anchor.setDistT(distance);
+    anchor.setDistB(distance);
+    anchor.setDistL(distance);
+    anchor.setDistR(distance);
+
+    boolean behindText = "true".equals(cursor.getAttributeText(DocxConstants.QNAME_BEHIND_TEXT_ATT));
+    anchor.setBehindDoc(behindText);
+    anchor.setSimplePos2(false);
+    anchor.setLocked(false);
+    anchor.setLayoutInCell(true);
+    anchor.setAllowOverlap(true);
+    // Later images are in front of earlier ones.
+    anchor.setRelativeHeight(ANCHOR_BASE_RELATIVE_HEIGHT + anchorCounter++);
+
+    CTPoint2D simplePos = anchor.addNewSimplePos();
+    simplePos.setX(0);
+    simplePos.setY(0);
+
+    setAnchorHorizontalPosition(anchor.addNewPositionH(), cursor);
+    setAnchorVerticalPosition(anchor.addNewPositionV(), cursor);
+
+    anchor.setExtent(inline.getExtent());
+    CTEffectExtent effectExtent = anchor.addNewEffectExtent();
+    effectExtent.setL(0);
+    effectExtent.setT(0);
+    effectExtent.setR(0);
+    effectExtent.setB(0);
+
+    setAnchorWrap(anchor, cursor);
+
+    anchor.setDocPr(inline.getDocPr());
+    if (inline.isSetCNvGraphicFramePr()) {
+      anchor.setCNvGraphicFramePr(inline.getCNvGraphicFramePr());
+    }
+    anchor.setGraphic(inline.getGraphic());
+    drawing.removeInline(0);
+  }
+
+  private void setAnchorHorizontalPosition(CTPosH posH, XmlCursor cursor) {
+    String relative = cursor.getAttributeText(DocxConstants.QNAME_H_RELATIVE_ATT);
+    STRelFromH.Enum relativeFrom = STRelFromH.COLUMN;
+    if (null != relative) {
+      switch (relative.trim()) {
+        case "page": relativeFrom = STRelFromH.PAGE; break;
+        case "margin": relativeFrom = STRelFromH.MARGIN; break;
+        case "column": relativeFrom = STRelFromH.COLUMN; break;
+        case "character": relativeFrom = STRelFromH.CHARACTER; break;
+        default:
+          log.warn("makeAnchor(): Unexpected h-relative value \"" + relative + "\". Using \"column\".");
+      }
+    }
+    posH.setRelativeFrom(relativeFrom);
+
+    String align = cursor.getAttributeText(DocxConstants.QNAME_H_ALIGN_ATT);
+    String offset = cursor.getAttributeText(DocxConstants.QNAME_H_OFFSET_ATT);
+    if (null != align) {
+      STAlignH.Enum alignH = null;
+      switch (align.trim()) {
+        case "left": alignH = STAlignH.LEFT; break;
+        case "center": alignH = STAlignH.CENTER; break;
+        case "right": alignH = STAlignH.RIGHT; break;
+        case "inside": alignH = STAlignH.INSIDE; break;
+        case "outside": alignH = STAlignH.OUTSIDE; break;
+        default:
+          log.warn("makeAnchor(): Unexpected h-align value \"" + align + "\". Using an offset of 0.");
+      }
+      if (null != offset) {
+        log.warn("makeAnchor(): Both h-align and h-offset specified. Using h-align.");
+      }
+      if (null != alignH) {
+        posH.setAlign(alignH);
+        return;
+      }
+      offset = null;
+    }
+    posH.setPosOffset((int) (null == offset ? 0 : toEmu(offset, "h-offset")));
+  }
+
+  private void setAnchorVerticalPosition(CTPosV posV, XmlCursor cursor) {
+    String relative = cursor.getAttributeText(DocxConstants.QNAME_V_RELATIVE_ATT);
+    STRelFromV.Enum relativeFrom = STRelFromV.PARAGRAPH;
+    if (null != relative) {
+      switch (relative.trim()) {
+        case "page": relativeFrom = STRelFromV.PAGE; break;
+        case "margin": relativeFrom = STRelFromV.MARGIN; break;
+        case "paragraph": relativeFrom = STRelFromV.PARAGRAPH; break;
+        case "line": relativeFrom = STRelFromV.LINE; break;
+        default:
+          log.warn("makeAnchor(): Unexpected v-relative value \"" + relative + "\". Using \"paragraph\".");
+      }
+    }
+    posV.setRelativeFrom(relativeFrom);
+
+    String align = cursor.getAttributeText(DocxConstants.QNAME_V_ALIGN_ATT);
+    String offset = cursor.getAttributeText(DocxConstants.QNAME_V_OFFSET_ATT);
+    if (null != align) {
+      STAlignV.Enum alignV = null;
+      switch (align.trim()) {
+        case "top": alignV = STAlignV.TOP; break;
+        case "center": alignV = STAlignV.CENTER; break;
+        case "bottom": alignV = STAlignV.BOTTOM; break;
+        case "inside": alignV = STAlignV.INSIDE; break;
+        case "outside": alignV = STAlignV.OUTSIDE; break;
+        default:
+          log.warn("makeAnchor(): Unexpected v-align value \"" + align + "\". Using an offset of 0.");
+      }
+      if (null != offset) {
+        log.warn("makeAnchor(): Both v-align and v-offset specified. Using v-align.");
+      }
+      if (null != alignV) {
+        posV.setAlign(alignV);
+        return;
+      }
+      offset = null;
+    }
+    posV.setPosOffset((int) (null == offset ? 0 : toEmu(offset, "v-offset")));
+  }
+
+  private void setAnchorWrap(CTAnchor anchor, XmlCursor cursor) {
+    String wrap = cursor.getAttributeText(DocxConstants.QNAME_WRAP_ATT);
+    wrap = null == wrap ? "square" : wrap.trim();
+    if ("top-and-bottom".equals(wrap)) {
+      anchor.addNewWrapTopAndBottom();
+    } else if ("none".equals(wrap)) {
+      anchor.addNewWrapNone();
+    } else {
+      if (!"square".equals(wrap)) {
+        log.warn("makeAnchor(): Unexpected wrap value \"" + wrap + "\". Using \"square\".");
+      }
+      STWrapText.Enum wrapText = STWrapText.BOTH_SIDES;
+      String wrapTextValue = cursor.getAttributeText(DocxConstants.QNAME_WRAP_TEXT_ATT);
+      if (null != wrapTextValue) {
+        switch (wrapTextValue.trim()) {
+          case "both": wrapText = STWrapText.BOTH_SIDES; break;
+          case "left": wrapText = STWrapText.LEFT; break;
+          case "right": wrapText = STWrapText.RIGHT; break;
+          case "largest": wrapText = STWrapText.LARGEST; break;
+          default:
+            log.warn("makeAnchor(): Unexpected wrap-text value \"" + wrapTextValue + "\". Using \"both\".");
+        }
+      }
+      anchor.addNewWrapSquare().setWrapText(wrapText);
+    }
+  }
+
+  /**
+   * Converts a measurement to EMUs. Reports a bad value and returns 0.
+   */
+  private long toEmu(String measurement, String attName) {
+    try {
+      return Measurement.toTwips(measurement, getDotsPerInch()) * EMUS_PER_TWIP;
+    } catch (MeasurementException e) {
+      log.warn("makeAnchor(): Value \"" + measurement + "\" for attribute \"" + attName + "\" is not a valid measurement. Using 0.");
+      return 0;
+    }
   }
 
   /**
@@ -3915,6 +4111,8 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
   private static final long DEFAULT_PAGE_WIDTH_TWIPS = 12240;
   private static final long DEFAULT_MARGIN_TWIPS = 1440;
   private static final long DEFAULT_COLUMN_SPACE_TWIPS = 720;
+  private static final long ANCHOR_BASE_RELATIVE_HEIGHT = 251658240L;
+  private int anchorCounter = 0; // Used to order floating images
   private static final long EMUS_PER_TWIP = 635;
 
   /**

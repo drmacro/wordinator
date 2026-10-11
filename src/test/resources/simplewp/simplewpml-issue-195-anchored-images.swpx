@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="../../../main/doctypes/simplewpml/simplewpml.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<document xmlns="urn:ns:wordinator:simplewpml">
+  <body>
+    <!-- Issue #195: Floating images -->
+    <p style="Heading1"><run>Issue #195: Floating images</run></p>
+    <p>
+      <image src="images/picture-02.jpg" width="150px">
+        <anchor h-relative="margin" h-align="right" v-relative="paragraph" v-offset="0in"
+                wrap="square" wrap-text="both" distance="0.1in"/>
+      </image>
+      <run>Square wrap. This paragraph has a floating image aligned to the right margin. The text should flow around the left side of the image. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</run>
+    </p>
+    <p>
+      <image src="images/picture-02.jpg" width="150px">
+        <anchor h-relative="margin" h-align="center" v-relative="paragraph" v-offset="0.1in" wrap="top-and-bottom" distance="0.1in"/>
+      </image>
+      <run>Top and bottom wrap. The image is centered between the margins and the text stays above and below it. It is 0.1in below the top of this paragraph so that its 0.1in distance does not reach into the previous paragraph.</run>
+    </p>
+    <p>
+      <image src="images/picture-02.jpg" width="1.5in">
+        <anchor h-relative="margin" h-offset="1in" v-relative="paragraph" v-offset="-0.1in" wrap="none" behind-text="true"/>
+      </image>
+      <run>Behind text. The image is positioned 1in from the left margin and 0.1in above the top of this paragraph, and it runs behind this text.</run>
+    </p>
+    <p><run>An inline image without an anchor element, for comparison: </run><image src="images/picture-02.jpg" width="50px"/></p>
+    <table>
+      <tbody>
+        <tr>
+          <td><p>
+            <image src="images/picture-02.jpg" width="60px">
+              <anchor h-relative="column" h-align="right" wrap="square"/>
+            </image>
+            <run>A floating image in a table cell.</run></p></td>
+          <td><p><run>Another cell.</run></p></td>
+        </tr>
+      </tbody>
+    </table>
+  </body>
+</document>

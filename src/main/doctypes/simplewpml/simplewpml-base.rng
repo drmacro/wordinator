@@ -1140,7 +1140,9 @@
         the default of 72 pixels/inch should be used unless the processor provides
         for specifying a different default resolution.</p>
       </a:documentation>
-      <empty/>
+      <optional>
+        <ref name="anchor"/>
+      </optional>
       <attribute name="src">
         <a:documentation>
           <p>The image data. Value is the URI of the image, e.g. "graphics/image-01.jpg".
@@ -1164,6 +1166,138 @@
             <value>true</value>
             <value>false</value>
           </choice>
+        </attribute>
+      </optional>
+    </element>
+  </define>
+  
+  <define name="anchor">
+    <element name="anchor" ns="urn:ns:wordinator:simplewpml">
+      <a:documentation>
+        <p>Makes the image containing it a floating image that is positioned relative to the page, margins,
+        column, or the paragraph it is in, instead of an inline image that flows with the text.</p>
+        <p>The image's width and height specify its size. @fit-to-page-width is ignored for floating images.</p>
+        <p>See 20.4.2.3 anchor (Anchor for Floating DrawingML Object)</p>
+      </a:documentation>
+      <empty/>
+      <optional>
+        <attribute name="h-relative" a:defaultValue="column">
+          <a:documentation>
+            <p>What the horizontal position is relative to.</p>
+          </a:documentation>
+          <choice>
+            <value>page</value>
+            <value>margin</value>
+            <value>column</value>
+            <value>character</value>
+          </choice>
+        </attribute>
+      </optional>
+      <optional>
+        <choice>
+          <attribute name="h-align">
+            <a:documentation>
+              <p>Horizontal alignment relative to the h-relative area. "inside" and "outside" are for
+              facing pages.</p>
+            </a:documentation>
+            <choice>
+              <value>left</value>
+              <value>center</value>
+              <value>right</value>
+              <value>inside</value>
+              <value>outside</value>
+            </choice>
+          </attribute>
+          <attribute name="h-offset">
+            <a:documentation>
+              <p>Distance from the left edge of the h-relative area to the left edge of the image. May be negative.
+              Default is 0. Not used if h-align is specified.</p>
+            </a:documentation>
+            <ref name="measurement"/>
+          </attribute>
+        </choice>
+      </optional>
+      <optional>
+        <attribute name="v-relative" a:defaultValue="paragraph">
+          <a:documentation>
+            <p>What the vertical position is relative to.</p>
+          </a:documentation>
+          <choice>
+            <value>page</value>
+            <value>margin</value>
+            <value>paragraph</value>
+            <value>line</value>
+          </choice>
+        </attribute>
+      </optional>
+      <optional>
+        <choice>
+          <attribute name="v-align">
+            <a:documentation>
+              <p>Vertical alignment relative to the v-relative area. "inside" and "outside" are for
+              facing pages.</p>
+            </a:documentation>
+            <choice>
+              <value>top</value>
+              <value>center</value>
+              <value>bottom</value>
+              <value>inside</value>
+              <value>outside</value>
+            </choice>
+          </attribute>
+          <attribute name="v-offset">
+            <a:documentation>
+              <p>Distance from the top edge of the v-relative area to the top edge of the image. May be negative.
+              Default is 0. Not used if v-align is specified.</p>
+            </a:documentation>
+            <ref name="measurement"/>
+          </attribute>
+        </choice>
+      </optional>
+      <optional>
+        <attribute name="wrap" a:defaultValue="square">
+          <a:documentation>
+            <p>How text wraps around the image: "square" wraps text around the image's bounding box,
+            "top-and-bottom" keeps text above and below the image, and "none" lets the text run over the image
+            (see behind-text). Tight wrapping is not supported.</p>
+          </a:documentation>
+          <choice>
+            <value>square</value>
+            <value>top-and-bottom</value>
+            <value>none</value>
+          </choice>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="wrap-text" a:defaultValue="both">
+          <a:documentation>
+            <p>For wrap="square", the sides of the image text may be on.</p>
+          </a:documentation>
+          <choice>
+            <value>both</value>
+            <value>left</value>
+            <value>right</value>
+            <value>largest</value>
+          </choice>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="distance" a:defaultValue="0">
+          <a:documentation>
+            <p>The distance between the image and the text that wraps around it, on all sides.</p>
+            <p>NOTE: The space is also reserved above the image. For an image positioned at the top of its paragraph
+            (the default) the space can extend into the preceding paragraph and push that paragraph's last line below
+            the image. Use v-offset to move the image down by the same distance if that is not wanted.</p>
+          </a:documentation>
+          <ref name="measurement"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="behind-text" a:defaultValue="false">
+          <a:documentation>
+            <p>If "true", the image is behind the text, e.g., for a watermark. Normally used with wrap="none".</p>
+          </a:documentation>
+          <ref name="true-false-value"/>
         </attribute>
       </optional>
     </element>

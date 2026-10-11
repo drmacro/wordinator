@@ -42,6 +42,17 @@ public final class DocxConstants {
   public static final QName QNAME_COUNT_ATT = new QName("", "count");
   public static final QName QNAME_SPACE_ATT = new QName("", "space");
   public static final QName QNAME_SEPARATOR_ATT = new QName("", "separator");
+  public static final QName QNAME_ANCHOR_ELEM = new QName(SIMPLE_WP_NS, "anchor");
+  public static final QName QNAME_BEHIND_TEXT_ATT = new QName("", "behind-text");
+  public static final QName QNAME_DISTANCE_ATT = new QName("", "distance");
+  public static final QName QNAME_H_ALIGN_ATT = new QName("", "h-align");
+  public static final QName QNAME_H_OFFSET_ATT = new QName("", "h-offset");
+  public static final QName QNAME_H_RELATIVE_ATT = new QName("", "h-relative");
+  public static final QName QNAME_V_ALIGN_ATT = new QName("", "v-align");
+  public static final QName QNAME_V_OFFSET_ATT = new QName("", "v-offset");
+  public static final QName QNAME_V_RELATIVE_ATT = new QName("", "v-relative");
+  public static final QName QNAME_WRAP_ATT = new QName("", "wrap");
+  public static final QName QNAME_WRAP_TEXT_ATT = new QName("", "wrap-text");
   public static final QName QNAME_BOOKMARKREF_ATT = new QName("", "bookmarkRef");
   public static final QName QNAME_BORDER_COLOR_ATT = new QName("", "bordercolor");
   public static final QName QNAME_BORDER_COLOR_TOP_ATT = new QName("", "bordercolortop");
