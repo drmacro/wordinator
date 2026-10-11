@@ -21,6 +21,10 @@ import org.apache.poi.xwpf.usermodel.TableRowAlign;
 import org.apache.poi.xwpf.usermodel.XWPFAbstractNum;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFFooter;
+import org.apache.poi.xwpf.usermodel.XWPFFootnote;
+import org.apache.poi.openxml4j.opc.PackageRelationship;
+import org.apache.poi.openxml4j.opc.TargetMode;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTHyperlink;
 import org.apache.poi.xwpf.usermodel.XWPFHeader;
 import org.apache.poi.xwpf.usermodel.XWPFHyperlinkRun;
 import org.apache.poi.xwpf.usermodel.XWPFNum;
@@ -302,6 +306,28 @@ public class TestDocxGenerator extends TestCase {
     p = iterator.next();
     fnText = p.getFootnoteText();
     assertEquals(" [3: FN-2This is a custom footnote. It specifies a literal callout of \"FN-2\" and a reference callout of \"Ref-2\".] ", p.getFootnoteText());
+  }
+
+  @Test
+  public void testHyperlinkInFootnote() throws Exception {
+    XWPFDocument doc = convert("simplewp/simplewpml-footnote-hyperlink.swpx", "out/footnote-hyperlink.docx");
+    XWPFFootnote footnote = doc.getFootnotes().stream()
+        .filter(fn -> fn.getParagraphs().stream().anyMatch(fp -> fp.getText().contains("the target")))
+        .findFirst().orElse(null);
+    assertNotNull("Expected a footnote containing the hyperlink text", footnote);
+    String rId = null;
+    for (XWPFParagraph fp : footnote.getParagraphs()) {
+      for (CTHyperlink link : fp.getCTP().getHyperlinkList()) {
+        rId = link.getId();
+      }
+    }
+    assertNotNull("Expected a hyperlink within the footnote", rId);
+    // The relationship must live in the footnote part, not the main document part,
+    // otherwise Word reports the document as corrupt.
+    PackageRelationship rel = footnote.getPart().getPackagePart().getRelationship(rId);
+    assertNotNull("Expected relationship " + rId + " in the footnotes part", rel);
+    assertEquals("https://example.com/footnote-target", rel.getTargetURI().toString());
+    assertEquals(TargetMode.EXTERNAL, rel.getTargetMode());
   }
 
   @Test

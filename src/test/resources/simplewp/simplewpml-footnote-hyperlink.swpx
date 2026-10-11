@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="../../../main/doctypes/simplewpml/simplewpml.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<document xmlns="urn:ns:wordinator:simplewpml">
+  <body>
+    <p style="Heading1">
+      <run>Test of external hyperlink within a footnote</run>
+    </p>
+    <p style="normal">
+      <run>This paragraph has a footnote that contains a hyperlink.</run>
+      <fn><p>
+        <run>See </run>
+        <hyperlink href="https://example.com/footnote-target"><run>the target</run></hyperlink>
+        <run> for details.</run>
+      </p></fn>
+    </p>
+  </body>
+</document>

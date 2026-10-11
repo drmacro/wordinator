@@ -26,6 +26,14 @@ If you need to go from Word documents back to XML, you may find [the DITA for Pu
 
 ## Release Notes
 
+* 1.2.1 (unreleased)
+
+  * Issue 186: Incorporate fixes from Lars Marius Garshol's fork (https://github.com/larsga/wordinator). Thanks to Lars Marius Garshol.
+  * Fix corrupt DOCX files (Word reports unreadable content) when a footnote contains an external hyperlink. The hyperlink relationship is now created in the footnotes part rather than the main document part.
+  * Fix incorrect log message.
+  * Add InvalidInputException and rework the exception classes used for error handling.
+  * Update Apache POI (poi, poi-ooxml) to 5.5.1.
+
 * 1.2.0
 
   * Issue 155: Implement the align attribute on tables. Thanks to Lars Marius Garshol.
