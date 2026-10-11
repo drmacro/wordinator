@@ -34,6 +34,7 @@ If you need to go from Word documents back to XML, you may find [the DITA for Pu
   * Add InvalidInputException and rework the exception classes used for error handling.
   * Update Apache POI (poi, poi-ooxml) to 5.5.1.
   * Issue 186: Add optional attributes borderWidthTop, borderWidthLeft, borderWidthRight, and borderWidthBottom to table and td to set border thicknesses, as measurements (e.g., "1pt", "1mm"). Border widths are applied even when no border style is specified. Thanks to Lars Marius Garshol.
+  * Issue 186: Support SVG images (image/@src with an .svg file name or an image/svg+xml data URL). The image size comes from the width and height attributes of the svg element when the image does not specify one. Images that Java cannot read no longer cause a failure when sizing the image; the default 200x200 size is used. Thanks to Lars Marius Garshol.
 
 * 1.2.0
 

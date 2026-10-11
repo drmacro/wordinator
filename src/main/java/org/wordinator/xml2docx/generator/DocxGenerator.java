@@ -29,6 +29,7 @@ import java.util.Optional;
 
 import javax.imageio.ImageIO;
 import javax.xml.namespace.QName;
+import javax.xml.parsers.SAXParserFactory;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FilenameUtils;
@@ -127,6 +128,10 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.STShd;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STStyleType;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STTblLayoutType;
 import org.wordinator.xml2docx.xwpf.model.XWPFHeaderFooterPolicy;
+import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * Generates DOCX files from Simple Word Processing Markup Language XML.
@@ -2495,7 +2500,7 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
     if (format == 0) {
       // FIXME: Might be more appropriate to throw an exception here.
         log.error("Unsupported picture, format code \"" + format + "\": " + imageFilename +
-                ". Expected emf|wmf|pict|jpeg|jpg|png|dib|gif|tiff|eps|bmp|wpg");
+                ". Expected emf|wmf|pict|jpeg|jpg|png|dib|gif|tiff|eps|bmp|wpg|svg");
         cursor.pop();
         return;
     }
@@ -2505,8 +2510,17 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
     try {
       // FIXME: Need to limit this to the formats Java2D can read.
       img = ImageIO.read(new ByteArrayInputStream(imageBytes));
-      intrinsicWidth = img.getWidth();
-      intrinsicHeight = img.getHeight();
+      if (img != null) {
+        intrinsicWidth = img.getWidth();
+        intrinsicHeight = img.getHeight();
+      } else if (format == XWPFDocument.PICTURE_TYPE_SVG) {
+        // Java2D can't read SVG, so get the size from the svg element, if it has one.
+        int[] svgSize = getSvgDimensions(imageBytes);
+        if (svgSize != null) {
+          intrinsicWidth = svgSize[0];
+          intrinsicHeight = svgSize[1];
+        }
+      }
     } catch (IOException e) {
       log.warn("" + e.getClass().getSimpleName() + " exception loading image file '" + imageFilename +"': " +
                      e.getMessage());
@@ -2592,6 +2606,59 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
   }
 
   /**
+   * Get the dimensions of an SVG image from the width and height attributes
+   * of its root svg element.
+   * @param svgBytes The SVG data
+   * @return Width and height in pixels, or null if the root element does not
+   * have both attributes or they cannot be parsed.
+   */
+  private int[] getSvgDimensions(byte[] svgBytes) {
+    try {
+      SAXParserFactory factory = SAXParserFactory.newInstance();
+      factory.setNamespaceAware(true);
+      // The SVG is untrusted input: don't resolve DTDs or external entities.
+      factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+      factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+      factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+      final int[][] result = new int[1][];
+      DefaultHandler handler = new DefaultHandler() {
+        @Override
+        public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
+          String width = atts.getValue("width");
+          String height = atts.getValue("height");
+          if ("http://www.w3.org/2000/svg".equals(uri) && "svg".equals(localName) &&
+              width != null && height != null) {
+            try {
+              result[0] = new int[] {
+                  (int)Math.round(Measurement.toPixels(width, Measurement.POINTS_PER_INCH)),
+                  (int)Math.round(Measurement.toPixels(height, Measurement.POINTS_PER_INCH))};
+            } catch (MeasurementException e) {
+              log.warn("Bad SVG width or height: " + e.getMessage());
+            }
+          }
+          // Only the root element matters
+          throw new SAXException("Done");
+        }
+        @Override
+        public InputSource resolveEntity(String publicId, String systemId) {
+          return new InputSource(new java.io.StringReader(""));
+        }
+      };
+      try {
+        factory.newSAXParser().parse(new ByteArrayInputStream(svgBytes), handler);
+      } catch (SAXException e) {
+        if (!"Done".equals(e.getMessage())) {
+          throw e;
+        }
+      }
+      return result[0];
+    } catch (Exception e) {
+      log.warn(e.getClass().getSimpleName() + " reading SVG dimensions: " + e.getMessage());
+      return null;
+    }
+  }
+
+  /**
    * Get the Word image format code for the specified MIME type
    * @param mimeType The MIME type to evaluate, i.e. "image/jpeg"
    * @return The format code or zero if the MIME type is not recognized.
@@ -2599,6 +2666,10 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
   private int getImageFormatForMimeType(String mimeType) {
     int format = 0;
     String formatString = mimeType.split("/")[1];
+    if (formatString.endsWith("+xml")) {
+      // E.g., image/svg+xml
+      formatString = formatString.substring(0, formatString.length() - "+xml".length());
+    }
     format = getImageFormat(formatString);
     return format;
   }
@@ -3920,6 +3991,7 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
         else if ("eps".equals(imgExtension)) format = XWPFDocument.PICTURE_TYPE_EPS;
         else if ("bmp".equals(imgExtension)) format = XWPFDocument.PICTURE_TYPE_BMP;
         else if ("wpg".equals(imgExtension)) format = XWPFDocument.PICTURE_TYPE_WPG;
+        else if ("svg".equals(imgExtension)) format = XWPFDocument.PICTURE_TYPE_SVG;
 
     return format;
   }
