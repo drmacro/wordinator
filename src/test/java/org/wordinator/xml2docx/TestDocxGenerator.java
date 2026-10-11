@@ -47,6 +47,7 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageMar;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageNumber;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageSz;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTColumns;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTc;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTcBorders;
@@ -1135,6 +1136,61 @@ public class TestDocxGenerator extends TestCase {
     pageMar.setRight(BigInteger.valueOf(900));
     pageMar.setGutter(BigInteger.valueOf(100));
     assertEquals(11906 - 1000 - 900 - 100, DocxGenerator.getContentWidthInTwips(sectPr));
+  }
+
+  @Test
+  public void testSectionColumns() throws Exception {
+    // Issue #194
+    XWPFDocument doc = convert("simplewp/simplewpml-issue-194-columns.swpx", "out/issue-194-columns.docx");
+    List<CTSectPr> sectPrs = new java.util.ArrayList<>();
+    for (XWPFParagraph para : doc.getParagraphs()) {
+      if (para.getCTP().isSetPPr() && para.getCTP().getPPr().isSetSectPr()) {
+        sectPrs.add(para.getCTP().getPPr().getSectPr());
+      }
+    }
+    // The last section's properties are on the body:
+    sectPrs.add(doc.getDocument().getBody().getSectPr());
+    assertEquals("Expected three sections", 3, sectPrs.size());
+
+    CTColumns cols = sectPrs.get(0).getCols();
+    assertNotNull("Section 1 should have columns", cols);
+    assertEquals(BigInteger.valueOf(2), cols.getNum());
+    assertEquals(BigInteger.valueOf(720), cols.getSpace()); // 0.5in
+    assertTrue("Section 1 should have a separator", isOn(cols.getSep()));
+
+    assertFalse("Section 2 should not have columns", sectPrs.get(1).isSetCols());
+
+    // The last section's columns must be carried over to the body-level section properties.
+    cols = sectPrs.get(2).getCols();
+    assertNotNull("Last section should have columns", cols);
+    assertEquals(BigInteger.valueOf(3), cols.getNum());
+    assertEquals(BigInteger.valueOf(360), cols.getSpace()); // 0.25in
+    assertFalse("Last section should not have a separator", cols.isSetSep() && isOn(cols.getSep()));
+  }
+
+  private static boolean isOn(Object onOff) {
+    String value = String.valueOf(onOff);
+    return "true".equals(value) || "on".equals(value) || "1".equals(value);
+  }
+
+  @Test
+  public void testContentWidthWithColumns() {
+    CTSectPr sectPr = CTSectPr.Factory.newInstance();
+    sectPr.addNewPgSz().setW(BigInteger.valueOf(12240));
+    CTPageMar pageMar = sectPr.addNewPgMar();
+    pageMar.setLeft(BigInteger.valueOf(1440));
+    pageMar.setRight(BigInteger.valueOf(1440));
+    // Content width is 9360. Two columns with the default 720 space: (9360 - 720) / 2
+    CTColumns cols = sectPr.addNewCols();
+    cols.setNum(BigInteger.valueOf(2));
+    assertEquals(4320, DocxGenerator.getContentWidthInTwips(sectPr));
+    // Three columns with 360 space: (9360 - 2 * 360) / 3
+    cols.setNum(BigInteger.valueOf(3));
+    cols.setSpace(BigInteger.valueOf(360));
+    assertEquals(2880, DocxGenerator.getContentWidthInTwips(sectPr));
+    // One column is the full width
+    cols.setNum(BigInteger.valueOf(1));
+    assertEquals(9360, DocxGenerator.getContentWidthInTwips(sectPr));
   }
 
   @Test

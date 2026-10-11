@@ -88,6 +88,7 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDecimalNumber;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTNumLvl;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTNumPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDocument1;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTColumns;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTFldChar;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTFtnEdn;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTHdrFtrRef;
@@ -551,6 +552,9 @@ public class DocxGenerator {
     }
     if (fromSectPr.isSetPgNumType()) {
       toSectPr.setPgNumType(fromSectPr.getPgNumType());
+    }
+    if (fromSectPr.isSetCols()) {
+      toSectPr.setCols(fromSectPr.getCols());
     }
     // The section type determines how the section starts, so the last section's
     // type must carry over to the body-level section properties.
@@ -1336,6 +1340,49 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
     }
     cursor.pop();
 
+    // Issue #194: Columns
+    cursor.push();
+    if (cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "columns"))) {
+      setColumns(cursor, sectPr);
+    }
+    cursor.pop();
+
+  }
+
+  /**
+   * Set the columns for a page sequence
+   * @param cursor Cursor pointing to columns element
+   * @param sectPr Section properties to put the column definitions on
+   */
+  private void setColumns(XmlCursor cursor, CTSectPr sectPr) {
+    CTColumns cols = (sectPr.isSetCols() ? sectPr.getCols() : sectPr.addNewCols());
+
+    String countValue = cursor.getAttributeText(DocxConstants.QNAME_COUNT_ATT);
+    if (null != countValue && !"".equals(countValue.trim())) {
+      try {
+        long count = Long.parseLong(countValue.trim());
+        if (count < 1) {
+          throw new NumberFormatException("Must be at least 1");
+        }
+        cols.setNum(BigInteger.valueOf(count));
+      } catch (NumberFormatException e) {
+        log.warn("setColumns(): Value \"" + countValue + "\" for attribute \"count\" is not a positive integer. Using 1.");
+      }
+    }
+
+    String spaceValue = cursor.getAttributeText(DocxConstants.QNAME_SPACE_ATT);
+    if (null != spaceValue && !"".equals(spaceValue.trim())) {
+      try {
+        cols.setSpace(BigInteger.valueOf(Measurement.toTwips(spaceValue, getDotsPerInch())));
+      } catch (MeasurementException e) {
+        log.warn("setColumns(): Value \"" + spaceValue + "\" for attribute \"space\" cannot be converted to a twips value");
+      }
+    }
+
+    String separatorValue = cursor.getAttributeText(DocxConstants.QNAME_SEPARATOR_ATT);
+    if (null != separatorValue) {
+      cols.setSep("true".equals(separatorValue.trim()));
+    }
   }
 
   /**
@@ -3867,6 +3914,7 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
   // Word's defaults when the section properties don't specify a page size or margins (Letter, 1" margins)
   private static final long DEFAULT_PAGE_WIDTH_TWIPS = 12240;
   private static final long DEFAULT_MARGIN_TWIPS = 1440;
+  private static final long DEFAULT_COLUMN_SPACE_TWIPS = 720;
   private static final long EMUS_PER_TWIP = 635;
 
   /**
@@ -3940,7 +3988,17 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
         gutter = twips(mar.getGutter(), gutter);
       }
     }
-    return Math.max(0, pageWidth - left - right - gutter);
+    long width = Math.max(0, pageWidth - left - right - gutter);
+    // Issue #194: With equal-width columns, images must fit within a column.
+    if (null != sectPr && sectPr.isSetCols()) {
+      CTColumns cols = sectPr.getCols();
+      long count = cols.getNum() == null ? 1 : cols.getNum().longValue();
+      if (count > 1) {
+        long space = twips(cols.getSpace(), DEFAULT_COLUMN_SPACE_TWIPS);
+        width = Math.max(0, (width - (count - 1) * space) / count);
+      }
+    }
+    return width;
   }
 
   private static long twips(Object value, long defaultValue) {
