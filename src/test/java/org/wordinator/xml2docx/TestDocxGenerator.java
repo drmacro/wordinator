@@ -985,6 +985,18 @@ public class TestDocxGenerator extends TestCase {
     assertEquals(BigInteger.valueOf(16838), pageSz.getH());
   }
 
+  @Test
+  public void testPageNumberXsltFormat() throws Exception {
+    // issue #116
+    XWPFDocument doc = convert("simplewp/simplewpml-issue-116-xslt-format.swpx", "out/issue-116-xslt-format.docx");
+    List<IBodyElement> contents = doc.getBodyElements();
+    XWPFParagraph p = (XWPFParagraph) contents.get(0);
+    assertEquals(STNumberFormat.Enum.forString("lowerRoman"),
+        p.getCTPPr().getSectPr().getPgNumType().getFmt());
+    CTSectPr sectPr = doc.getDocument().getBody().getSectPr();
+    assertEquals(STNumberFormat.Enum.forString("upperLetter"), sectPr.getPgNumType().getFmt());
+  }
+
   public void testTableAlign() throws Exception {
     XWPFDocument doc = convert("simplewp/simplewpml-table-align.swpx", "out/table-align.docx");
     List<IBodyElement> contents = doc.getBodyElements();
