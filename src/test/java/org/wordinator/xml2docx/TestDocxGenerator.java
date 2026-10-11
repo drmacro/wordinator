@@ -1145,6 +1145,35 @@ public class TestDocxGenerator extends TestCase {
     assertEquals(227, borders.getBottom().getSz().intValueExact());
   }
 
+  @Test
+  public void testSVG() throws Exception {
+    XWPFDocument doc = convert("simplewp/simplewpml-svg.swpx", "out/svg.docx");
+    XWPFPicture picture = getOnlyPicture(doc);
+    // The SVG's root element specifies width="300" height="300"
+    assertEquals("Expected width of 300", 300.0, picture.getWidth());
+    assertEquals("Expected height (depth) of 300", 300.0, picture.getDepth());
+  }
+
+  @Test
+  public void testSVGNoDims() throws Exception {
+    XWPFDocument doc = convert("simplewp/simplewpml-svg-no-dims.swpx", "out/svg-no-dims.docx");
+    XWPFPicture picture = getOnlyPicture(doc);
+    // The SVG has no width or height, so the 200x200 default applies
+    assertEquals("Expected width of 200", 200.0, picture.getWidth());
+    assertEquals("Expected height (depth) of 200", 200.0, picture.getDepth());
+  }
+
+  private XWPFPicture getOnlyPicture(XWPFDocument doc) {
+    List<IBodyElement> contents = doc.getBodyElements();
+    assertEquals(1, contents.size());
+    XWPFParagraph p = (XWPFParagraph) contents.get(0);
+    assertEquals(2, p.getRuns().size());
+    assertEquals("Image 1", p.getRuns().get(0).getText(0));
+    List<XWPFPicture> pictures = p.getRuns().get(1).getEmbeddedPictures();
+    assertEquals("Expected a picture", 1, pictures.size());
+    return pictures.get(0);
+  }
+
   // ===== INTERNAL UTILITIES
 
   private XWPFDocument convert(String infile, String outfile) throws Exception {
