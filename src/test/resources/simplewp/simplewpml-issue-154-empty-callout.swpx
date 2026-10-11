@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="../../../main/doctypes/simplewpml/simplewpml.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<document xmlns="urn:ns:wordinator:simplewpml">
+  <body>
+    <p style="Heading1">
+      <run>Issue #154: Footnote with empty callout</run>
+    </p>
+    <p style="normal">
+      <run>This paragraph has a footnote with an empty callout.</run>
+      <fn callout="" id="fn_1"><p><run>Footnote text.</run></p></fn>
+    </p>
+  </body>
+</document>

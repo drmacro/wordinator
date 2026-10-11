@@ -35,6 +35,7 @@ If you need to go from Word documents back to XML, you may find [the DITA for Pu
   * Update Apache POI (poi, poi-ooxml) to 5.5.1.
   * Issue 186: Add optional attributes borderWidthTop, borderWidthLeft, borderWidthRight, and borderWidthBottom to table and td to set border thicknesses, as measurements (e.g., "1pt", "1mm"). Border widths are applied even when no border style is specified. Thanks to Lars Marius Garshol.
   * Issue 186: Support SVG images (image/@src with an .svg file name or an image/svg+xml data URL). The image size comes from the width and height attributes of the svg element when the image does not specify one. Images that Java cannot read no longer cause a failure when sizing the image; the default 200x200 size is used. Thanks to Lars Marius Garshol.
+  * Issue 154: A footnote with an empty callout attribute (callout="") is now treated as having no literal callout and gets a normal generated one. Previously the empty literal callout made Word stop rendering the document after that point.
   * Issue 139: Warning for an unexpected element in a header or footer no longer cites `<fn>`.
   * Issue 91: Errors such as an unloadable template or an XSLT failure are reported to stderr as a single "ERROR:" line instead of a stack trace or a doubled "RuntimeException:" log message. Run with debug logging to see the stack trace.
   * Issue 38: New optional command-line option --debug passes debug=true to the XSLT transform to turn on its debug messages (supported by the bundled html2docx and ditahtml2docx transforms).
