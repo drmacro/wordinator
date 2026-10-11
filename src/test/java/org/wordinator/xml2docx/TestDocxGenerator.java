@@ -582,6 +582,26 @@ public class TestDocxGenerator extends TestCase {
   }
 
   @Test
+  public void testTocEntryBookmarkRef() throws Exception {
+    // Issue #151: tocentry/@bookmarkRef generates a PAGEREF to the bookmark's name.
+    XWPFDocument doc = convert("simplewp/simplewpml-issue-151-toc-bookmarkref.swpx", "out/issue-151-toc-bookmarkref.docx");
+    String xml = doc.getDocument().getBody().xmlText();
+    assertTrue("Expected PAGEREF to the first bookmark's name", xml.contains("PAGEREF _Toc_first \\h"));
+    assertTrue("Expected PAGEREF to a bookmark defined after the ToC", xml.contains("PAGEREF _Toc_second \\h"));
+    assertFalse("Entry with arg-n=true should have no PAGEREF", xml.contains("PAGEREF h3"));
+    assertEquals("Expected exactly two PAGEREF fields", 2, xml.split("PAGEREF", -1).length - 1);
+    // Explicit entries: Word would overwrite them on update, so no dirty flag.
+    assertFalse("ToC with explicit entries should not be marked dirty", xml.contains("w:dirty"));
+  }
+
+  @Test
+  public void testTocWithoutEntriesIsDirty() throws Exception {
+    XWPFDocument doc = convert("simplewp/simplewpml-issue-151-toc-no-entries.swpx", "out/issue-151-toc-no-entries.docx");
+    String xml = doc.getDocument().getBody().xmlText();
+    assertTrue("Generated ToC should be marked dirty so Word updates it on open", xml.contains("w:dirty"));
+  }
+
+  @Test
   public void testDocumentPropertiesGeneration() throws Exception {
     XWPFDocument doc = convert("simplewp/simplewpml-issue-140-document-properties.swpx", "out/simplewpml-issue-140-document-properties.docx");
     POIXMLProperties properties = doc.getProperties();
