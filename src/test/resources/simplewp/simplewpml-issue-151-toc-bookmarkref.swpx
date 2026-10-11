@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="../../../main/doctypes/simplewpml/simplewpml.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<document xmlns="urn:ns:wordinator:simplewpml">
+  <body>
+    <p style="Heading1">Issue #151: ToC entries with bookmarkRef</p>
+    <!-- The bookmark names differ from the IDs and the second bookmark comes after the ToC. -->
+    <toc arg-d="-" arg-x="true">
+      <tocentry bookmarkRef="h1">
+        <p><run>First heading</run></p>
+        <tocentry bookmarkRef="h2"><p><run>Second heading</run></p></tocentry>
+      </tocentry>
+      <tocentry bookmarkRef="h3" arg-n="true"><p><run>No page number</run></p></tocentry>
+    </toc>
+    <p style="Heading1"><bookmarkStart id="h1" name="_Toc_first"/><run>First heading</run><bookmarkEnd id="h1"/></p>
+    <p style="Heading2"><run><break type="page"/></run><bookmarkStart id="h2" name="_Toc_second"/><run>Second heading</run><bookmarkEnd id="h2"/></p>
+    <p style="Heading2"><run><break type="page"/></run><bookmarkStart id="h3"/><run>No page number</run><bookmarkEnd id="h3"/></p>
+  </body>
+</document>

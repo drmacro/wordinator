@@ -971,6 +971,14 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
     }
     cursor.pop();
 
+    // Issue #151: Add a page number reference to the bookmark the entry points to,
+    // unless the page number is suppressed (@arg-n="true").
+    String bookmarkRef = cursor.getAttributeText(DocxConstants.QNAME_BOOKMARKREF_ATT);
+    String omitPageNumber = cursor.getAttributeText(DocxConstants.QNAME_ARG_N_ATT);
+    if (null != bookmarkRef && !"true".equals(omitPageNumber)) {
+      addTocPageReference(para, getBookmarkName(cursor, bookmarkRef));
+    }
+
     // Set to TOC style
     String tocStyleId = "TOC" + tocLevel;
     XWPFStyle tocStyle = para.getDocument().getStyles().getStyle(tocStyleId);
@@ -993,6 +1001,54 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
   }
 
   /**
+   * Adds a tab and a PAGEREF field to a ToC entry paragraph.
+   * @param para The ToC entry paragraph
+   * @param bookmarkName Name (not ID) of the bookmark the page reference points to
+   */
+  private void addTocPageReference(XWPFParagraph para, String bookmarkName) {
+    para.createRun().addTab();
+
+    para.createRun().getCTR().addNewFldChar().setFldCharType(STFldCharType.BEGIN);
+
+    CTText instr = para.createRun().getCTR().addNewInstrText();
+    instr.setSpace(Space.PRESERVE);
+    instr.setStringValue(" PAGEREF " + bookmarkName + " \\h ");
+
+    para.createRun().getCTR().addNewFldChar().setFldCharType(STFldCharType.SEPARATE);
+    // Placeholder result. Word replaces it when the field is updated.
+    para.createRun().setText("1");
+    para.createRun().getCTR().addNewFldChar().setFldCharType(STFldCharType.END);
+  }
+
+  /**
+   * Gets the name of the bookmark with the specified ID. Bookmarks may come after the
+   * element that refers to them, so this looks at the whole input document.
+   * @param cursor Cursor positioned anywhere in the input document
+   * @param bookmarkId The bookmarkStart/@id value
+   * @return The bookmark's @name value, or the ID if the bookmark has no name or is not found.
+   */
+  private String getBookmarkName(XmlCursor cursor, String bookmarkId) {
+    // Not using XPath here: XMLBeans would try to use Saxon for it, which doesn't
+    // work with the Saxon version this project uses.
+    XmlCursor docCursor = cursor.getObject().newCursor();
+    try {
+      docCursor.toStartDoc();
+      QName bookmarkStartName = new QName(DocxConstants.SIMPLE_WP_NS, "bookmarkStart");
+      while (!docCursor.toNextToken().isEnddoc()) {
+        if (docCursor.isStart() && bookmarkStartName.equals(docCursor.getName())
+            && bookmarkId.equals(docCursor.getAttributeText(DocxConstants.QNAME_ID_ATT))) {
+          String name = docCursor.getAttributeText(DocxConstants.QNAME_NAME_ATT);
+          return (name == null || name.trim().isEmpty()) ? bookmarkId : name;
+        }
+      }
+      log.warn("No bookmark with ID '" + bookmarkId + "' found for ToC entry. Using the ID as the bookmark name.");
+      return bookmarkId;
+    } finally {
+      docCursor.dispose();
+    }
+  }
+
+  /**
    * Makes the start field for a table of contents complex field.
    *
    * @param cursor The XML cursor pointing at a <toc> element.   *
@@ -1003,7 +1059,14 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
     //           when the Word Update automatic links on open setting is active.
     CTFldChar field = para.createRun().getCTR().addNewFldChar();
     field.setFldCharType(STFldCharType.BEGIN);
-    field.setDirty(STOnOff1.ON);
+    // Issue #151: Word replaces explicit ToC entries when it updates the field, so only
+    //             set the dirty flag (update on open) when there are no explicit entries.
+    XmlCursor tocCursor = cursor.getObject().newCursor();
+    boolean hasEntries = tocCursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "tocentry"));
+    tocCursor.dispose();
+    if (!hasEntries) {
+      field.setDirty(STOnOff1.ON);
+    }
     CTText ctText = para.createRun().getCTR().addNewInstrText();
     ctText.setSpace(Space.PRESERVE);
     String tocOptions = "";
