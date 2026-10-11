@@ -33,6 +33,7 @@ If you need to go from Word documents back to XML, you may find [the DITA for Pu
   * Fix incorrect log message.
   * Add InvalidInputException and rework the exception classes used for error handling.
   * Update Apache POI (poi, poi-ooxml) to 5.5.1.
+  * Issue 186: Add optional attributes borderWidthTop, borderWidthLeft, borderWidthRight, and borderWidthBottom to table and td to set border thicknesses, as measurements (e.g., "1pt", "1mm"). Border widths are applied even when no border style is specified. Thanks to Lars Marius Garshol.
 
 * 1.2.0
 

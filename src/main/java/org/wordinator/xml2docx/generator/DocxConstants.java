@@ -51,6 +51,10 @@ public final class DocxConstants {
   public static final QName QNAME_BORDER_STYLE_OUTSIDE_ATT = new QName("", "borderstyleoutside");
   public static final QName QNAME_BORDER_STYLE_RIGHT_ATT = new QName("", "borderstyleright");
   public static final QName QNAME_BORDER_STYLE_TOP_ATT = new QName("", "borderstyletop");
+  public static final QName QNAME_BORDER_WIDTH_TOP_ATT = new QName("", "borderWidthTop");
+  public static final QName QNAME_BORDER_WIDTH_LEFT_ATT = new QName("", "borderWidthLeft");
+  public static final QName QNAME_BORDER_WIDTH_RIGHT_ATT = new QName("", "borderWidthRight");
+  public static final QName QNAME_BORDER_WIDTH_BOTTOM_ATT = new QName("", "borderWidthBottom");
 	public static final QName QNAME_BOTTOM_ATT = new QName("", "bottom");
 	public static final QName QNAME_CALCULATEDWIDTH_ATT = new QName("", "calculatedWidth");
   public static final QName QNAME_CALLOUT_ATT = new QName("", "callout");

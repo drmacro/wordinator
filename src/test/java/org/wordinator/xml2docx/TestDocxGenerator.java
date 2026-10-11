@@ -48,6 +48,9 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageNumber;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageSz;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectPr;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTc;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTcBorders;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTcPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTText;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STFldCharType;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STNumberFormat;
@@ -1099,6 +1102,47 @@ public class TestDocxGenerator extends TestCase {
     CTPositiveSize2D ext = picture.getCTPicture().getSpPr().getXfrm().getExt();
     assertEquals(Units.toEMU(50), ext.getCy());
     assertEquals("The image is square, so the width should match the height", Units.toEMU(50), ext.getCx());
+  }
+
+  @Test
+  public void testTableBorderWidth() throws Exception {
+    XWPFDocument doc = convert("simplewp/simplewpml-table-border-width.swpx", "out/table-border-width.docx");
+    List<IBodyElement> contents = doc.getBodyElements();
+    assertEquals(1, contents.size());
+
+    Iterator<IBodyElement> it = contents.iterator();
+    IBodyElement elem = it.next();
+    assertEquals(BodyElementType.TABLE, elem.getElementType());
+
+    XWPFTable t = (XWPFTable) elem;
+
+    // check the border widths
+    assertEquals(64, t.getLeftBorderSize());
+    assertEquals(23, t.getRightBorderSize());
+    assertEquals(8, t.getTopBorderSize());
+    assertEquals(227, t.getBottomBorderSize());
+  }
+
+  public void testTableCellBorderWidth() throws Exception {
+    XWPFDocument doc = convert("simplewp/simplewpml-table-cell-border-width.swpx", "out/table-cell-border-width.docx");
+    List<IBodyElement> contents = doc.getBodyElements();
+    assertEquals(1, contents.size());
+
+    Iterator<IBodyElement> it = contents.iterator();
+    IBodyElement elem = it.next();
+    assertEquals(BodyElementType.TABLE, elem.getElementType());
+
+    XWPFTable t = (XWPFTable) elem;
+    XWPFTableCell cell = t.getRows().get(0).getTableCells().get(0);
+    CTTc c = cell.getCTTc();
+    CTTcPr pr = c.getTcPr();
+    CTTcBorders borders = pr.getTcBorders();
+
+    // check the border widths
+    assertEquals(64, borders.getLeft().getSz().intValueExact());
+    assertEquals(23, borders.getRight().getSz().intValueExact());
+    assertEquals(8, borders.getTop().getSz().intValueExact());
+    assertEquals(227, borders.getBottom().getSz().intValueExact());
   }
 
   // ===== INTERNAL UTILITIES

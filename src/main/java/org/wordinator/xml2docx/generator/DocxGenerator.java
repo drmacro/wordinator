@@ -133,6 +133,7 @@ import org.wordinator.xml2docx.xwpf.model.XWPFHeaderFooterPolicy;
  */
 public class DocxGenerator {
   private static String NS_MATHML = "http://www.w3.org/1998/Math/MathML";
+  private static final int DEFAULT_BORDER_WIDTH = 8; // 1pt, in eighths of a point
 
   int imageCounter = 0; // Used to keep track of count of images created.
   
@@ -2970,7 +2971,6 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
   }
 
   private TableBorderStyles setTableFrame(XWPFTable table, XmlCursor cursor) {
-    int frameWidth = 8; // 1pt
     int frameSpace = 0;
     String frameColor = "auto";
 
@@ -3017,21 +3017,58 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
         leftBorder = XWPFBorderType.NONE;
         rightBorder = XWPFBorderType.NONE;
       }
+    }
 
+    int bwidth = getBorderWidth(DocxConstants.QNAME_BORDER_WIDTH_BOTTOM_ATT, cursor);
+    if (bottomBorder != null || bwidth != -1) {
+      table.setBottomBorder(bottomBorder, widthOrDefault(bwidth), frameSpace, frameColor);
     }
-    if (bottomBorder != null) {
-      table.setBottomBorder(bottomBorder, frameWidth, frameSpace, frameColor);
+
+    bwidth = getBorderWidth(DocxConstants.QNAME_BORDER_WIDTH_TOP_ATT, cursor);
+    if (topBorder != null || bwidth != -1) {
+      table.setTopBorder(topBorder, widthOrDefault(bwidth), frameSpace, frameColor);
     }
-    if (topBorder != null) {
-      table.setTopBorder(topBorder, frameWidth, frameSpace, frameColor);
+
+    bwidth = getBorderWidth(DocxConstants.QNAME_BORDER_WIDTH_LEFT_ATT, cursor);
+    if (leftBorder != null || bwidth != -1) {
+      table.setLeftBorder(leftBorder, widthOrDefault(bwidth), frameSpace, frameColor);
     }
-    if (leftBorder != null) {
-      table.setLeftBorder(leftBorder, frameWidth, frameSpace, frameColor);
-    }
-    if (rightBorder != null) {
-      table.setRightBorder(rightBorder, frameWidth, frameSpace, frameColor);
+
+    bwidth = getBorderWidth(DocxConstants.QNAME_BORDER_WIDTH_RIGHT_ATT, cursor);
+    if (rightBorder != null || bwidth != -1) {
+      table.setRightBorder(rightBorder, widthOrDefault(bwidth), frameSpace, frameColor);
     }
     return borderStyles;
+  }
+
+  private boolean hasBorderWidths(XmlCursor cursor) {
+    return getBorderWidth(DocxConstants.QNAME_BORDER_WIDTH_BOTTOM_ATT, cursor) != -1 ||
+        getBorderWidth(DocxConstants.QNAME_BORDER_WIDTH_TOP_ATT, cursor) != -1 ||
+        getBorderWidth(DocxConstants.QNAME_BORDER_WIDTH_LEFT_ATT, cursor) != -1 ||
+        getBorderWidth(DocxConstants.QNAME_BORDER_WIDTH_RIGHT_ATT, cursor) != -1;
+  }
+
+  private static int widthOrDefault(int width) {
+    return -1 == width ? DEFAULT_BORDER_WIDTH : width;
+  }
+
+  /**
+   * Get the width of a border from an attribute
+   * @return Width in eighths of a point, or -1 if not specified or invalid
+   */
+  private int getBorderWidth(QName attribute, XmlCursor cursor) {
+    String width = cursor.getAttributeText(attribute);
+    if (width == null) {
+      return -1;
+    }
+
+    // border width is given in 1/8th of a point
+    try {
+      return (int) Math.round(Measurement.toPoints(width, dotsPerInch) * 8);
+    } catch (MeasurementException e) {
+      log.warn("getBorderWidth(): " + e.getClass().getSimpleName() + " - " + e.getMessage(), e);
+      return -1;
+    }
   }
 
   /**
@@ -3485,42 +3522,64 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
     // log.debug("setCellBorders(): tag is \"" + cursor.getName().getLocalPart() + "\"");
     TableBorderStyles borderStyles = new TableBorderStyles(cursor.getObject());
 
-    if (borderStyles.hasBorders()) {
+    if (borderStyles.hasBorders() || hasBorderWidths(cursor)) {
       CTTcBorders borders = ctTcPr.addNewTcBorders();
 
       // Borders can be set per edge:
 
-      if (borderStyles.getBottomBorder() != null) {
+      int bwidth = getBorderWidth(DocxConstants.QNAME_BORDER_WIDTH_BOTTOM_ATT, cursor);
+      if (borderStyles.getBottomBorder() != null || bwidth != -1) {
         CTBorder bottom = borders.addNewBottom();
         STBorder.Enum val = borderStyles.getBottomBorderEnum();
         if (val != null) {
           bottom.setVal(val);
-        } else {
+        } else if (bwidth == -1) {
           log.warn("setCellBorders(): Failed to get STBorder.Enum value for XWPFBorderStyle \"" + borderStyles.getBottomBorder().name() + "\"");
         }
         if (borderStyles.getBottomColor() != null) {
           bottom.setColor(borderStyles.getBottomColor());
         }
+        if (bwidth != -1) {
+          bottom.setSz(BigInteger.valueOf(bwidth));
+        }
       }
-      if (borderStyles.getTopBorder() != null) {
+      bwidth = getBorderWidth(DocxConstants.QNAME_BORDER_WIDTH_TOP_ATT, cursor);
+      if (borderStyles.getTopBorder() != null || bwidth != -1) {
         CTBorder top = borders.addNewTop();
-        top.setVal(borderStyles.getTopBorderEnum());
+        if (borderStyles.getTopBorderEnum() != null) {
+          top.setVal(borderStyles.getTopBorderEnum());
+        }
         if (borderStyles.getTopColor() != null) {
           top.setColor(borderStyles.getTopColor());
         }
+        if (bwidth != -1) {
+          top.setSz(BigInteger.valueOf(bwidth));
+        }
       }
-      if (borderStyles.getLeftBorder() != null) {
+      bwidth = getBorderWidth(DocxConstants.QNAME_BORDER_WIDTH_LEFT_ATT, cursor);
+      if (borderStyles.getLeftBorder() != null || bwidth != -1) {
         CTBorder left = borders.addNewLeft();
-        left.setVal(borderStyles.getLeftBorderEnum());
+        if (borderStyles.getLeftBorderEnum() != null) {
+          left.setVal(borderStyles.getLeftBorderEnum());
+        }
         if (borderStyles.getLeftColor() != null) {
           left.setColor(borderStyles.getLeftColor());
         }
+        if (bwidth != -1) {
+          left.setSz(BigInteger.valueOf(bwidth));
+        }
       }
-      if (borderStyles.getRightBorder() != null) {
+      bwidth = getBorderWidth(DocxConstants.QNAME_BORDER_WIDTH_RIGHT_ATT, cursor);
+      if (borderStyles.getRightBorder() != null || bwidth != -1) {
         CTBorder right = borders.addNewRight();
-        right.setVal(borderStyles.getRightBorderEnum());
+        if (borderStyles.getRightBorderEnum() != null) {
+          right.setVal(borderStyles.getRightBorderEnum());
+        }
         if (borderStyles.getRightColor() != null) {
           right.setColor(borderStyles.getRightColor());
+        }
+        if (bwidth != -1) {
+          right.setSz(BigInteger.valueOf(bwidth));
         }
       }
     }

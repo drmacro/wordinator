@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wp:document xmlns:wp="urn:ns:wordinator:simplewpml">
+  <wp:body>
+    <wp:table width="100%" borderWidthTop="1pt" borderWidthLeft="8pt"
+              borderWidthRight="1mm" borderWidthBottom="1cm">
+      <wp:tbody>
+        <wp:tr>
+          <wp:td>
+            <wp:p>Hey ho</wp:p>
+          </wp:td>
+        </wp:tr>
+      </wp:tbody>
+    </wp:table>
+  </wp:body>
+</wp:document>
