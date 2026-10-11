@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="../../../main/doctypes/simplewpml/simplewpml.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<document xmlns="urn:ns:wordinator:simplewpml">
+  <body>
+    <!-- Issue #194: Section-level columns -->
+    <section type="nextPage">
+      <page-sequence-properties>
+        <page-size width="8.5in" height="11in"/>
+        <columns count="2" space="0.5in" separator="true"/>
+      </page-sequence-properties>
+      <body>
+        <p><run>Section 1, column 1. This section has two columns with a separator.</run></p>
+        <p><run><break type="column"/>Section 1, column 2.</run></p>
+      </body>
+    </section>
+    <section type="continuous">
+      <body>
+        <p><run>Section 2 has no columns element, so it is a single column.</run></p>
+      </body>
+    </section>
+    <section type="continuous">
+      <page-sequence-properties>
+        <columns count="3" space="0.25in"/>
+      </page-sequence-properties>
+      <body>
+        <p><run>Section 3 (the last section) has three columns and no separator.</run></p>
+      </body>
+    </section>
+  </body>
+</document>

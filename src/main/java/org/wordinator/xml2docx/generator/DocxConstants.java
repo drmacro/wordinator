@@ -39,6 +39,9 @@ public final class DocxConstants {
   public static final QName QNAME_ARG_X_ATT = new QName("", "arg-x");
   public static final QName QNAME_ARG_Z_ATT = new QName("", "arg-z");
 	public static final QName QNAME_BOLD_ATT = new QName("", "bold");
+  public static final QName QNAME_COUNT_ATT = new QName("", "count");
+  public static final QName QNAME_SPACE_ATT = new QName("", "space");
+  public static final QName QNAME_SEPARATOR_ATT = new QName("", "separator");
   public static final QName QNAME_BOOKMARKREF_ATT = new QName("", "bookmarkRef");
   public static final QName QNAME_BORDER_COLOR_ATT = new QName("", "bordercolor");
   public static final QName QNAME_BORDER_COLOR_TOP_ATT = new QName("", "bordercolortop");

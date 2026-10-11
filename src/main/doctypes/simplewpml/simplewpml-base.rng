@@ -195,6 +195,44 @@
       <optional>
         <ref name="page-size"/>
       </optional>
+      <optional>
+        <ref name="columns"/>
+      </optional>
+    </element>
+  </define>
+  
+  <define name="columns">
+    <element name="columns" ns="urn:ns:wordinator:simplewpml">
+      <a:documentation>
+        <p>Defines the number of text columns for the pages in the section. Columns are equal width.</p>
+        <p>To mix single-column and multiple-column areas on the same page, put them in separate sections
+        and give the later section the type "continuous". Use &lt;break type="column"/> to start a new column.</p>
+        <p>See 17.6.4 cols (Column Definitions)</p>
+      </a:documentation>
+      <optional>
+        <attribute name="count" a:defaultValue="1">
+          <a:documentation>
+            <p>The number of columns.</p>
+          </a:documentation>
+          <data type="positiveInteger"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="space">
+          <a:documentation>
+            <p>The space between columns. If not specified, Word's default of 0.5in is used.</p>
+          </a:documentation>
+          <ref name="measurement"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="separator" a:defaultValue="false">
+          <a:documentation>
+            <p>Draw a vertical line between columns.</p>
+          </a:documentation>
+          <ref name="true-false-value"/>
+        </attribute>
+      </optional>
     </element>
   </define>
   
