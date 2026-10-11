@@ -30,7 +30,7 @@
         <wp:page-size orient="portrait" width="210mm" height="297mm"/>
       </wp:page-sequence-properties>
       <wp:body>
-        <wp:p><wp:run>This is the first page numbered in decimal</wp:run></wp:p>
+        <wp:p><wp:run>This is the first page numbered in upper-case letters</wp:run></wp:p>
       </wp:body>
     </wp:section>
   </wp:body>
