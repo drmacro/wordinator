@@ -28,7 +28,7 @@ If you need to go from Word documents back to XML, you may find [the DITA for Pu
 
 * 1.2.1 (unreleased)
 
-  * Issue 116: Implement page-number-properties/@xslt-format (with format="custom" or no @format). XSLT format tokens "1", "01", "a", "A", "i", and "I" map to the equivalent Word page number formats; other tokens fall back to decimal with a warning. Word does not support prefix or suffix text on page numbers.
+  * Issue 116: Implement page-number-properties/@xslt-format (with format="custom" or no @format). XSLT format tokens "1", "01", "a", "A", "i", and "I" map to the equivalent Word page number formats; other tokens fall back to decimal with a warning. Word does not support prefix or suffix text on page numbers. Observed in Word, the page number formats bahtText, bullet, dollarText, and decimalEnclosedCircleChinese are displayed as plain decimal numbers (for decimalEnclosedCircleChinese this may depend on fonts); Wordinator writes the requested format value regardless.
   * Issue 186: Incorporate fixes from Lars Marius Garshol's fork (https://github.com/larsga/wordinator). Thanks to Lars Marius Garshol.
   * Fix corrupt DOCX files (Word reports unreadable content) when a footnote contains an external hyperlink. The hyperlink relationship is now created in the footnotes part rather than the main document part.
   * Fix incorrect log message.
