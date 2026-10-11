@@ -1506,21 +1506,55 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
     }
   }
 
+  /**
+   * Translates an XSLT xsl:number format string to the closest Word page number format.
+   * Word page numbers support only a single numbering token with no prefix or suffix.
+   * @param xsltFormat The XSLT format string, e.g. "1", "i", "A", "01"
+   * @return Word number format name (ST_NumberFormat value). "decimal" if there is no equivalent.
+   */
+  static String xsltFormatToWordFormat(String xsltFormat) {
+    if (null == xsltFormat || xsltFormat.isEmpty()) {
+      log.warn("Page number format \"custom\" requires @xslt-format. Using \"decimal\"");
+      return "decimal";
+    }
+    java.util.regex.Matcher m = java.util.regex.Pattern.compile("\\p{Alnum}+").matcher(xsltFormat);
+    if (!m.find()) {
+      log.warn("Page number @xslt-format \"" + xsltFormat + "\" has no number format token. Using \"decimal\"");
+      return "decimal";
+    }
+    String token = m.group();
+    if (m.start() > 0 || m.end() < xsltFormat.length()) {
+      log.warn("Page number @xslt-format \"" + xsltFormat + "\": prefix and suffix text not supported by Word, using only \"" + token + "\"");
+    }
+    switch (token) {
+      case "1": return "decimal";
+      case "01": return "decimalZero";
+      case "a": return "lowerLetter";
+      case "A": return "upperLetter";
+      case "i": return "lowerRoman";
+      case "I": return "upperRoman";
+      default:
+        log.warn("Page number @xslt-format token \"" + token + "\" has no Word equivalent. Using \"decimal\"");
+        return "decimal";
+    }
+  }
+
   private void setPageNumberProperties(XmlCursor cursor, CTSectPr sectPr) {
     cursor.push();
     if (cursor.toChild(new QName(DocxConstants.SIMPLE_WP_NS, "page-number-properties"))) {
       String start = cursor.getAttributeText(DocxConstants.QNAME_START_ATT);
       String format = cursor.getAttributeText(DocxConstants.QNAME_FORMAT_ATT);
+      String xsltFormat = cursor.getAttributeText(DocxConstants.QNAME_XSLT_FORMAT_ATT);
       String chapterSep = cursor.getAttributeText(DocxConstants.QNAME_CHAPTER_SEPARATOR_ATT);
       String chapterStyle = cursor.getAttributeText(DocxConstants.QNAME_CHAPTER_STYLE_ATT);
       if (null != format || null != chapterSep || null != chapterStyle || null != start) {
         CTPageNumber pageNumber = (sectPr.isSetPgNumType() ? sectPr.getPgNumType() : sectPr.addNewPgNumType());
+        if (null == format && null != xsltFormat) {
+          format = "custom";
+        }
         if (null != format) {
           if ("custom".equals(format)) {
-            // FIXME: Implement translation from XSLT number format values to the equivalent Word
-            // number formatting values.
-            log.warn("Page number format \"" + format + "\" not supported. Use Word-specific values. Using \"decimal\"");
-            format = "decimal";
+            format = xsltFormatToWordFormat(xsltFormat);
           }
           STNumberFormat.Enum fmt = STNumberFormat.Enum.forString(format);
           if (fmt != null) {
