@@ -72,6 +72,8 @@ public class MakeDocx {
   public static final String XSLT_PARAM_CHUNKLEVEL = "chunklevel";
   public static final String OPTION_FIT_IMAGES = "fit-images";
   public static final String XSLT_PARAM_FIT_IMAGES = "fit-images";
+  public static final String OPTION_DEBUG = "debug";
+  public static final String XSLT_PARAM_DEBUG = "debug";
 
   public static void main( String[] args ) throws Exception {
     Options options = buildOptions();
@@ -88,7 +90,36 @@ public class MakeDocx {
     } catch (DocxGenerationException e) {
       System.err.println("ERROR: " + e.getMessage());
       System.exit(1);
+    } catch (Exception e) {
+      // Unexpected failures (XSLT errors, bad input, etc.): report the
+      // message chain as a user-facing error rather than a raw stack trace.
+      System.err.println("ERROR: " + describe(e));
+      log.debug("Stack trace:", e);
+      System.exit(1);
     }
+  }
+
+  /**
+   * Builds a one-line description of an exception and its causes, omitting
+   * repeated messages and class names that add no information.
+   */
+  private static String describe(Throwable e) {
+    StringBuilder sb = new StringBuilder();
+    String last = null;
+    for (Throwable t = e; t != null; t = t.getCause()) {
+      String msg = t.getMessage();
+      if (msg == null || msg.isEmpty()) {
+        msg = t.getClass().getSimpleName();
+      }
+      if (!msg.equals(last)) {
+        if (sb.length() > 0) {
+          sb.append(": ");
+        }
+        sb.append(msg);
+        last = msg;
+      }
+    }
+    return sb.toString();
   }
 
   /**
@@ -127,6 +158,10 @@ public class MakeDocx {
       xsltParameters.put(XSLT_PARAM_FIT_IMAGES, "true");
     }
 
+    if (cmd.hasOption(OPTION_DEBUG)) {
+      xsltParameters.put(XSLT_PARAM_DEBUG, "true");
+    }
+
     log.info("Input document or directory='" + inDocPath + "'");
     log.info("Output directory           ='" + docxPath + "'");
     log.info("DOTX template              ='" + templatePath + "'");
@@ -150,7 +185,7 @@ public class MakeDocx {
     try {
       templateDoc = new XWPFDocument(new FileInputStream(templateFile));
     } catch (Exception e) {
-      throw new RuntimeException("Error loading template DOCX file \"" + templateFile.getAbsolutePath() + "\"", e);
+      throw new DocxGenerationException("Error loading template DOCX file \"" + templateFile.getAbsolutePath() + "\": " + e.getMessage(), e);
     }
 
     File outFile = new File(docxPath);
@@ -244,7 +279,7 @@ public class MakeDocx {
         }
         XmlCatalogResolver.setCatalog(catalog, processor.getUnderlyingConfiguration(), false);
       } catch (XPathException e) {
-        throw new RuntimeException("Failed to load Apache catalog resolver library", e);
+        throw new DocxGenerationException("Failed to load Apache catalog resolver library: " + e.getMessage(), e);
       }
     }
 
@@ -386,6 +421,14 @@ public class MakeDocx {
             + "Images are not resized by default.")
       .build();
 
+    Option debug = Option.builder()
+      .longOpt(OPTION_DEBUG)
+      .required(false)
+      .hasArg(false)
+      .desc("Turn on debug output from the XSLT transform, for example to trace style-name mapping. "
+            + "Passes debug=true to the XSLT transform (the bundled html2docx and ditahtml2docx transforms support it).")
+      .build();
+
     options.addOption(input);
     options.addOption(output);
     options.addOption(template);
@@ -394,6 +437,7 @@ public class MakeDocx {
     options.addOption(chunkLevel);
     options.addOption(catalog);
     options.addOption(fitImages);
+    options.addOption(debug);
 
     return options;
   }

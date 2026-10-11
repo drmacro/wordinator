@@ -56,8 +56,11 @@
     -->
   <xsl:param name="chunk-level" as="xs:string" select="'root'"/>
   
+  <!-- Set by the debug command-line option (passed as debug=true). -->
+  <xsl:param name="debug" as="xs:string" select="'false'"/>
+  
   <xsl:template match="/">
-    <xsl:param name="doDebug" as="xs:boolean" select="false()"/>
+    <xsl:param name="doDebug" as="xs:boolean" select="$debug = ('true', 'yes', '1')"/>
     
     <log started="{format-dateTime(current-dateTime(), '[Y000]-[m0]}-[d0]')}">
       <message>+ [INFO] inputdoc={base-uri(.)}</message>
