@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 import org.apache.poi.ooxml.POIXMLProperties;
 import org.apache.poi.ooxml.POIXMLProperties.CoreProperties;
@@ -318,6 +319,22 @@ public class TestDocxGenerator extends TestCase {
     p = iterator.next();
     fnText = p.getFootnoteText();
     assertEquals(" [3: FN-2This is a custom footnote. It specifies a literal callout of \"FN-2\" and a reference callout of \"Ref-2\".] ", p.getFootnoteText());
+  }
+
+  @Test
+  public void testFootnoteCalloutUnderline() throws Exception {
+    // Issue #200: fn/@underline underlines the literal callouts.
+    XWPFDocument doc = convert("simplewp/simplewpml-issue-200-fn-underline.swpx", "out/issue-200-fn-underline.docx");
+    List<XWPFFootnote> footnotes = doc.getFootnotes().stream()
+        .filter(fn -> fn.getParagraphs().stream().anyMatch(fp -> !fp.getText().isEmpty()))
+        .collect(Collectors.toList());
+    assertEquals(2, footnotes.size());
+    String underlined = footnotes.get(0).getCTFtnEdn().xmlText();
+    assertTrue("Callout in underlined footnote should be underlined", underlined.matches("(?s).*<w:u w:val=\"single\"/>.*<w:t>U1</w:t>.*"));
+    String plain = footnotes.get(1).getCTFtnEdn().xmlText();
+    assertFalse("Footnote without @underline should not be underlined", plain.contains("<w:u "));
+    String bodyXml = doc.getDocument().getBody().xmlText();
+    assertTrue("Reference callout should be underlined", bodyXml.matches("(?s).*<w:u w:val=\"single\"/>.*<w:footnoteReference[^>]*/><w:t>U1</w:t>.*"));
   }
 
   @Test
