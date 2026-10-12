@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="../../../main/doctypes/simplewpml/simplewpml.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<document xmlns="urn:ns:wordinator:simplewpml">
+  <body>
+    <p style="Heading1"><run>Issue #44: Comments</run></p>
+    <!-- Container form -->
+    <p><run>Text before. </run><comment author="Pat Author" initials="PA" date="2024-05-01T10:30:00Z"
+      ><comment-body><p><run>Container comment.</run></p><p><run>Second comment paragraph.</run></p></comment-body
+      ><run>commented text</run></comment><run> text after.</run></p>
+    <!-- Marker form, range crossing paragraphs -->
+    <p><run>Start </run><commentStart id="c1" author="Sam Reviewer" initials="SR"
+      ><comment-body><p><run>Marker comment.</run></p></comment-body></commentStart><run>of range.</run></p>
+    <p><run>Middle paragraph.</run></p>
+    <p><run>End </run><commentEnd id="c1"/><run>of range.</run></p>
+    <!-- Overlapping: marker range containing a container -->
+    <p><commentStart id="c2" author="Sam Reviewer"/><run>Outer </run><comment author="Pat Author"
+      ><comment-body><p><run>Inner comment.</run></p></comment-body><run>inner</run></comment><commentEnd id="c2"/></p>
+  </body>
+</document>

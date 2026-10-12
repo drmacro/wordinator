@@ -111,6 +111,10 @@ public final class DocxConstants {
 	public static final QName QNAME_LEFT_ATT = new QName("", "left");
   public static final QName QNAME_LEFTINDENT_ATT = new QName("", "leftindent");
 	public static final QName QNAME_NAME_ATT = new QName("", "name");
+	public static final QName QNAME_AUTHOR_ATT = new QName("", "author");
+	public static final QName QNAME_INITIALS_ATT = new QName("", "initials");
+	public static final QName QNAME_DATE_ATT = new QName("", "date");
+	public static final QName QNAME_COMMENT_BODY_ELEM = new QName(SIMPLE_WP_NS, "comment-body");
   public static final QName QNAME_ORIENT_ATT = new QName("", "orient");
 	public static final QName QNAME_OUTLINE_ATT = new QName("", "outline");
 	public static final QName QNAME_OUTLINE_LEVEL_ATT = new QName("", "outline-level");
