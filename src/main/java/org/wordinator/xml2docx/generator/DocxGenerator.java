@@ -18,7 +18,11 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.text.SimpleDateFormat;
+import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -51,6 +55,8 @@ import org.apache.poi.xwpf.usermodel.TableRowAlign;
 import org.apache.poi.xwpf.usermodel.UnderlinePatterns;
 import org.apache.poi.xwpf.usermodel.XWPFAbstractFootnoteEndnote;
 import org.apache.poi.xwpf.usermodel.XWPFAbstractNum;
+import org.apache.poi.xwpf.usermodel.XWPFComment;
+import org.apache.poi.xwpf.usermodel.XWPFComments;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFFooter;
 import org.apache.poi.xwpf.usermodel.XWPFHeader;
@@ -428,6 +434,8 @@ public class DocxGenerator {
   private int dotsPerInch = 72; /* DPI */
   // Map of source IDs to internal object IDs.
   private Map<String, BigInteger> bookmarkIdToIdMap = new HashMap<String, BigInteger>();
+  // Map of source commentStart IDs to the Word comment IDs.
+  private Map<String, BigInteger> commentIdToIdMap = new HashMap<String, BigInteger>();
   private int idCtr = 0;
   private File inFile;
   private XWPFDocument templateDoc;
@@ -1961,6 +1969,26 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
       para.setKeepNext(keepValue);
     }
 
+    makeParagraphContent(para, cursor);
+
+    cursor.pop();
+
+    if (null != listId && !listId.isEmpty()) {
+      listParagraphs.computeIfAbsent(listId, k -> new ArrayList<>()).add(para);
+    }
+    return para;
+  }
+
+  /**
+   * Constructs the inline content of a paragraph from the children of the
+   * current element. Used for &lt;p> and for the &lt;comment> container, which
+   * may contain the same inline content as a paragraph.
+   * @param para Paragraph to add the content to
+   * @param cursor Points at the element whose children are the content. Position is
+   * restored on return.
+   */
+  private void makeParagraphContent(XWPFParagraph para, XmlCursor cursor) throws DocxGenerationException {
+    cursor.push();
     if (cursor.toFirstChild()) {
       do {
         String tagName = cursor.getName().getLocalPart();
@@ -1973,6 +2001,14 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
           makeBookmarkEnd(para, cursor);
         } else if ("complexField".equals(tagName)) {
           makeComplexField(para, cursor);
+        } else if ("comment-body".equals(tagName)) {
+          // Comment content, handled by the containing comment or commentStart.
+        } else if ("comment".equals(tagName)) {
+          makeComment(para, cursor);
+        } else if ("commentStart".equals(tagName)) {
+          makeCommentStart(para, cursor);
+        } else if ("commentEnd".equals(tagName)) {
+          makeCommentEnd(para, cursor);
         } else if ("fn".equals(tagName)) {
           makeFootnote(para, cursor.getObject());
         } else if ("hyperlink".equals(tagName)) {
@@ -1991,11 +2027,6 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
       } while(cursor.toNextSibling());
     }
     cursor.pop();
-
-    if (null != listId && !listId.isEmpty()) {
-      listParagraphs.computeIfAbsent(listId, k -> new ArrayList<>()).add(para);
-    }
-    return para;
   }
 
   /**
@@ -2424,6 +2455,114 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
     } else {
       bookmark.setId(id);
     }
+  }
+
+  /**
+   * Construct a comment container. The comment's content (everything but the
+   * comment-body) is the commented range.
+   * @param para The paragraph to add the comment to
+   * @param cursor Points to the comment element
+   */
+  private void makeComment(XWPFParagraph para, XmlCursor cursor) throws DocxGenerationException {
+    BigInteger id = createComment(para.getDocument(), cursor);
+    para.getCTP().addNewCommentRangeStart().setId(id);
+    makeParagraphContent(para, cursor);
+    endComment(para, id);
+  }
+
+  /**
+   * Construct the start of a comment range. The range is ended by the commentEnd
+   * with the same @id, which may be in a different paragraph.
+   * @param para The paragraph to add the range start to
+   * @param cursor Points to the commentStart element
+   */
+  private void makeCommentStart(XWPFParagraph para, XmlCursor cursor) throws DocxGenerationException {
+    String sourceId = cursor.getAttributeText(DocxConstants.QNAME_ID_ATT);
+    if (sourceId == null || sourceId.trim().isEmpty()) {
+      throw new DocxGenerationException("commentStart element has no @id value");
+    }
+    BigInteger id = createComment(para.getDocument(), cursor);
+    this.commentIdToIdMap.put(sourceId, id);
+    para.getCTP().addNewCommentRangeStart().setId(id);
+  }
+
+  /**
+   * Construct the end of a comment range and the comment reference.
+   * @param para The paragraph to add the range end to
+   * @param cursor Points to the commentEnd element
+   */
+  private void makeCommentEnd(XWPFParagraph para, XmlCursor cursor) throws DocxGenerationException {
+    String sourceId = cursor.getAttributeText(DocxConstants.QNAME_ID_ATT);
+    BigInteger id = this.commentIdToIdMap.get(sourceId);
+    if (id == null) {
+      throw new DocxGenerationException("No commentStart found for commentEnd with ID '" + sourceId + "'");
+    }
+    endComment(para, id);
+  }
+
+  /**
+   * Adds the range end and the run holding the reference to the comment.
+   */
+  private void endComment(XWPFParagraph para, BigInteger id) {
+    para.getCTP().addNewCommentRangeEnd().setId(id);
+    CTR ref = para.getCTP().addNewR();
+    XWPFStyles styles = para.getDocument().getStyles();
+    if (styles != null && styles.styleExist("CommentReference")) {
+      ref.addNewRPr().addNewRStyle().setVal("CommentReference");
+    }
+    ref.addNewCommentReference().setId(id);
+  }
+
+  /**
+   * Creates the comment in the comments part from the comment or commentStart element.
+   * @param doc The document the comment belongs to
+   * @param cursor Points to the comment or commentStart element. Its comment-body child, if any,
+   * provides the comment's content.
+   * @return The ID of the new comment.
+   */
+  private BigInteger createComment(XWPFDocument doc, XmlCursor cursor) throws DocxGenerationException {
+    XWPFComments comments = doc.getDocComments();
+    if (comments == null) {
+      comments = doc.createComments();
+    }
+    BigInteger id = nextId();
+    XWPFComment comment = comments.createComment(id);
+
+    String author = cursor.getAttributeText(DocxConstants.QNAME_AUTHOR_ATT);
+    comment.getCtComment().setAuthor(author == null ? "" : author);
+    String initials = cursor.getAttributeText(DocxConstants.QNAME_INITIALS_ATT);
+    if (initials != null) {
+      comment.getCtComment().setInitials(initials);
+    }
+    String date = cursor.getAttributeText(DocxConstants.QNAME_DATE_ATT);
+    if (date != null && !date.trim().isEmpty()) {
+      try {
+        Calendar cal = GregorianCalendar.from(ZonedDateTime.from(OffsetDateTime.parse(date.trim())));
+        comment.getCtComment().setDate(cal);
+      } catch (RuntimeException e) {
+        log.warn("Comment @date value '" + date + "' is not an xs:dateTime with a timezone. Ignored.");
+      }
+    }
+
+    cursor.push();
+    if (cursor.toChild(DocxConstants.QNAME_COMMENT_BODY_ELEM) && cursor.toFirstChild()) {
+      do {
+        String tagName = cursor.getName().getLocalPart();
+        if ("p".equals(tagName)) {
+          makeParagraph(comment.createParagraph(), cursor);
+        } else {
+          // POI's XWPFComment does not offer an empty table to populate, so only paragraphs are supported.
+          log.warn("makeComment(): Unexpected element {" + cursor.getName().getNamespaceURI() + "}:" + tagName + " in <comment-body>. Ignored.");
+        }
+      } while (cursor.toNextSibling());
+    }
+    cursor.pop();
+
+    if (comment.getParagraphs().isEmpty()) {
+      // Word requires at least one paragraph in a comment.
+      comment.createParagraph();
+    }
+    return id;
   }
 
   /**

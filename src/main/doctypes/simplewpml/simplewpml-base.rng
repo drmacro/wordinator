@@ -603,6 +603,9 @@
         <choice>
           <ref name="bookmarkStart"/>
           <ref name="bookmarkEnd"/>
+          <ref name="comment"/>
+          <ref name="commentStart"/>
+          <ref name="commentEnd"/>
           <ref name="fn"/>
           <ref name="hyperlink"/>
           <ref name="image"/>
@@ -1050,6 +1053,83 @@
     </element>
   </define>
   
+  <define name="comment-atts">
+    <optional>
+      <attribute name="author"><a:documentation><p>Name of the comment's author.</p></a:documentation></attribute>
+    </optional>
+    <optional>
+      <attribute name="initials"><a:documentation><p>Initials of the comment's author.</p></a:documentation></attribute>
+    </optional>
+    <optional>
+      <attribute name="date">
+        <a:documentation><p>Date and time of the comment as an xs:dateTime with a timezone, e.g., "2024-05-01T10:30:00Z".</p></a:documentation>
+      </attribute>
+    </optional>
+  </define>
+
+  <define name="comment-body">
+    <element name="comment-body" ns="urn:ns:wordinator:simplewpml">
+      <a:documentation>
+        <p>The content of a comment: one or more paragraphs. Tables are not supported in comments.</p>
+      </a:documentation>
+      <zeroOrMore>
+        <ref name="p"/>
+      </zeroOrMore>
+    </element>
+  </define>
+
+  <define name="comment">
+    <element name="comment" ns="urn:ns:wordinator:simplewpml">
+      <a:documentation>
+        <p>A comment container. The inline content (everything except the comment-body) is the
+        commented range. Use commentStart and commentEnd instead when the range crosses paragraphs.</p>
+        <p>@since: 1.2.1</p>
+      </a:documentation>
+      <optional><ref name="comment-body"/></optional>
+      <zeroOrMore>
+        <choice>
+          <ref name="bookmarkStart"/>
+          <ref name="bookmarkEnd"/>
+          <ref name="comment"/>
+          <ref name="commentStart"/>
+          <ref name="commentEnd"/>
+          <ref name="fn"/>
+          <ref name="hyperlink"/>
+          <ref name="image"/>
+          <ref name="page-number-ref"/>
+          <ref name="run"/>
+          <ref name="object"/>
+          <ref name="complexField"/>
+          <ref name="math"/>
+        </choice>
+      </zeroOrMore>
+      <ref name="comment-atts"/>
+    </element>
+  </define>
+
+  <define name="commentStart">
+    <element name="commentStart" ns="urn:ns:wordinator:simplewpml">
+      <a:documentation>
+        <p>Marks the start of a commented range and holds the comment's content. The @id value pairs it
+        with its commentEnd, which may be in a different paragraph.</p>
+        <p>@since: 1.2.1</p>
+      </a:documentation>
+      <optional><ref name="comment-body"/></optional>
+      <ref name="id.att"/>
+      <ref name="comment-atts"/>
+    </element>
+  </define>
+
+  <define name="commentEnd">
+    <element name="commentEnd" ns="urn:ns:wordinator:simplewpml">
+      <a:documentation>
+        <p>Marks the end of a commented range. The @id value matches the corresponding commentStart.</p>
+        <p>@since: 1.2.1</p>
+      </a:documentation>
+      <ref name="id.att"/>
+    </element>
+  </define>
+
   <define name="fn">
     <element name="fn" ns="urn:ns:wordinator:simplewpml">
       <a:documentation>

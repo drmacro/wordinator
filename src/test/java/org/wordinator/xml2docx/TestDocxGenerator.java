@@ -19,6 +19,7 @@ import org.apache.poi.xwpf.usermodel.IBodyElement;
 import org.apache.poi.xwpf.usermodel.IRunElement;
 import org.apache.poi.xwpf.usermodel.TableRowAlign;
 import org.apache.poi.xwpf.usermodel.XWPFAbstractNum;
+import org.apache.poi.xwpf.usermodel.XWPFComment;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFFooter;
 import org.apache.poi.xwpf.usermodel.XWPFFootnote;
@@ -57,6 +58,7 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.STFldCharType;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STNumberFormat;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STPageOrientation;
 import org.wordinator.xml2docx.generator.DocxConstants;
+import org.wordinator.xml2docx.generator.DocxGenerationException;
 import org.wordinator.xml2docx.generator.DocxGenerator;
 
 import junit.framework.TestCase;
@@ -586,6 +588,35 @@ public class TestDocxGenerator extends TestCase {
     XWPFParagraph p = iterator.next();
     assertNotNull(p);
     // Put remaining tests here.
+  }
+
+  @Test
+  public void testComments() throws Exception {
+    // Issue #44: comment container and commentStart/commentEnd markers.
+    XWPFDocument doc = convert("simplewp/simplewpml-issue-44-comments.swpx", "out/issue-44-comments.docx");
+    XWPFComment[] comments = doc.getComments();
+    assertEquals("Expected 4 comments", 4, comments.length);
+    XWPFComment first = comments[0];
+    assertEquals("Pat Author", first.getAuthor());
+    assertEquals("PA", first.getInitials());
+    assertNotNull(first.getDate());
+    assertEquals("Container comment body should have two paragraphs", 2, first.getParagraphs().size());
+    assertEquals("Marker comment.", comments[1].getText().trim());
+    assertEquals("Sam Reviewer", comments[1].getAuthor());
+    String xml = doc.getDocument().getBody().xmlText();
+    assertEquals("Range starts", 4, xml.split("commentRangeStart", -1).length - 1);
+    assertEquals("Range ends", 4, xml.split("commentRangeEnd", -1).length - 1);
+    assertEquals("Comment references", 4, xml.split("commentReference", -1).length - 1);
+  }
+
+  @Test
+  public void testCommentEndWithoutStart() throws Exception {
+    try {
+      convert("simplewp/simplewpml-issue-44-comment-unmatched-end.swpx", "out/issue-44-comment-unmatched-end.docx");
+      fail("Expected a failure for a commentEnd with no commentStart");
+    } catch (DocxGenerationException e) {
+      assertTrue(e.getMessage().contains("nostart"));
+    }
   }
 
   @Test
