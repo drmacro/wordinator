@@ -13,7 +13,8 @@
     <p><run>Middle paragraph.</run></p>
     <p><run>End </run><commentEnd id="c1"/><run>of range.</run></p>
     <!-- Overlapping: marker range containing a container -->
-    <p><commentStart id="c2" author="Sam Reviewer"/><run>Outer </run><comment author="Pat Author"
+    <p><commentStart id="c2" author="Sam Reviewer"
+      ><comment-body><p><run>Outer comment.</run></p></comment-body></commentStart><run>Outer </run><comment author="Pat Author"
       ><comment-body><p><run>Inner comment.</run></p></comment-body><run>inner</run></comment><commentEnd id="c2"/></p>
   </body>
 </document>
