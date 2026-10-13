@@ -1188,6 +1188,9 @@
             <p>Turn on underlining for the literal callouts, both in the footnote reference and in 
             the footnote itself. Applies only when @callout is specified. Does not underline the 
             footnote text, which is formatted by its own runs.</p>
+            <p>To mark a new footnote, specify @underline and also underline the runs of the footnote text.
+            To mark only a new reference to an existing footnote, specify @underline and leave the 
+            footnote text runs unformatted.</p>
             <p>Issue #200</p>
             <p>See 17.18.99 ST_Underline (Underline Patterns).</p>
           </a:documentation>
