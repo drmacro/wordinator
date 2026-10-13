@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="../../../main/doctypes/simplewpml/simplewpml.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<document xmlns="urn:ns:wordinator:simplewpml">
+  <body>
+    <p style="Heading1">
+      <run>Issue #200: Underlined footnote callout</run>
+    </p>
+    <p style="normal">
+      <run>Footnote with underlined callout.</run>
+      <fn callout="U1" underline="single"><p><run>Footnote text one.</run></p></fn>
+    </p>
+    <p style="normal">
+      <run>Footnote without underline.</run>
+      <fn callout="N2"><p><run>Footnote text two.</run></p></fn>
+    </p>
+  </body>
+</document>

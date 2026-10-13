@@ -145,6 +145,7 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.STSectionMark;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STShd;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STStyleType;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STTblLayoutType;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.STUnderline;
 import org.wordinator.xml2docx.xwpf.model.XWPFHeaderFooterPolicy;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
@@ -2291,6 +2292,7 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
     String type = cursor.getAttributeText(DocxConstants.QNAME_TYPE_ATT);
     String callout = cursor.getAttributeText(DocxConstants.QNAME_CALLOUT_ATT);
     String referenceCallout = cursor.getAttributeText(DocxConstants.QNAME_REFERENCE_CALLOUT_ATT);
+    String underline = cursor.getAttributeText(DocxConstants.QNAME_UNDERLINE_ATT);
 
     // Issue #154: An empty callout means "no literal callout". Treating it as a literal
     //             produces empty callout text, which makes Word stop rendering the document.
@@ -2345,6 +2347,8 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
         if (paraCursor.toChild(DocxConstants.QNAME_FOOTNOTEREFEREMCE_ELEM)) {
           paraCursor.setAttributeText(DocxConstants.QNAME_CUSTOMMARKFOLLOWS_ATT, "on");
           paraCursor.toParent();
+          // Issue #200: @underline applies to the literal callouts.
+          setCalloutUnderline(paraCursor.getObject(), underline);
           paraCursor.toEndToken();
           paraCursor.insertElementWithText(DocxConstants.QNAME_T_ELEM, referenceCallout);
         }
@@ -2360,6 +2364,7 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
       // Remove that and replace it with a w:t with the callout.
       if (noteCursor.toChild(DocxConstants.QNAME_W_P_ELEM)) {
         if (noteCursor.toChild(DocxConstants.QNAME_R_ELEM)) {
+          setCalloutUnderline(noteCursor.getObject(), underline);
           cursor.push();
           if (noteCursor.toChild(DocxConstants.QNAME_FOOTNOTEREF_ELEM)) {
             noteCursor.removeXml();
@@ -2375,6 +2380,25 @@ private void handleCustomProperties(XWPFDocument doc, XmlObject xml) {
     }
 
     cursor.pop();
+  }
+
+  /**
+   * Applies underlining to a run that holds a literal footnote callout.
+   * @param runObj The w:r element (CTR) holding the callout
+   * @param underline Value of fn/@underline (ST_Underline value). If null or empty, nothing is done.
+   */
+  private void setCalloutUnderline(XmlObject runObj, String underline) {
+    if (underline == null || underline.trim().isEmpty() || !(runObj instanceof CTR)) {
+      return;
+    }
+    STUnderline.Enum value = STUnderline.Enum.forString(underline.trim());
+    if (value == null) {
+      log.error("- [ERROR] Unrecognized underline value \"" + underline + "\" on <fn>");
+      return;
+    }
+    CTR ctr = (CTR)runObj;
+    CTRPr rPr = ctr.isSetRPr() ? ctr.getRPr() : ctr.addNewRPr();
+    rPr.addNewU().setVal(value);
   }
 
   /**
